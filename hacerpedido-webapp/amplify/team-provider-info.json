@@ -10,6 +10,14 @@
             "StackName": "amplify-hacerpedido-webapp-dev-183059",
             "StackId": "arn:aws:cloudformation:us-east-1:813977654622:stack/amplify-hacerpedido-webapp-dev-183059/e5fee5f0-7119-11ea-8927-0a36a8f29061",
             "AmplifyAppId": "d3c5fapkz14eil"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d3c5fapkz14eil",
+                    "type": "manual"
+                }
+            }
         }
     }
 }
