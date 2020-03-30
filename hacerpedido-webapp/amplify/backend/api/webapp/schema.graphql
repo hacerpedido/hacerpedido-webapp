@@ -1,22 +1,43 @@
-type Store @model {
+type Shop @model {
   id: String!
   name: String!
-  sections: [Section] @connection(keyName: "byStore", fields: ["id"])
+  slug: String
+  region: String
+	#Address               // Por sucursal
+	#Logo
+  #Background
+	#[Category]            //¿En qué categoría de estas entraría?
+  #Visibility            // publicado / draft / no-publicado
+  #Notes
+  #Delivery Cost         //  Envíos a domicilio: $50	
+	#WhatsApp #
+	#Phone #
+	#Open Times
+	#Takeaway			// ¿Contás con takeaway?
+	#Delivery			// ¿Contás con delivery propio?	
+	#OrdersByPhoneOrWhatsApp?	// ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
+	#CreatedAt			// Submitted At
+  typeformToken: String	
+#	UpdatedAt
+#[Section]
+#  sections: [Section] @connection(keyName: "byShop", fields: ["id"])
 }
 
-type Section @model @key(name: "byStore", fields: ["storeID"]) {
-  id: String!
-  title: String!
-  storeID: String!
-  store: Store @connection(fields: ["storeID"])
-  products: [Product] @connection(keyName: "bySection", fields: ["id"])
-}
 
-type Product @model @key(name: "bySection", fields: ["sectionID", "name"]) {
-  id: String!
-  sectionID: String!
-  section: Section @connection(fields: ["sectionID"])
-  name: String!
-  description: String
-  price: Float
-}
+
+#type Section @model @key(name: "byShop", fields: ["shopID"]) {
+#  id: String!
+#  title: String!
+#  shopID: String!
+#  shop: Shop @connection(fields: ["shopID"])
+#  products: [Product] @connection(keyName: "bySection", fields: ["id"])
+#}
+
+#type Product @model @key(name: "bySection", fields: ["sectionID", "name"]) {
+#  id: String!
+#  sectionID: String!
+#  section: Section @connection(fields: ["sectionID"])
+#  name: String!
+#  description: String
+#  price: Float
+#}

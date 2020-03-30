@@ -2,19 +2,27 @@ import React, { useEffect, useReducer } from "react";
 import { Link } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
 
-import { listStores } from "./graphql/queries";
+import { listShops } from "./graphql/queries";
+import { onCreateShop } from "./graphql/subscriptions";
 
 // Action Types
 const QUERY = "QUERY";
+const LOADING = "LOADING";
+const SUBSCRIPTION = "SUBSCRIPTION";
 
 const initialState = {
-  stores: []
+  shops: [],
+  loading: false
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case LOADING:
+      return { ...state, loading: action.loading };
     case QUERY:
-      return { ...state, stores: action.stores };
+      return { ...state, shops: action.shops, loading: false };
+    case SUBSCRIPTION:
+      return { ...state, shops: [...state.shops, action.shop] };
     default:
       return state;
   }
@@ -25,10 +33,20 @@ export default function Home() {
 
   useEffect(() => {
     async function getData() {
-      const storeData = await API.graphql(graphqlOperation(listStores));
-      dispatch({ type: QUERY, stores: storeData.data.listStores.items });
+      const shopData = await API.graphql(graphqlOperation(listShops, {limit: 10000}));
+      dispatch({ type: QUERY, shops: shopData.data.listShops.items });
     }
+    dispatch({ type: LOADING, loading: true });
     getData();
+
+    const subscription = API.graphql(graphqlOperation(onCreateShop)).subscribe({
+      next: eventData => {
+        const shop = eventData.value.data.onCreateShop;
+        dispatch({ type: SUBSCRIPTION, shop });
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
@@ -36,18 +54,22 @@ export default function Home() {
       <h2>Listado de comercios</h2>
 
       <div>
-      <ul>
-        {state.stores.length > 0 ? (
-          state.stores.map(store => (
-            <li key={store.id}>
-              <Link to={store.id}>{store.name}</Link>
-            </li>
-          ))
+        {(state.shops.length === 0) & state.loading ? (
+          <div>Loading...</div>
         ) : (
-          <p>Sin comercios en la base de datos</p>
+          <ul>
+            {state.shops.length > 0 ? (
+              state.shops.map(shop => (
+                <li key={shop.id}>
+                  <Link to={shop.slug}>{shop.name}</Link>
+                </li>
+              ))
+            ) : (
+              <p>Sin comercios en la base de datos</p>
+            )}
+          </ul>
         )}
-      </ul>
-    </div>
+      </div>
     </div>
   );
 }
