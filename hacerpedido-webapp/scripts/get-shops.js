@@ -1,7 +1,9 @@
+// npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-shops.js src/aws-exports.js && node build-scripts/scripts/get-shops.js
+
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShops } from "../queries.js";
-import { createShop } from "../mutations";
+import { createShop, updateShop } from "../mutations";
 import { v4 as uuidv4 } from "uuid";
 
 const { google } = require("googleapis");
@@ -16,7 +18,9 @@ async function main() {
   });
 
   const sheets = google.sheets("v4");
-  const shopsData = await API.graphql(graphqlOperation(listShops, {limit: 10000}));
+  const shopsData = await API.graphql(
+    graphqlOperation(listShops, { limit: 10000 })
+  );
 
   // console.log(shopsData);
   // console.log(shopsData.data);
@@ -53,8 +57,38 @@ async function createShopApi(shop) {
   await API.graphql(graphqlOperation(createShop, { input: shop }));
 }
 
+async function updateShopApi(shop) {
+  // await API.graphql(graphqlOperation(updateShop, { input: shop }));
+  await API.graphql({
+    query: updateShop,
+    variables: { input: shop }
+  });
+}
+
+function removeEmptyStringElements(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "object") {
+      removeEmptyStringElements(obj[prop]);
+    } else if (obj[prop] === "") {
+      delete obj[prop];
+    }
+  }
+  return obj;
+}
+
 function processRow(row, shops) {
-  const name = row[0];
+  // 0 - Cómo es tu nombre?
+  // 1 - Nombre del Negocio
+  // 2 - ¿En qué categoría de estas entraría?
+  // 3 - ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
+  // 4 - ¿Contás con delivery propio?
+  // 5 - Whatsapp de Pedidos
+  // 6 - Correo de contacto
+  // 7 - ¿Contás con takeaway?
+  // 8 - Submitted At
+  // 9 - Token
+
+  const userName = row[0];
   const businessName = row[1];
   const category = row[2];
   const ordersByPhoneOrWhatsApp = row[3];
@@ -72,32 +106,36 @@ function processRow(row, shops) {
     return;
   }
 
+  let newValues = {
+    name: businessName,
+    slug: businessName,
+    region: "Mar del Plata",
+    typeformToken: typeformToken,
+    userName: userName,
+    category: category,
+    ordersByPhoneOrWhatsApp: ordersByPhoneOrWhatsApp,
+    delivery: delivery,
+    whatsAppNumber: whatsApp,
+    email: email,
+    takeaway: takeaway,
+    submittedAt: submittedAt
+  };
+
   let obj = shops.find(o => o.typeformToken === typeformToken);
+  let shop = Object.assign(obj, newValues); // {...obj, ...newValues};
+
+  shop = removeEmptyStringElements(shop);
+
+  // console.log(shop);
 
   if (obj === undefined) {
+    shop["id"] = uuidv4();
     console.log("add");
-    const shop = {
-      id: uuidv4(),
-      name: businessName,
-      slug: businessName,
-      // region: null,
-      typeformToken: typeformToken
-    };
     createShopApi(shop).catch(console.error);
   } else {
     console.log("update");
+    updateShopApi(shop).catch(console.error);
   }
 }
 
 main().catch(console.error);
-
-// 0 - Cómo es tu nombre?
-// 1 - Nombre del Negocio
-// 2 - ¿En qué categoría de estas entraría?
-// 3 - ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
-// 4 - ¿Contás con delivery propio?
-// 5 - Whatsapp de Pedidos
-// 6 - Correo de contacto
-// 7 - ¿Contás con takeaway?
-// 8 - Submitted At
-// 9 - Token
