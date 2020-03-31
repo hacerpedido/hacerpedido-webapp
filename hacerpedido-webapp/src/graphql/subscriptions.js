@@ -8,6 +8,22 @@ export const onCreateShop = /* GraphQL */ `
       name
       slug
       region
+      userName
+      category
+      address
+      notes
+      ordersByPhoneOrWhatsApp
+      delivery
+      takeaway
+      whatsAppNumber
+      phoneNumber
+      email
+      submittedAt
+      openTimes
+      deliveryCost
+      visibility
+      logo
+      background
       typeformToken
     }
   }
@@ -19,6 +35,22 @@ export const onUpdateShop = /* GraphQL */ `
       name
       slug
       region
+      userName
+      category
+      address
+      notes
+      ordersByPhoneOrWhatsApp
+      delivery
+      takeaway
+      whatsAppNumber
+      phoneNumber
+      email
+      submittedAt
+      openTimes
+      deliveryCost
+      visibility
+      logo
+      background
       typeformToken
     }
   }
@@ -30,6 +62,22 @@ export const onDeleteShop = /* GraphQL */ `
       name
       slug
       region
+      userName
+      category
+      address
+      notes
+      ordersByPhoneOrWhatsApp
+      delivery
+      takeaway
+      whatsAppNumber
+      phoneNumber
+      email
+      submittedAt
+      openTimes
+      deliveryCost
+      visibility
+      logo
+      background
       typeformToken
     }
   }

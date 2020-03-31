@@ -8,6 +8,22 @@ export const getShop = /* GraphQL */ `
       name
       slug
       region
+      userName
+      category
+      address
+      notes
+      ordersByPhoneOrWhatsApp
+      delivery
+      takeaway
+      whatsAppNumber
+      phoneNumber
+      email
+      submittedAt
+      openTimes
+      deliveryCost
+      visibility
+      logo
+      background
       typeformToken
     }
   }
@@ -24,6 +40,22 @@ export const listShops = /* GraphQL */ `
         name
         slug
         region
+        userName
+        category
+        address
+        notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
+        openTimes
+        deliveryCost
+        visibility
+        logo
+        background
         typeformToken
       }
       nextToken

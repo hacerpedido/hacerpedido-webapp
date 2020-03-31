@@ -3,26 +3,30 @@ type Shop @model {
   name: String!
   slug: String
   region: String
-	#Address               // Por sucursal
-	#Logo
-  #Background
-	#[Category]            //¿En qué categoría de estas entraría?
-  #Visibility            // publicado / draft / no-publicado
-  #Notes
-  #Delivery Cost         //  Envíos a domicilio: $50	
-	#WhatsApp #
-	#Phone #
-	#Open Times
-	#Takeaway			// ¿Contás con takeaway?
-	#Delivery			// ¿Contás con delivery propio?	
-	#OrdersByPhoneOrWhatsApp?	// ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
-	#CreatedAt			// Submitted At
+  userName: String
+  category: String
+  address: String
+  notes: String
+  ordersByPhoneOrWhatsApp: String
+  delivery: String
+  takeaway: String
+  whatsAppNumber: String
+  phoneNumber: String
+  email: String
+  submittedAt: String
+  openTimes: String
+  deliveryCost: String
+  visibility: Visibility
+  logo: String
+  background: String
   typeformToken: String	
-#	UpdatedAt
-#[Section]
 #  sections: [Section] @connection(keyName: "byShop", fields: ["id"])
 }
 
+enum Visibility {
+  public
+  private
+}
 
 
 #type Section @model @key(name: "byShop", fields: ["shopID"]) {
