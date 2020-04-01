@@ -39,7 +39,7 @@ export default function App() {
           <Route path="/start">
             <div>Página para comercios</div>
           </Route>
-          <Route path={`/:storeId`}>
+          <Route path={`/:slug`}>
             <Store />
           </Route>
           <Route path="/">

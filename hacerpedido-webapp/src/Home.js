@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
+
+import ShopCard from "./ShopCard";
 
 import { listShops } from "./graphql/queries";
 import { onCreateShop } from "./graphql/subscriptions";
@@ -33,7 +35,12 @@ export default function Home() {
 
   useEffect(() => {
     async function getData() {
-      const shopData = await API.graphql(graphqlOperation(listShops, {limit: 10000}));
+      const shopData = await API.graphql(
+        graphqlOperation(listShops, {
+          filter: { visibility: { eq: "public" } },
+          limit: 10000
+        })
+      );
       dispatch({ type: QUERY, shops: shopData.data.listShops.items });
     }
     dispatch({ type: LOADING, loading: true });
@@ -55,13 +62,13 @@ export default function Home() {
 
       <div>
         {(state.shops.length === 0) & state.loading ? (
-          <div>Loading...</div>
+          <div>Cargando...</div>
         ) : (
           <ul>
             {state.shops.length > 0 ? (
               state.shops.map(shop => (
                 <li key={shop.id}>
-                  <Link to={shop.slug}>{shop.name}</Link>
+                  <ShopCard shop={shop} />
                 </li>
               ))
             ) : (
