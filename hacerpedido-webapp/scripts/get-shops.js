@@ -130,6 +130,7 @@ function processRow(row, shops) {
 
   if (obj === undefined) {
     shop["id"] = uuidv4();
+    shop["visibility"] = "private";
     console.log("add");
     createShopApi(shop).catch(console.error);
   } else {

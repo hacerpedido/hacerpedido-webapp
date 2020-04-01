@@ -25,6 +25,16 @@ export const onCreateShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -52,6 +62,16 @@ export const onUpdateShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -79,6 +99,49 @@ export const onDeleteShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
+    }
+  }
+`;
+export const onCreateProduct = /* GraphQL */ `
+  subscription OnCreateProduct {
+    onCreateProduct {
+      id
+      shopID
+      category
+      name
+      description
+    }
+  }
+`;
+export const onUpdateProduct = /* GraphQL */ `
+  subscription OnUpdateProduct {
+    onUpdateProduct {
+      id
+      shopID
+      category
+      name
+      description
+    }
+  }
+`;
+export const onDeleteProduct = /* GraphQL */ `
+  subscription OnDeleteProduct {
+    onDeleteProduct {
+      id
+      shopID
+      category
+      name
+      description
     }
   }
 `;
