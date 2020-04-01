@@ -1,4 +1,4 @@
-type Shop @model {
+type Shop @model @key(name: "bySlug", fields: ["slug"]) {
   id: String!
   name: String!
   slug: String
