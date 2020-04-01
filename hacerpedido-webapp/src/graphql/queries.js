@@ -25,6 +25,16 @@ export const getShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -57,6 +67,45 @@ export const listShops = /* GraphQL */ `
         logo
         background
         typeformToken
+        prods {
+          items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+          nextToken
+        }
+      }
+      nextToken
+    }
+  }
+`;
+export const getProduct = /* GraphQL */ `
+  query GetProduct($id: ID!) {
+    getProduct(id: $id) {
+      id
+      shopID
+      category
+      name
+      description
+    }
+  }
+`;
+export const listProducts = /* GraphQL */ `
+  query ListProducts(
+    $filter: ModelProductFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listProducts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        shopID
+        category
+        name
+        description
       }
       nextToken
     }

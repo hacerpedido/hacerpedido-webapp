@@ -2,7 +2,7 @@ import React, { useEffect, useReducer } from "react";
 // import { Link } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
 
-import { listShops } from "./graphql/queries";
+import { listShopsWithProducts } from "./graphql/queriesCustom";
 import { useParams } from "react-router-dom";
 
 // Action Types
@@ -11,7 +11,8 @@ const LOADING = "LOADING";
 
 const initialState = {
   shops: [],
-  loading: false
+  loading: false,
+  products: []
 };
 
 const reducer = (state, action) => {
@@ -33,7 +34,7 @@ export default function Shop() {
   useEffect(() => {
     async function getData() {
       const shopData = await API.graphql(
-        graphqlOperation(listShops, {
+        graphqlOperation(listShopsWithProducts, {
           filter: { slug: { eq: slug } },
           limit: 10000
         })
@@ -56,6 +57,12 @@ export default function Shop() {
 
   const shop = state.shops[0];
 
+  // const products = shop.products;
+  // console.log(products);
+
+  const prods = shop.prods.items;
+  console.log(prods);
+
   return (
     <div>
       <h3>{shop.name}</h3>
@@ -63,6 +70,23 @@ export default function Shop() {
       {shop.address ? <p>{shop.address}</p> : ""}
       {shop.openTimes ? <p>Pedidos: {shop.openTimes}</p> : ""}
       {shop.deliveryCost ? <p>Delivery: {shop.deliveryCost}</p> : ""}
+
+    {(prods.length === 0) & state.loading ? (
+          <div>Cargando...</div>
+        ) : (
+          <ul>
+            {prods.length > 0 ? (
+              prods.map(product => (
+                <li key={product.id}>
+                  {product.name}
+                </li>
+              ))
+            ) : (
+              <p>Sin productos</p>
+            )}
+          </ul>
+        )}
+
     </div>
   );
 }

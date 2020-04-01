@@ -28,6 +28,16 @@ export const createShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -58,6 +68,16 @@ export const updateShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -88,6 +108,58 @@ export const deleteShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      prods {
+        items {
+          id
+          shopID
+          category
+          name
+          description
+        }
+        nextToken
+      }
+    }
+  }
+`;
+export const createProduct = /* GraphQL */ `
+  mutation CreateProduct(
+    $input: CreateProductInput!
+    $condition: ModelProductConditionInput
+  ) {
+    createProduct(input: $input, condition: $condition) {
+      id
+      shopID
+      category
+      name
+      description
+    }
+  }
+`;
+export const updateProduct = /* GraphQL */ `
+  mutation UpdateProduct(
+    $input: UpdateProductInput!
+    $condition: ModelProductConditionInput
+  ) {
+    updateProduct(input: $input, condition: $condition) {
+      id
+      shopID
+      category
+      name
+      description
+    }
+  }
+`;
+export const deleteProduct = /* GraphQL */ `
+  mutation DeleteProduct(
+    $input: DeleteProductInput!
+    $condition: ModelProductConditionInput
+  ) {
+    deleteProduct(input: $input, condition: $condition) {
+      id
+      shopID
+      category
+      name
+      description
     }
   }
 `;
