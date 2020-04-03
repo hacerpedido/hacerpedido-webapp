@@ -1,25 +1,32 @@
 import React from "react";
 import { View } from "react-native";
-import { withStyles } from "@ui-kitten/components";
+import { TopNavigation, useTheme } from "@ui-kitten/components";
 import { Link } from "react-router-dom";
 
-const HeaderView = props => {
-  const { themedStyle, style, ...restProps } = props;
+export default function Header() {
+  // const onBackPress = () => {
+  // };
 
-  return (
-    <View {...restProps} style={[themedStyle, style]}>
-      <Link to="/">Home</Link>
-      <Link to="/start">Start</Link>
+  const renderLeftControl = () => (
+    <View style={{ padding: 12 }}>
+      <Link to="/">HacerPedidos.com</Link>
+    </View>
+    // <BackAction onPress={onBackPress}/>
+  );
+
+  const renderRightControl = () => (
+    <View style={{ padding: 12 }}>
+      <Link to="/start">Suma tu comercio</Link>
     </View>
   );
-};
 
-export const ThemedHeaderView = withStyles(HeaderView, theme => ({
-  // awesome: {
-    backgroundColor: theme["color-primary-500"]
-  // }
-}));
+  const theme = useTheme();
 
-export default function Header() {
-  return <ThemedHeaderView />;
+  return (
+    <TopNavigation
+      style={{ backgroundColor: theme["color-primary-default"] }}
+      leftControl={renderLeftControl()}
+      rightControls={renderRightControl()}
+    />
+  );
 }
