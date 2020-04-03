@@ -4,6 +4,7 @@ import API from "@aws-amplify/api";
 import PubSub from "@aws-amplify/pubsub";
 import { ApplicationProvider, Layout } from "@ui-kitten/components";
 import { mapping, light as lightTheme } from "@eva-design/eva";
+import { default as appTheme } from './custom-theme.json';
 
 import Home from "./Home";
 import Header from "./Header";
@@ -43,9 +44,11 @@ const HomeScreen = () => (
   </Layout>
 );
 
+const theme = { ...lightTheme, ...appTheme };
+
 export default function App() {
   return (
-    <ApplicationProvider mapping={mapping} theme={lightTheme}>
+    <ApplicationProvider mapping={mapping} theme={theme}>
       <HomeScreen />
     </ApplicationProvider>
   );

@@ -1,19 +1,25 @@
 import React from "react";
+import { View } from "react-native";
+import { withStyles } from "@ui-kitten/components";
 import { Link } from "react-router-dom";
 
-export default function Header() {
+const HeaderView = props => {
+  const { themedStyle, style, ...restProps } = props;
+
   return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/start">Start</Link>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <View {...restProps} style={[themedStyle, style]}>
+      <Link to="/">Home</Link>
+      <Link to="/start">Start</Link>
+    </View>
   );
+};
+
+export const ThemedHeaderView = withStyles(HeaderView, theme => ({
+  // awesome: {
+    backgroundColor: theme["color-primary-500"]
+  // }
+}));
+
+export default function Header() {
+  return <ThemedHeaderView />;
 }
