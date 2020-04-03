@@ -3,8 +3,7 @@
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShops } from "../queries.js";
-import { createProduct, deleteProduct } from "../mutations";
-import { v4 as uuidv4 } from "uuid";
+import { createProduct } from "../mutations";
 
 const { google } = require("googleapis");
 
