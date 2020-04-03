@@ -25,13 +25,13 @@ export const onCreateShop = /* GraphQL */ `
       logo
       background
       typeformToken
-      prods {
+      products {
         items {
           id
-          shopID
           category
           name
           description
+          price
         }
         nextToken
       }
@@ -62,13 +62,13 @@ export const onUpdateShop = /* GraphQL */ `
       logo
       background
       typeformToken
-      prods {
+      products {
         items {
           id
-          shopID
           category
           name
           description
+          price
         }
         nextToken
       }
@@ -99,13 +99,13 @@ export const onDeleteShop = /* GraphQL */ `
       logo
       background
       typeformToken
-      prods {
+      products {
         items {
           id
-          shopID
           category
           name
           description
+          price
         }
         nextToken
       }
@@ -116,10 +116,36 @@ export const onCreateProduct = /* GraphQL */ `
   subscription OnCreateProduct {
     onCreateProduct {
       id
-      shopID
       category
       name
       description
+      price
+      shop {
+        id
+        name
+        slug
+        region
+        userName
+        category
+        address
+        notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
+        openTimes
+        deliveryCost
+        visibility
+        logo
+        background
+        typeformToken
+        products {
+          nextToken
+        }
+      }
     }
   }
 `;
@@ -127,10 +153,36 @@ export const onUpdateProduct = /* GraphQL */ `
   subscription OnUpdateProduct {
     onUpdateProduct {
       id
-      shopID
       category
       name
       description
+      price
+      shop {
+        id
+        name
+        slug
+        region
+        userName
+        category
+        address
+        notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
+        openTimes
+        deliveryCost
+        visibility
+        logo
+        background
+        typeformToken
+        products {
+          nextToken
+        }
+      }
     }
   }
 `;
@@ -138,10 +190,36 @@ export const onDeleteProduct = /* GraphQL */ `
   subscription OnDeleteProduct {
     onDeleteProduct {
       id
-      shopID
       category
       name
       description
+      price
+      shop {
+        id
+        name
+        slug
+        region
+        userName
+        category
+        address
+        notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
+        openTimes
+        deliveryCost
+        visibility
+        logo
+        background
+        typeformToken
+        products {
+          nextToken
+        }
+      }
     }
   }
 `;

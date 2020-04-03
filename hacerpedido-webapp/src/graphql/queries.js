@@ -25,13 +25,13 @@ export const getShop = /* GraphQL */ `
       logo
       background
       typeformToken
-      prods {
+      products {
         items {
           id
-          shopID
           category
           name
           description
+          price
         }
         nextToken
       }
@@ -67,14 +67,7 @@ export const listShops = /* GraphQL */ `
         logo
         background
         typeformToken
-        prods {
-          items {
-          id
-          shopID
-          category
-          name
-          description
-        }
+        products {
           nextToken
         }
       }
@@ -86,10 +79,36 @@ export const getProduct = /* GraphQL */ `
   query GetProduct($id: ID!) {
     getProduct(id: $id) {
       id
-      shopID
       category
       name
       description
+      price
+      shop {
+        id
+        name
+        slug
+        region
+        userName
+        category
+        address
+        notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
+        openTimes
+        deliveryCost
+        visibility
+        logo
+        background
+        typeformToken
+        products {
+          nextToken
+        }
+      }
     }
   }
 `;
@@ -102,10 +121,33 @@ export const listProducts = /* GraphQL */ `
     listProducts(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        shopID
         category
         name
         description
+        price
+        shop {
+          id
+          name
+          slug
+          region
+          userName
+          category
+          address
+          notes
+          ordersByPhoneOrWhatsApp
+          delivery
+          takeaway
+          whatsAppNumber
+          phoneNumber
+          email
+          submittedAt
+          openTimes
+          deliveryCost
+          visibility
+          logo
+          background
+          typeformToken
+        }
       }
       nextToken
     }
