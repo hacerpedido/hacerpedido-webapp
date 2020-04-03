@@ -5,12 +5,12 @@ import API, { graphqlOperation } from "@aws-amplify/api";
 import ShopCard from "./ShopCard";
 
 import { listShops } from "./graphql/queries";
-import { onCreateShop } from "./graphql/subscriptions";
+// import { onCreateShop } from "./graphql/subscriptions";
 
 // Action Types
 const QUERY = "QUERY";
 const LOADING = "LOADING";
-const SUBSCRIPTION = "SUBSCRIPTION";
+// const SUBSCRIPTION = "SUBSCRIPTION";
 
 const initialState = {
   shops: [],
@@ -23,8 +23,8 @@ const reducer = (state, action) => {
       return { ...state, loading: action.loading };
     case QUERY:
       return { ...state, shops: action.shops, loading: false };
-    case SUBSCRIPTION:
-      return { ...state, shops: [...state.shops, action.shop] };
+    // case SUBSCRIPTION:
+    //   return { ...state, shops: [...state.shops, action.shop] };
     default:
       return state;
   }
@@ -46,14 +46,14 @@ export default function Home() {
     dispatch({ type: LOADING, loading: true });
     getData();
 
-    const subscription = API.graphql(graphqlOperation(onCreateShop)).subscribe({
-      next: eventData => {
-        const shop = eventData.value.data.onCreateShop;
-        dispatch({ type: SUBSCRIPTION, shop });
-      }
-    });
+    // const subscription = API.graphql(graphqlOperation(onCreateShop)).subscribe({
+    //   next: eventData => {
+    //     const shop = eventData.value.data.onCreateShop;
+    //     dispatch({ type: SUBSCRIPTION, shop });
+    //   }
+    // });
 
-    return () => subscription.unsubscribe();
+    // return () => subscription.unsubscribe();
   }, []);
 
   return (

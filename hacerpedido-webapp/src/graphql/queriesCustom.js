@@ -10,29 +10,18 @@ export const listShopsWithProducts = /* GraphQL */ `
       items {
         id
         name
-        slug
-        region
-        userName
         category
         address
         notes
-        ordersByPhoneOrWhatsApp
-        delivery
-        takeaway
         whatsAppNumber
         phoneNumber
-        email
-        submittedAt
         openTimes
         deliveryCost
-        visibility
         logo
         background
-        typeformToken
-        prods {
+        products {
           items {
             id
-            shopID
             category
             name
             description

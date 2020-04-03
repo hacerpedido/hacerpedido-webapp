@@ -68,16 +68,16 @@ async function main() {
   // console.log(JSON.stringify(responseSheets, null, 2));
 }
 
-async function deleteProductsApi(shopID) {
-  await API.graphql(
-    graphqlOperation(deleteProduct, { condition: { shopID: { eq: shopID } } })
-  );
+// async function deleteProductsApi(shopID) {
+//   await API.graphql(
+//     graphqlOperation(deleteProduct, { condition: { shopID: { eq: shopID } } })
+//   );
 
-  //   await API.graphql({
-  //     query: deleteProduct,
-  //     variables: { input: shop, condition: { shopID: { eq: shopID } }}
-  //   });
-}
+//   //   await API.graphql({
+//   //     query: deleteProduct,
+//   //     variables: { input: shop, condition: { shopID: { eq: shopID } }}
+//   //   });
+// }
 
 async function createProductApi(product) {
   await API.graphql(graphqlOperation(createProduct, { input: product }));
@@ -150,11 +150,12 @@ function processRows(slug, rows, shops) {
     }
 
     let product = {
-      id: uuidv4(),
+      // id: uuidv4(),
       name: name,
-      //   price: price,
+      price: price,
       category: section,
-      shopID: shopID
+      // shopID: shopID,
+      productShopId: shopID
     };
 
     if (description !== undefined && description !== "") {

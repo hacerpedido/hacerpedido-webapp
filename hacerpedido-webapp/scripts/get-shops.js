@@ -45,7 +45,7 @@ async function main() {
         console.log("No data found.");
       } else {
         for (const row of rows) {
-          //console.log(`${row}`);
+          console.log(`${row}`);
           processRow(row, shops);
         }
       }
@@ -122,21 +122,38 @@ function processRow(row, shops) {
   };
 
   let obj = shops.find(o => o.typeformToken === typeformToken);
-  let shop = Object.assign(obj, newValues); // {...obj, ...newValues};
+
+  let shop = {};
+  if (obj !== undefined) {
+    shop = Object.assign(obj, newValues);
+    delete shop["products"];
+
+  } else {
+    shop = newValues;
+  }  
 
   shop = removeEmptyStringElements(shop);
 
-  // console.log(shop);
+  console.log(shop);
 
   if (obj === undefined) {
-    shop["id"] = uuidv4();
-    shop["visibility"] = "private";
+    // shop["id"] = uuidv4();
+    shop.visibility = "private";
     console.log("add");
-    createShopApi(shop).catch(console.error);
+    createShopApi(shop).catch(error => {
+      console.log(JSON.stringify(error, null, 2));
+    });
   } else {
     console.log("update");
-    updateShopApi(shop).catch(console.error);
+    // shop.visibility = "private";
+
+    updateShopApi(shop).catch(error => {
+      console.log(JSON.stringify(error, null, 2));
+    });
   }
+
 }
 
-main().catch(console.error);
+main().catch(error => {
+  console.log(JSON.stringify(error, null, 2));
+});

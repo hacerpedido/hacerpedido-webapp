@@ -2,6 +2,7 @@ import React, { useEffect, useReducer } from "react";
 // import { Link } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
 
+// import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
 import { useParams } from "react-router-dom";
 
@@ -57,10 +58,7 @@ export default function Shop() {
 
   const shop = state.shops[0];
 
-  // const products = shop.products;
-  // console.log(products);
-
-  const prods = shop.prods.items;
+  const prods = shop.products.items;
   console.log(prods);
 
   return (

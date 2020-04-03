@@ -1,3 +1,4 @@
+
 type Shop @model @key(name: "bySlug", fields: ["slug"]) {
   id: ID!
   name: String!
@@ -20,8 +21,7 @@ type Shop @model @key(name: "bySlug", fields: ["slug"]) {
   logo: String
   background: String
   typeformToken: String
-  # products: [Product] @connection(name: "ShopProduct")
-  prods: [Product] @connection(keyName: "byShop", fields: ["id"])
+  products: [Product] @connection(name: "ShopProducts", limit: 5000)
 }
 
 enum Visibility {
@@ -29,12 +29,12 @@ enum Visibility {
   private
 }
 
-type Product @model @key(name: "byShop", fields: ["shopID", "name"]) {
+type Product @model {
   id: ID!
-  shopID: ID!
+  # shopID: ID!
   category: String!
   name: String!
   description: String
-  #  price: Float
-  # shop: Shop @connection(name: "ShopProduct")
+  price: Float
+  shop: Shop @connection(name: "ShopProducts")  # productShopId
 }
