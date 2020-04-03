@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { TopNavigation, useTheme } from "@ui-kitten/components";
 import { Link } from "react-router-dom";
 
-export default function Header() {
+export default function HomeHeader() {
   // const onBackPress = () => {
   // };
 

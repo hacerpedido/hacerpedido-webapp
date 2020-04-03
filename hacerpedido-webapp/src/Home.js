@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 import API, { graphqlOperation } from "@aws-amplify/api";
 import { Layout, Text, Spinner } from "@ui-kitten/components";
 
+import HomeHeader from "./HomeHeader";
 import ShopCard from "./ShopCard";
 import { listShops } from "./graphql/queries";
 // import { onCreateShop } from "./graphql/subscriptions";
@@ -58,9 +59,11 @@ export default function Home() {
   }, []);
 
   return (
-    <Layout>
+    <>
+    <HomeHeader />
+    <Layout style={styles.container}>
       {(state.shops.length === 0) & state.loading ? (
-        <Spinner size="giant" style={styles.container} />
+        <Spinner size="giant" style={styles.spinner} />
       ) : (
         <>
           {state.shops.length > 0 ? (
@@ -71,15 +74,21 @@ export default function Home() {
         </>
       )}
     </Layout>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  spinner: {
+    alignItems: "center",
+
+  },
   container: {
+    padding: 16,
     // flex: 1,
     // flexDirection: "row",
     // justifyContent: "space-between",
-    alignItems: "center",
+    // alignItems: "center",
     // flexWrap: "wrap"
   }
 });

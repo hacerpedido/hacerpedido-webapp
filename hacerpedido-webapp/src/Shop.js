@@ -1,10 +1,14 @@
 import React, { useEffect, useReducer } from "react";
 // import { Link } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
+import { Layout, Text, Spinner } from "@ui-kitten/components";
+import { StyleSheet } from "react-native";
 
 // import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
 import { useParams } from "react-router-dom";
+
+import ShopHeader from "./ShopHeader";
 
 // Action Types
 const QUERY = "QUERY";
@@ -62,29 +66,41 @@ export default function Shop() {
   console.log(prods);
 
   return (
-    <div>
-      <h3>{shop.name}</h3>
-      {shop.logo ? <img src="{shop.logo}" alt={shop.name + " logo"} /> : ""}
-      {shop.address ? <p>{shop.address}</p> : ""}
-      {shop.openTimes ? <p>Pedidos: {shop.openTimes}</p> : ""}
-      {shop.deliveryCost ? <p>Delivery: {shop.deliveryCost}</p> : ""}
+    <>
+      <ShopHeader shop={shop} />
+      <Layout style={styles.container}>
+        {shop.logo ? <img src="{shop.logo}" alt={shop.name + " logo"} /> : ""}
+        {shop.address ? <p>{shop.address}</p> : ""}
+        {shop.openTimes ? <p>Pedidos: {shop.openTimes}</p> : ""}
+        {shop.deliveryCost ? <p>Delivery: {shop.deliveryCost}</p> : ""}
 
-    {(prods.length === 0) & state.loading ? (
+        {(prods.length === 0) & state.loading ? (
           <div>Cargando...</div>
         ) : (
           <ul>
             {prods.length > 0 ? (
-              prods.map(product => (
-                <li key={product.id}>
-                  {product.name}
-                </li>
-              ))
-            ) : (
+              // prods.map(product => <li key={product.id}>{product.category} - {product.name} - {product.price}</li>)
+              prods.map(product => <li key={product.id}>{product.name}</li>)
+              ) : (
               <p>Sin productos</p>
             )}
           </ul>
         )}
-
-    </div>
+      </Layout>
+    </>
   );
 }
+
+const styles = StyleSheet.create({
+  spinner: {
+    alignItems: "center"
+  },
+  container: {
+    padding: 16
+    // flex: 1,
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    // alignItems: "center",
+    // flexWrap: "wrap"
+  }
+});
