@@ -1,9 +1,10 @@
 import React, { useEffect, useReducer } from "react";
 // import { Link } from "react-router-dom";
+import { StyleSheet } from "react-native";
 import API, { graphqlOperation } from "@aws-amplify/api";
+import { Layout, Text, Spinner } from "@ui-kitten/components";
 
 import ShopCard from "./ShopCard";
-
 import { listShops } from "./graphql/queries";
 // import { onCreateShop } from "./graphql/subscriptions";
 
@@ -57,26 +58,28 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="App">
-      <h2>Listado de comercios</h2>
-
-      <div>
-        {(state.shops.length === 0) & state.loading ? (
-          <div>Cargando...</div>
-        ) : (
-          <ul>
-            {state.shops.length > 0 ? (
-              state.shops.map(shop => (
-                <li key={shop.id}>
-                  <ShopCard shop={shop} />
-                </li>
-              ))
-            ) : (
-              <p>Sin comercios en la base de datos</p>
-            )}
-          </ul>
-        )}
-      </div>
-    </div>
+    <Layout>
+      {(state.shops.length === 0) & state.loading ? (
+        <Spinner size="giant" style={styles.container} />
+      ) : (
+        <>
+          {state.shops.length > 0 ? (
+            state.shops.map(shop => <ShopCard shop={shop} key={shop.id} />)
+          ) : (
+            <Text>Sin comercios en la base de datos</Text>
+          )}
+        </>
+      )}
+    </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    // flexDirection: "row",
+    // justifyContent: "space-between",
+    alignItems: "center",
+    // flexWrap: "wrap"
+  }
+});
