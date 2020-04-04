@@ -25,7 +25,9 @@ PubSub.configure(awsconfig);
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    // flex: 1,
+    // flexDirection: 'column',
+    // backgroundColor: 'red',// '#fafcff',
   }
 });
 

@@ -15,5 +15,7 @@ export const AssetIconsPack = {
     'chevron-down': IconProvider(require('./assets/chevron-down.svg')),
     'clock': IconProvider(require('./assets/clock.svg')),
     'pin': IconProvider(require('./assets/pin.svg')),
+    'logo': IconProvider(require('./assets/logo.svg')),
+    // 'logo1': IconProvider(require('./assets/hacerpedido_logo.png')),
   },
 };

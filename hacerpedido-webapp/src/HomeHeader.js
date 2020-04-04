@@ -1,26 +1,36 @@
 import React from "react";
 import { View } from "react-native";
-import { TopNavigation, useTheme } from "@ui-kitten/components";
-import { Link } from "react-router-dom";
+import {
+  Icon,
+  TopNavigation,
+  TopNavigationAction,
+  useTheme
+} from "@ui-kitten/components";
+import { Link, useHistory } from "react-router-dom";
 
 export default function HomeHeader() {
-  // const onBackPress = () => {
-  // };
+  const history = useHistory();
+  const theme = useTheme();
+
+  const BackIcon = style => <Icon name="logo" width={54} height={24} />;
+
+  const BackAction = props => (
+    <TopNavigationAction {...props} icon={BackIcon} />
+  );
 
   const renderLeftControl = () => (
-    <View style={{ padding: 12 }}>
-      <Link to="/">HacerPedidos.com</Link>
-    </View>
-    // <BackAction onPress={onBackPress}/>
+    <BackAction
+      onPress={() => {
+        history.push("/");
+      }}
+    />
   );
 
   const renderRightControl = () => (
     <View style={{ padding: 12 }}>
-      <Link to="/start">Suma tu comercio</Link>
+      <Link to="/start">Sumá tu comercio!</Link>
     </View>
   );
-
-  const theme = useTheme();
 
   return (
     <TopNavigation

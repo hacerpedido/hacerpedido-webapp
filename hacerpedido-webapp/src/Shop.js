@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-// import { Link } from "react-router-dom";
+import { Image } from "react-native";
 import API, { graphqlOperation } from "@aws-amplify/api";
 import { Layout, Text, Spinner } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
@@ -53,11 +53,11 @@ export default function Shop() {
   }, [slug]);
 
   if (state.shops.length === 0 && state.loading) {
-    return <div>Cargando...</div>;
+    return <Spinner size="giant" />;
   }
 
   if (state.shops.length === 0) {
-    return <p>Sin comercios en la base de datos para {slug}</p>;
+    return <Text>Sin comercios en la base de datos para {slug}</Text>;
   }
 
   const shop = state.shops[0];
@@ -69,20 +69,20 @@ export default function Shop() {
     <>
       <ShopHeader shop={shop} />
       <Layout style={styles.container}>
-        {shop.logo ? <img src="{shop.logo}" alt={shop.name + " logo"} /> : ""}
-        {shop.address ? <p>{shop.address}</p> : ""}
-        {shop.openTimes ? <p>Pedidos: {shop.openTimes}</p> : ""}
-        {shop.deliveryCost ? <p>Delivery: {shop.deliveryCost}</p> : ""}
+        {shop.logo ? <Image src="{shop.logo}" alt={shop.name + " logo"} /> : ""}
+        {shop.address ? <Text>{shop.address}</Text> : ""}
+        {shop.openTimes ? <Text>Pedidos: {shop.openTimes}</Text> : ""}
+        {shop.deliveryCost ? <Text>Delivery: {shop.deliveryCost}</Text> : ""}
 
         {(prods.length === 0) & state.loading ? (
-          <div>Cargando...</div>
+          <Spinner size="giant" />
         ) : (
           <ul>
             {prods.length > 0 ? (
               // prods.map(product => <li key={product.id}>{product.category} - {product.name} - {product.price}</li>)
               prods.map(product => <li key={product.id}>{product.name}</li>)
-              ) : (
-              <p>Sin productos</p>
+            ) : (
+              <Text>Sin productos</Text>
             )}
           </ul>
         )}

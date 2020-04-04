@@ -60,35 +60,30 @@ export default function Home() {
 
   return (
     <>
-    <HomeHeader />
-    <Layout style={styles.container}>
-      {(state.shops.length === 0) & state.loading ? (
-        <Spinner size="giant" style={styles.spinner} />
-      ) : (
-        <>
-          {state.shops.length > 0 ? (
-            state.shops.map(shop => <ShopCard shop={shop} key={shop.id} />)
-          ) : (
-            <Text>Sin comercios en la base de datos</Text>
-          )}
-        </>
-      )}
-    </Layout>
+      <HomeHeader />
+      <Layout style={styles.container}>
+        {(state.shops.length === 0) & state.loading ? (
+          <Spinner size="giant" style={styles.spinner} />
+        ) : (
+          <>
+            {state.shops.length > 0 ? (
+              state.shops.map(shop => <ShopCard shop={shop} key={shop.id} />)
+            ) : (
+              <Text>Sin comercios en la base de datos</Text>
+            )}
+          </>
+        )}
+      </Layout>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   spinner: {
-    alignItems: "center",
-
+    alignItems: "center"
   },
   container: {
     padding: 16,
-    // flex: 1,
-    // flexDirection: "row",
-    // justifyContent: "space-between",
-    // alignItems: "center",
-    // flexWrap: "wrap"
+    backgroundColor: '#fafcff',
   }
 });
