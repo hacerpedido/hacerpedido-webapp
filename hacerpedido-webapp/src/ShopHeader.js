@@ -7,13 +7,15 @@ import {
 } from "@ui-kitten/components";
 import { useHistory } from "react-router-dom";
 
-const BackIcon = style => <Icon {...style} name="arrow-back" />;
-
-const BackAction = props => <TopNavigationAction {...props} icon={BackIcon} />;
-
 export default function ShopHeader({ shop }) {
   const theme = useTheme();
   const history = useHistory();
+
+  const BackIcon = style => <Icon {...style} name="arrow-back" />;
+
+  const BackAction = props => (
+    <TopNavigationAction {...props} icon={BackIcon} />
+  );
 
   const renderLeftControl = () => (
     <BackAction
