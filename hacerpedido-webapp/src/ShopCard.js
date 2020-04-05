@@ -1,9 +1,14 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { View, Image, StyleSheet } from "react-native";
-import { Card, Icon, Text } from "@ui-kitten/components";
+import { Card, Text } from "@ui-kitten/components";
+
+import DecoratedLabel from "./components/DecoratedLabel";
 
 const styles = StyleSheet.create({
+  card: {
+    marginBottom: 16
+  },
   container: {
     flex: 1,
     flexDirection: "row",
@@ -19,7 +24,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingStart: 8
   },
-  dataLabels: {
+  decoratedLabel: {
     textAlignVertical: "center",
     color: "#8f9bb3",
     paddingStart: 6
@@ -30,21 +35,6 @@ const styles = StyleSheet.create({
   }
 });
 
-function DecoratedLabel({ iconName, text }) {
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center"
-      }}
-    >
-      <Icon name={iconName} width={14} height={14} />
-      <Text style={styles.dataLabels}>{text}</Text>
-    </View>
-  );
-}
-
 export default function ShopCard({ shop }) {
   const history = useHistory();
 
@@ -53,6 +43,7 @@ export default function ShopCard({ shop }) {
       onPress={() => {
         history.push("/" + shop.slug);
       }}
+      style={styles.card}
     >
       <View style={styles.container}>
         <View style={styles.containerLogo}>
@@ -68,18 +59,24 @@ export default function ShopCard({ shop }) {
             {shop.name}
           </Text>
           {shop.address ? (
-            <DecoratedLabel iconName="pin" text={shop.address} />
+            <DecoratedLabel
+              iconName="pin"
+              text={shop.address}
+              style={styles.decoratedLabel}
+            />
           ) : null}
           {shop.openTimes ? (
             <DecoratedLabel
               iconName="clock"
               text={"Pedidos: " + shop.openTimes}
+              style={styles.decoratedLabel}
             />
           ) : null}
           {shop.deliveryCost ? (
             <DecoratedLabel
               iconName="car"
               text={"Delivery: " + shop.deliveryCost}
+              style={styles.decoratedLabel}
             />
           ) : null}
         </View>

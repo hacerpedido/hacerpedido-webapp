@@ -9,12 +9,15 @@ export const listShopsWithProducts = /* GraphQL */ `
     listShops(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        slug
         name
         category
         address
         notes
         whatsAppNumber
         phoneNumber
+        ordersWhatsAppNumber
+        ordersPhoneNumber
         openTimes
         deliveryCost
         logo
@@ -24,7 +27,9 @@ export const listShopsWithProducts = /* GraphQL */ `
             id
             category
             name
+            price
             description
+            itemNumber
           }
           nextToken
         }

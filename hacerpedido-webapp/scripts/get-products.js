@@ -2,8 +2,8 @@
 
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
-import { listShops } from "../queries.js";
-import { createProduct } from "../mutations";
+import { listShopsWithProducts } from "../queriesCustom.js";
+import { createProduct, deleteProduct } from "../mutations";
 
 const { google } = require("googleapis");
 
@@ -21,7 +21,9 @@ async function main() {
   const sheets = google.sheets("v4");
 
   const shopsData = await API.graphql(
-    graphqlOperation(listShops, { limit: 10000 })
+    graphqlOperation(listShopsWithProducts, {
+      limit: 10000
+    })
   );
   const shops = shopsData.data.listShops.items;
 
@@ -33,8 +35,6 @@ async function main() {
   };
 
   const response = await sheets.spreadsheets.get(request);
-
-  //   ).data;
 
   response.data.sheets.forEach(function(sheet) {
     const title = sheet.properties.title;
@@ -63,20 +63,31 @@ async function main() {
       }
     );
   });
-
-  // console.log(JSON.stringify(responseSheets, null, 2));
 }
 
-// async function deleteProductsApi(shopID) {
-//   await API.graphql(
-//     graphqlOperation(deleteProduct, { condition: { shopID: { eq: shopID } } })
-//   );
+async function deleteProducts(shop) {
+  if (shop.products.items.length === 0) {
+    console.log("No products to delete.");
 
-//   //   await API.graphql({
-//   //     query: deleteProduct,
-//   //     variables: { input: shop, condition: { shopID: { eq: shopID } }}
-//   //   });
-// }
+    return;
+  }
+  shop.products.items.forEach(product => {
+    console.log("DELETING: " + shop.id + "  -   " + product.id);
+    API.graphql(
+      graphqlOperation(deleteProduct, { input: { id: product.id } })
+    ).catch(error => {
+      console.log(JSON.stringify(error, null, 2));
+    });
+  });
+  await sleep(2000);
+  console.log("CONTINUE...");
+}
+
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 async function createProductApi(product) {
   await API.graphql(graphqlOperation(createProduct, { input: product }));
@@ -120,24 +131,24 @@ function processRows(slug, rows, shops) {
 
   console.log("shopID: " + shopID);
 
-  //   deleteProductsApi(shopID).catch(console.error);
+  deleteProducts(shop).catch(console.error);
 
   var section = "";
 
-  for (const row of rows) {
-    // console.log("-------");
+  var itemNumber = 0;
+
+  rows.forEach(row => {
 
     console.log(`${row}`);
 
     const name = row[0];
     const price = row[1];
     const description = row[2];
-    // const onSale = row[3];
     const isSection = row[4];
 
     if (name === "" || name === undefined) {
       //   console.log("-----> EMPTY");
-      continue;
+      return;
     }
 
     // Is a section?
@@ -145,28 +156,31 @@ function processRows(slug, rows, shops) {
       console.log("-----> SECTION");
       section = name;
 
-      continue;
+      return;
     }
 
+    itemNumber++;
+
     let product = {
-      // id: uuidv4(),
       name: name,
-      price: price,
+      price: parseFloat(price),
       category: section,
-      // shopID: shopID,
-      productShopId: shopID
+      productShopId: shopID,
+      itemNumber: itemNumber
     };
 
     if (description !== undefined && description !== "") {
-      product["description"] = description;
+      product.description = description;
     }
+
+    // console.log(JSON.stringify(product, null, 2));
 
     // product = removeEmptyStringElements(product); Soy un optimista!
 
     createProductApi(product).catch(error => {
       console.log(JSON.stringify(error, null, 2));
     });
-  }
+  });
 }
 
 main().catch(console.error);

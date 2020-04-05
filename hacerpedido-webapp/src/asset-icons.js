@@ -16,6 +16,7 @@ export const AssetIconsPack = {
     'clock': IconProvider(require('./assets/clock.svg')),
     'pin': IconProvider(require('./assets/pin.svg')),
     'logo': IconProvider(require('./assets/logo.svg')),
-    // 'logo1': IconProvider(require('./assets/hacerpedido_logo.png')),
+    'phone': IconProvider(require('./assets/phone-call.svg')),
+    'whatsapp': IconProvider(require('./assets/whatsapp-fill.svg')),
   },
 };

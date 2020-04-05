@@ -21,6 +21,8 @@ type Shop @model @key(name: "bySlug", fields: ["slug"]) {
   logo: String
   background: String
   typeformToken: String
+  ordersPhoneNumber: String
+  ordersWhatsAppNumber: String
   products: [Product] @connection(name: "ShopProducts", limit: 5000)
 }
 
@@ -31,10 +33,10 @@ enum Visibility {
 
 type Product @model {
   id: ID!
-  # shopID: ID!
   category: String!
   name: String!
   description: String
   price: Float
   shop: Shop @connection(name: "ShopProducts")  # productShopId
+  itemNumber: Int
 }
