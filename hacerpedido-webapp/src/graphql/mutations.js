@@ -28,6 +28,8 @@ export const createShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      ordersPhoneNumber
+      ordersWhatsAppNumber
       products {
         items {
           id
@@ -35,6 +37,7 @@ export const createShop = /* GraphQL */ `
           name
           description
           price
+          itemNumber
         }
         nextToken
       }
@@ -68,6 +71,8 @@ export const updateShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      ordersPhoneNumber
+      ordersWhatsAppNumber
       products {
         items {
           id
@@ -75,6 +80,7 @@ export const updateShop = /* GraphQL */ `
           name
           description
           price
+          itemNumber
         }
         nextToken
       }
@@ -108,6 +114,8 @@ export const deleteShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      ordersPhoneNumber
+      ordersWhatsAppNumber
       products {
         items {
           id
@@ -115,6 +123,7 @@ export const deleteShop = /* GraphQL */ `
           name
           description
           price
+          itemNumber
         }
         nextToken
       }
@@ -154,10 +163,13 @@ export const createProduct = /* GraphQL */ `
         logo
         background
         typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
       }
+      itemNumber
     }
   }
 `;
@@ -194,10 +206,13 @@ export const updateProduct = /* GraphQL */ `
         logo
         background
         typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
       }
+      itemNumber
     }
   }
 `;
@@ -234,10 +249,13 @@ export const deleteProduct = /* GraphQL */ `
         logo
         background
         typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
       }
+      itemNumber
     }
   }
 `;

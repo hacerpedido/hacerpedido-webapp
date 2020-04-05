@@ -25,6 +25,8 @@ export const getShop = /* GraphQL */ `
       logo
       background
       typeformToken
+      ordersPhoneNumber
+      ordersWhatsAppNumber
       products {
         items {
           id
@@ -32,6 +34,7 @@ export const getShop = /* GraphQL */ `
           name
           description
           price
+          itemNumber
         }
         nextToken
       }
@@ -67,6 +70,8 @@ export const listShops = /* GraphQL */ `
         logo
         background
         typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
@@ -105,10 +110,13 @@ export const getProduct = /* GraphQL */ `
         logo
         background
         typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
       }
+      itemNumber
     }
   }
 `;
@@ -147,7 +155,10 @@ export const listProducts = /* GraphQL */ `
           logo
           background
           typeformToken
+          ordersPhoneNumber
+          ordersWhatsAppNumber
         }
+        itemNumber
       }
       nextToken
     }

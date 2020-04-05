@@ -1,7 +1,6 @@
-import React, { useEffect, useReducer } from "react";
-import { Image } from "react-native";
+import React, { useEffect, useReducer, View } from "react";
 import API, { graphqlOperation } from "@aws-amplify/api";
-import { Layout, Text, Spinner } from "@ui-kitten/components";
+import { Card, Layout, Text, Spinner } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 
 // import { listShops } from "./graphql/queries";
@@ -9,6 +8,8 @@ import { listShopsWithProducts } from "./graphql/queriesCustom";
 import { useParams } from "react-router-dom";
 
 import ShopHeader from "./ShopHeader";
+import ShopFooter from "./ShopFooter";
+import ProductList from "./ProductList";
 
 // Action Types
 const QUERY = "QUERY";
@@ -62,31 +63,28 @@ export default function Shop() {
 
   const shop = state.shops[0];
 
-  const prods = shop.products.items;
-  console.log(prods);
+  const prods = shop.products.items.sort((a, b) =>
+    a.itemNumber > b.itemNumber ? 1 : -1
+  );
+  // console.log(prods);
 
   return (
     <>
       <ShopHeader shop={shop} />
       <Layout style={styles.container}>
-        {shop.logo ? <Image src="{shop.logo}" alt={shop.name + " logo"} /> : ""}
-        {shop.address ? <Text>{shop.address}</Text> : ""}
-        {shop.openTimes ? <Text>Pedidos: {shop.openTimes}</Text> : ""}
-        {shop.deliveryCost ? <Text>Delivery: {shop.deliveryCost}</Text> : ""}
-
-        {(prods.length === 0) & state.loading ? (
+        {state.loading ? (
           <Spinner size="giant" />
         ) : (
-          <ul>
-            {prods.length > 0 ? (
-              // prods.map(product => <li key={product.id}>{product.category} - {product.name} - {product.price}</li>)
-              prods.map(product => <li key={product.id}>{product.name}</li>)
-            ) : (
+          <>
+            {prods.length === 0 ? (
               <Text>Sin productos</Text>
+            ) : (
+              <ProductList products={prods} />
             )}
-          </ul>
+          </>
         )}
       </Layout>
+      <ShopFooter shop={shop} />
     </>
   );
 }
