@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   containerDelivery: {
     justifyContent: "flex-end",
-    backgroundColor: "none",
+    backgroundColor: "none"
   },
   decoratedLabel: {
     textAlignVertical: "center",
@@ -77,7 +77,12 @@ export default function ShopHeader({ shop }) {
   );
 
   return (
-    <View style={{ backgroundColor: theme["color-primary-default"] }}>
+    <View
+      style={{
+        backgroundColor: theme["color-primary-default"],
+        marginBottom: 16
+      }}
+    >
       <TopNavigation
         style={{ backgroundColor: theme["color-primary-default"] }}
         leftControl={renderLeftControl()}
