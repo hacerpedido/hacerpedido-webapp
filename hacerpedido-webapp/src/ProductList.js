@@ -1,6 +1,5 @@
-import React, { useEffect, useReducer, View } from "react";
-import API, { graphqlOperation } from "@aws-amplify/api";
-import { Card, Layout, Text, Spinner } from "@ui-kitten/components";
+import React from "react";
+import { Card, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
