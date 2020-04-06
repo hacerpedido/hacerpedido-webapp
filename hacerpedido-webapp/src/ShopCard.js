@@ -22,12 +22,8 @@ const styles = StyleSheet.create({
   },
   containerLabels: {
     flex: 1,
-    paddingStart: 8
-  },
-  decoratedLabel: {
-    textAlignVertical: "center",
-    color: "#8f9bb3",
-    paddingStart: 6
+    paddingStart: 8,
+    marginLeft: 8
   },
   logo: {
     width: 75,
@@ -55,28 +51,28 @@ export default function ShopCard({ shop }) {
           />
         </View>
         <View style={styles.containerLabels}>
-          <Text category="h6" style={{ color: "#222b45" }}>
+          <Text category="h6" style={{ color: "#222b45", marginBottom:4 }}>
             {shop.name}
           </Text>
           {shop.address ? (
             <DecoratedLabel
               iconName="pin"
               text={shop.address}
-              style={styles.decoratedLabel}
+              color={"#8f9bb3"}
             />
           ) : null}
           {shop.openTimes ? (
             <DecoratedLabel
               iconName="clock"
               text={"Pedidos: " + shop.openTimes}
-              style={styles.decoratedLabel}
+              color={"#8f9bb3"}
             />
           ) : null}
           {shop.deliveryCost ? (
             <DecoratedLabel
               iconName="car"
               text={"Delivery: " + shop.deliveryCost}
-              style={styles.decoratedLabel}
+              color={"#8f9bb3"}
             />
           ) : null}
         </View>

@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "get-shops": "node scripts/get-shops.mjs"
+    "get-shops": "node scripts/get-shops.mjs",
+    "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
+    "@svgr/cli": "^5.3.1",
     "babel-preset-es2015": "^6.24.1"
   }
 }
