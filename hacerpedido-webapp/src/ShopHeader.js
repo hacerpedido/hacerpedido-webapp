@@ -82,6 +82,7 @@ export default function ShopHeader({ shop }) {
             iconName="pin"
             text={shop.address}
             style={styles.decoratedLabel}
+            color={"#222b45"}
           />
         ) : null}
         {shop.openTimes ? (
@@ -89,6 +90,7 @@ export default function ShopHeader({ shop }) {
             iconName="clock"
             text={"Pedidos: " + shop.openTimes}
             style={styles.decoratedLabel}
+            color={"#222b45"}
           />
         ) : null}
         {shop.deliveryCost ? (
@@ -96,6 +98,7 @@ export default function ShopHeader({ shop }) {
             iconName="car"
             text={"Delivery: " + shop.deliveryCost}
             style={styles.decoratedLabel}
+            color={"#222b45"}
           />
         ) : null}
       </View>

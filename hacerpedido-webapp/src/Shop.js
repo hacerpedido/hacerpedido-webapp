@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, View } from "react";
+import React, { useEffect, useReducer,  } from "react";
 import API, { graphqlOperation } from "@aws-amplify/api";
-import { Card, Layout, Text, Spinner } from "@ui-kitten/components";
-import { StyleSheet } from "react-native";
+import { Layout, Text, Spinner } from "@ui-kitten/components";
+import { StyleSheet, ScrollView } from "react-native";
 
 // import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
@@ -70,21 +70,25 @@ export default function Shop() {
 
   return (
     <>
-      <ShopHeader shop={shop} />
-      <Layout style={styles.container}>
-        {state.loading ? (
-          <Spinner size="giant" />
-        ) : (
-          <>
-            {prods.length === 0 ? (
-              <Text>Sin productos</Text>
-            ) : (
-              <ProductList products={prods} />
-            )}
-          </>
-        )}
+      <ScrollView>
+        <ShopHeader shop={shop} />
+        <Layout style={styles.container}>
+          {state.loading ? (
+            <Spinner size="giant" />
+          ) : (
+            <>
+              {prods.length === 0 ? (
+                <Text>Sin productos</Text>
+              ) : (
+                <ProductList products={prods} />
+              )}
+            </>
+          )}
+        </Layout>
+      </ScrollView>
+      <Layout style={styles.footer}>
+        <ShopFooter shop={shop} />
       </Layout>
-      <ShopFooter shop={shop} />
     </>
   );
 }
@@ -94,11 +98,14 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   container: {
-    padding: 16
-    // flex: 1,
-    // flexDirection: "row",
-    // justifyContent: "space-between",
-    // alignItems: "center",
-    // flexWrap: "wrap"
+    padding: 16,
+    marginBottom: 130,
+  },
+  footer: {
+    width: "100%",
+    height: 100,
+    backgroundColor: "#fafcff",
+    position: "fixed",
+    bottom: 0
   }
 });
