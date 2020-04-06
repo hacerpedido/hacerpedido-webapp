@@ -1,14 +1,8 @@
 import React from "react";
 import { View, Image, StyleSheet } from "react-native";
-import {
-  Icon,
-  Layout,
-  Text,
-  TopNavigation,
-  TopNavigationAction,
-  useTheme
-} from "@ui-kitten/components";
+import { Button, Icon, Layout, Text } from "@ui-kitten/components";
 import { useHistory } from "react-router-dom";
+import Background from "./assets/images/fondo1.png";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 
@@ -48,48 +42,53 @@ const styles = StyleSheet.create({
     paddingBottom: 6
   },
   shopName: {
-    color: "#222b45",
+    color: "#fff",
     padding: 6,
     fontFamily: "Barlow",
     fontWeight: "700"
-
   },
   logo: {
     width: 100,
     height: 100,
     borderRadius: 50
-  }
+  },
+  containerTop: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    backgroundColor: "none"
+  },
+  buttonBack: { backgroundColor: "none", border: 0 }
 });
 
 export default function ShopHeader({ shop }) {
-  const theme = useTheme();
   const history = useHistory();
 
-  const BackIcon = style => <Icon {...style} name="arrow-back" />;
-
-  const BackAction = props => (
-    <TopNavigationAction {...props} icon={BackIcon} />
-  );
-
-  const renderLeftControl = () => (
-    <BackAction
-      onPress={() => {
-        history.push("/");
-      }}
-    />
+  const BackIcon = style => (
+    <Icon {...style} name="arrow-back" width={24} height={24} />
   );
 
   return (
     <View
       style={{
-        backgroundColor: theme["color-primary-default"],
-        marginBottom: 16
+        marginBottom: 16,
+        background:
+          "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 31.44%, rgba(0, 0, 0, 0.6) 100%), " +
+          `url(${Background})` +
+          ", #3ECC7E",
+        // backgroundRepeat: "tile",
+        backgroundSize: "418px 280px"
       }}
     >
-      <TopNavigation
-        style={{ backgroundColor: theme["color-primary-default"] }}
-        leftControl={renderLeftControl()}
-      />
+      <Layout style={styles.containerTop}>
+        <Button
+          style={styles.buttonBack}
+          onPress={() => {
+            history.push("/");
+          }}
+          icon={BackIcon}
+        ></Button>
+      </Layout>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
           <Image
@@ -103,11 +102,7 @@ export default function ShopHeader({ shop }) {
           {shop.name}
         </Text>
         {shop.address ? (
-          <DecoratedLabel
-            iconName="pin"
-            text={shop.address}
-            color={"#222b45"}
-          />
+          <DecoratedLabel iconName="pin" text={shop.address} color={"#fff"} />
         ) : null}
       </View>
       <Layout style={styles.containerBottom}>
@@ -115,7 +110,7 @@ export default function ShopHeader({ shop }) {
           <DecoratedLabel
             iconName="clock"
             text={"Pedidos: " + shop.openTimes}
-            color={"#222b45"}
+            color={"#fff"}
           />
         ) : null}
         <Layout style={styles.containerDelivery}>
@@ -123,7 +118,7 @@ export default function ShopHeader({ shop }) {
             <DecoratedLabel
               iconName="car"
               text={"Delivery: " + shop.deliveryCost}
-              color={"#222b45"}
+              color={"#fff"}
             />
           ) : null}
         </Layout>

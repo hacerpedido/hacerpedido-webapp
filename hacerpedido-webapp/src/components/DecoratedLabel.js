@@ -14,8 +14,8 @@ export default function DecoratedLabel({ iconName, text, color }) {
     text: {
       padding: 3,
       color: color,
-      fontFamily: "RobotoSlab",
-      fontWeight: "500"
+      fontFamily: "Roboto Slab",
+      fontWeight: "400"
     }
   };
 
