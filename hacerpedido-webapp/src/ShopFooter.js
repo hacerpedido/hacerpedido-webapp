@@ -8,19 +8,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginBottom: 16,
-    padding: 16,
+    padding: 18
   },
   buttonWhatsApp: {
     flex: 0.67,
     margin: 8,
     backgroundColor: "#3ECB7D",
-    borderColor: "#37B36E"
+    borderColor: "#37B36E",
+    fontFamily: "Barlow",
+    fontWeight: "600"
   },
   buttonCall: {
     flex: 0.33,
     margin: 8,
     backgroundColor: "#ffb234",
-    borderColor: "#ffb234"
+    borderColor: "#ffb234",
+    fontFamily: "Barlow",
+    fontWeight: "600"
   }
 });
 
