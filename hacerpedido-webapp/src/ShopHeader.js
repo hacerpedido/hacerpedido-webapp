@@ -2,6 +2,7 @@ import React from "react";
 import { View, Image, StyleSheet } from "react-native";
 import {
   Icon,
+  Layout,
   Text,
   TopNavigation,
   TopNavigationAction,
@@ -20,13 +21,26 @@ const styles = StyleSheet.create({
   },
   containerLogo: {
     flex: -1,
-    width: 75,
-    height: 75,
+    width: 100,
+    height: 100,
     alignItems: "center"
   },
   containerLabels: {
     flex: 1,
     paddingStart: 8
+  },
+  containerBottom: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    flex: 1,
+    backgroundColor: "none",
+    padding: 12,
+    paddingTop: 18
+  },
+  containerDelivery: {
+    justifyContent: "flex-end",
+    backgroundColor: "none",
   },
   decoratedLabel: {
     textAlignVertical: "center",
@@ -38,8 +52,9 @@ const styles = StyleSheet.create({
     padding: 6
   },
   logo: {
-    width: 75,
-    height: 75
+    width: 100,
+    height: 100,
+    borderRadius: 50
   }
 });
 
@@ -76,32 +91,35 @@ export default function ShopHeader({ shop }) {
             style={styles.logo}
           />
         </View>
-        <Text category="h4" style={styles.nameLabel}>{shop.name}</Text>
+        <Text category="h4" style={styles.nameLabel}>
+          {shop.name}
+        </Text>
         {shop.address ? (
           <DecoratedLabel
             iconName="pin"
             text={shop.address}
-            style={styles.decoratedLabel}
-            color={"#222b45"}
-          />
-        ) : null}
-        {shop.openTimes ? (
-          <DecoratedLabel
-            iconName="clock"
-            text={"Pedidos: " + shop.openTimes}
-            style={styles.decoratedLabel}
-            color={"#222b45"}
-          />
-        ) : null}
-        {shop.deliveryCost ? (
-          <DecoratedLabel
-            iconName="car"
-            text={"Delivery: " + shop.deliveryCost}
-            style={styles.decoratedLabel}
             color={"#222b45"}
           />
         ) : null}
       </View>
+      <Layout style={styles.containerBottom}>
+        {shop.openTimes ? (
+          <DecoratedLabel
+            iconName="clock"
+            text={"Pedidos: " + shop.openTimes}
+            color={"#222b45"}
+          />
+        ) : null}
+        <Layout style={styles.containerDelivery}>
+          {shop.deliveryCost ? (
+            <DecoratedLabel
+              iconName="car"
+              text={"Delivery: " + shop.deliveryCost}
+              color={"#222b45"}
+            />
+          ) : null}
+        </Layout>
+      </Layout>
     </View>
   );
 }

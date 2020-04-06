@@ -16,7 +16,7 @@ export default function DecoratedLabel({ iconName, text, color }) {
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        textAlignVertical: "center",
+        textAlignVertical: "center"
       }}
     >
       {icons[iconName]}

@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 75,
-    height: 75
+    height: 75,
+    borderRadius: 37.5
   }
 });
 
