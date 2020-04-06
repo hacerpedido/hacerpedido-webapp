@@ -5,10 +5,19 @@ import * as Icons from "../assets/icons/";
 
 export default function DecoratedLabel({ iconName, text, color }) {
   const icons = {
-    "car": <Icons.Car color={color} />,
-    "clock": <Icons.Clock color={color} />,
-    "pin": <Icons.Pin color={color} />,
-  }  
+    car: <Icons.Car color={color} />,
+    clock: <Icons.Clock color={color} />,
+    pin: <Icons.Pin color={color} />
+  };
+
+  const styles = {
+    text: {
+      padding: 3,
+      color: color,
+      fontFamily: "RobotoSlab",
+      fontWeight: "500"
+    }
+  };
 
   return (
     <View
@@ -20,7 +29,7 @@ export default function DecoratedLabel({ iconName, text, color }) {
       }}
     >
       {icons[iconName]}
-      <Text style={{padding: 3, color: color}}>{text}</Text>
+      <Text style={styles.text}>{text}</Text>
     </View>
   );
 }

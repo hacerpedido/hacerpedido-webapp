@@ -29,6 +29,12 @@ const styles = StyleSheet.create({
     width: 75,
     height: 75,
     borderRadius: 37.5
+  },
+  shopName: {
+    color: "#222b45",
+    marginBottom: 4,
+    fontFamily: "Barlow",
+    fontWeight: "600"
   }
 });
 
@@ -52,7 +58,7 @@ export default function ShopCard({ shop }) {
           />
         </View>
         <View style={styles.containerLabels}>
-          <Text category="h6" style={{ color: "#222b45", marginBottom:4 }}>
+          <Text category="h6" style={styles.shopName}>
             {shop.name}
           </Text>
           {shop.address ? (

@@ -2,43 +2,55 @@ import React from "react";
 import { Card, Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 
-const styles = StyleSheet.create({
-  card: {
-    marginTop: 16,
-    marginLeft: 16,
-    marginRight: 16
-  },
+const productStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
     flex: 1
   },
-  category: {
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 16
-  },
   price: {
-    marginRight: 24,
-    marginLeft: 12
+    marginLeft: 12,
+    fontFamily: "Barlow",
+    fontWeight: "600"
+
   },
   description: {
     color: "#8f9bb3",
-    flex:1 , flexWrap: "wrap"
-  },
-  name: {
-    flex:1 , 
+    flex: 1,
     flexWrap: "wrap"
   },
-  nameProduct: {
+  name: {
+    flex: 1,
+    flexWrap: "wrap",
+    fontFamily: "Barlow",
+    fontWeight: "600"
+  }
+});
+
+const styles = StyleSheet.create({
+  card: {
+    marginTop: 16,
+    marginLeft: 16,
+    marginRight: 16
+  },
+  product: {
     marginTop: 16,
     marginBottom: 16,
-    marginLeft: 14,
+    marginLeft: 16,
+    marginRight: 16,
+    paddingLeft: 25,
+    paddingRight: 25,
     borderBottomWidth: 1,
     borderColor: "#edf1f7",
-    paddingBottom: 8,
-    flex:1
+    paddingBottom: 12
+  },
+  category: {
+    marginLeft: 16,
+    marginRight: 16,
+    marginTop: 16,
+    fontFamily: "Barlow",
+    fontWeight: "600"
   },
   divider: {
     borderColor: "#edf1f7",
@@ -54,14 +66,14 @@ const styles = StyleSheet.create({
 
 function Product({ product }) {
   return (
-    <Layout key={product.id} style={styles.container}>
-      <Layout style={styles.nameProduct}>
-        <Text category="s1" style={styles.name}>
+    <Layout key={product.id} style={[productStyles.container, styles.product]}>
+      <Layout>
+        <Text category="s1" style={productStyles.name}>
           {product.name}
         </Text>
-        <Text style={styles.description}>{product.description}</Text>
+        <Text style={productStyles.description}>{product.description}</Text>
       </Layout>
-      <Text category="s1" style={styles.price}>
+      <Text category="s1" style={productStyles.price}>
         ${product.price}
       </Text>
     </Layout>
@@ -71,12 +83,16 @@ function Product({ product }) {
 function ProductPromo({ product }) {
   return (
     <Card key={product.id} style={styles.card}>
-      <Layout style={styles.container}>
-        <Layout style={{flex:1}}>
-          <Text category="s1" style={styles.name}>{product.name}</Text>
-          <Text style={styles.description}>{product.description}</Text>
+      <Layout style={productStyles.container}>
+        <Layout style={{ flex: 1 }}>
+          <Text category="s1" style={productStyles.name}>
+            {product.name}
+          </Text>
+          <Text style={productStyles.description}>{product.description}</Text>
         </Layout>
-        <Text category="s1">${product.price}</Text>
+        <Text category="s1" style={productStyles.price}>
+          ${product.price}
+        </Text>
       </Layout>
     </Card>
   );

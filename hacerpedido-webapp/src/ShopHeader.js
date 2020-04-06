@@ -47,9 +47,12 @@ const styles = StyleSheet.create({
     color: "#222b45",
     paddingBottom: 6
   },
-  nameLabel: {
+  shopName: {
     color: "#222b45",
-    padding: 6
+    padding: 6,
+    fontFamily: "Barlow",
+    fontWeight: "700"
+
   },
   logo: {
     width: 100,
@@ -96,7 +99,7 @@ export default function ShopHeader({ shop }) {
             style={styles.logo}
           />
         </View>
-        <Text category="h4" style={styles.nameLabel}>
+        <Text category="h4" style={styles.shopName}>
           {shop.name}
         </Text>
         {shop.address ? (
