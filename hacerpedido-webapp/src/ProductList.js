@@ -4,7 +4,9 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: 16
+    marginTop: 16,
+    marginLeft: 16,
+    marginRight: 16
   },
   container: {
     flexDirection: "row",
@@ -13,17 +15,21 @@ const styles = StyleSheet.create({
     flex: 1
   },
   category: {
-    // marginBottom: 16,
+    marginLeft: 16,
+    marginRight: 16,
     marginTop: 16
   },
   price: {
-    marginRight: 24
+    marginRight: 24,
+    marginLeft: 12
   },
   description: {
-    color: "#8f9bb3"
+    color: "#8f9bb3",
+    flex:1 , flexWrap: "wrap"
   },
   name: {
-    marginTop: 16
+    flex:1 , 
+    flexWrap: "wrap"
   },
   nameProduct: {
     marginTop: 16,
@@ -31,7 +37,8 @@ const styles = StyleSheet.create({
     marginLeft: 14,
     borderBottomWidth: 1,
     borderColor: "#edf1f7",
-    paddingBottom: 8
+    paddingBottom: 8,
+    flex:1
   },
   divider: {
     borderColor: "#edf1f7",
@@ -65,8 +72,8 @@ function ProductPromo({ product }) {
   return (
     <Card key={product.id} style={styles.card}>
       <Layout style={styles.container}>
-        <Layout>
-          <Text category="s1">{product.name}</Text>
+        <Layout style={{flex:1}}>
+          <Text category="s1" style={styles.name}>{product.name}</Text>
           <Text style={styles.description}>{product.description}</Text>
         </Layout>
         <Text category="s1">${product.price}</Text>

@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   container: {
-    padding: 16,
     marginBottom: 130,
   },
   footer: {
