@@ -3,7 +3,7 @@
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShopsWithProducts } from "../queriesCustom.js";
-import { createProduct, deleteProduct } from "../mutations";
+import { createProduct, deleteProduct, updateShop } from "../mutations";
 
 const { google } = require("googleapis");
 
@@ -43,7 +43,7 @@ async function main() {
       {
         auth: auth,
         spreadsheetId: spreadsheetId,
-        range: title + "!A2:E"
+        range: title + "!A2:G"
       },
       (err, res) => {
         console.log("-----------------------------------");
@@ -53,6 +53,8 @@ async function main() {
           console.error("The API returned an error.");
           throw err;
         }
+
+        // console.log(JSON.stringify(res, null, 2));
         const rows = res.data.values;
         if (rows.length === 0) {
           console.log("No data found.");
@@ -62,6 +64,14 @@ async function main() {
         console.log("-----------------------------------");
       }
     );
+  });
+}
+
+async function updateShopApi(shop) {
+  // await API.graphql(graphqlOperation(updateShop, { input: shop }));
+  await API.graphql({
+    query: updateShop,
+    variables: { input: shop }
   });
 }
 
@@ -83,10 +93,23 @@ async function deleteProducts(shop) {
   console.log("CONTINUE...");
 }
 
+// TODO: Crear biblioteca de funciones: 
+
 function sleep(ms) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
+}
+
+function removeEmptyStringElements(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "object") {
+      removeEmptyStringElements(obj[prop]);
+    } else if (obj[prop] === "") {
+      delete obj[prop];
+    }
+  }
+  return obj;
 }
 
 async function createProductApi(product) {
@@ -111,7 +134,7 @@ function processRows(slug, rows, shops) {
   //     onSale: Boolean!
   //    }
 
-  if (slug.startsWith("NO")) {
+  if (slug.startsWith("NO") || slug.startsWith("REVISAR") || slug.startsWith("Sheet")) {
     console.log("SKIP: Sheet " + slug);
 
     return;
@@ -131,7 +154,40 @@ function processRows(slug, rows, shops) {
 
   console.log("shopID: " + shopID);
 
-  deleteProducts(shop).catch(console.error);
+  console.log("Dirección: " + rows[0][6]);
+  console.log("Horario: " + rows[1][6]);
+  console.log("Envío a domicilio: " + rows[2][6]);
+  console.log("Logo: " + rows[3][6]);
+  console.log("Fondo: " + rows[4][6]);
+  console.log("Visibility: " + rows[5][6]);
+  console.log("ordersPhoneNumber: " + rows[6][6]);
+  console.log("whatsAppNumber: " + rows[7][6]);
+  console.log("region: " + rows[8][6]);
+  console.log("category: " + rows[9][6]);
+
+  let newShopValues = {
+    id: shopID,
+    address: rows[0][6],
+    openTimes: rows[1][6],
+    deliveryCost: rows[2][6],
+    logo: rows[3][6],
+    background: rows[4][6],
+    visibility: rows[5][6],
+    ordersPhoneNumber: rows[6][6],
+    ordersWhatsAppNumber: rows[7][6],
+    region: rows[8][6],
+    category: rows[9][6],
+  };
+
+  let shopValues = removeEmptyStringElements(newShopValues);
+
+  updateShopApi(shopValues).catch(error => {
+    console.log(JSON.stringify(error, null, 2));
+  });  
+
+  deleteProducts(shop).catch(error => {
+      console.log(JSON.stringify(error, null, 2));
+    });
 
   var section = "";
 
@@ -139,7 +195,6 @@ function processRows(slug, rows, shops) {
 
   rows.forEach(row => {
 
-    console.log(`${row}`);
 
     const name = row[0];
     const price = row[1];
@@ -150,6 +205,8 @@ function processRows(slug, rows, shops) {
       //   console.log("-----> EMPTY");
       return;
     }
+
+    console.log(`${row}`);
 
     // Is a section?
     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
@@ -183,4 +240,6 @@ function processRows(slug, rows, shops) {
   });
 }
 
-main().catch(console.error);
+main().catch(error => {
+  console.log(JSON.stringify(error, null, 2));
+});

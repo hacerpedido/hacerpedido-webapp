@@ -1,8 +1,14 @@
 import React from "react";
-import { View, Image, StyleSheet } from "react-native";
-import { Button, Icon, Layout, Text } from "@ui-kitten/components";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import { useHistory } from "react-router-dom";
-import Background from "./assets/images/fondo1.png";
+import Background from "./assets/images/fondo2@1x.jpg";
+import * as Icons from "./assets/icons/";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 
@@ -11,118 +17,117 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+  },
+  containerData: {
+    zIndex: 0,
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16
   },
   containerLogo: {
     flex: -1,
     width: 100,
     height: 100,
-    alignItems: "center"
+    alignItems: "center",
   },
   containerLabels: {
     flex: 1,
-    paddingStart: 8
-  },
-  containerBottom: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    flex: 1,
-    backgroundColor: "none",
-    padding: 12,
-    paddingTop: 18
-  },
-  containerDelivery: {
-    justifyContent: "flex-end",
-    backgroundColor: "none"
-  },
-  decoratedLabel: {
-    textAlignVertical: "center",
-    color: "#222b45",
-    paddingBottom: 6
+    paddingStart: 8,
   },
   shopName: {
     color: "#fff",
     padding: 6,
     fontFamily: "Barlow",
-    fontWeight: "700"
+    fontWeight: "700",
+    fontSize: 19,
   },
   logo: {
     width: 100,
     height: 100,
-    borderRadius: 50
+    borderRadius: 50,
+    backgroundColor: "#fff",
   },
   containerTop: {
+    zIndex: 2,
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
-    backgroundColor: "none"
+    backgroundColor: "none",
   },
-  buttonBack: { backgroundColor: "none", border: 0 }
+  buttonBack: {
+    backgroundColor: "none",
+    border: 0,
+    padding: 16,
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
 });
 
 export default function ShopHeader({ shop }) {
   const history = useHistory();
 
-  const BackIcon = style => (
-    <Icon {...style} name="arrow-back" width={24} height={24} />
-  );
-
   return (
     <View
       style={{
         marginBottom: 16,
-        background:
-          "linear-gradient(180deg, rgba(0, 0, 0, 0.1) 31.44%, rgba(0, 0, 0, 0.6) 100%), " +
-          `url(${Background})` +
-          ", #3ECC7E",
-        // backgroundRepeat: "tile",
-        backgroundSize: "418px 280px"
+        background: `url(${Background}), #3ECC7E`,
       }}
     >
-      <Layout style={styles.containerTop}>
-        <Button
-          style={styles.buttonBack}
+      <View style={styles.containerTop}>
+        <TouchableHighlight
           onPress={() => {
             history.push("/");
           }}
-          icon={BackIcon}
-        ></Button>
-      </Layout>
-      <View style={styles.container}>
+          style={styles.buttonBack}
+        >
+            <Icons.ArrowLeft color={"white"} />
+        </TouchableHighlight>
+      </View>
+      <View style={styles.containerData}>
         <View style={styles.containerLogo}>
           <Image
             source={{
-              uri: shop.logo
+              uri: shop.logo,
             }}
             style={styles.logo}
           />
         </View>
-        <Text category="h4" style={styles.shopName}>
-          {shop.name}
-        </Text>
+        <Text style={styles.shopName}>{shop.name}</Text>
         {shop.address ? (
-          <DecoratedLabel iconName="pin" text={shop.address} color={"#fff"} />
+          <DecoratedLabel
+            iconName="pin"
+            text={shop.address}
+            iconColor={"#fff"}
+            textColor={"#fff"}
+            fontSize={13}
+            marginBottom={5}
+          />
         ) : null}
-      </View>
-      <Layout style={styles.containerBottom}>
         {shop.openTimes ? (
           <DecoratedLabel
             iconName="clock"
-            text={"Pedidos: " + shop.openTimes}
-            color={"#fff"}
+            text={shop.openTimes}
+            iconColor={"#fff"}
+            textColor={"#fff"}
+            fontSize={13}
+            marginBottom={5}
           />
         ) : null}
-        <Layout style={styles.containerDelivery}>
-          {shop.deliveryCost ? (
-            <DecoratedLabel
-              iconName="car"
-              text={"Delivery: " + shop.deliveryCost}
-              color={"#fff"}
-            />
-          ) : null}
-        </Layout>
-      </Layout>
+        {shop.deliveryCost ? (
+          <DecoratedLabel
+            iconName="car"
+            text={"Delivery: " + shop.deliveryCost}
+            iconColor={"#fff"}
+            textColor={"#fff"}
+            fontSize={13}
+            marginBottom={10}
+          />
+        ) : null}
+      </View>
     </View>
   );
 }

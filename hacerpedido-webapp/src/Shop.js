@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer,  } from "react";
 import API, { graphqlOperation } from "@aws-amplify/api";
-import { Layout, Text, Spinner } from "@ui-kitten/components";
-import { StyleSheet, ScrollView } from "react-native";
+import { ActivityIndicator, StyleSheet, ScrollView, Text, View } from "react-native";
 
 // import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
@@ -54,7 +53,8 @@ export default function Shop() {
   }, [slug]);
 
   if (state.shops.length === 0 && state.loading) {
-    return <Spinner size="giant" />;
+    return           <ActivityIndicator size="large" color="#FFB233" />
+    ;
   }
 
   if (state.shops.length === 0) {
@@ -72,9 +72,9 @@ export default function Shop() {
     <>
       <ScrollView>
         <ShopHeader shop={shop} />
-        <Layout style={styles.container}>
+        <View style={styles.container}>
           {state.loading ? (
-            <Spinner size="giant" />
+            <Text >Cargando...</Text>
           ) : (
             <>
               {prods.length === 0 ? (
@@ -84,11 +84,11 @@ export default function Shop() {
               )}
             </>
           )}
-        </Layout>
+        </View>
       </ScrollView>
-      <Layout style={styles.footer}>
+      <View style={styles.footer}>
         <ShopFooter shop={shop} />
-      </Layout>
+      </View>
     </>
   );
 }

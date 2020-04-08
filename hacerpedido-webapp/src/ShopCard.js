@@ -1,89 +1,91 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
-import { View, Image, StyleSheet } from "react-native";
-import { Card, Text } from "@ui-kitten/components";
+import { View, Image, StyleSheet, Text } from "react-native";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 16
+    marginBottom: 6,
+    borderRadius: 7,
+    borderColor: "#E8E8E8",
+    borderWidth: 1,
+    paddingBottom: 20,
+    paddingTop: 20,
+    paddingLeft: 15,
+    paddingRight: 15,
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   containerLogo: {
     flex: -1,
     width: 75,
     height: 75,
-    alignItems: "center"
+    alignItems: "center",
   },
   containerLabels: {
     flex: 1,
-    paddingStart: 8,
-    marginLeft: 8
+    paddingLeft: 8,
+    marginLeft: 8,
   },
   logo: {
     width: 75,
     height: 75,
-    borderRadius: 37.5
+    borderRadius: 37.5,
+    backgroundColor: "#fff",
   },
   shopName: {
-    color: "#222b45",
+    color: "#4D360F",
     marginBottom: 4,
     fontFamily: "Barlow",
-    fontWeight: "600"
-  }
+    fontWeight: "600",
+    fontSize: 14,
+  },
 });
 
-export default function ShopCard({ shop }) {
-  const history = useHistory();
-
+export default function ShopCard({ shop, selected, onSelect }) {
   return (
-    <Card
-      onPress={() => {
-        history.push("/" + shop.slug);
-      }}
-      style={styles.card}
-    >
+    <View style={styles.card}>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
           <Image
             source={{
-              uri: shop.logo
+              uri: shop.logo,
             }}
             style={styles.logo}
           />
         </View>
         <View style={styles.containerLabels}>
-          <Text category="h6" style={styles.shopName}>
-            {shop.name}
-          </Text>
+          <Text style={styles.shopName}>{shop.name}</Text>
           {shop.address ? (
             <DecoratedLabel
               iconName="pin"
               text={shop.address}
-              color={"#8f9bb3"}
+              iconColor={"#C5CEE0"}
+              textColor={"#8F9BB3"}
             />
           ) : null}
           {shop.openTimes ? (
             <DecoratedLabel
               iconName="clock"
-              text={"Pedidos: " + shop.openTimes}
-              color={"#8f9bb3"}
+              text={shop.openTimes}
+              iconColor={"#C5CEE0"}
+              textColor={"#8F9BB3"}
             />
           ) : null}
           {shop.deliveryCost ? (
             <DecoratedLabel
               iconName="car"
-              text={"Delivery: " + shop.deliveryCost}
-              color={"#8f9bb3"}
+              text={shop.deliveryCost}
+              iconColor={"#C5CEE0"}
+              textColor={"#8F9BB3"}
             />
           ) : null}
         </View>
       </View>
-    </Card>
+    </View>
   );
 }
