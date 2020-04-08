@@ -1,105 +1,119 @@
 import React from "react";
-import { Card, Layout, Text } from "@ui-kitten/components";
-import { StyleSheet } from "react-native";
+// import { Card, Layout,  } from "@ui-kitten/components";
+import { StyleSheet, Text, View } from "react-native";
 
 const productStyles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    flex: 1
   },
   price: {
     marginLeft: 12,
     fontFamily: "Barlow",
-    fontWeight: "600"
-
+    fontWeight: "600",
+    fontSize: 15,
+    color: "#B27D23",
   },
   description: {
-    color: "#8f9bb3",
     flex: 1,
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    color: "#8f9bb3",
+    fontFamily: "Roboto Slab",
+    fontSize: 12,
+    lineHeight: 16
   },
   name: {
     flex: 1,
     flexWrap: "wrap",
     fontFamily: "Barlow",
-    fontWeight: "600"
-  }
+    fontWeight: "600",
+    color: "#4D360F",
+    fontSize: 15,
+    lineHeight: 18,
+  },
 });
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: 16,
-    marginLeft: 16,
-    marginRight: 16
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    borderRadius: 7,
+    padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   product: {
     marginTop: 16,
     marginBottom: 16,
     marginLeft: 16,
     marginRight: 16,
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingRight: 10,
     borderBottomWidth: 1,
     borderColor: "#edf1f7",
-    paddingBottom: 12
+    paddingBottom: 12,
   },
   category: {
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
     fontFamily: "Barlow",
-    fontWeight: "600"
+    fontWeight: "600",
+    fontSize: 16,
+    color: "#4D360F",
   },
   divider: {
     borderColor: "#edf1f7",
-    backgroundColor: "#fafcff",
+    backgroundColor: "#fafafa",
     height: 10,
     width: "100%",
     borderTopWidth: 1,
     borderBottomWidth: 1,
     marginTop: 16,
-    marginBottom: 16
-  }
+    marginBottom: 16,
+  },
 });
 
 function Product({ product }) {
   return (
-    <Layout key={product.id} style={[productStyles.container, styles.product]}>
-      <Layout>
+    <View key={product.id} style={[productStyles.container, styles.product]}>
+      <View style={{ flex: 1 }}>
         <Text category="s1" style={productStyles.name}>
           {product.name}
         </Text>
         <Text style={productStyles.description}>{product.description}</Text>
-      </Layout>
+      </View>
       <Text category="s1" style={productStyles.price}>
         ${product.price}
       </Text>
-    </Layout>
+    </View>
   );
 }
 
 function ProductPromo({ product }) {
   return (
-    <Card key={product.id} style={styles.card}>
-      <Layout style={productStyles.container}>
-        <Layout style={{ flex: 1 }}>
+    <View key={product.id} style={styles.card}>
+      <View style={productStyles.container}>
+        <View style={{ flex: 1 }}>
           <Text category="s1" style={productStyles.name}>
             {product.name}
           </Text>
           <Text style={productStyles.description}>{product.description}</Text>
-        </Layout>
+        </View>
         <Text category="s1" style={productStyles.price}>
           ${product.price}
         </Text>
-      </Layout>
-    </Card>
+      </View>
+    </View>
   );
 }
 
 function Divider() {
-  return <Layout style={styles.divider}></Layout>;
+  return <View style={styles.divider}></View>;
 }
 
 export default function ProductList(props) {
@@ -107,7 +121,7 @@ export default function ProductList(props) {
 
   let category = "";
 
-  props.products.forEach(product => {
+  props.products.forEach((product) => {
     if (category !== product.category) {
       if (product.category !== "Promociones") {
         listItems.push(<Divider />);

@@ -1,33 +1,41 @@
 import React from "react";
-import { View } from "react-native";
-import { Text } from "@ui-kitten/components";
+import { Text, View } from "react-native";
 import * as Icons from "../assets/icons/";
 
-export default function DecoratedLabel({ iconName, text, color }) {
+export default function DecoratedLabel({
+  iconName,
+  text,
+  iconColor,
+  textColor,
+  fontSize,
+  marginBottom
+}) {
   const icons = {
-    car: <Icons.Car color={color} />,
-    clock: <Icons.Clock color={color} />,
-    pin: <Icons.Pin color={color} />
+    car: <Icons.Car color={iconColor} />,
+    clock: <Icons.Clock color={iconColor} />,
+    pin: <Icons.Pin color={iconColor} />,
   };
 
   const styles = {
     text: {
       padding: 3,
-      color: color,
+      color: textColor,
       fontFamily: "Roboto Slab",
-      fontWeight: "400"
-    }
+      fontWeight: "400",
+      fontSize: fontSize ? fontSize : 12,
+      lineHeight: 12,
+    },
+    container: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      textAlignVertical: "center",
+      marginBottom: marginBottom ? marginBottom : 0
+    },
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        textAlignVertical: "center"
-      }}
-    >
+    <View style={styles.container}>
       {icons[iconName]}
       <Text style={styles.text}>{text}</Text>
     </View>

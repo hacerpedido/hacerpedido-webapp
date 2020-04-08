@@ -1,37 +1,52 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Button, Icon } from "@ui-kitten/components";
+import {
+  Button,
+  StyleSheet,
+  TouchableHighlight,
+  View,
+  Text,
+} from "react-native";
+import * as Icons from "./assets/icons/";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 16,
-    padding: 18
+  },
+  containerWhatsApp: {
+    flex: 0.67,
+  },
+  containerCall: {
+    flex: 0.33,
   },
   buttonWhatsApp: {
-    flex: 0.67,
-    margin: 8,
     backgroundColor: "#3ECB7D",
     borderColor: "#37B36E",
-    fontFamily: "Barlow",
-    fontWeight: "600"
   },
   buttonCall: {
-    flex: 0.33,
-    margin: 8,
     backgroundColor: "#ffb234",
-    borderColor: "#ffb234",
+    borderColor: "#E5A02F",
+  },
+  buttonText: {
     fontFamily: "Barlow",
-    fontWeight: "600"
-  }
+    fontWeight: "600",
+    fontSize: 16,
+    color: "#fff",
+    marginLeft: 5
+  },
+  button: {
+    minHeight: 50,
+    margin: 10,
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: 7,
+  },
 });
 
 export default function ShopFooter({ shop }) {
-  const WhatsAppIcon = style => <Icon {...style} name="whatsapp" />;
-  const PhoneIcon = style => <Icon {...style} name="phone" />;
-
   const onPressWhatsApp = () => {
     let url =
       "https://api.whatsapp.com/send?phone=" +
@@ -48,24 +63,24 @@ export default function ShopFooter({ shop }) {
   return (
     <View style={styles.container}>
       {shop.ordersWhatsAppNumber ? (
-        <Button
-          style={styles.buttonWhatsApp}
+        <TouchableHighlight
           onPress={onPressWhatsApp}
-          status="primary"
-          icon={WhatsAppIcon}
+          style={styles.containerWhatsApp}
         >
-          Pedir por Whatsapp
-        </Button>
+          <View style={[styles.buttonWhatsApp, styles.button]}>
+            <Icons.WhatsappFill color={"white"} />
+            <Text style={styles.buttonText}>Pedir por Whatsapp</Text>
+          </View>
+        </TouchableHighlight>
       ) : null}
 
       {shop.ordersPhoneNumber ? (
-        <Button
-          style={styles.buttonCall}
-          onPress={onPressCall}
-          icon={PhoneIcon}
-        >
-          Llamar
-        </Button>
+        <TouchableHighlight onPress={onPressCall} style={styles.containerCall}>
+          <View style={[styles.buttonCall, styles.button]}>
+            <Icons.PhoneCall color={"white"} />
+            <Text style={styles.buttonText}>Llamar</Text>
+          </View>
+        </TouchableHighlight>
       ) : null}
     </View>
   );
