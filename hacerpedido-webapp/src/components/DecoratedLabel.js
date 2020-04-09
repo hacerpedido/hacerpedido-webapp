@@ -18,12 +18,13 @@ export default function DecoratedLabel({
 
   const styles = {
     text: {
+      
       padding: 3,
       color: textColor,
       fontFamily: "Roboto Slab",
       fontWeight: "400",
       fontSize: fontSize ? fontSize : 12,
-      lineHeight: 12,
+      lineHeight: 14,
     },
     container: {
       flex: 1,

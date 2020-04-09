@@ -107,11 +107,8 @@ function processRow(row, shops) {
 
   let newValues = {
     name: businessName,
-    slug: businessName,
-    region: "Mar del Plata",
     typeformToken: typeformToken,
     userName: userName,
-    category: category,
     ordersByPhoneOrWhatsApp: ordersByPhoneOrWhatsApp,
     delivery: delivery,
     whatsAppNumber: whatsApp,
@@ -138,6 +135,8 @@ function processRow(row, shops) {
   if (obj === undefined) {
     // shop["id"] = uuidv4();
     shop.visibility = "private";
+    shop.region = "Mar del Plata";
+    shop.category = category;
     console.log("add");
     createShopApi(shop).catch(error => {
       console.log(JSON.stringify(error, null, 2));

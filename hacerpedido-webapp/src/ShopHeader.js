@@ -7,8 +7,8 @@ import {
   View,
 } from "react-native";
 import { useHistory } from "react-router-dom";
-import Background from "./assets/images/fondo2@1x.jpg";
 import * as Icons from "./assets/icons/";
+import * as Backgrounds from "./assets/images/backgrounds/";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 16
+    marginTop: 16,
   },
   containerLogo: {
     flex: -1,
@@ -43,6 +43,8 @@ const styles = StyleSheet.create({
     fontFamily: "Barlow",
     fontWeight: "700",
     fontSize: 19,
+    marginVertical: 5,
+    textTransform: "capitalize",
   },
   logo: {
     width: 100,
@@ -67,6 +69,38 @@ const styles = StyleSheet.create({
   },
 });
 
+function getBackgroundForCategory(category) {
+  let background = "";
+  switch (category) {
+    case "Bebida":
+      background = `url(${Backgrounds.Bebida})`;
+      break;
+    case "Café":
+      background = `url(${Backgrounds.Cafe})`;
+      break;
+    case "Comida":
+      background = `url(${Backgrounds.Comida})`;
+      break;
+    case "Farmacia":
+      background = `url(${Backgrounds.Farmacia})`;
+      break;
+    case "Kiosko":
+      background = `url(${Backgrounds.Kiosko})`;
+      break;
+    case "Otros":
+      background = `url(${Backgrounds.Otros})`;
+      break;
+    case "Fruta y Verdura":
+      background = `url(${Backgrounds.Verduleria})`;
+      break;
+
+    default:
+      break;
+  }
+
+  return background;
+}
+
 export default function ShopHeader({ shop }) {
   const history = useHistory();
 
@@ -74,7 +108,7 @@ export default function ShopHeader({ shop }) {
     <View
       style={{
         marginBottom: 16,
-        background: `url(${Background}), #3ECC7E`,
+        background: getBackgroundForCategory(shop.category),
       }}
     >
       <View style={styles.containerTop}>
@@ -84,7 +118,7 @@ export default function ShopHeader({ shop }) {
           }}
           style={styles.buttonBack}
         >
-            <Icons.ArrowLeft color={"white"} />
+          <Icons.ArrowLeft color={"white"} />
         </TouchableHighlight>
       </View>
       <View style={styles.containerData}>
@@ -96,7 +130,7 @@ export default function ShopHeader({ shop }) {
             style={styles.logo}
           />
         </View>
-        <Text style={styles.shopName}>{shop.name}</Text>
+        <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
         {shop.address ? (
           <DecoratedLabel
             iconName="pin"
@@ -104,7 +138,7 @@ export default function ShopHeader({ shop }) {
             iconColor={"#fff"}
             textColor={"#fff"}
             fontSize={13}
-            marginBottom={5}
+            marginBottom={4}
           />
         ) : null}
         {shop.openTimes ? (
@@ -114,7 +148,7 @@ export default function ShopHeader({ shop }) {
             iconColor={"#fff"}
             textColor={"#fff"}
             fontSize={13}
-            marginBottom={5}
+            marginBottom={4}
           />
         ) : null}
         {shop.deliveryCost ? (
@@ -124,7 +158,7 @@ export default function ShopHeader({ shop }) {
             iconColor={"#fff"}
             textColor={"#fff"}
             fontSize={13}
-            marginBottom={10}
+            marginBottom={30}
           />
         ) : null}
       </View>
