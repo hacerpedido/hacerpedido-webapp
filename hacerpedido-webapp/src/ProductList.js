@@ -22,7 +22,7 @@ const productStyles = StyleSheet.create({
     color: "#8f9bb3",
     fontFamily: "Roboto Slab",
     fontSize: 12,
-    lineHeight: 16
+    lineHeight: 16,
   },
   name: {
     flex: 1,
@@ -32,6 +32,7 @@ const productStyles = StyleSheet.create({
     color: "#4D360F",
     fontSize: 15,
     lineHeight: 18,
+    marginBottom: 5,
   },
 });
 
@@ -48,22 +49,22 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   product: {
-    marginTop: 16,
-    marginBottom: 16,
+    marginTop: 15,
     marginLeft: 16,
     marginRight: 16,
     paddingRight: 10,
     borderBottomWidth: 1,
     borderColor: "#edf1f7",
-    paddingBottom: 12,
+    paddingBottom: 10,
   },
   category: {
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
+    marginBottom: 2,
     fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 16,
+    fontWeight: "800",
+    fontSize: 17,
     color: "#4D360F",
   },
   divider: {
@@ -82,13 +83,12 @@ function Product({ product }) {
   return (
     <View key={product.id} style={[productStyles.container, styles.product]}>
       <View style={{ flex: 1 }}>
-        <Text category="s1" style={productStyles.name}>
-          {product.name}
-        </Text>
+        <Text style={productStyles.name}>{product.name}</Text>
         <Text style={productStyles.description}>{product.description}</Text>
       </View>
-      <Text category="s1" style={productStyles.price}>
-        ${product.price}
+      <Text style={productStyles.price}>
+        {product.price ? "$" : null}
+        {product.price}
       </Text>
     </View>
   );
@@ -99,13 +99,12 @@ function ProductPromo({ product }) {
     <View key={product.id} style={styles.card}>
       <View style={productStyles.container}>
         <View style={{ flex: 1 }}>
-          <Text category="s1" style={productStyles.name}>
-            {product.name}
-          </Text>
+          <Text style={productStyles.name}>{product.name}</Text>
           <Text style={productStyles.description}>{product.description}</Text>
         </View>
-        <Text category="s1" style={productStyles.price}>
-          ${product.price}
+        <Text style={productStyles.price}>
+          {product.price ? "$" : null}
+          {product.price}
         </Text>
       </View>
     </View>

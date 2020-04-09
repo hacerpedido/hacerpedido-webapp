@@ -41,8 +41,9 @@ const styles = StyleSheet.create({
     color: "#4D360F",
     marginBottom: 4,
     fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 14,
+    fontWeight: "700",
+    fontSize: 16,
+    textTransform: "capitalize"
   },
 });
 
@@ -59,7 +60,7 @@ export default function ShopCard({ shop, selected, onSelect }) {
           />
         </View>
         <View style={styles.containerLabels}>
-          <Text style={styles.shopName}>{shop.name}</Text>
+          <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
           {shop.address ? (
             <DecoratedLabel
               iconName="pin"

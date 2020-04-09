@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Button,
   StyleSheet,
   TouchableHighlight,
   View,
@@ -22,10 +21,13 @@ const styles = StyleSheet.create({
   buttonWhatsApp: {
     backgroundColor: "#3ECB7D",
     borderColor: "#37B36E",
+    margin: 10,
   },
   buttonCall: {
     backgroundColor: "#ffb234",
     borderColor: "#E5A02F",
+    marginRight: 10,
+
   },
   buttonText: {
     fontFamily: "Barlow",
@@ -36,13 +38,13 @@ const styles = StyleSheet.create({
   },
   button: {
     minHeight: 50,
-    margin: 10,
     marginTop: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
-    borderRadius: 7,
+    borderRadius: 4,
+    borderWidth: 1
   },
 });
 

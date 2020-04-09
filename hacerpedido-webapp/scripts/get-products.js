@@ -13,7 +13,7 @@ async function main() {
   // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
   // export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
   const auth = new google.auth.GoogleAuth({
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 
   const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
@@ -22,7 +22,7 @@ async function main() {
 
   const shopsData = await API.graphql(
     graphqlOperation(listShopsWithProducts, {
-      limit: 10000
+      limit: 10000,
     })
   );
   const shops = shopsData.data.listShops.items;
@@ -31,19 +31,19 @@ async function main() {
     auth: auth,
     spreadsheetId: spreadsheetId,
     ranges: [],
-    includeGridData: false
+    includeGridData: false,
   };
 
   const response = await sheets.spreadsheets.get(request);
 
-  response.data.sheets.forEach(function(sheet) {
+  response.data.sheets.forEach(function (sheet) {
     const title = sheet.properties.title;
 
     sheets.spreadsheets.values.get(
       {
         auth: auth,
         spreadsheetId: spreadsheetId,
-        range: title + "!A2:G"
+        range: title + "!A2:G",
       },
       (err, res) => {
         console.log("-----------------------------------");
@@ -61,7 +61,7 @@ async function main() {
         } else {
           processRows(sheet.properties.title, rows, shops);
         }
-        console.log("-----------------------------------");
+        // console.log("-----------------------------------");
       }
     );
   });
@@ -71,7 +71,7 @@ async function updateShopApi(shop) {
   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
   await API.graphql({
     query: updateShop,
-    variables: { input: shop }
+    variables: { input: shop },
   });
 }
 
@@ -81,22 +81,22 @@ async function deleteProducts(shop) {
 
     return;
   }
-  shop.products.items.forEach(product => {
-    console.log("DELETING: " + shop.id + "  -   " + product.id);
+  shop.products.items.forEach((product) => {
+    // console.log("DELETING: " + shop.id + "  -   " + product.id);
     API.graphql(
       graphqlOperation(deleteProduct, { input: { id: product.id } })
-    ).catch(error => {
+    ).catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   });
   await sleep(2000);
-  console.log("CONTINUE...");
+  // console.log("CONTINUE...");
 }
 
-// TODO: Crear biblioteca de funciones: 
+// TODO: Crear biblioteca de funciones:
 
 function sleep(ms) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
@@ -134,13 +134,17 @@ function processRows(slug, rows, shops) {
   //     onSale: Boolean!
   //    }
 
-  if (slug.startsWith("NO") || slug.startsWith("REVISAR") || slug.startsWith("Sheet")) {
+  if (
+    slug.startsWith("NO") ||
+    slug.startsWith("REVISAR") ||
+    slug.startsWith("Sheet")
+  ) {
     console.log("SKIP: Sheet " + slug);
 
     return;
   }
 
-  let shop = shops.find(o => o.slug === slug);
+  let shop = shops.find((o) => o.slug === slug);
 
   //   console.log(shop);
 
@@ -152,18 +156,18 @@ function processRows(slug, rows, shops) {
 
   let shopID = shop.id;
 
-  console.log("shopID: " + shopID);
+  // console.log("shopID: " + shopID);
 
-  console.log("Dirección: " + rows[0][6]);
-  console.log("Horario: " + rows[1][6]);
-  console.log("Envío a domicilio: " + rows[2][6]);
-  console.log("Logo: " + rows[3][6]);
-  console.log("Fondo: " + rows[4][6]);
-  console.log("Visibility: " + rows[5][6]);
-  console.log("ordersPhoneNumber: " + rows[6][6]);
-  console.log("whatsAppNumber: " + rows[7][6]);
-  console.log("region: " + rows[8][6]);
-  console.log("category: " + rows[9][6]);
+  // console.log("Dirección: " + rows[0][6]);
+  // console.log("Horario: " + rows[1][6]);
+  // console.log("Envío a domicilio: " + rows[2][6]);
+  // console.log("Logo: " + rows[3][6]);
+  // console.log("Fondo: " + rows[4][6]);
+  // console.log("Visibility: " + rows[5][6]);
+  // console.log("ordersPhoneNumber: " + rows[6][6]);
+  // console.log("whatsAppNumber: " + rows[7][6]);
+  // console.log("region: " + rows[8][6]);
+  // console.log("category: " + rows[9][6]);
 
   let newShopValues = {
     id: shopID,
@@ -181,21 +185,19 @@ function processRows(slug, rows, shops) {
 
   let shopValues = removeEmptyStringElements(newShopValues);
 
-  updateShopApi(shopValues).catch(error => {
+  updateShopApi(shopValues).catch((error) => {
     console.log(JSON.stringify(error, null, 2));
-  });  
+  });
 
-  deleteProducts(shop).catch(error => {
-      console.log(JSON.stringify(error, null, 2));
-    });
+  deleteProducts(shop).catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
 
   var section = "";
 
   var itemNumber = 0;
 
-  rows.forEach(row => {
-
-
+  rows.forEach((row) => {
     const name = row[0];
     const price = row[1];
     const description = row[2];
@@ -206,11 +208,11 @@ function processRows(slug, rows, shops) {
       return;
     }
 
-    console.log(`${row}`);
+    // console.log(`${row}`);
 
     // Is a section?
     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
-      console.log("-----> SECTION");
+      // console.log("-----> SECTION");
       section = name;
 
       return;
@@ -223,7 +225,7 @@ function processRows(slug, rows, shops) {
       price: parseFloat(price),
       category: section,
       productShopId: shopID,
-      itemNumber: itemNumber
+      itemNumber: itemNumber,
     };
 
     if (description !== undefined && description !== "") {
@@ -234,12 +236,12 @@ function processRows(slug, rows, shops) {
 
     // product = removeEmptyStringElements(product); Soy un optimista!
 
-    createProductApi(product).catch(error => {
+    createProductApi(product).catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   });
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.log(JSON.stringify(error, null, 2));
 });
