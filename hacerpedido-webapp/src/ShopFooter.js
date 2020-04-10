@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  TouchableHighlight,
-  View,
-  Text,
-} from "react-native";
+import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 import * as Icons from "./assets/icons/";
 
 const styles = StyleSheet.create({
@@ -27,14 +22,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffb234",
     borderColor: "#E5A02F",
     marginRight: 10,
-
   },
   buttonText: {
     fontFamily: "Barlow",
     fontWeight: "600",
     fontSize: 16,
     color: "#fff",
-    marginLeft: 5
+    marginLeft: 5,
   },
   button: {
     minHeight: 50,
@@ -44,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
     borderRadius: 4,
-    borderWidth: 1
+    borderWidth: 1,
   },
 });
 
@@ -66,6 +60,7 @@ export default function ShopFooter({ shop }) {
     <View style={styles.container}>
       {shop.ordersWhatsAppNumber ? (
         <TouchableHighlight
+          underlayColor={"none"}
           onPress={onPressWhatsApp}
           style={styles.containerWhatsApp}
         >
@@ -77,7 +72,11 @@ export default function ShopFooter({ shop }) {
       ) : null}
 
       {shop.ordersPhoneNumber ? (
-        <TouchableHighlight onPress={onPressCall} style={styles.containerCall}>
+        <TouchableHighlight
+          onPress={onPressCall}
+          style={styles.containerCall}
+          underlayColor={"none"}
+        >
           <View style={[styles.buttonCall, styles.button]}>
             <Icons.PhoneCall color={"white"} />
             <Text style={styles.buttonText}>Llamar</Text>

@@ -46,7 +46,7 @@ async function main() {
         range: title + "!A2:G",
       },
       (err, res) => {
-        console.log("-----------------------------------");
+        console.log("-----------------------------------  ");
         console.log(sheet.properties.title);
 
         if (err) {
@@ -68,6 +68,7 @@ async function main() {
 }
 
 async function updateShopApi(shop) {
+  await sleep(507 + Math.random() * 100);
   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
   await API.graphql({
     query: updateShop,
@@ -81,6 +82,7 @@ async function deleteProducts(shop) {
 
     return;
   }
+  await sleep(1000 + Math.random() * 100);
   shop.products.items.forEach((product) => {
     // console.log("DELETING: " + shop.id + "  -   " + product.id);
     API.graphql(
@@ -89,7 +91,6 @@ async function deleteProducts(shop) {
       console.log(JSON.stringify(error, null, 2));
     });
   });
-  await sleep(2000);
   // console.log("CONTINUE...");
 }
 
