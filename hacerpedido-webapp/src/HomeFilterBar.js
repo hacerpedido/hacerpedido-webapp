@@ -1,7 +1,7 @@
 import React from "react";
 import {
   SafeAreaView,
-  TouchableOpacity,
+  TouchableHighlight,
   FlatList,
   StyleSheet,
   Text,
@@ -11,15 +11,16 @@ const categories = [
   "Comida",
   "Kiosko",
   "Bebida",
-  "Fruta y Verdura",
-  "Café",
-  "Farmacia",
+  // "Fruta y Verdura",
+  // "Café",
+  // "Farmacia",
   "Otros",
 ];
 
 function Item({ id, title, selected, onSelect }) {
   return (
-    <TouchableOpacity
+    <TouchableHighlight
+      underlayColor={"#fafafa"}
       onPress={() => onSelect(id)}
       style={[
         styles.item,
@@ -38,21 +39,24 @@ function Item({ id, title, selected, onSelect }) {
       >
         {title}
       </Text>
-    </TouchableOpacity>
+    </TouchableHighlight>
   );
 }
 
-export default function HomeFilterBar({selectedFilter, onSelectFilter }) {
+export default function HomeFilterBar({ selectedFilter, onSelectFilter }) {
   const [selected, setSelected] = React.useState(String);
 
   if (selected === "") {
-      setSelected(selectedFilter);
+    setSelected(selectedFilter);
   }
 
-  const onSelect = React.useCallback((id) => {
-    setSelected(id);
-    onSelectFilter(id);
-  }, [onSelectFilter]);
+  const onSelect = React.useCallback(
+    (id) => {
+      setSelected(id);
+      onSelectFilter(id);
+    },
+    [onSelectFilter]
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -83,7 +87,7 @@ const styles = StyleSheet.create({
     borderColor: "#F3F0EB",
     borderBottomWidth: 1,
     paddingLeft: 4,
-    paddingRight: 4
+    paddingRight: 4,
   },
   item: {
     backgroundColor: "#FFFFFF",

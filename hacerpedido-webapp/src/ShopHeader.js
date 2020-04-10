@@ -113,6 +113,7 @@ export default function ShopHeader({ shop }) {
     >
       <View style={styles.containerTop}>
         <TouchableHighlight
+          underlayColor={"none"}
           onPress={() => {
             history.push("/");
           }}

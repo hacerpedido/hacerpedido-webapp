@@ -1,28 +1,22 @@
 import React from "react";
 
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { Link, useHistory } from "react-router-dom";
+import { StyleSheet, Text, View } from "react-native";
+import { Link } from "react-router-dom";
 import * as Icons from "./assets/icons/";
 
 export default function HomeHeader() {
-  const history = useHistory();
-
   return (
     <View style={styles.container}>
       <Link to="/">
         <Icons.LogoHacerpedido width={177} height={19} color={"white"} />
       </Link>
 
-      <TouchableHighlight
-        onPress={() => {
-          history.push("/start");
-        }}
-        style={styles.button}
+      <a
+        href="https://comercios.hacerpedido.com/"
+        style={{ textDecoration: "none" }}
       >
-        <View>
-          <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-        </View>
-      </TouchableHighlight>
+        <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
+      </a>
     </View>
   );
 }
