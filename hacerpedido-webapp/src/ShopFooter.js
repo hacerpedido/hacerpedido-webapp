@@ -6,22 +6,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-  },
-  containerWhatsApp: {
-    flex: 0.67,
-  },
-  containerCall: {
-    flex: 0.33,
+    marginHorizontal: 5
   },
   buttonWhatsApp: {
     backgroundColor: "#3ECB7D",
     borderColor: "#37B36E",
-    margin: 10,
+    marginVertical: 10,
   },
   buttonCall: {
     backgroundColor: "#ffb234",
     borderColor: "#E5A02F",
-    marginRight: 10,
+    marginVertical: 10,
   },
   buttonText: {
     fontFamily: "Barlow",
@@ -39,48 +34,54 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 4,
     borderWidth: 1,
+    marginHorizontal: 5
   },
 });
 
 export default function ShopFooter({ shop }) {
-  const onPressWhatsApp = () => {
-    let url =
-      "https://api.whatsapp.com/send?phone=" +
-      shop.ordersWhatsAppNumber +
-      "&amp;text=Hola!%20Quiero%20hacer%20un%20pedido.%20Enviado%20a%20trav%C3%A9s%20de%20*HacerPedido.com*";
+  let callUrl;
+  if (shop.ordersPhoneNumber) {
+    callUrl = "tel:" + encodeURIComponent(shop.ordersPhoneNumber);
+  } 
 
-    window.location.href = url;
-  };
+  let whatsappUrl;
 
-  const onPressCall = () => {
-    window.location.href = "tel:" + shop.ordersPhoneNumber;
-  };
+  if (shop.ordersWhatsAppNumber) {
+    let number = shop.ordersWhatsAppNumber.replace("+", "");
+
+    whatsappUrl =
+      "https://wa.me/" +
+      number +
+      // "&text=Hola!%20Quiero%20hacer%20un%20pedido.%20Enviado%20a%20trav%C3%A9s%20de%20*HacerPedido.com*";
+      "?text=%C2%A1Hola%21%20Quiero%20hacer%20un%20pedido%20via%20HacerPedido%20%F0%9F%92%AA";
+  }
 
   return (
     <View style={styles.container}>
       {shop.ordersWhatsAppNumber ? (
         <TouchableHighlight
           underlayColor={"none"}
-          onPress={onPressWhatsApp}
-          style={styles.containerWhatsApp}
+          style={{flex: (shop.ordersPhoneNumber ? 0.67 : 1)}}
         >
-          <View style={[styles.buttonWhatsApp, styles.button]}>
-            <Icons.WhatsappFill color={"white"} />
-            <Text style={styles.buttonText}>Pedir por Whatsapp</Text>
-          </View>
+          <div className="bounza">
+            <a href={whatsappUrl} style={{ textDecoration: "none" }}>
+              <View style={[styles.buttonWhatsApp, styles.button]}>
+                <Icons.WhatsappFill color={"white"} />
+                <Text style={styles.buttonText}>Pedir por Whatsapp</Text>
+              </View>
+            </a>
+          </div>
         </TouchableHighlight>
       ) : null}
 
       {shop.ordersPhoneNumber ? (
-        <TouchableHighlight
-          onPress={onPressCall}
-          style={styles.containerCall}
-          underlayColor={"none"}
-        >
-          <View style={[styles.buttonCall, styles.button]}>
-            <Icons.PhoneCall color={"white"} />
-            <Text style={styles.buttonText}>Llamar</Text>
-          </View>
+        <TouchableHighlight style={{flex: (shop.ordersWhatsAppNumber ? 0.33 : 1)}} underlayColor={"none"}>
+          <a href={callUrl} style={{ textDecoration: "none" }}>
+            <View style={[styles.buttonCall, styles.button]}>
+              <Icons.PhoneCall color={"white"} />
+              <Text style={styles.buttonText}>Llamar</Text>
+            </View>
+          </a>
         </TouchableHighlight>
       ) : null}
     </View>
