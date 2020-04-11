@@ -69,9 +69,14 @@ const styles = StyleSheet.create({
   },
 });
 
-function getBackgroundForCategory(category) {
+function getBackgroundForShop(shop) {
+  if (shop.background) {
+    return `url(${shop.background})`;
+  }
+
   let background = "";
-  switch (category) {
+
+  switch (shop.category) {
     case "Bebida":
       background = `url(${Backgrounds.Bebida})`;
       break;
@@ -84,7 +89,7 @@ function getBackgroundForCategory(category) {
     case "Farmacia":
       background = `url(${Backgrounds.Farmacia})`;
       break;
-    case "Kiosko":
+    case "Almacén / Kiosko":
       background = `url(${Backgrounds.Kiosko})`;
       break;
     case "Otros":
@@ -108,7 +113,7 @@ export default function ShopHeader({ shop }) {
     <View
       style={{
         marginBottom: 16,
-        background: getBackgroundForCategory(shop.category),
+        background: getBackgroundForShop(shop),
       }}
     >
       <View style={styles.containerTop}>

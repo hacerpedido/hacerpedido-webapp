@@ -9,8 +9,8 @@ import {
 
 const categories = [
   "Comida",
-  "Kiosko",
   "Bebida",
+  "Almacén / Kiosko",
   // "Fruta y Verdura",
   // "Café",
   // "Farmacia",
