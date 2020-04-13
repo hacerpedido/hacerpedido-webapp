@@ -1,4 +1,5 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
 import {
@@ -9,38 +10,16 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
+import { Helmet } from "react-helmet";
 
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
 import { listShops } from "./graphql/queries";
-
-const QUERY = "QUERY";
-const LOADING = "LOADING";
-const NEW_CATEGORY = "NEW_CATEGORY";
-
-const initialState = {
-  shops: [],
-  loading: false,
-  selectedFilter: "Comida",
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case NEW_CATEGORY: 
-      return {...state, selectedFilter: action.selectedFilter};
-    case LOADING:
-      return { ...state, loading: action.loading };
-    case QUERY:
-      return { ...state, shops: action.shops, loading: false };
-    default:
-      return state;
-  }
-};
+import { setCategory, loading, query } from "./homeSlice";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
-
 
 const renderHeader = (count) => {
   let shopText = count > 0 || count === 0 ? "comercios" : "comercio";
@@ -54,7 +33,8 @@ const renderHeader = (count) => {
 };
 
 export default function Home() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const state = useSelector((state) => state);
+  const dispatch = useDispatch();
   const history = useHistory();
 
   const onSelect = React.useCallback(
@@ -78,23 +58,26 @@ export default function Home() {
           limit: 10000,
         })
       );
-      dispatch({ type: QUERY, shops: shopData.data.listShops.items });
+      dispatch(query(shopData.data.listShops.items));
     }
-    dispatch({ type: LOADING, loading: true });
+    dispatch(loading(true));
     getData();
-  }, [state.selectedFilter]);
+  }, [state.selectedFilter, dispatch]);
 
   return (
     <>
-      <HomeHeader />
-      <HomeFilterBar
-        selectedFilter={state.selectedFilter}
-        onSelectFilter={(selected) => {
-          dispatch({ type: NEW_CATEGORY, selectedFilter: selected });
-
-          // console.log(selected);
-        }}
-      />
+      <Helmet>
+        <title>Pedí a tu restaurant favorito por WhatsApp</title>
+      </Helmet>
+      <View style={styles.topBar}>
+        <HomeHeader />
+        <HomeFilterBar
+          selectedFilter={state.selectedFilter}
+          onSelectFilter={(selected) => {
+            dispatch(setCategory(selected));
+          }}
+        />
+      </View>
       <View style={styles.container}>
         {(state.shops.length === 0) & state.loading ? (
           <ActivityIndicator size="large" color="#FFB233" />
@@ -142,7 +125,15 @@ const styles = StyleSheet.create({
   spinner: {
     alignItems: "center",
   },
+  topBar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2
+  },
   container: {
+    marginTop: 110,
     paddingLeft: 10,
     paddingRight: 10,
     paddingBottom: 10,
@@ -154,6 +145,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Barlow",
     fontWeight: 400,
-
   },
 });

@@ -10,6 +10,7 @@
     "@aws-amplify/storage": "^3.1.5",
     "@aws-amplify/ui": "^2.0.2",
     "@react-native-community/netinfo": "^5.7.0",
+    "@reduxjs/toolkit": "^1.3.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -18,9 +19,11 @@
     "googleapis": "^48.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-helmet": "^6.0.0",
     "react-native": "^0.62.1",
     "react-native-svg": "^12.0.3",
     "react-native-web": "^0.12.2",
+    "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "typescript": "^3.8.3",
@@ -31,7 +34,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "get-shops": "node scripts/get-shops.mjs",
+    "get-shops": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js scripts/get-shops.js src/aws-exports.js && node build-scripts/scripts/get-shops.js",
+    "get-products": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js scripts/get-shops.js src/aws-exports.js && node build-scripts/scripts/get-products.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
   "eslintConfig": {
@@ -53,6 +57,7 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@svgr/cli": "^5.3.1",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-es2015": "^6.24.1",
+    "redux-devtools": "^3.5.0"
   }
 }

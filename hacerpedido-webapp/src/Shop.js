@@ -1,12 +1,20 @@
-import React, { useEffect, useReducer,  } from "react";
+import React, { useEffect, useReducer } from "react";
 import API, { graphqlOperation } from "@aws-amplify/api";
-import { ActivityIndicator, StyleSheet, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { Helmet } from "react-helmet";
 
 // import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
 import { useParams } from "react-router-dom";
 
 import ShopHeader from "./ShopHeader";
+import ShopNotes from "./ShopNotes";
 import ShopFooter from "./ShopFooter";
 import ProductList from "./ProductList";
 
@@ -17,7 +25,7 @@ const LOADING = "LOADING";
 const initialState = {
   shops: [],
   loading: false,
-  products: []
+  products: [],
 };
 
 const reducer = (state, action) => {
@@ -41,7 +49,7 @@ export default function Shop() {
       const shopData = await API.graphql(
         graphqlOperation(listShopsWithProducts, {
           filter: { slug: { eq: slug } },
-          limit: 10000
+          limit: 10000,
         })
       );
       // console.log("SLUG: " + slug);
@@ -53,8 +61,7 @@ export default function Shop() {
   }, [slug]);
 
   if (state.shops.length === 0 && state.loading) {
-    return           <ActivityIndicator size="large" color="#FFB233" />
-    ;
+    return <ActivityIndicator size="large" color="#FFB233" />;
   }
 
   if (state.shops.length === 0) {
@@ -63,6 +70,24 @@ export default function Shop() {
 
   const shop = state.shops[0];
 
+  /* 
+<!-- OG: 2.7.6 -->
+    <meta property="og:image" content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"/>
+    <meta property="og:description" content="WAI"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:site_name" content="Hacer Pedido"/>
+    <meta property="og:title" content="WAI"/>
+    <meta property="og:url" content="https://comercios.hacerpedido.com/wai/"/>
+    <meta property="og:updated_time" content="2020-04-03T13:41:13+00:00"/>
+    <meta property="article:published_time" content="2020-04-03T13:24:19+00:00"/>
+    <meta property="article:modified_time" content="2020-04-03T13:41:13+00:00"/>
+    <meta property="twitter:card" content="summary"/>
+    <meta property="twitter:title" content="WAI"/>
+    <meta property="twitter:description" content="WAI"/>
+    <meta property="twitter:url" content="https://comercios.hacerpedido.com/wai/"/>
+    <!-- /OG -->
+  */
+
   const prods = shop.products.items.sort((a, b) =>
     a.itemNumber > b.itemNumber ? 1 : -1
   );
@@ -70,17 +95,52 @@ export default function Shop() {
 
   return (
     <>
+      <Helmet>
+        <title>{shop.name}</title>
+        <meta
+          property="og:image"
+          content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"
+        />
+        <meta property="og:description" content={shop.name} />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Hacer Pedido" />
+        <meta property="og:title" content={shop.name} />
+        <meta
+          property="og:url"
+          content={"https://hacerpedido.com/" + shop.slug}
+        />
+        {/* <meta property="og:updated_time" content="2020-04-03T13:41:13+00:00" />
+        <meta
+          property="article:published_time"
+          content="2020-04-03T13:24:19+00:00"
+        />
+        <meta
+          property="article:modified_time"
+          content="2020-04-03T13:41:13+00:00"
+        /> */}
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:title" content={shop.name} />
+        <meta property="twitter:description" content={shop.name} />
+        <meta
+          property="twitter:url"
+          content={"https://hacerpedido.com/" + shop.slug}
+        />
+      </Helmet>
+
       <ScrollView>
         <ShopHeader shop={shop} />
         <View style={styles.container}>
           {state.loading ? (
-            <Text >Cargando...</Text>
+            <Text>Cargando...</Text>
           ) : (
             <>
               {prods.length === 0 ? (
                 <Text>Sin productos</Text>
               ) : (
-                <ProductList products={prods} />
+                <>
+                  <ProductList products={prods} />
+                  <ShopNotes shop={shop} />
+                </>
               )}
             </>
           )}
@@ -95,7 +155,7 @@ export default function Shop() {
 
 const styles = StyleSheet.create({
   spinner: {
-    alignItems: "center"
+    alignItems: "center",
   },
   container: {
     marginBottom: 130,
@@ -105,6 +165,6 @@ const styles = StyleSheet.create({
     height: 100,
     backgroundColor: "#fafcff",
     position: "fixed",
-    bottom: 0
-  }
+    bottom: 0,
+  },
 });
