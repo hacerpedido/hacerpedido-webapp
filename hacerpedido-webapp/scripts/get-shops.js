@@ -44,7 +44,7 @@ async function main() {
         console.log("No data found.");
       } else {
         for (const row of rows) {
-          console.log(`${row}`);
+          // console.log(`${row}`);
           processRow(row, shops);
         }
       }
@@ -130,20 +130,29 @@ function processRow(row, shops) {
 
   shop = removeEmptyStringElements(shop);
 
-  console.log(shop);
-
   if (obj === undefined) {
-    // shop["id"] = uuidv4();
     shop.visibility = "private";
     shop.region = "Mar del Plata";
+    shop.slug = newValues.name.toLowerCase().replace(/\s/g, "-");
     shop.category = category;
+
     console.log("add");
+
+    console.log(shop);
+
     createShopApi(shop).catch(error => {
       console.log(JSON.stringify(error, null, 2));
     });
   } else {
     console.log("update");
-    // shop.visibility = "private";
+
+    if (shop.slug === undefined) {
+      shop.slug = shop.name.toLowerCase().replace(/\s/g, "-");
+    } else {
+      shop.slug = shop.slug.toLowerCase().replace(/\s/g, "-");
+    }
+
+    console.log(shop);
 
     updateShopApi(shop).catch(error => {
       console.log(JSON.stringify(error, null, 2));

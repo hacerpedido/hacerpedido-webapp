@@ -67,7 +67,7 @@ export default function ShopFooter({ shop }) {
             <a href={whatsappUrl} style={{ textDecoration: "none" }}>
               <View style={[styles.buttonWhatsApp, styles.button]}>
                 <Icons.WhatsappFill color={"white"} />
-                <Text style={styles.buttonText}>Pedir por Whatsapp</Text>
+                <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
               </View>
             </a>
           </div>

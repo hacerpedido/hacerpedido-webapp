@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import API from "@aws-amplify/api";
 import PubSub from "@aws-amplify/pubsub";
 // import { StyleSheet } from "react-native";
+import {Helmet} from "react-helmet";
 
 import Home from "./Home";
 import Store from "./Shop";

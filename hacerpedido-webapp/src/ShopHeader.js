@@ -109,11 +109,14 @@ function getBackgroundForShop(shop) {
 export default function ShopHeader({ shop }) {
   const history = useHistory();
 
+  const backgroundSize = (shop.background) ? "cover" : "auto";
+
   return (
     <View
       style={{
         marginBottom: 16,
         background: getBackgroundForShop(shop),
+        backgroundSize: backgroundSize
       }}
     >
       <View style={styles.containerTop}>

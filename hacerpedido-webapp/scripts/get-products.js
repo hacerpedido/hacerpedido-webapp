@@ -182,6 +182,7 @@ function processRows(slug, rows, shops) {
     ordersWhatsAppNumber: rows[7][6],
     region: rows[8][6],
     category: rows[9][6],
+    notes: rows[10][6]
   };
 
   let shopValues = removeEmptyStringElements(newShopValues);

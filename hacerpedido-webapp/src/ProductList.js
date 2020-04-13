@@ -2,6 +2,8 @@ import React from "react";
 // import { Card, Layout,  } from "@ui-kitten/components";
 import { StyleSheet, Text, View } from "react-native";
 
+import Divider from "./components/Divider";
+
 const productStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -67,16 +69,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#4D360F",
   },
-  divider: {
-    borderColor: "#edf1f7",
-    backgroundColor: "#fafafa",
-    height: 10,
-    width: "100%",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    marginTop: 16,
-    marginBottom: 16,
-  },
 });
 
 function Product({ product }) {
@@ -111,22 +103,19 @@ function ProductPromo({ product }) {
   );
 }
 
-function Divider() {
-  return <View style={styles.divider}></View>;
-}
-
 export default function ProductList(props) {
   const listItems = [];
 
   let category = "";
+  let item = 0;
 
   props.products.forEach((product) => {
     if (category !== product.category) {
-      if (product.category !== "Promociones") {
-        listItems.push(<Divider />);
+      if (item !== 0 && product.category !== "Promociones") {
+        listItems.push(<Divider key={item++} />);
       }
       listItems.push(
-        <Text category="h5" style={styles.category}>
+        <Text key={item++} style={styles.category}>
           {product.category}
         </Text>
       );
@@ -134,12 +123,12 @@ export default function ProductList(props) {
     }
 
     if (product.category === "Promociones") {
-      listItems.push(<ProductPromo product={product} />);
+      listItems.push(<ProductPromo key={item++} product={product} />);
     } else {
-      listItems.push(<Product product={product} />);
+      listItems.push(<Product key={item++} product={product} />);
     }
   });
-  listItems.push(<Divider />);
+  listItems.push(<Divider key={item++} />);
 
   return <>{listItems}</>;
 }
