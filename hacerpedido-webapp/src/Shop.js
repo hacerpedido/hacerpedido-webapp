@@ -57,7 +57,9 @@ export default function Shop() {
       dispatch({ type: QUERY, shops: shopData.data.listShops.items });
     }
     dispatch({ type: LOADING, loading: true });
-    getData();
+    getData().catch((error) => {
+      console.log(JSON.stringify(error, null, 2));
+    });
   }, [slug]);
 
   if (state.shops.length === 0 && state.loading) {

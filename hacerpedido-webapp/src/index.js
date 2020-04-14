@@ -14,15 +14,15 @@ const store = configureStore({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <Helmet
         titleTemplate="%s | Hacer Pedido"
         defaultTitle="Hacer Pedido"
       />
       <App />
-    </Provider>
-  </React.StrictMode>,
+    </Provider>,
+  // </React.StrictMode>,
   document.getElementById("root")
 );
 

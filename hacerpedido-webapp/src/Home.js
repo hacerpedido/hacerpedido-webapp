@@ -15,7 +15,7 @@ import { Helmet } from "react-helmet";
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
-import { listShops } from "./graphql/queries";
+import { listShopsForHome } from "./graphql/queriesCustom";
 import { setCategory, loading, query } from "./homeSlice";
 
 let touchStartingPoint = 0;
@@ -50,7 +50,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       const shopData = await API.graphql(
-        graphqlOperation(listShops, {
+        graphqlOperation(listShopsForHome, {
           filter: {
             visibility: { eq: "public" },
             category: { eq: state.selectedFilter },
@@ -58,10 +58,15 @@ export default function Home() {
           limit: 10000,
         })
       );
-      dispatch(query(shopData.data.listShops.items));
+      const shops = shopData.data.listShops.items.sort((a, b) =>
+        a.name > b.name ? 1 : -1
+      );
+      dispatch(query(shops));
     }
     dispatch(loading(true));
-    getData();
+    getData().catch((error) => {
+      console.log(JSON.stringify(error, null, 2));
+    });
   }, [state.selectedFilter, dispatch]);
 
   return (
@@ -69,7 +74,7 @@ export default function Home() {
       <Helmet>
         <title>Pedí a tu restaurant favorito por WhatsApp</title>
       </Helmet>
-      <View style={styles.topBar}>
+      <View style={styles.header}>
         <HomeHeader />
         <HomeFilterBar
           selectedFilter={state.selectedFilter}
@@ -78,7 +83,7 @@ export default function Home() {
           }}
         />
       </View>
-      <View style={styles.container}>
+      <View style={styles.body}>
         {(state.shops.length === 0) & state.loading ? (
           <ActivityIndicator size="large" color="#FFB233" />
         ) : (
@@ -125,14 +130,14 @@ const styles = StyleSheet.create({
   spinner: {
     alignItems: "center",
   },
-  topBar: {
+  header: {
     position: "fixed",
     top: 0,
     left: 0,
-    right: 0,
-    zIndex: 2
+    width: "100%",
+    zIndex: 2,
   },
-  container: {
+  body: {
     marginTop: 110,
     paddingLeft: 10,
     paddingRight: 10,
