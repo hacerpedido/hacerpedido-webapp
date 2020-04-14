@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  SafeAreaView,
-  TouchableHighlight,
   FlatList,
   StyleSheet,
   Text,
+  TouchableHighlight,
+  View,
 } from "react-native";
 
 const categories = [
@@ -59,7 +59,7 @@ export default function HomeFilterBar({ selectedFilter, onSelectFilter }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
         alwaysBounceHorizontal={true}
         showsVerticalScrollIndicator={false}
@@ -76,7 +76,7 @@ export default function HomeFilterBar({ selectedFilter, onSelectFilter }) {
         keyExtractor={(item) => item}
         extraData={selected}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

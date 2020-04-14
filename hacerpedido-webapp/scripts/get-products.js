@@ -46,8 +46,8 @@ async function main() {
         range: title + "!A2:G",
       },
       (err, res) => {
-        console.log("-----------------------------------  ");
-        console.log(sheet.properties.title);
+        // console.log("--------------------  " + sheet.properties.title);
+        // console.log(sheet.properties.title);
 
         if (err) {
           console.error("The API returned an error.");
@@ -140,14 +140,15 @@ function processRows(slug, rows, shops) {
     slug.startsWith("REVISAR") ||
     slug.startsWith("Sheet")
   ) {
-    console.log("SKIP: Sheet " + slug);
+    // console.log("SKIP: Sheet " + slug);
+    console.log("--------------------  " + slug);
 
     return;
   }
 
   let shop = shops.find((o) => o.slug === slug);
 
-  //   console.log(shop);
+    console.log(slug);
 
   if (shop === undefined) {
     console.log("ERROR: Shop not found");
