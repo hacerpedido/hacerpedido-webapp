@@ -116,7 +116,9 @@ export default function ShopHeader({ shop }) {
       style={{
         marginBottom: 16,
         background: getBackgroundForShop(shop),
-        backgroundSize: backgroundSize
+        backgroundSize: backgroundSize,
+        backgroundColor: "#dadada",
+
       }}
     >
       <View style={styles.containerTop}>

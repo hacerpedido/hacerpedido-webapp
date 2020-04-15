@@ -23,8 +23,8 @@ const productStyles = StyleSheet.create({
     flexWrap: "wrap",
     color: "#8f9bb3",
     fontFamily: "Roboto Slab",
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 13,
+    lineHeight: 17,
   },
   name: {
     flex: 1,
