@@ -10,7 +10,7 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
@@ -35,7 +35,7 @@ const renderHeader = (count) => {
 export default function Home() {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useHistory();  
 
   const onSelect = React.useCallback(
     (slug) => {
@@ -48,6 +48,8 @@ export default function Home() {
   );
 
   useEffect(() => {
+    dispatch(loading(true));
+
     async function getData() {
       const shopData = await API.graphql(
         graphqlOperation(listShopsForHome, {
@@ -63,7 +65,6 @@ export default function Home() {
       );
       dispatch(query(shops));
     }
-    dispatch(loading(true));
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
@@ -84,8 +85,8 @@ export default function Home() {
         />
       </View>
       <View style={styles.body}>
-        {(state.shops.length === 0) & state.loading ? (
-          <ActivityIndicator size="large" color="#FFB233" />
+        {(state.shops.length === 0) && state.loading ? (
+          <ActivityIndicator size="large" color="#FFB233" style={{margin: 30}} />
         ) : (
           <>
             {state.shops.length > 0 ? (
@@ -117,7 +118,7 @@ export default function Home() {
                 keyExtractor={(shop) => shop.id}
               />
             ) : (
-              <Text>Sin comercios en la base de datos aún.</Text>
+              <Text></Text>
             )}
           </>
         )}

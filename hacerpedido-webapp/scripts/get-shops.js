@@ -4,6 +4,7 @@ import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShops } from "../queries.js";
 import { createShop, updateShop } from "../mutations";
+import slugify from "slugify";
 
 const { google } = require("googleapis");
 
@@ -131,9 +132,12 @@ function processRow(row, shops) {
   shop = removeEmptyStringElements(shop);
 
   if (obj === undefined) {
+
+    const slug = slugify(newValues.name, {remove: /[*+~.()'"!:@]/g})
+
     shop.visibility = "private";
     shop.region = "Mar del Plata";
-    shop.slug = newValues.name.toLowerCase().replace(/\s/g, "-");
+    shop.slug = slug;
     shop.category = category;
 
     console.log("add");
@@ -147,9 +151,9 @@ function processRow(row, shops) {
     console.log("update");
 
     if (shop.slug === undefined) {
-      shop.slug = shop.name.toLowerCase().replace(/\s/g, "-");
-    } else {
-      shop.slug = shop.slug.toLowerCase().replace(/\s/g, "-");
+      shop.slug = slugify(shop.name, {remove: /[*+~.()'"!:@]/g});
+    // } else {
+    //   shop.slug = slugify(shop.slug, {remove: /[*+~.()'"!:@]/g})
     }
 
     console.log(shop);
@@ -158,7 +162,6 @@ function processRow(row, shops) {
       console.log(JSON.stringify(error, null, 2));
     });
   }
-
 }
 
 main().catch(error => {

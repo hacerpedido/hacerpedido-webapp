@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 // import { listShops } from "./graphql/queries";
 import { listShopsWithProducts } from "./graphql/queriesCustom";
@@ -63,7 +63,7 @@ export default function Shop() {
   }, [slug]);
 
   if (state.shops.length === 0 && state.loading) {
-    return <ActivityIndicator size="large" color="#FFB233" />;
+    return <ActivityIndicator size="large" color="#FFB233" style={{margin: 30}}/>;
   }
 
   if (state.shops.length === 0) {
@@ -111,15 +111,6 @@ export default function Shop() {
           property="og:url"
           content={"https://hacerpedido.com/" + shop.slug}
         />
-        {/* <meta property="og:updated_time" content="2020-04-03T13:41:13+00:00" />
-        <meta
-          property="article:published_time"
-          content="2020-04-03T13:24:19+00:00"
-        />
-        <meta
-          property="article:modified_time"
-          content="2020-04-03T13:41:13+00:00"
-        /> */}
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content={shop.name} />
         <meta property="twitter:description" content={shop.name} />
