@@ -3,22 +3,188 @@
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShopsWithProducts } from "../queriesCustom.js";
-import { createProduct, deleteProduct, updateShop } from "../mutations";
+import { listShops } from "../queries.js";
+import {
+  createProduct,
+  deleteProduct,
+  updateShop,
+  createShop,
+} from "../mutations";
+import slugify from "slugify";
 
 const { google } = require("googleapis");
 
 API.configure(awsconfig);
 
-async function main() {
-  // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
-  // export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
-  const auth = new google.auth.GoogleAuth({
-    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+// This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
+const auth = new google.auth.GoogleAuth({
+  scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+});
+const sheets = google.sheets("v4");
+
+async function import_shops() {
+  console.log("IMPORT SHOPS FROM TYPEFORM");
+
+  const shopsData = await API.graphql(
+    graphqlOperation(listShops, { limit: 10000 })
+  );
+
+  // console.log(shopsData);
+  // console.log(shopsData.data);
+  // console.log(shopsData.data.listShops);
+  // console.log(shopsData.data.listShops.items);
+
+  const shops = shopsData.data.listShops.items;
+
+  sheets.spreadsheets.values.get(
+    {
+      auth: auth,
+      spreadsheetId: "1Yw_wN07YVY2--GC3V-Sok94CKhqEKm-yHJp6YPZRopw",
+      range: "HacerPedido.com!A2:J",
+    },
+    (err, res) => {
+      if (err) {
+        console.error("The API returned an error.");
+        throw err;
+      }
+      const rows = res.data.values;
+      if (rows.length === 0) {
+        console.log("No data found.");
+      } else {
+        for (const row of rows) {
+          // console.log(`${row}`);
+          processShopRow(row, shops);
+        }
+      }
+    }
+  );
+}
+
+async function createShopApi(shop) {
+  await API.graphql(graphqlOperation(createShop, { input: shop }));
+}
+
+async function updateShopApi(shop) {
+  // await API.graphql(graphqlOperation(updateShop, { input: shop }));
+  await API.graphql({
+    query: updateShop,
+    variables: { input: shop },
   });
+}
 
+function removeEmptyStringElements(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "object") {
+      removeEmptyStringElements(obj[prop]);
+    } else if (obj[prop] === "") {
+      delete obj[prop];
+    }
+  }
+  return obj;
+}
+
+function toSlug(name) {
+  let slug = slugify(name, { remove: /[*+~.()'"!:@]/g, lower: true });
+  slug = slug.replace(/^-+|-+$/gm, ""); // quitar los - del principio y fin
+
+  // if (slug.split("-").length >= 3) {
+  //   slug = slug.replace(/-/g, ""); // quitar los -
+  // }
+
+  return slug;
+}
+
+function processShopRow(row, shops) {
+  // 0 - Cómo es tu nombre?
+  // 1 - Nombre del Negocio
+  // 2 - ¿En qué categoría de estas entraría?
+  // 3 - ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
+  // 4 - ¿Contás con delivery propio?
+  // 5 - Whatsapp de Pedidos
+  // 6 - Correo de contacto
+  // 7 - ¿Contás con takeaway?
+  // 8 - Submitted At
+  // 9 - Token
+
+  const userName = row[0];
+  const businessName = row[1];
+  const category = row[2];
+  const ordersByPhoneOrWhatsApp = row[3];
+  const delivery = row[4];
+  const whatsApp = row[5];
+  const email = row[6];
+  const takeaway = row[7];
+  const submittedAt = row[8];
+  const typeformToken = row[9];
+
+  // const tokenRegex = /^[a-z0-9]{32}$/;
+  // if (!tokenRegex.test(typeformToken)) {
+  //   console.log("Invalid");
+
+  //   return;
+  // }
+
+  let newValues = {
+    name: businessName,
+    typeformToken: typeformToken,
+    userName: userName,
+    ordersByPhoneOrWhatsApp: ordersByPhoneOrWhatsApp,
+    delivery: delivery,
+    whatsAppNumber: whatsApp,
+    email: email,
+    takeaway: takeaway,
+    submittedAt: submittedAt,
+  };
+
+  let obj = shops.find((o) => o.typeformToken === typeformToken);
+
+  let shop = {};
+  if (obj !== undefined) {
+    shop = Object.assign(obj, newValues);
+    delete shop["products"];
+  } else {
+    shop = newValues;
+  }
+
+  shop = removeEmptyStringElements(shop);
+
+  if (obj === undefined) {
+    const slug = toSlug(newValues.name);
+
+    shop.visibility = "private";
+    shop.region = "Mar del Plata";
+    shop.slug = slug;
+    shop.category = category;
+
+    console.log("add: " + shop.slug);
+
+    createShopApi(shop).catch((error) => {
+      console.log(JSON.stringify(error, null, 2));
+    });
+  } else {
+    const originalSlug = shop.slug;
+
+    if (shop.slug === undefined) {
+      shop.slug = toSlug(shop.name);
+    } else {
+      shop.slug = toSlug(shop.slug);
+    }
+
+    if (originalSlug !== shop.slug) {
+      console.log("Update + SLUG:" + originalSlug + " ---> " + shop.slug);
+    } else {
+      console.log("update: " + shop.slug);
+    }
+
+    updateShopApi(shop).catch((error) => {
+      console.log(JSON.stringify(error, null, 2));
+    });
+  }
+}
+
+async function import_products() {
   const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
-
-  const sheets = google.sheets("v4");
 
   const shopsData = await API.graphql(
     graphqlOperation(listShopsWithProducts, {
@@ -59,7 +225,7 @@ async function main() {
         if (rows.length === 0) {
           console.log("No data found.");
         } else {
-          processRows(sheet.properties.title, rows, shops);
+          processShopRows(sheet.properties.title, rows, shops);
         }
         // console.log("-----------------------------------");
       }
@@ -67,14 +233,14 @@ async function main() {
   });
 }
 
-async function updateShopApi(shop) {
-  await sleep(507 + Math.random() * 100);
-  // await API.graphql(graphqlOperation(updateShop, { input: shop }));
-  await API.graphql({
-    query: updateShop,
-    variables: { input: shop },
-  });
-}
+// async function updateShopApi(shop) {
+//   await sleep(507 + Math.random() * 100);
+//   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
+//   await API.graphql({
+//     query: updateShop,
+//     variables: { input: shop },
+//   });
+// }
 
 async function deleteProducts(shop) {
   if (shop.products.items.length === 0) {
@@ -102,22 +268,11 @@ function sleep(ms) {
   });
 }
 
-function removeEmptyStringElements(obj) {
-  for (var prop in obj) {
-    if (typeof obj[prop] === "object") {
-      removeEmptyStringElements(obj[prop]);
-    } else if (obj[prop] === "") {
-      delete obj[prop];
-    }
-  }
-  return obj;
-}
-
 async function createProductApi(product) {
   await API.graphql(graphqlOperation(createProduct, { input: product }));
 }
 
-function processRows(slug, rows, shops) {
+function processShopRows(slug, rows, shops) {
   // 0 - Título
   // 1 - Precio
   // 2 - Descripción
@@ -148,7 +303,7 @@ function processRows(slug, rows, shops) {
 
   let shop = shops.find((o) => o.slug === slug);
 
-    console.log(slug);
+  console.log(slug);
 
   if (shop === undefined) {
     console.log("ERROR: Shop not found");
@@ -183,8 +338,11 @@ function processRows(slug, rows, shops) {
     ordersWhatsAppNumber: rows[7][6],
     region: rows[8][6],
     category: rows[9][6],
-    notes: rows[10][6]
   };
+
+  if (rows.length > 9) {
+    newShopValues.notes = rows[10][6];
+  }
 
   let shopValues = removeEmptyStringElements(newShopValues);
 
@@ -245,6 +403,19 @@ function processRows(slug, rows, shops) {
   });
 }
 
-main().catch((error) => {
-  console.log(JSON.stringify(error, null, 2));
-});
+import_shops()
+  .then(() => {
+    console.log("IMPORT PRODUCTS");
+    import_products();
+  })
+  .catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
+
+// sleep(4000);
+
+//
+
+// import_products().catch((error) => {
+//   console.log(JSON.stringify(error, null, 2));
+// });
