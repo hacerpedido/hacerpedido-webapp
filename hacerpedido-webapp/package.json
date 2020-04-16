@@ -37,8 +37,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "get-shops": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js scripts/get-shops.js src/aws-exports.js && node build-scripts/scripts/get-shops.js",
-    "get-products": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js scripts/get-shops.js src/aws-exports.js && node build-scripts/scripts/get-products.js",
+    "get-products": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
   "eslintConfig": {
