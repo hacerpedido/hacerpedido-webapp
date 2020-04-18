@@ -16,7 +16,7 @@ import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
 import { listShopsForHome } from "./graphql/queriesCustom";
-import { setCategory, loading, query } from "./homeSlice";
+import { setCategory, loading, query } from "./shopsSlice";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
@@ -35,7 +35,7 @@ const renderHeader = (count) => {
 export default function Home() {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const history = useHistory();  
+  const history = useHistory();
 
   const onSelect = React.useCallback(
     (slug) => {
@@ -60,15 +60,19 @@ export default function Home() {
           limit: 10000,
         })
       );
-      const shops = shopData.data.listShops.items.sort((a, b) =>
-        a.name > b.name ? 1 : -1
-      );
+      const shops = shopData.data.listShops.items;
       dispatch(query(shops));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   }, [state.selectedFilter, dispatch]);
+
+  let shops = state.shops.filter(
+    (x) => x.visibility === "public" && x.category === state.selectedFilter
+  );
+
+  shops = shops.sort((a, b) => (a.name > b.name ? 1 : -1));
 
   return (
     <>
@@ -85,14 +89,18 @@ export default function Home() {
         />
       </View>
       <View style={styles.body}>
-        {(state.shops.length === 0) && state.loading ? (
-          <ActivityIndicator size="large" color="#FFB233" style={{margin: 30}} />
+        {shops.length === 0 && state.loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#FFB233"
+            style={{ margin: 30 }}
+          />
         ) : (
           <>
-            {state.shops.length > 0 ? (
+            {shops.length > 0 ? (
               <FlatList
-                ListHeaderComponent={renderHeader(state.shops.length)}
-                data={state.shops}
+                ListHeaderComponent={renderHeader(shops.length)}
+                data={shops}
                 renderItem={({ item }) => (
                   <TouchableHighlight
                     delayPressIn={5000}

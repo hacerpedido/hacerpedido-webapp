@@ -8,7 +8,10 @@ import {
 } from "react-native";
 import { useHistory } from "react-router-dom";
 import * as Icons from "./assets/icons/";
-import * as Backgrounds from "./assets/images/backgrounds/";
+import {
+  getBackgroundForCategory,
+  getBackgroundColorForCategory,
+} from "./categories";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 
@@ -74,42 +77,13 @@ function getBackgroundForShop(shop) {
     return `url(${shop.background})`;
   }
 
-  let background = "";
-
-  switch (shop.category) {
-    case "Bebida":
-      background = `url(${Backgrounds.Bebida})`;
-      break;
-    case "Café":
-      background = `url(${Backgrounds.Cafe})`;
-      break;
-    case "Comida":
-      background = `url(${Backgrounds.Comida})`;
-      break;
-    case "Farmacia":
-      background = `url(${Backgrounds.Farmacia})`;
-      break;
-    case "Almacén / Kiosko":
-      background = `url(${Backgrounds.Kiosko})`;
-      break;
-    case "Otros":
-      background = `url(${Backgrounds.Otros})`;
-      break;
-    case "Fruta y Verdura":
-      background = `url(${Backgrounds.Verduleria})`;
-      break;
-
-    default:
-      break;
-  }
-
-  return background;
+  return getBackgroundForCategory(shop.category);
 }
 
 export default function ShopHeader({ shop }) {
   const history = useHistory();
 
-  const backgroundSize = (shop.background) ? "cover" : "auto";
+  const backgroundSize = shop.background ? "cover" : "auto";
 
   return (
     <View
@@ -117,8 +91,7 @@ export default function ShopHeader({ shop }) {
         marginBottom: 16,
         background: getBackgroundForShop(shop),
         backgroundSize: backgroundSize,
-        backgroundColor: "#dadada",
-
+        backgroundColor: getBackgroundColorForCategory(shop.category),
       }}
     >
       <View style={styles.containerTop}>

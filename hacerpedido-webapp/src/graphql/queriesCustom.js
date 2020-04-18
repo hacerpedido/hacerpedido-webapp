@@ -10,17 +10,28 @@ export const listShopsForHome = /* GraphQL */ `
     listShops(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        slug
         name
+        slug
+        region
+        userName
         category
         address
         notes
-        ordersWhatsAppNumber
-        ordersPhoneNumber
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
+        whatsAppNumber
+        phoneNumber
+        email
+        submittedAt
         openTimes
         deliveryCost
+        visibility
         logo
         background
+        typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           nextToken
         }
@@ -40,19 +51,28 @@ export const listShopsWithProducts = /* GraphQL */ `
     listShops(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        slug
         name
+        slug
+        region
+        userName
         category
         address
         notes
+        ordersByPhoneOrWhatsApp
+        delivery
+        takeaway
         whatsAppNumber
         phoneNumber
-        ordersWhatsAppNumber
-        ordersPhoneNumber
+        email
+        submittedAt
         openTimes
         deliveryCost
+        visibility
         logo
         background
+        typeformToken
+        ordersPhoneNumber
+        ordersWhatsAppNumber
         products {
           items {
             id

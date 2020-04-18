@@ -6,17 +6,7 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-
-const categories = [
-  "Comida",
-  "Bebida",
-  "Cafeteria",
-  "Almacén / Kiosko",
-  // "Fruta y Verdura",
-  // "Café",
-  // "Farmacia",
-  "Otros",
-];
+import {categories} from './categories';
 
 function Item({ id, title, selected, onSelect }) {
   return (
