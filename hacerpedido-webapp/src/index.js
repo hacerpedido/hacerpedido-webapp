@@ -19,7 +19,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 
-import homeReducer from "./homeSlice";
+import homeReducer from "./shopsSlice";
 
 const persistConfig = {
   key: "root",
