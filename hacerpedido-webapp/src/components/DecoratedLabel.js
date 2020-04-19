@@ -23,7 +23,7 @@ export default function DecoratedLabel({
       color: textColor,
       fontFamily: "Roboto Slab",
       fontWeight: "400",
-      fontSize: fontSize ? fontSize : 12,
+      fontSize: fontSize ?? 12,
       lineHeight: 14,
     },
     container: {
@@ -31,7 +31,7 @@ export default function DecoratedLabel({
       flexDirection: "row",
       alignItems: "center",
       textAlignVertical: "center",
-      marginBottom: marginBottom ? marginBottom : 0
+      marginBottom: marginBottom ?? 0
     },
   };
 

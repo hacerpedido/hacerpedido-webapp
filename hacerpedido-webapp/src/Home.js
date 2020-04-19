@@ -75,9 +75,9 @@ export default function Home() {
   shops = shops.sort((a, b) => (a.name > b.name ? 1 : -1));
 
   return (
-    <>
+    <View>
       <Helmet>
-        <title>Pedí a tu restaurant favorito por WhatsApp</title>
+        <title>Pedí a tu comercio favorito por WhatsApp</title>
       </Helmet>
       <View style={styles.header}>
         <HomeHeader />
@@ -99,6 +99,7 @@ export default function Home() {
           <>
             {shops.length > 0 ? (
               <FlatList
+                // style={{height: "100vh"}}
                 ListHeaderComponent={renderHeader(shops.length)}
                 data={shops}
                 renderItem={({ item }) => (
@@ -124,6 +125,33 @@ export default function Home() {
                   </TouchableHighlight>
                 )}
                 keyExtractor={(shop) => shop.id}
+                // onScroll={(event) => {
+                //   // console.log(event.nativeEvent.contentOffset);
+                //   homeFlatListScrollY = event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
+                // }}
+                // onScrollEndDrag={(event) => {
+                //   homeFlatListScrollY = event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
+                // }}
+                // initialScrollIndex={homeScrollY ? homeScrollY : 0}
+                // getItemLayout={(data, index) => (
+                //   {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
+                // )}
+                // initialNumToRender={100}
+                // onLayout={event => {
+                //   this.frameHeight = event.nativeEvent.layout.height;
+                //   const maxOffset = this.contentHeight - this.frameHeight;
+                //   if (maxOffset < homeFlatListScrollY) {
+                //     homeFlatListScrollY = maxOffset;
+                //   }
+                // }}
+                // onContentSizeChange={(contentWidth, contentHeight) => {
+                //   this.contentHeight = contentHeight;
+                //   const maxOffset = this.contentHeight - this.frameHeight;
+                //   if (maxOffset < homeFlatListScrollY) {
+                //     homeFlatListScrollY = maxOffset;
+                //   }
+                // }}
+                // scrollEventThrottle={160}
               />
             ) : (
               <Text></Text>
@@ -131,7 +159,7 @@ export default function Home() {
           </>
         )}
       </View>
-    </>
+    </View>
   );
 }
 
@@ -147,6 +175,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   body: {
+    flex: 1,
     marginTop: 110,
     paddingLeft: 10,
     paddingRight: 10,

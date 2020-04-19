@@ -17,10 +17,14 @@ import DecoratedLabel from "./components/DecoratedLabel";
 
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 16,
+  },
+  containerNavigator: {
+    zIndex: 2,
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    backgroundColor: "none",
   },
   containerData: {
     zIndex: 0,
@@ -55,13 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: "#fff",
   },
-  containerTop: {
-    zIndex: 2,
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    backgroundColor: "none",
-  },
   buttonBack: {
     backgroundColor: "none",
     border: 0,
@@ -83,18 +80,16 @@ function getBackgroundForShop(shop) {
 export default function ShopHeader({ shop }) {
   const history = useHistory();
 
-  const backgroundSize = shop.background ? "cover" : "auto";
-
   return (
     <View
       style={{
-        marginBottom: 16,
+        ...styles.container,
         background: getBackgroundForShop(shop),
-        backgroundSize: backgroundSize,
+        backgroundSize: shop.background ? "100% auto" : "auto",
         backgroundColor: getBackgroundColorForCategory(shop.category),
       }}
     >
-      <View style={styles.containerTop}>
+      <View style={styles.containerNavigator}>
         <TouchableHighlight
           underlayColor={"none"}
           onPress={() => {

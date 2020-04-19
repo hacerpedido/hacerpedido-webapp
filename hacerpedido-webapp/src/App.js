@@ -5,7 +5,6 @@ import PubSub from "@aws-amplify/pubsub";
 
 import Home from "./Home";
 import Shop from "./Shop";
-import AdminApp from "./Admin/AdminHome";
 
 import awsconfig from "./aws-exports";
 
@@ -17,7 +16,6 @@ export default function App() {
     <React.Fragment>
       <Router>
         <Switch>
-          <Route path="/admin/" component={AdminApp} />
           <Route path={`/:slug`} component={Shop} />
           <Route path="/" component={Home} />
         </Switch>

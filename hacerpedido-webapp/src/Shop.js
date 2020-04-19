@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import API, { graphqlOperation } from "@aws-amplify/api";
@@ -19,7 +19,7 @@ export default function Shop() {
 
   let { slug } = useParams();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch(loading(true));
 
     async function getData() {
@@ -56,7 +56,6 @@ export default function Shop() {
       a.itemNumber > b.itemNumber ? 1 : -1
     );
   }
-  // console.log(prods);
 
   return (
     <>
