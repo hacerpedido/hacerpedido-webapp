@@ -5,21 +5,16 @@ const initialState = {
   loading: false,
   selectedFilter: "Comida",
   homeFirstVisibleItem: 0,
-  homeInitialOffset: 0
 };
 
 const shopsSlice = createSlice({
   name: "shops",
   initialState: initialState,
   reducers: {
-    setHomeInitialOffset(state, action) {
-      state.homeInitialOffset = action.payload;
-    },
     setHomeFirstVisibleItem(state, action) {
       state.homeFirstVisibleItem = action.payload;
     },
     setCategory(state, action) {
-      state.homeInitialOffset = 0;
       state.homeFirstVisibleItem = 0;
       state.selectedFilter = action.payload;
     },
@@ -38,6 +33,6 @@ const shopsSlice = createSlice({
   },
 });
 
-export const { setCategory, loading, query, setHomeFirstVisibleItem, setHomeInitialOffset } = shopsSlice.actions;
+export const { setCategory, loading, query, setHomeFirstVisibleItem } = shopsSlice.actions;
 
 export default shopsSlice.reducer;
