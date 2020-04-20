@@ -1,3 +1,4 @@
+// import React, { useEffect, useRef } from "react";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -5,6 +6,7 @@ import API, { graphqlOperation } from "@aws-amplify/api";
 import {
   ActivityIndicator,
   FlatList,
+  // InteractionManager,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -16,10 +18,20 @@ import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
 import { listShopsForHome } from "./graphql/queriesCustom";
-import { setCategory, loading, query } from "./shopsSlice";
+import {
+  setCategory,
+  loading,
+  query,
+  setHomeFirstVisibleItem,
+  // setHomeInitialOffset,
+} from "./shopsSlice";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
+
+// let homeFlatListScrollY = 0;
+let firstVisibleItem = 0;
+let ITEM_HEIGHT = 130;
 
 const renderHeader = (count) => {
   let shopText = count > 0 || count === 0 ? "comercios" : "comercio";
@@ -32,20 +44,46 @@ const renderHeader = (count) => {
   );
 };
 
+const onViewableItemsChanged = ({ viewableItems, changed }) => {
+  if (viewableItems !== undefined && viewableItems.length > 0) {
+    firstVisibleItem = viewableItems[0].index;
+  }
+};
+
 export default function Home() {
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
   const history = useHistory();
+  // const flatListRef = useRef(null);
 
   const onSelect = React.useCallback(
     (slug) => {
       let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
       if (distance <= 10) {
+        // console.log(firstVisibleItem);
+        // dispatch(setHomeInitialOffset(homeFlatListScrollY));
+        dispatch(setHomeFirstVisibleItem(firstVisibleItem));
         history.push("/" + slug);
       }
     },
-    [history]
+    [history, dispatch]
   );
+
+  // useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  // if (!!flatListRef.current && state.homeInitialOffset > 0 ) {
+  //   flatListRef.current.scrollTo(0, state.homeInitialOffset);
+  // }
+  // if (props.startAtEnd) {
+  //   flatListRef.current.scrollToEnd({ animated: false })
+  // } else if (props.contentOffset) {
+  //   flatListRef.current.scrollTo({
+  //     ...props.contentOffset,
+  //     animated: false,
+  //   })
+  // }
+  //   })
+  // }, [state.homeInitialOffset])
 
   useEffect(() => {
     dispatch(loading(true));
@@ -74,6 +112,9 @@ export default function Home() {
 
   shops = shops.sort((a, b) => (a.name > b.name ? 1 : -1));
 
+  let initialScrollIndex = state.homeFirstVisibleItem ?? 0;
+  // let initialScrollIndex = state.homeInitialOffset ?? 0;
+
   return (
     <View>
       <Helmet>
@@ -99,7 +140,12 @@ export default function Home() {
           <>
             {shops.length > 0 ? (
               <FlatList
-                // style={{height: "100vh"}}
+                // ref={flatListRef}
+                onViewableItemsChanged={onViewableItemsChanged}
+                viewabilityConfig={{
+                  itemVisiblePercentThreshold: 75,
+                }}
+                style={{ height: "100vh", paddingBottom: 100 }}
                 ListHeaderComponent={renderHeader(shops.length)}
                 data={shops}
                 renderItem={({ item }) => (
@@ -125,14 +171,16 @@ export default function Home() {
                   </TouchableHighlight>
                 )}
                 keyExtractor={(shop) => shop.id}
+                initialScrollIndex={initialScrollIndex ?? 0}
                 // onScroll={(event) => {
                 //   // console.log(event.nativeEvent.contentOffset);
-                //   homeFlatListScrollY = event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
+                //   homeFlatListScrollY =
+                //     event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
                 // }}
                 // onScrollEndDrag={(event) => {
-                //   homeFlatListScrollY = event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
+                //   homeFlatListScrollY =
+                //     event.nativeEvent.contentOffset.y / ITEM_HEIGHT;
                 // }}
-                // initialScrollIndex={homeScrollY ? homeScrollY : 0}
                 // getItemLayout={(data, index) => (
                 //   {length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index}
                 // )}
@@ -151,7 +199,12 @@ export default function Home() {
                 //     homeFlatListScrollY = maxOffset;
                 //   }
                 // }}
-                // scrollEventThrottle={160}
+                getItemLayout={(data, index) => ({
+                  length: ITEM_HEIGHT,
+                  offset: ITEM_HEIGHT * index + 110,
+                  index,
+                })}
+                scrollEventThrottle={160}
               />
             ) : (
               <Text></Text>

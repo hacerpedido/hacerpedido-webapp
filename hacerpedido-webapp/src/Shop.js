@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
   },
   container: {
     marginBottom: 130,
+    backgroundColor: "#fff"
   },
   footer: {
     width: "100%",
