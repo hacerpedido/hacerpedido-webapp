@@ -115,6 +115,8 @@ export default function Home() {
   let initialScrollIndex = state.homeFirstVisibleItem ?? 0;
   // let initialScrollIndex = state.homeInitialOffset ?? 0;
 
+  // console.log("initialScrollIndex: " + initialScrollIndex);
+
   return (
     <View>
       <Helmet>
@@ -125,6 +127,7 @@ export default function Home() {
         <HomeFilterBar
           selectedFilter={state.selectedFilter}
           onSelectFilter={(selected) => {
+            firstVisibleItem = 0;
             dispatch(setCategory(selected));
           }}
         />
@@ -143,10 +146,15 @@ export default function Home() {
                 // ref={flatListRef}
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={{
-                  itemVisiblePercentThreshold: 75,
+                  itemVisiblePercentThreshold: 50,
                 }}
-                style={{ height: "100vh", paddingBottom: 100 }}
+                style={{ height: "100vh" }}
+                showsVerticalScrollIndicator = {false}
                 ListHeaderComponent={renderHeader(shops.length)}
+                ListFooterComponent={
+                  // Para que al hacer scroll se vea la última celda
+                  <View style={{ height: 250, backgroundColor: "none" }} />
+                }
                 data={shops}
                 renderItem={({ item }) => (
                   <TouchableHighlight
