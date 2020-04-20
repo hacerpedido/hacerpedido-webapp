@@ -19,16 +19,16 @@ import {
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 
-import homeReducer from "./shopsSlice";
+import shopsReducer from "./shopsSlice";
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["shops", "loading"],
+  blacklist: ["shops", "loading", "homeFirstVisibleItem", "homeInitialOffset"],
 };
 
-const persistedReducer = persistReducer(persistConfig, homeReducer);
+const persistedReducer = persistReducer(persistConfig, shopsReducer);
 
 const store = configureStore({
   reducer: persistedReducer,
