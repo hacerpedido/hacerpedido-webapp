@@ -14,7 +14,7 @@ import ProductList from "./ProductList";
 import Loading from "./components/Loading";
 
 export default function Shop() {
-  const state = useSelector((state) => state);
+  const state = useSelector((state) => state); // TODO: limitar que parte del estado usar
   const dispatch = useDispatch();
 
   let { slug } = useParams();
@@ -39,6 +39,7 @@ export default function Shop() {
     });
   }, [slug, dispatch]);
 
+  // Just in case
   const shop = state.shops.find((x) => x.slug === slug);
 
   if (shop === undefined) {
@@ -51,6 +52,7 @@ export default function Shop() {
 
   let prods = [];
 
+  // TODO: Mover a un modelo?
   if (shop.products !== undefined && shop.products.items !== undefined) {
     prods = [...shop.products.items].sort((a, b) =>
       a.itemNumber > b.itemNumber ? 1 : -1

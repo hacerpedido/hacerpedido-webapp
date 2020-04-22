@@ -49,6 +49,7 @@ export default function ShopFooter({ shop }) {
   if (shop.ordersWhatsAppNumber) {
     let number = shop.ordersWhatsAppNumber.replace("+", "");
 
+    // TODO: Extraer y encapsular pensando en el carrito de compras
     whatsappUrl =
       "https://wa.me/" +
       number +

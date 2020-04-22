@@ -1,3 +1,6 @@
+// This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
+//
 // npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js
 
 import API, { graphqlOperation } from "@aws-amplify/api";
@@ -16,8 +19,6 @@ const { google } = require("googleapis");
 
 API.configure(awsconfig);
 
-// This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
 const auth = new google.auth.GoogleAuth({
   scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
 });
@@ -30,9 +31,6 @@ async function import_shops() {
     graphqlOperation(listShops, { limit: 10000 })
   );
 
-  // console.log(shopsData);
-  // console.log(shopsData.data);
-  // console.log(shopsData.data.listShops);
   // console.log(shopsData.data.listShops.items);
 
   const shops = shopsData.data.listShops.items;
@@ -117,13 +115,6 @@ function processShopRow(row, shops) {
   const takeaway = row[7];
   const submittedAt = row[8];
   const typeformToken = row[9];
-
-  // const tokenRegex = /^[a-z0-9]{32}$/;
-  // if (!tokenRegex.test(typeformToken)) {
-  //   console.log("Invalid");
-
-  //   return;
-  // }
 
   let newValues = {
     name: businessName,
@@ -233,15 +224,6 @@ async function import_products() {
   });
 }
 
-// async function updateShopApi(shop) {
-//   await sleep(507 + Math.random() * 100);
-//   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
-//   await API.graphql({
-//     query: updateShop,
-//     variables: { input: shop },
-//   });
-// }
-
 async function deleteProducts(shop) {
   if (shop.products.items.length === 0) {
     console.log("No products to delete.");
@@ -277,18 +259,7 @@ function processShopRows(slug, rows, shops) {
   // 1 - Precio
   // 2 - Descripción
   // 3 - Promo
-  // 4 - Categoria
-
-  // type Product @model @key(name: "byShop", fields: ["shopID"]) {
-  //     id: String!
-  //     shopID: String!
-  //     shop: Shop @connection(fields: ["shopID"])
-  //     section: String!
-  //     name: String!
-  //     description: String
-  //     price: Float
-  //     onSale: Boolean!
-  //    }
+  // 4 - Cate
 
   if (
     slug.startsWith("NO") ||
@@ -314,7 +285,6 @@ function processShopRows(slug, rows, shops) {
   let shopID = shop.id;
 
   // console.log("shopID: " + shopID);
-
   // console.log("Dirección: " + rows[0][6]);
   // console.log("Horario: " + rows[1][6]);
   // console.log("Envío a domicilio: " + rows[2][6]);
@@ -365,15 +335,11 @@ function processShopRows(slug, rows, shops) {
     const isSection = row[4];
 
     if (name === "" || name === undefined) {
-      //   console.log("-----> EMPTY");
       return;
     }
 
-    // console.log(`${row}`);
-
     // Is a section?
     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
-      // console.log("-----> SECTION");
       section = name;
 
       return;
@@ -395,8 +361,6 @@ function processShopRows(slug, rows, shops) {
 
     // console.log(JSON.stringify(product, null, 2));
 
-    // product = removeEmptyStringElements(product); Soy un optimista!
-
     createProductApi(product).catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
@@ -411,11 +375,3 @@ import_shops()
   .catch((error) => {
     console.log(JSON.stringify(error, null, 2));
   });
-
-// sleep(4000);
-
-//
-
-// import_products().catch((error) => {
-//   console.log(JSON.stringify(error, null, 2));
-// });

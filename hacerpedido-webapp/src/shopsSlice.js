@@ -4,7 +4,7 @@ const initialState = {
   shops: [],
   loading: false,
   selectedFilter: "Comida",
-  homeFirstVisibleItem: 0,
+  homeFirstVisibleItem: 0,  // TODO: Quitar de acá, mover a state.home
 };
 
 const shopsSlice = createSlice({
