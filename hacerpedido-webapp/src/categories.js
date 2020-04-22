@@ -1,5 +1,9 @@
-// import React from "react";
 import * as Backgrounds from "./assets/images/backgrounds/";
+
+//
+// TODO: Rearmar todo esto en un modelo
+//
+
 
 export const categories = [
   "Comida",
@@ -12,6 +16,7 @@ export const categories = [
   "Otros",
 ];
 
+// TODO: Refactor
 const backgroundColors = {
   Bebida: "#A83434",
   Cafeteria: "#C0733D",
@@ -26,6 +31,7 @@ export function getBackgroundColorForCategory(category) {
   return backgroundColors[category];
 }
 
+// TODO: Refactor, extraer valores, meter en un modelo
 export function getBackgroundForCategory(category) {
   let background = "";
 

@@ -1,5 +1,4 @@
 import React from "react";
-// import { Card, Layout,  } from "@ui-kitten/components";
 import { StyleSheet, Text, View } from "react-native";
 
 import Divider from "./components/Divider";

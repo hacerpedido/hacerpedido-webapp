@@ -2,13 +2,16 @@ import React from "react";
 import { Text, View } from "react-native";
 import * as Icons from "../assets/icons/";
 
+// TODO: Este componente tiene una responsabilidad difusa, mucha
+// configuración externa. Repensar.
+
 export default function DecoratedLabel({
   iconName,
   text,
   iconColor,
   textColor,
   fontSize,
-  marginBottom
+  marginBottom,
 }) {
   const icons = {
     car: <Icons.Car color={iconColor} />,
@@ -18,7 +21,6 @@ export default function DecoratedLabel({
 
   const styles = {
     text: {
-      
       padding: 3,
       color: textColor,
       fontFamily: "Roboto Slab",
@@ -31,7 +33,7 @@ export default function DecoratedLabel({
       flexDirection: "row",
       alignItems: "center",
       textAlignVertical: "center",
-      marginBottom: marginBottom ?? 0
+      marginBottom: marginBottom ?? 0,
     },
   };
 

@@ -47,7 +47,7 @@ const onViewableItemsChanged = ({ viewableItems, changed }) => {
 };
 
 export default function Home() {
-  const state = useSelector((state) => state);
+  const state = useSelector((state) => state); // TODO: limitar que se lee del store
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -83,10 +83,12 @@ export default function Home() {
     });
   }, [state.selectedFilter, dispatch]);
 
+  // TODO: mover a un modelo?
   let shops = state.shops.filter(
     (x) => x.visibility === "public" && x.category === state.selectedFilter
   );
 
+  // TODO: mover a un modelo?
   shops = shops.sort((a, b) => (a.name > b.name ? 1 : -1));
 
   let initialScrollIndex = state.homeFirstVisibleItem ?? 0;
