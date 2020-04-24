@@ -57,8 +57,7 @@ function fix_category(oldCategory) {
 
   switch (oldCategory) {
     case "Bebida":
-      return "Bebida";
-    // TODO: return "Bebidas";
+      return "Bebidas";
 
     case "Bebidas alcoholicas":
       return "Bebidas";
@@ -67,8 +66,7 @@ function fix_category(oldCategory) {
       return "Bebidas";
 
     case "Cafeteria":
-      return "Cafeteria";
-    // TODO: return "Cafetería";
+      return "Cafetería";
 
     case "Farmacia":
       return "Otros";
