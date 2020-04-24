@@ -106,6 +106,7 @@ export default function Shop() {
           )}
         </View>
       </ScrollView>
+      {/* TODO: Quitar el view */}
       <View style={styles.footer}>
         <ShopFooter shop={shop} />
       </View>

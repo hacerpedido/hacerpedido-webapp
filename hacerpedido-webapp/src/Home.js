@@ -127,7 +127,7 @@ export default function Home() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={renderHeader(shops.length)}
                 ListFooterComponent={
-                  // Para que al hacer scroll se vea la última celda
+                  // TODO: Remover. Para que al hacer scroll se vea la última celda
                   <View style={{ height: 250, backgroundColor: "none" }} />
                 }
                 data={shops}
