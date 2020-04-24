@@ -25,7 +25,10 @@ export default function Shop() {
     async function getData() {
       const shopData = await API.graphql(
         graphqlOperation(listShopsWithProducts, {
-          filter: { slug: { eq: slug } },
+          filter: {
+            slug: { eq: slug },
+            visibility: { eq: "public" },
+          },
           limit: 10000,
         })
       );
