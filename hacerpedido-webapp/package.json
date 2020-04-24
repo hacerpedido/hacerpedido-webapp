@@ -39,6 +39,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "get-products": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js",
+    "fix-categories": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/fix-categories.js src/aws-exports.js && node build-scripts/scripts/fix-categories.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
   "eslintConfig": {

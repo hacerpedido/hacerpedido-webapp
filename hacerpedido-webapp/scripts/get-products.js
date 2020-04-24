@@ -10,7 +10,7 @@ import { listShops } from "../queries.js";
 import {
   createProduct,
   deleteProduct,
-  updateShop,
+  // updateShop,
   createShop,
 } from "../mutations";
 import slugify from "slugify";
@@ -63,13 +63,13 @@ async function createShopApi(shop) {
   await API.graphql(graphqlOperation(createShop, { input: shop }));
 }
 
-async function updateShopApi(shop) {
-  // await API.graphql(graphqlOperation(updateShop, { input: shop }));
-  await API.graphql({
-    query: updateShop,
-    variables: { input: shop },
-  });
-}
+// async function updateShopApi(shop) {
+//   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
+//   await API.graphql({
+//     query: updateShop,
+//     variables: { input: shop },
+//   });
+// }
 
 function removeEmptyStringElements(obj) {
   for (var prop in obj) {
@@ -90,6 +90,8 @@ function toSlug(name) {
   //   slug = slug.replace(/-/g, ""); // quitar los -
   // }
 
+  // TODO: Esto tendría que asegurarse que el slug es único antes de retornar
+
   return slug;
 }
 
@@ -107,10 +109,10 @@ function processShopRow(row, shops) {
 
   const userName = row[0];
   const businessName = row[1];
-  const category = row[2];
+  const category = row[2]; // TODO: Convertir a una de las posibles en la base de datos
   const ordersByPhoneOrWhatsApp = row[3];
   const delivery = row[4];
-  const whatsApp = row[5];
+  const whatsApp = row[5];  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
   const email = row[6];
   const takeaway = row[7];
   const submittedAt = row[8];
@@ -153,24 +155,24 @@ function processShopRow(row, shops) {
     createShopApi(shop).catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
-  } else {
-    const originalSlug = shop.slug;
+    // } else {
+    //   const originalSlug = shop.slug;
 
-    if (shop.slug === undefined) {
-      shop.slug = toSlug(shop.name);
-    } else {
-      shop.slug = toSlug(shop.slug);
-    }
+    //   if (shop.slug === undefined) {
+    //     shop.slug = toSlug(shop.name);
+    //   } else {
+    //     shop.slug = toSlug(shop.slug);
+    //   }
 
-    if (originalSlug !== shop.slug) {
-      console.log("Update + SLUG:" + originalSlug + " ---> " + shop.slug);
-    } else {
-      console.log("update: " + shop.slug);
-    }
+    //   if (originalSlug !== shop.slug) {
+    //     console.log("Update + SLUG:" + originalSlug + " ---> " + shop.slug);
+    //   } else {
+    //     console.log("update: " + shop.slug);
+    //   }
 
-    updateShopApi(shop).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
+    //   updateShopApi(shop).catch((error) => {
+    //     console.log(JSON.stringify(error, null, 2));
+    // });
   }
 }
 
@@ -296,29 +298,29 @@ function processShopRows(slug, rows, shops) {
   // console.log("region: " + rows[8][6]);
   // console.log("category: " + rows[9][6]);
 
-  let newShopValues = {
-    id: shopID,
-    address: rows[0][6],
-    openTimes: rows[1][6],
-    deliveryCost: rows[2][6],
-    logo: rows[3][6],
-    background: rows[4][6],
-    visibility: rows[5][6],
-    ordersPhoneNumber: rows[6][6],
-    ordersWhatsAppNumber: rows[7][6],
-    region: rows[8][6],
-    category: rows[9][6],
-  };
+  // let newShopValues = {
+  //   id: shopID,
+  //   address: rows[0][6],
+  //   openTimes: rows[1][6],
+  //   deliveryCost: rows[2][6],
+  //   logo: rows[3][6],
+  //   background: rows[4][6],
+  //   visibility: rows[5][6],
+  //   ordersPhoneNumber: rows[6][6],
+  //   ordersWhatsAppNumber: rows[7][6],
+  //   region: rows[8][6],
+  //   category: rows[9][6],
+  // };
 
-  if (rows.length > 9) {
-    newShopValues.notes = rows[10][6];
-  }
+  // if (rows.length > 9) {
+  //   newShopValues.notes = rows[10][6];
+  // }
 
-  let shopValues = removeEmptyStringElements(newShopValues);
+  // let shopValues = removeEmptyStringElements(newShopValues);
 
-  updateShopApi(shopValues).catch((error) => {
-    console.log(JSON.stringify(error, null, 2));
-  });
+  // updateShopApi(shopValues).catch((error) => {
+  //   console.log(JSON.stringify(error, null, 2));
+  // });
 
   deleteProducts(shop).catch((error) => {
     console.log(JSON.stringify(error, null, 2));
