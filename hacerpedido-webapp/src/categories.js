@@ -22,10 +22,10 @@ export const categories = [
 // TODO: Refactor
 const backgroundColors = {
   Comida: "#3CC077",
-  Cervecerías: "",
-  "Helados y Postres": "",
-  Panadería: "",
-  Saludable: "",
+  Cervecerías: "#BFBE3B",
+  "Helados y Postres": "#D83E3D",
+  Panadería: "#D4A9C0",
+  Saludable: "#EFA43D",
   "Almacén / Kiosko": "#3C6AC0",
   Cafetería: "#C0733D",
   Bebidas: "#A83434",
@@ -47,16 +47,16 @@ export function getBackgroundForCategory(category) {
       background = `url(${Backgrounds.Comida})`;
       break;
     case "Cervecerías":
-      background = `url(${Backgrounds.Comida})`;
+      background = `url(${Backgrounds.Cervecerias})`;
       break;
     case "Helados y Postres":
-      background = `url(${Backgrounds.Comida})`;
+      background = `url(${Backgrounds.Helados})`;
       break;
     case "Panadería":
-      background = `url(${Backgrounds.Comida})`;
+      background = `url(${Backgrounds.Panaderia})`;
       break;
     case "Saludable":
-      background = `url(${Backgrounds.Comida})`;
+      background = `url(${Backgrounds.Saludable})`;
       break;
     case "Almacén / Kiosko":
       background = `url(${Backgrounds.Kiosko})`;
