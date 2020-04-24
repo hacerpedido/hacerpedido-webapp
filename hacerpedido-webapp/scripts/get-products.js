@@ -109,10 +109,10 @@ function processShopRow(row, shops) {
 
   const userName = row[0];
   const businessName = row[1];
-  const category = row[2];
+  const category = row[2]; // TODO: Convertir a una de las posibles en la base de datos
   const ordersByPhoneOrWhatsApp = row[3];
   const delivery = row[4];
-  const whatsApp = row[5];
+  const whatsApp = row[5];  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
   const email = row[6];
   const takeaway = row[7];
   const submittedAt = row[8];
