@@ -39,8 +39,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "get-products": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js",
-    "fix-categories": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/fix-categories.js src/aws-exports.js && node build-scripts/scripts/fix-categories.js",
-    "fix-slugs": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/fix-slugs.js src/aws-exports.js && node build-scripts/scripts/fix-slugs.js",
+    "fix-categories": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/fix-categories.js src/aws-exports.js src/categories.js && node build-scripts/scripts/fix-categories.js",
+    "fix-slugs": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/fix-slugs.js src/aws-exports.js src/categories.js && node build-scripts/scripts/fix-slugs.js",
+    "import-data": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/import-data.js src/aws-exports.js src/categories.js && node build-scripts/scripts/import-data.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
   "eslintConfig": {

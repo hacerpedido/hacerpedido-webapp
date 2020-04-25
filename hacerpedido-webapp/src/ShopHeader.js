@@ -11,7 +11,7 @@ import * as Icons from "./assets/icons/";
 import {
   getBackgroundForCategory,
   getBackgroundColorForCategory,
-} from "./categories";
+} from "./categoriesHelper";
 
 import DecoratedLabel from "./components/DecoratedLabel";
 

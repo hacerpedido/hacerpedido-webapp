@@ -1,19 +1,13 @@
 // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
 // export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
-//
-// npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js
 
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
 import { listShopsWithProducts } from "../queriesCustom.js";
 import { listShops } from "../queries.js";
-import {
-  createProduct,
-  deleteProduct,
-  // updateShop,
-  createShop,
-} from "../mutations";
+import { createProduct, deleteProduct, createShop } from "../mutations";
 import slugify from "slugify";
+import { sanitizeCategory } from "../src/categories";
 
 const { google } = require("googleapis");
 
@@ -33,13 +27,13 @@ async function import_shops() {
 
   // console.log(shopsData.data.listShops.items);
 
-  const shops = shopsData.data.listShops.items;
+  let shops = shopsData.data.listShops.items;
 
   sheets.spreadsheets.values.get(
     {
       auth: auth,
-      spreadsheetId: "1Yw_wN07YVY2--GC3V-Sok94CKhqEKm-yHJp6YPZRopw",
-      range: "HacerPedido.com!A2:J",
+      spreadsheetId: "1jQIYS0E2A_qhxByXPNS0Ncg0SEDaqUx4VUDUvtnMdHo",
+      range: "HacerPedido V2!A2:M",
     },
     (err, res) => {
       if (err) {
@@ -51,6 +45,7 @@ async function import_shops() {
         console.log("No data found.");
       } else {
         for (const row of rows) {
+          // console.log("------------------------------------------------------");
           // console.log(`${row}`);
           let shop = processShopRow(row, shops);
           if (shop !== undefined) {
@@ -62,11 +57,17 @@ async function import_shops() {
   );
 }
 
-async function createShopApi(shop) {
-  await API.graphql(graphqlOperation(createShop, { input: shop }));
+function removeEmptyStringElements(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "object") {
+      removeEmptyStringElements(obj[prop]);
+    } else if (obj[prop] === "") {
+      delete obj[prop];
+    }
+  }
+  return obj;
 }
 
-// TODO: COPIADA DE import-data (este script tiene poca vida)
 function toSlug(name, shops) {
   let slug = slugify(name, { remove: /[*+~.()'"!:@]/g, lower: true });
   slug = slug.replace(/^-+|-+$/gm, ""); // quitar los - del principio y fin
@@ -91,130 +92,66 @@ function toSlug(name, shops) {
   return slug + "-" + i;
 }
 
-// async function updateShopApi(shop) {
-//   // await API.graphql(graphqlOperation(updateShop, { input: shop }));
-//   await API.graphql({
-//     query: updateShop,
-//     variables: { input: shop },
-//   });
-// }
-
-function removeEmptyStringElements(obj) {
-  for (var prop in obj) {
-    if (typeof obj[prop] === "object") {
-      removeEmptyStringElements(obj[prop]);
-    } else if (obj[prop] === "") {
-      delete obj[prop];
-    }
-  }
-  return obj;
-}
-
 function processShopRow(row, shops) {
-  // 0 - Cómo es tu nombre?
-  // 1 - Nombre del Negocio
-  // 2 - ¿En qué categoría de estas entraría?
-  // 3 - ¿Recibis pedidos por WhatsApp o por teléfono de tus clientes?
-  // 4 - ¿Contás con delivery propio?
-  // 5 - Whatsapp de Pedidos
-  // 6 - Correo de contacto
-  // 7 - ¿Contás con takeaway?
-  // 8 - Submitted At
-  // 9 - Token
+  const typeformToken = row[12];
 
-  const userName = row[0];
-  const businessName = row[1];
-  const category = row[2]; // TODO: Convertir a una de las posibles en la base de datos
-  const ordersByPhoneOrWhatsApp = row[3];
-  const delivery = row[4];
-  const whatsApp = row[5];  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
-  const email = row[6];
-  const takeaway = row[7];
-  const submittedAt = row[8];
-  const typeformToken = row[9];
-
-  let newValues = {
-    name: businessName,
-    typeformToken: typeformToken,
-    userName: userName,
-    ordersByPhoneOrWhatsApp: ordersByPhoneOrWhatsApp,
-    delivery: delivery,
-    whatsAppNumber: whatsApp,
-    email: email,
-    takeaway: takeaway,
-    submittedAt: submittedAt,
-  };
-
-  let obj = shops.find((o) => o.typeformToken === typeformToken);
-
-  let shop = {};
-  if (obj !== undefined) {
-    shop = Object.assign(obj, newValues);
-    delete shop["products"];
-  } else {
-    shop = newValues;
+  let shopExists =
+    shops.find((o) => o.typeformToken === typeformToken) !== undefined;
+  if (shopExists) {
+    return;
   }
+
+  let shop = {
+    userName: row[0], // ¿Cómo es tu nombre?
+    name: row[1], // ¿Cuál es el nombre de tu negocio?
+    category: row[2], // 2 - ¿En qué categoría de estas entraría?
+    region: row[3], // 3 - ¿En qué ciudad está ubicado?
+    address: row[4], // 4 - ¿Cuál es la dirección de tu negocio?
+    openTimes: row[5], // 5 - ¿Cuáles son tus horarios?
+    ordersWhatsAppNumber: row[6], // 6 - ¿Con qué *WhatsApp* recibís pedidos de tus clientes?
+    // const  = row[7]; // 7 - ¿Usás otro teléfono para tomar pedidos?
+    ordersPhoneNumber: row[8], // 8 - Escribí tu otro teléfono:
+    email: row[9], // 9 - ¿Cuál es tu e-mail?
+    deliveryCost: row[10],
+    submittedAt: row[11], // 11 - Submitted At
+    typeformToken: typeformToken, // 12 - Token
+    visibility: "private",
+  };
 
   shop = removeEmptyStringElements(shop);
 
-  if (obj === undefined) {
-    const slug = toSlug(newValues.name, shops);
+  shop.slug = toSlug(shop.name, shops);
+  shop.category = sanitizeCategory(shop.category);
 
-    shop.visibility = "private";
-    shop.region = "Mar del Plata";
-    shop.slug = slug;
-    shop.category = category;
+  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
 
-    console.log("add: " + shop.slug);
+  console.log("add: " + shop.slug);
+  console.log(shop);
 
-    createShopApi(shop).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-    // } else {
-    //   const originalSlug = shop.slug;
+  API.graphql(graphqlOperation(createShop, { input: shop })).catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
 
-    //   if (shop.slug === undefined) {
-    //     shop.slug = toSlug(shop.name);
-    //   } else {
-    //     shop.slug = toSlug(shop.slug);
-    //   }
-
-    //   if (originalSlug !== shop.slug) {
-    //     console.log("Update + SLUG:" + originalSlug + " ---> " + shop.slug);
-    //   } else {
-    //     console.log("update: " + shop.slug);
-    //   }
-
-    //   updateShopApi(shop).catch((error) => {
-    //     console.log(JSON.stringify(error, null, 2));
-    // });
-
-    return shop;
-  }
+  return shop;
 }
 
 async function import_products() {
   const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
-
   const shopsData = await API.graphql(
     graphqlOperation(listShopsWithProducts, {
       limit: 10000,
     })
   );
   const shops = shopsData.data.listShops.items;
-
   const request = {
     auth: auth,
     spreadsheetId: spreadsheetId,
     ranges: [],
     includeGridData: false,
   };
-
   const response = await sheets.spreadsheets.get(request);
-
   response.data.sheets.forEach(function (sheet) {
     const title = sheet.properties.title;
-
     sheets.spreadsheets.values.get(
       {
         auth: auth,
@@ -224,12 +161,10 @@ async function import_products() {
       (err, res) => {
         // console.log("--------------------  " + sheet.properties.title);
         // console.log(sheet.properties.title);
-
         if (err) {
           console.error("The API returned an error.");
           throw err;
         }
-
         // console.log(JSON.stringify(res, null, 2));
         const rows = res.data.values;
         if (rows.length === 0) {
@@ -258,7 +193,6 @@ async function deleteProducts(shop) {
       console.log(JSON.stringify(error, null, 2));
     });
   });
-  // console.log("CONTINUE...");
 }
 
 // TODO: Crear biblioteca de funciones:
@@ -269,10 +203,6 @@ function sleep(ms) {
   });
 }
 
-async function createProductApi(product) {
-  await API.graphql(graphqlOperation(createProduct, { input: product }));
-}
-
 function processShopRows(slug, rows, shops) {
   // 0 - Título
   // 1 - Precio
@@ -280,11 +210,7 @@ function processShopRows(slug, rows, shops) {
   // 3 - Promo
   // 4 - Cate
 
-  if (
-    slug.startsWith("NO") ||
-    slug.startsWith("REVISAR") ||
-    slug.startsWith("Sheet")
-  ) {
+  if (slug.startsWith("NO")) {
     // console.log("SKIP: Sheet " + slug);
     console.log("--------------------  " + slug);
 
@@ -303,48 +229,11 @@ function processShopRows(slug, rows, shops) {
 
   let shopID = shop.id;
 
-  // console.log("shopID: " + shopID);
-  // console.log("Dirección: " + rows[0][6]);
-  // console.log("Horario: " + rows[1][6]);
-  // console.log("Envío a domicilio: " + rows[2][6]);
-  // console.log("Logo: " + rows[3][6]);
-  // console.log("Fondo: " + rows[4][6]);
-  // console.log("Visibility: " + rows[5][6]);
-  // console.log("ordersPhoneNumber: " + rows[6][6]);
-  // console.log("whatsAppNumber: " + rows[7][6]);
-  // console.log("region: " + rows[8][6]);
-  // console.log("category: " + rows[9][6]);
-
-  // let newShopValues = {
-  //   id: shopID,
-  //   address: rows[0][6],
-  //   openTimes: rows[1][6],
-  //   deliveryCost: rows[2][6],
-  //   logo: rows[3][6],
-  //   background: rows[4][6],
-  //   visibility: rows[5][6],
-  //   ordersPhoneNumber: rows[6][6],
-  //   ordersWhatsAppNumber: rows[7][6],
-  //   region: rows[8][6],
-  //   category: rows[9][6],
-  // };
-
-  // if (rows.length > 9) {
-  //   newShopValues.notes = rows[10][6];
-  // }
-
-  // let shopValues = removeEmptyStringElements(newShopValues);
-
-  // updateShopApi(shopValues).catch((error) => {
-  //   console.log(JSON.stringify(error, null, 2));
-  // });
-
   deleteProducts(shop).catch((error) => {
     console.log(JSON.stringify(error, null, 2));
   });
 
   var section = "";
-
   var itemNumber = 0;
 
   rows.forEach((row) => {
@@ -380,15 +269,16 @@ function processShopRows(slug, rows, shops) {
 
     // console.log(JSON.stringify(product, null, 2));
 
-    createProductApi(product).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
+    API.graphql(graphqlOperation(createProduct, { input: product })).catch(
+      (error) => {
+        console.log(JSON.stringify(error, null, 2));
+      }
+    );
   });
 }
 
 import_shops()
   .then(() => {
-    console.log("IMPORT PRODUCTS");
     import_products();
   })
   .catch((error) => {
