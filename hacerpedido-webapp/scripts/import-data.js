@@ -45,9 +45,8 @@ async function import_shops() {
         console.log("No data found.");
       } else {
         for (const row of rows) {
-          console.log("------------------------------------------------------");
-
-          console.log(`${row}`);
+          // console.log("------------------------------------------------------");
+          // console.log(`${row}`);
           let shop = processShopRow(row, shops);
           if (shop !== undefined) {
             shops.push(shop);
@@ -56,10 +55,6 @@ async function import_shops() {
       }
     }
   );
-}
-
-async function createShopApi(shop) {
-  await API.graphql(graphqlOperation(createShop, { input: shop }));
 }
 
 function removeEmptyStringElements(obj) {
@@ -126,61 +121,61 @@ function processShopRow(row, shops) {
   shop = removeEmptyStringElements(shop);
 
   shop.slug = toSlug(shop.name, shops);
-  shop.category = sanitizeCategory(shop.category);  
+  shop.category = sanitizeCategory(shop.category);
 
   // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
 
   console.log("add: " + shop.slug);
   console.log(shop);
 
-  // createShopApi(shop).catch((error) => {
-  //   console.log(JSON.stringify(error, null, 2));
-  // });
+  API.graphql(graphqlOperation(createShop, { input: shop })).catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
 
   return shop;
 }
 
 async function import_products() {
-  // const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
-  // const shopsData = await API.graphql(
-  //   graphqlOperation(listShopsWithProducts, {
-  //     limit: 10000,
-  //   })
-  // );
-  // const shops = shopsData.data.listShops.items;
-  // const request = {
-  //   auth: auth,
-  //   spreadsheetId: spreadsheetId,
-  //   ranges: [],
-  //   includeGridData: false,
-  // };
-  // const response = await sheets.spreadsheets.get(request);
-  // response.data.sheets.forEach(function (sheet) {
-  //   const title = sheet.properties.title;
-  //   sheets.spreadsheets.values.get(
-  //     {
-  //       auth: auth,
-  //       spreadsheetId: spreadsheetId,
-  //       range: title + "!A2:G",
-  //     },
-  //     (err, res) => {
-  //       // console.log("--------------------  " + sheet.properties.title);
-  //       // console.log(sheet.properties.title);
-  //       if (err) {
-  //         console.error("The API returned an error.");
-  //         throw err;
-  //       }
-  //       // console.log(JSON.stringify(res, null, 2));
-  //       const rows = res.data.values;
-  //       if (rows.length === 0) {
-  //         console.log("No data found.");
-  //       } else {
-  //         processShopRows(sheet.properties.title, rows, shops);
-  //       }
-  //       // console.log("-----------------------------------");
-  //     }
-  //   );
-  // });
+  const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
+  const shopsData = await API.graphql(
+    graphqlOperation(listShopsWithProducts, {
+      limit: 10000,
+    })
+  );
+  const shops = shopsData.data.listShops.items;
+  const request = {
+    auth: auth,
+    spreadsheetId: spreadsheetId,
+    ranges: [],
+    includeGridData: false,
+  };
+  const response = await sheets.spreadsheets.get(request);
+  response.data.sheets.forEach(function (sheet) {
+    const title = sheet.properties.title;
+    sheets.spreadsheets.values.get(
+      {
+        auth: auth,
+        spreadsheetId: spreadsheetId,
+        range: title + "!A2:G",
+      },
+      (err, res) => {
+        // console.log("--------------------  " + sheet.properties.title);
+        // console.log(sheet.properties.title);
+        if (err) {
+          console.error("The API returned an error.");
+          throw err;
+        }
+        // console.log(JSON.stringify(res, null, 2));
+        const rows = res.data.values;
+        if (rows.length === 0) {
+          console.log("No data found.");
+        } else {
+          processShopRows(sheet.properties.title, rows, shops);
+        }
+        // console.log("-----------------------------------");
+      }
+    );
+  });
 }
 
 async function deleteProducts(shop) {
@@ -208,10 +203,6 @@ function sleep(ms) {
   });
 }
 
-async function createProductApi(product) {
-  await API.graphql(graphqlOperation(createProduct, { input: product }));
-}
-
 function processShopRows(slug, rows, shops) {
   // 0 - Título
   // 1 - Precio
@@ -219,11 +210,7 @@ function processShopRows(slug, rows, shops) {
   // 3 - Promo
   // 4 - Cate
 
-  if (
-    slug.startsWith("NO") ||
-    slug.startsWith("REVISAR") ||
-    slug.startsWith("Sheet")
-  ) {
+  if (slug.startsWith("NO")) {
     // console.log("SKIP: Sheet " + slug);
     console.log("--------------------  " + slug);
 
@@ -242,31 +229,11 @@ function processShopRows(slug, rows, shops) {
 
   let shopID = shop.id;
 
-  // let newShopValues = {
-  //   id: shopID,
-  //   logo: rows[3][6],
-  //   background: rows[4][6],
-  //   visibility: rows[5][6],
-  //   region: rows[8][6],
-  //   category: rows[9][6],
-  // };
-
-  // if (rows.length > 9) {
-  //   newShopValues.notes = rows[10][6];
-  // }
-
-  // let shopValues = removeEmptyStringElements(newShopValues);
-
-  // updateShopApi(shopValues).catch((error) => {
-  //   console.log(JSON.stringify(error, null, 2));
-  // });
-
   deleteProducts(shop).catch((error) => {
     console.log(JSON.stringify(error, null, 2));
   });
 
   var section = "";
-
   var itemNumber = 0;
 
   rows.forEach((row) => {
@@ -302,15 +269,16 @@ function processShopRows(slug, rows, shops) {
 
     // console.log(JSON.stringify(product, null, 2));
 
-    createProductApi(product).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
+    API.graphql(graphqlOperation(createProduct, { input: product })).catch(
+      (error) => {
+        console.log(JSON.stringify(error, null, 2));
+      }
+    );
   });
 }
 
 import_shops()
   .then(() => {
-    console.log("IMPORT PRODUCTS");
     import_products();
   })
   .catch((error) => {

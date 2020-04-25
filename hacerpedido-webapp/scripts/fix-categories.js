@@ -26,17 +26,13 @@ async function fix_categories() {
         category: category,
       };
 
-      // updateShopApi(newShopValues).catch((error) => {
-      //   console.log(JSON.stringify(error, null, 2));
-      // });
+      API.graphql({
+        query: updateShop,
+        variables: { input: newShopValues },
+      }).catch((error) => {
+        console.log(JSON.stringify(error, null, 2));
+      });
     }
-  });
-}
-
-async function updateShopApi(shop) {
-  await API.graphql({
-    query: updateShop,
-    variables: { input: shop },
   });
 }
 
