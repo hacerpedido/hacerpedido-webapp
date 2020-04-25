@@ -52,7 +52,10 @@ async function import_shops() {
       } else {
         for (const row of rows) {
           // console.log(`${row}`);
-          processShopRow(row, shops);
+          let shop = processShopRow(row, shops);
+          if (shop !== undefined) {
+            shops.push(shop);
+          }
         }
       }
     }
@@ -61,6 +64,31 @@ async function import_shops() {
 
 async function createShopApi(shop) {
   await API.graphql(graphqlOperation(createShop, { input: shop }));
+}
+
+// TODO: COPIADA DE import-data (este script tiene poca vida)
+function toSlug(name, shops) {
+  let slug = slugify(name, { remove: /[*+~.()'"!:@]/g, lower: true });
+  slug = slug.replace(/^-+|-+$/gm, ""); // quitar los - del principio y fin
+
+  // if (slug.split("-").length >= 3) {
+  //   slug = slug.replace(/-/g, ""); // quitar los -
+  // }
+
+  // Asegurarse que el slug es único antes de retornar
+
+  if (shops.find((o) => o.slug === slug) === undefined) {
+    return slug;
+  }
+
+  let isRepeated;
+  let i = 0;
+  do {
+    let candidate = slug + "-" + ++i;
+    isRepeated = shops.find((o) => o.slug === candidate) !== undefined;
+  } while (isRepeated);
+
+  return slug + "-" + i;
 }
 
 // async function updateShopApi(shop) {
@@ -80,19 +108,6 @@ function removeEmptyStringElements(obj) {
     }
   }
   return obj;
-}
-
-function toSlug(name) {
-  let slug = slugify(name, { remove: /[*+~.()'"!:@]/g, lower: true });
-  slug = slug.replace(/^-+|-+$/gm, ""); // quitar los - del principio y fin
-
-  // if (slug.split("-").length >= 3) {
-  //   slug = slug.replace(/-/g, ""); // quitar los -
-  // }
-
-  // TODO: Esto tendría que asegurarse que el slug es único antes de retornar
-
-  return slug;
 }
 
 function processShopRow(row, shops) {
@@ -143,7 +158,7 @@ function processShopRow(row, shops) {
   shop = removeEmptyStringElements(shop);
 
   if (obj === undefined) {
-    const slug = toSlug(newValues.name);
+    const slug = toSlug(newValues.name, shops);
 
     shop.visibility = "private";
     shop.region = "Mar del Plata";
@@ -173,6 +188,8 @@ function processShopRow(row, shops) {
     //   updateShopApi(shop).catch((error) => {
     //     console.log(JSON.stringify(error, null, 2));
     // });
+
+    return shop;
   }
 }
 
