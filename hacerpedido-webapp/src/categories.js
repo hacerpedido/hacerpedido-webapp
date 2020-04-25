@@ -1,11 +1,3 @@
-import * as Backgrounds from "./assets/images/backgrounds/";
-
-//
-// TODO: Rearmar todo esto en un modelo
-//
-// TODO: Las categorías del Typeform son diferentes,
-// deberíamos permitir múltiples nombres para las categorías
-// i.e: Productos saludables > Saludable
 
 export const categories = [
   "Comida",
@@ -19,67 +11,50 @@ export const categories = [
   "Otros", // Otro
 ];
 
-// TODO: Refactor
-const backgroundColors = {
-  Comida: "#3CC077",
-  Cervecerías: "#BFBE3B",
-  "Helados y Postres": "#D83E3D",
-  Panadería: "#D4A9C0",
-  Saludable: "#EFA43D",
-  "Almacén / Kiosko": "#3C6AC0",
-  Cafetería: "#C0733D",
-  Bebidas: "#A83434",
-  Otros: "#3CA9C0",
-  // Farmacia: "#7F3CC0",
-  // "Fruta y Verdura": "#C1BE3D",
-};
-
-export function getBackgroundColorForCategory(category) {
-  return backgroundColors[category];
-}
-
-// TODO: Refactor, extraer valores, meter en un modelo
-export function getBackgroundForCategory(category) {
-  let background = "";
-
-  switch (category) {
-    case "Comida":
-      background = `url(${Backgrounds.Comida})`;
-      break;
-    case "Cervecerías":
-      background = `url(${Backgrounds.Cervecerias})`;
-      break;
-    case "Helados y Postres":
-      background = `url(${Backgrounds.Helados})`;
-      break;
-    case "Panadería":
-      background = `url(${Backgrounds.Panaderia})`;
-      break;
-    case "Saludable":
-      background = `url(${Backgrounds.Saludable})`;
-      break;
-    case "Almacén / Kiosko":
-      background = `url(${Backgrounds.Kiosko})`;
-      break;
-    case "Cafetería":
-      background = `url(${Backgrounds.Cafe})`;
-      break;
-    case "Bebidas":
-      background = `url(${Backgrounds.Bebida})`;
-      break;
-    case "Otros":
-      background = `url(${Backgrounds.Otros})`;
-      break;
-    // case "Farmacia":
-    //   background = `url(${Backgrounds.Farmacia})`;
-    //   break;
-    // case "Fruta y Verdura":
-    //   background = `url(${Backgrounds.Verduleria})`;
-    //   break;
-
-    default:
-      break;
+export function sanitizeCategory(oldCategory) {
+  if (categories.includes(oldCategory)) {
+    return oldCategory;
   }
 
-  return background;
+  switch (oldCategory) {
+    case "Bebida":
+      return "Bebidas";
+
+    case "Bebidas alcoholicas":
+      return "Bebidas";
+
+    case "Bebidas alcohólicas":
+      return "Bebidas";
+
+    case "Cafeteria":
+      return "Cafetería";
+
+    case "Farmacia":
+      return "Otros";
+
+    case "Kiosco, almacén, minimercado":
+      return "Almacén / Kiosko";
+
+    case "Kiosco/almacen":
+      return "Almacén / Kiosko";
+
+    case "Minimercado/supermercado":
+      return "Almacén / Kiosko";
+
+    case "Productos saludables":
+      return "Saludable";
+
+    case "Otros (alimento para mascotas, tecnología, productos congelados, viandas)":
+      return "Otros";
+
+    case "Restaurante":
+      return "Comida";
+
+    case "Verdulería y frutería":
+      return "Comida";
+
+    default:
+      console.log("ERROR: " + oldCategory + " no está considerada como una categoría.");
+      return oldCategory;
+  }
 }
