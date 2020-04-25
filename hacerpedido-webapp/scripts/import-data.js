@@ -7,6 +7,7 @@ import { listShopsWithProducts } from "../queriesCustom.js";
 import { listShops } from "../queries.js";
 import { createProduct, deleteProduct, createShop } from "../mutations";
 import slugify from "slugify";
+import { sanitizeCategory } from "../src/categories";
 
 const { google } = require("googleapis");
 
@@ -28,13 +29,11 @@ async function import_shops() {
 
   let shops = shopsData.data.listShops.items;
 
-  shops = shops.push({slug: 'peze-1'});
-
   sheets.spreadsheets.values.get(
     {
       auth: auth,
       spreadsheetId: "1jQIYS0E2A_qhxByXPNS0Ncg0SEDaqUx4VUDUvtnMdHo",
-      range: "HacerPedido V2!A2:L",
+      range: "HacerPedido V2!A2:M",
     },
     (err, res) => {
       if (err) {
@@ -49,7 +48,10 @@ async function import_shops() {
           console.log("------------------------------------------------------");
 
           console.log(`${row}`);
-          processShopRow(row, shops);
+          let shop = processShopRow(row, shops);
+          if (shop !== undefined) {
+            shops.push(shop);
+          }
         }
       }
     }
@@ -87,7 +89,6 @@ function toSlug(name, shops) {
 
   let isRepeated;
   let i = 0;
-
   do {
     let candidate = slug + "-" + ++i;
     isRepeated = shops.find((o) => o.slug === candidate) !== undefined;
@@ -97,13 +98,11 @@ function toSlug(name, shops) {
 }
 
 function processShopRow(row, shops) {
-  const typeformToken = row[11];
+  const typeformToken = row[12];
 
-  let obj = shops.find((o) => o.typeformToken === typeformToken);
-
-  if (obj !== undefined) {
-    console.log("YA EXISTE");
-
+  let shopExists =
+    shops.find((o) => o.typeformToken === typeformToken) !== undefined;
+  if (shopExists) {
     return;
   }
 
@@ -118,16 +117,16 @@ function processShopRow(row, shops) {
     // const  = row[7]; // 7 - ¿Usás otro teléfono para tomar pedidos?
     ordersPhoneNumber: row[8], // 8 - Escribí tu otro teléfono:
     email: row[9], // 9 - ¿Cuál es tu e-mail?
-    submittedAt: row[10], // 10 - Submitted At
-    typeformToken: typeformToken, // 11 - Token
-
-    //   deliveryCost: rows[2][6],
+    deliveryCost: row[10],
+    submittedAt: row[11], // 11 - Submitted At
+    typeformToken: typeformToken, // 12 - Token
+    visibility: "private",
   };
 
   shop = removeEmptyStringElements(shop);
 
   shop.slug = toSlug(shop.name, shops);
-  // shop.category = category;  // TODO: Convertir categoría a una de las posibles en la base de datos
+  shop.category = sanitizeCategory(shop.category);  
 
   // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
 
@@ -137,6 +136,8 @@ function processShopRow(row, shops) {
   // createShopApi(shop).catch((error) => {
   //   console.log(JSON.stringify(error, null, 2));
   // });
+
+  return shop;
 }
 
 async function import_products() {
