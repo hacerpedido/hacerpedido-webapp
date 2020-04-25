@@ -80,6 +80,9 @@ function fix_category(oldCategory) {
     case "Minimercado/supermercado":
       return "Almacén / Kiosko";
 
+    case "Productos saludables":
+      return "Saludable";
+
     case "Otros (alimento para mascotas, tecnología, productos congelados, viandas)":
       return "Otros";
 

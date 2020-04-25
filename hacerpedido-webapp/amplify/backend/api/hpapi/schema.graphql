@@ -5,7 +5,7 @@ type Shop @model
 {
   id: ID!
   name: String!
-  slug: String
+  slug: String!
   region: String
   userName: String
   category: String
