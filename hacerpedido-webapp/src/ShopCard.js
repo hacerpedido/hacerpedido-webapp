@@ -43,11 +43,11 @@ const styles = StyleSheet.create({
     fontFamily: "Barlow",
     fontWeight: "700",
     fontSize: 16,
-    textTransform: "capitalize"
+    textTransform: "capitalize",
   },
 });
 
-export default function ShopCard({ shop, selected, onSelect }) {
+export default ({ shop, selected, onSelect }) => {
   return (
     <View style={styles.card}>
       <View style={styles.container}>
@@ -89,4 +89,4 @@ export default function ShopCard({ shop, selected, onSelect }) {
       </View>
     </View>
   );
-}
+};

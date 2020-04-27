@@ -5,14 +5,14 @@ import * as Icons from "../assets/icons/";
 // TODO: Este componente tiene una responsabilidad difusa, mucha
 // configuración externa. Repensar.
 
-export default function DecoratedLabel({
+export default ({
   iconName,
   text,
   iconColor,
   textColor,
   fontSize,
   marginBottom,
-}) {
+}) => {
   const icons = {
     car: <Icons.Car color={iconColor} />,
     clock: <Icons.Clock color={iconColor} />,
@@ -43,4 +43,4 @@ export default function DecoratedLabel({
       <Text style={styles.text}>{text}</Text>
     </View>
   );
-}
+};

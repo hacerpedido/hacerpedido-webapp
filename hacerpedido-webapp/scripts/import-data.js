@@ -41,7 +41,7 @@ async function import_shops() {
         throw err;
       }
       const rows = res.data.values;
-      if (rows.length === 0) {
+      if (rows === undefined || rows.length === 0) {
         console.log("No data found.");
       } else {
         for (const row of rows) {
@@ -219,7 +219,7 @@ function processShopRows(slug, rows, shops) {
 
   let shop = shops.find((o) => o.slug === slug);
 
-  console.log(slug);
+  console.log("https://hacerpedido.com/" + slug);
 
   if (shop === undefined) {
     console.log("ERROR: Shop not found");

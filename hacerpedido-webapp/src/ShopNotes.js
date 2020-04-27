@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function ShopNotes({ shop }) {
+export default ({ shop }) => {
   if (shop.notes) {
     return (
       <View style={styles.container}>
