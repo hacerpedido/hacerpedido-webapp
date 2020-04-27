@@ -14,6 +14,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Divider() {
-  return <View style={styles.divider}></View>;
-}
+export default () => {
+  return <View style={styles.divider} />;
+};
