@@ -11,7 +11,7 @@ import awsconfig from "./aws-exports";
 API.configure(awsconfig);
 PubSub.configure(awsconfig);
 
-export default function App() {
+export default () => {
   return (
     <React.Fragment>
       <Router>

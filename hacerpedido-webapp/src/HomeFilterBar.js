@@ -6,7 +6,7 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import {categories} from './categories';
+import { categories } from "./categories";
 
 function Item({ id, title, selected, onSelect }) {
   return (
@@ -34,8 +34,7 @@ function Item({ id, title, selected, onSelect }) {
   );
 }
 
-export default function HomeFilterBar({ selectedFilter, onSelectFilter }) {
-
+export default ({ selectedFilter, onSelectFilter }) => {
   // TODO: mover todo esto a Redux!!
   const [selected, setSelected] = React.useState(String);
 
@@ -71,7 +70,7 @@ export default function HomeFilterBar({ selectedFilter, onSelectFilter }) {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

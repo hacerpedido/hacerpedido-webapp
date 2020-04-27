@@ -94,7 +94,7 @@ function ProductPromo({ product }) {
           <Text style={productStyles.description}>{product.description}</Text>
         </View>
         <Text style={productStyles.price}>
-          {product.price ? "$" : null}
+          {product.price && "$"}
           {product.price}
         </Text>
       </View>
@@ -102,13 +102,13 @@ function ProductPromo({ product }) {
   );
 }
 
-export default function ProductList(props) {
+export default ({products}) => {
   const listItems = [];
 
   let category = "";
   let item = 0;
 
-  props.products.forEach((product) => {
+  products.forEach((product) => {
     if (category !== product.category) {
       if (item !== 0 && product.category !== "Promociones") {
         listItems.push(<Divider key={item++} />);
@@ -121,6 +121,8 @@ export default function ProductList(props) {
       category = product.category;
     }
 
+    // TODO: mejorar esto, deberíamos tener un dato, en vez de usar
+    // el nombre "Promociones"
     if (product.category === "Promociones") {
       listItems.push(<ProductPromo key={item++} product={product} />);
     } else {

@@ -13,7 +13,8 @@ import ShopFooter from "./ShopFooter";
 import ProductList from "./ProductList";
 import Loading from "./components/Loading";
 
-export default function Shop() {
+// TODO: Dividir en Shop y ShopPage
+export default () => {
   const state = useSelector((state) => state); // TODO: limitar que parte del estado usar
   const dispatch = useDispatch();
 
