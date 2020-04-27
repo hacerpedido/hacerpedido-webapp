@@ -1,8 +1,8 @@
 import React from "react";
 import { ActivityIndicator } from "react-native";
 
-export default function Loading() {
+export default () => {
   return (
     <ActivityIndicator size="large" color="#FFB233" style={{ margin: 30 }} />
   );
-}
+};

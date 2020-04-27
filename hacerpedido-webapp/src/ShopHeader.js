@@ -77,7 +77,7 @@ function getBackgroundForShop(shop) {
   return getBackgroundForCategory(shop.category);
 }
 
-export default function ShopHeader({ shop }) {
+export default ({ shop }) => {
   const history = useHistory();
 
   return (
@@ -110,7 +110,7 @@ export default function ShopHeader({ shop }) {
           />
         </View>
         <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
-        {shop.address ? (
+        {shop.address && (
           <DecoratedLabel
             iconName="pin"
             text={shop.address}
@@ -119,8 +119,8 @@ export default function ShopHeader({ shop }) {
             fontSize={13}
             marginBottom={4}
           />
-        ) : null}
-        {shop.openTimes ? (
+        )}
+        {shop.openTimes && (
           <DecoratedLabel
             iconName="clock"
             text={shop.openTimes}
@@ -129,8 +129,8 @@ export default function ShopHeader({ shop }) {
             fontSize={13}
             marginBottom={4}
           />
-        ) : null}
-        {shop.deliveryCost ? (
+        )}
+        {shop.deliveryCost && (
           <DecoratedLabel
             iconName="car"
             text={"Delivery: " + shop.deliveryCost}
@@ -139,8 +139,8 @@ export default function ShopHeader({ shop }) {
             fontSize={13}
             marginBottom={30}
           />
-        ) : null}
+        )}
       </View>
     </View>
   );
-}
+};

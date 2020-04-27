@@ -1,7 +1,5 @@
 // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
 // export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
-//
-// npx babel --presets es2015 -d build-scripts/ src/graphql scripts/get-products.js src/aws-exports.js && node build-scripts/scripts/get-products.js
 
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
@@ -127,7 +125,7 @@ function processShopRow(row, shops) {
   const category = row[2]; // TODO: Convertir a una de las posibles en la base de datos
   const ordersByPhoneOrWhatsApp = row[3];
   const delivery = row[4];
-  const whatsApp = row[5];  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
+  const whatsApp = row[5]; // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
   const email = row[6];
   const takeaway = row[7];
   const submittedAt = row[8];
@@ -293,7 +291,7 @@ function processShopRows(slug, rows, shops) {
 
   let shop = shops.find((o) => o.slug === slug);
 
-  console.log(slug);
+  console.log("https://hacerpedido.com/" + slug);
 
   if (shop === undefined) {
     console.log("ERROR: Shop not found");

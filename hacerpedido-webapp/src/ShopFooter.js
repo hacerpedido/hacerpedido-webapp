@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
   buttonWhatsApp: {
     backgroundColor: "#3ECB7D",
@@ -34,15 +34,15 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 4,
     borderWidth: 1,
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
 });
 
-export default function ShopFooter({ shop }) {
+export default ({ shop }) => {
   let callUrl;
   if (shop.ordersPhoneNumber) {
     callUrl = "tel:" + encodeURIComponent(shop.ordersPhoneNumber);
-  } 
+  }
 
   let whatsappUrl;
 
@@ -59,10 +59,10 @@ export default function ShopFooter({ shop }) {
 
   return (
     <View style={styles.container}>
-      {shop.ordersWhatsAppNumber ? (
+      {shop.ordersWhatsAppNumber && (
         <TouchableHighlight
           underlayColor={"none"}
-          style={{flex: (shop.ordersPhoneNumber ? 0.67 : 1)}}
+          style={{ flex: shop.ordersPhoneNumber ? 0.67 : 1 }}
         >
           <div className="bounza">
             <a href={whatsappUrl} style={{ textDecoration: "none" }}>
@@ -73,10 +73,13 @@ export default function ShopFooter({ shop }) {
             </a>
           </div>
         </TouchableHighlight>
-      ) : null}
+      )}
 
-      {shop.ordersPhoneNumber ? (
-        <TouchableHighlight style={{flex: (shop.ordersWhatsAppNumber ? 0.33 : 1)}} underlayColor={"none"}>
+      {shop.ordersPhoneNumber && (
+        <TouchableHighlight
+          style={{ flex: shop.ordersWhatsAppNumber ? 0.33 : 1 }}
+          underlayColor={"none"}
+        >
           <a href={callUrl} style={{ textDecoration: "none" }}>
             <View style={[styles.buttonCall, styles.button]}>
               <Icons.PhoneCall color={"white"} />
@@ -84,7 +87,7 @@ export default function ShopFooter({ shop }) {
             </View>
           </a>
         </TouchableHighlight>
-      ) : null}
+      )}
     </View>
   );
-}
+};

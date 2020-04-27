@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Link } from "react-router-dom";
 import * as Icons from "./assets/icons/";
 
-export default function HomeHeader() {
+export default () => {
   return (
     <View style={styles.container}>
       <Link to="/">

@@ -46,7 +46,7 @@ const onViewableItemsChanged = ({ viewableItems, changed }) => {
   }
 };
 
-export default function Home() {
+export default () => {
   const state = useSelector((state) => state); // TODO: limitar que se lee del store
   const dispatch = useDispatch();
   const history = useHistory();
@@ -117,7 +117,7 @@ export default function Home() {
           />
         ) : (
           <>
-            {shops.length > 0 ? (
+            {shops.length > 0 && (
               <FlatList
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={{
@@ -162,15 +162,13 @@ export default function Home() {
                 })}
                 scrollEventThrottle={160}
               />
-            ) : (
-              <Text></Text>
             )}
           </>
         )}
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   spinner: {
