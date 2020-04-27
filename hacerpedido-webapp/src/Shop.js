@@ -26,10 +26,7 @@ export default () => {
     async function getData() {
       const shopData = await API.graphql(
         graphqlOperation(listShopsWithProducts, {
-          filter: {
-            slug: { eq: slug },
-            visibility: { eq: "public" },
-          },
+          filter: { slug: { eq: slug } },
           limit: 10000,
         })
       );
@@ -113,7 +110,7 @@ export default () => {
       </View>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   spinner: {
@@ -121,7 +118,7 @@ const styles = StyleSheet.create({
   },
   container: {
     marginBottom: 130,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   footer: {
     width: "100%",
