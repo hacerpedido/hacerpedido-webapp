@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 import * as Icons from "./assets/icons/";
+import { sanitizeWhatsAppNumber } from "./utils";
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +48,7 @@ export default ({ shop }) => {
   let whatsappUrl;
 
   if (shop.ordersWhatsAppNumber) {
-    let number = shop.ordersWhatsAppNumber.replace("+", "");
+    let number = sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
 
     // TODO: Extraer y encapsular pensando en el carrito de compras
     whatsappUrl =

@@ -8,6 +8,7 @@ import { listShops } from "../queries.js";
 import { createProduct, deleteProduct, createShop } from "../mutations";
 import slugify from "slugify";
 import { sanitizeCategory } from "../src/categories";
+import { sanitizeAddress, sanitizeWhatsAppNumber } from "../src/utils";
 
 const { google } = require("googleapis");
 
@@ -69,7 +70,7 @@ function removeEmptyStringElements(obj) {
 }
 
 function toSlug(name, shops) {
-  let slug = slugify(name, { remove: /[*+~.()'"!:@]/g, lower: true });
+  let slug = slugify(name, { remove: /[*+~.()'"¡!:@]/g, lower: true });
   slug = slug.replace(/^-+|-+$/gm, ""); // quitar los - del principio y fin
 
   // if (slug.split("-").length >= 3) {
@@ -118,12 +119,12 @@ function processShopRow(row, shops) {
     visibility: "private",
   };
 
-  shop = removeEmptyStringElements(shop);
-
   shop.slug = toSlug(shop.name, shops);
   shop.category = sanitizeCategory(shop.category);
+  shop.address = sanitizeAddress(shop.address);
+  shop.ordersWhatsAppNumber = sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
 
-  // TODO: Usarlo por defecto, agregar el "9", sacar el "0" si hace falta "0223" > "223"
+  shop = removeEmptyStringElements(shop);
 
   console.log("add: " + shop.slug);
   console.log(shop);
