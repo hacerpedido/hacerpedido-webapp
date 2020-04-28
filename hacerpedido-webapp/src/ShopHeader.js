@@ -80,6 +80,8 @@ function getBackgroundForShop(shop) {
 export default ({ shop }) => {
   const history = useHistory();
 
+  const address = shop.address ?? shop.region;
+
   return (
     <View
       style={{
@@ -110,16 +112,14 @@ export default ({ shop }) => {
           />
         </View>
         <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
-        {shop.address && (
-          <DecoratedLabel
-            iconName="pin"
-            text={shop.address}
-            iconColor={"#fff"}
-            textColor={"#fff"}
-            fontSize={13}
-            marginBottom={4}
-          />
-        )}
+        <DecoratedLabel
+          iconName="pin"
+          text={address}
+          iconColor={"#fff"}
+          textColor={"#fff"}
+          fontSize={13}
+          marginBottom={4}
+        />
         {shop.openTimes && (
           <DecoratedLabel
             iconName="clock"
