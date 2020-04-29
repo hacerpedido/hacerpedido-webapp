@@ -1,6 +1,19 @@
 import React from "react";
 import { StyleSheet,  View, Text } from "react-native";
 
+export default ({ shop }) => {
+  if (shop.notes) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.category}>Notas</Text>
+        <Text style={styles.notes}>{shop.notes}</Text>
+      </View>
+    );
+  }
+
+  return null;
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -28,15 +41,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ({ shop }) => {
-  if (shop.notes) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.category}>Notas</Text>
-        <Text style={styles.notes}>{shop.notes}</Text>
-      </View>
-    );
-  }
-
-  return null;
-}

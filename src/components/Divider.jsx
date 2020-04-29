@@ -1,6 +1,10 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
+export default () => {
+  return <View style={styles.divider} />;
+};
+
 const styles = StyleSheet.create({
   divider: {
     borderColor: "#edf1f7",
@@ -13,7 +17,3 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
-
-export default () => {
-  return <View style={styles.divider} />;
-};

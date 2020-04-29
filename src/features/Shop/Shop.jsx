@@ -5,13 +5,13 @@ import API, { graphqlOperation } from "@aws-amplify/api";
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { loading, query } from "./shopsSlice";
-import { listShopsWithProducts } from "./graphql/queriesCustom";
+import { loading, query } from "../../shopsSlice";
+import { listShopsWithProducts } from "../../graphql/queriesCustom";
 import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
 import ShopFooter from "./ShopFooter";
 import ProductList from "./ProductList";
-import Loading from "./components/Loading";
+import Loading from "../../components/Loading";
 
 // TODO: Dividir en Shop y ShopPage
 export default () => {
