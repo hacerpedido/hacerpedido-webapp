@@ -1,43 +1,8 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
-import * as Icons from "./assets/icons/";
-import { sanitizeWhatsAppNumber } from "./utils";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    marginHorizontal: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: "#3ECB7D",
-    borderColor: "#37B36E",
-    marginVertical: 10,
-  },
-  buttonCall: {
-    backgroundColor: "#ffb234",
-    borderColor: "#E5A02F",
-    marginVertical: 10,
-  },
-  buttonText: {
-    fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 16,
-    color: "#fff",
-    marginLeft: 5,
-  },
-  button: {
-    minHeight: 50,
-    marginTop: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 1,
-    marginHorizontal: 5,
-  },
-});
+import * as Icons from "../../assets/icons/";
+import { sanitizeWhatsAppNumber } from "../../utils";
 
 export default ({ shop }) => {
   let callUrl;
@@ -92,3 +57,40 @@ export default ({ shop }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    marginHorizontal: 5,
+  },
+  buttonWhatsApp: {
+    backgroundColor: "#3ECB7D",
+    borderColor: "#37B36E",
+    marginVertical: 10,
+  },
+  buttonCall: {
+    backgroundColor: "#ffb234",
+    borderColor: "#E5A02F",
+    marginVertical: 10,
+  },
+  buttonText: {
+    fontFamily: "Barlow",
+    fontWeight: "600",
+    fontSize: 16,
+    color: "#fff",
+    marginLeft: 5,
+  },
+  button: {
+    minHeight: 50,
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    marginHorizontal: 5,
+  },
+});
+

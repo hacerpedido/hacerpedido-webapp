@@ -6,7 +6,8 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { categories } from "./categories";
+
+import { categories } from "../../categories";
 
 function Item({ id, title, selected, onSelect }) {
   return (

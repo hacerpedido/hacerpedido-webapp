@@ -15,13 +15,13 @@ import { Helmet } from "react-helmet-async";
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
-import { listShopsForHome } from "./graphql/queriesCustom";
+import { listShopsForHome } from "../../graphql/queriesCustom";
 import {
   setCategory,
   loading,
   query,
   setHomeFirstVisibleItem,
-} from "./shopsSlice";
+} from "../../shopsSlice";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
