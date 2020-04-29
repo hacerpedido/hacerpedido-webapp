@@ -1,8 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { Helmet, HelmetProvider } from "react-helmet-async";
@@ -19,7 +16,11 @@ import {
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 
+import * as serviceWorker from "./serviceWorker";
 import shopsReducer from "./shopsSlice";
+import App from "./app/App";
+
+import "./index.css";
 
 const persistConfig = {
   key: "root",
