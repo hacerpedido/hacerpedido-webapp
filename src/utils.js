@@ -1,10 +1,14 @@
 export function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
+  if (typeof str !== "string") return "";
+
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
 }
 
 export function sanitizeWhatsAppNumber(phone) {
+  if (typeof phone !== "string") return phone;
+
   let newPhone = phone.replace("+", "");
   if (newPhone.startsWith("54")) {
     // Sólo para números de Argentina
@@ -27,8 +31,9 @@ export function sanitizeWhatsAppNumber(phone) {
 
 // npx babel --presets es2015 -d build-scripts/ src/utils.js && node build-scripts/src/utils.js
 export function sanitizeAddress(address) {
-  let newAddress = address === undefined ? "" : address.toString().trim();
-  newAddress = newAddress.replace(/no/gi, "");
+  if (typeof address !== "string") return "";
+
+  let newAddress = address.trim().replace(/no/gi, "");
 
   return toTitleCase(newAddress);
 }
@@ -37,4 +42,3 @@ export function sanitizeAddress(address) {
 // console.log(sanitizeAddress("    NO"));
 // console.log(sanitizeAddress("no"));
 // console.log(sanitizeAddress(undefined));
-
