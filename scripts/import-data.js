@@ -1,5 +1,5 @@
 // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
-// export GOOGLE_APPLICATION_CREDENTIALS=../../hacerpedido/hacer-pedido-ea59c946b381.json
+// export GOOGLE_APPLICATION_CREDENTIALS=../hacerpedido/hacer-pedido-ea59c946b381.json
 
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
