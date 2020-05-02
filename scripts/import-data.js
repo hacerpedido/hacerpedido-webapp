@@ -8,7 +8,7 @@ import { listShops } from "../queries.js";
 import { createProduct, deleteProduct, createShop } from "../mutations";
 import slugify from "slugify";
 import { sanitizeCategory } from "../src/categories";
-import { sanitizeAddress, sanitizeWhatsAppNumber } from "../src/utils";
+import * as utils from "../src/utils";
 
 const { google } = require("googleapis");
 
@@ -121,8 +121,8 @@ function processShopRow(row, shops) {
 
   shop.slug = toSlug(shop.name, shops);
   shop.category = sanitizeCategory(shop.category);
-  shop.address = sanitizeAddress(shop.address);
-  shop.ordersWhatsAppNumber = sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
+  shop.address = utils.sanitizeAddress(shop.address);
+  shop.ordersWhatsAppNumber = utils.sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
 
   shop = removeEmptyStringElements(shop);
 
@@ -249,7 +249,7 @@ function processShopRows(slug, rows, shops) {
 
     // Is a section?
     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
-      section = name;
+      section = utils.toTitleCase(name);
 
       return;
     }
@@ -257,8 +257,8 @@ function processShopRows(slug, rows, shops) {
     itemNumber++;
 
     let product = {
-      name: name,
-      price: parseFloat(price),
+      name: utils.sanitizeProductName(name),
+      price: utils.sanitizePrice(price),
       category: section,
       productShopId: shopID,
       itemNumber: itemNumber,

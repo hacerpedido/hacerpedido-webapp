@@ -3,11 +3,11 @@
 
 import API, { graphqlOperation } from "@aws-amplify/api";
 import awsconfig from "../src/aws-exports.js";
-import { listShopsWithProducts } from "../queriesCustom.js";
+// import { listShopsWithProducts } from "../queriesCustom.js";
 import { listShops } from "../queries.js";
 import {
-  createProduct,
-  deleteProduct,
+  // createProduct,
+  // deleteProduct,
   // updateShop,
   createShop,
 } from "../mutations";
@@ -191,203 +191,204 @@ function processShopRow(row, shops) {
   }
 }
 
-async function import_products() {
-  const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
+// async function import_products() {
+//   const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
 
-  const shopsData = await API.graphql(
-    graphqlOperation(listShopsWithProducts, {
-      limit: 10000,
-    })
-  );
-  const shops = shopsData.data.listShops.items;
+//   const shopsData = await API.graphql(
+//     graphqlOperation(listShopsWithProducts, {
+//       limit: 10000,
+//     })
+//   );
+//   const shops = shopsData.data.listShops.items;
 
-  const request = {
-    auth: auth,
-    spreadsheetId: spreadsheetId,
-    ranges: [],
-    includeGridData: false,
-  };
+//   const request = {
+//     auth: auth,
+//     spreadsheetId: spreadsheetId,
+//     ranges: [],
+//     includeGridData: false,
+//   };
 
-  const response = await sheets.spreadsheets.get(request);
+//   const response = await sheets.spreadsheets.get(request);
 
-  response.data.sheets.forEach(function (sheet) {
-    const title = sheet.properties.title;
+//   response.data.sheets.forEach(function (sheet) {
+//     const title = sheet.properties.title;
 
-    sheets.spreadsheets.values.get(
-      {
-        auth: auth,
-        spreadsheetId: spreadsheetId,
-        range: title + "!A2:G",
-      },
-      (err, res) => {
-        // console.log("--------------------  " + sheet.properties.title);
-        // console.log(sheet.properties.title);
+//     sheets.spreadsheets.values.get(
+//       {
+//         auth: auth,
+//         spreadsheetId: spreadsheetId,
+//         range: title + "!A2:G",
+//       },
+//       (err, res) => {
+//         // console.log("--------------------  " + sheet.properties.title);
+//         // console.log(sheet.properties.title);
 
-        if (err) {
-          console.error("The API returned an error.");
-          throw err;
-        }
+//         if (err) {
+//           console.error("The API returned an error.");
+//           throw err;
+//         }
 
-        // console.log(JSON.stringify(res, null, 2));
-        const rows = res.data.values;
-        if (rows.length === 0) {
-          console.log("No data found.");
-        } else {
-          processShopRows(sheet.properties.title, rows, shops);
-        }
-        // console.log("-----------------------------------");
-      }
-    );
-  });
-}
+//         // console.log(JSON.stringify(res, null, 2));
+//         const rows = res.data.values;
+//         if (rows.length === 0) {
+//           console.log("No data found.");
+//         } else {
+//           processShopRows(sheet.properties.title, rows, shops);
+//         }
+//         // console.log("-----------------------------------");
+//       }
+//     );
+//   });
+// }
 
-async function deleteProducts(shop) {
-  if (shop.products.items.length === 0) {
-    console.log("No products to delete.");
+// async function deleteProducts(shop) {
+//   if (shop.products.items.length === 0) {
+//     console.log("No products to delete.");
 
-    return;
-  }
-  await sleep(1000 + Math.random() * 100);
-  shop.products.items.forEach((product) => {
-    // console.log("DELETING: " + shop.id + "  -   " + product.id);
-    API.graphql(
-      graphqlOperation(deleteProduct, { input: { id: product.id } })
-    ).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-  });
-  // console.log("CONTINUE...");
-}
+//     return;
+//   }
+//   await sleep(1000 + Math.random() * 100);
+//   shop.products.items.forEach((product) => {
+//     // console.log("DELETING: " + shop.id + "  -   " + product.id);
+//     API.graphql(
+//       graphqlOperation(deleteProduct, { input: { id: product.id } })
+//     ).catch((error) => {
+//       console.log(JSON.stringify(error, null, 2));
+//     });
+//   });
+//   // console.log("CONTINUE...");
+// }
 
 // TODO: Crear biblioteca de funciones:
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+// function sleep(ms) {
+//   // Usar: await sleep(1000);
+//   return new Promise((resolve) => {
+//     setTimeout(resolve, ms);
+//   });
+// }
 
-async function createProductApi(product) {
-  await API.graphql(graphqlOperation(createProduct, { input: product }));
-}
+// async function createProductApi(product) {
+//   await API.graphql(graphqlOperation(createProduct, { input: product }));
+// }
 
-function processShopRows(slug, rows, shops) {
-  // 0 - Título
-  // 1 - Precio
-  // 2 - Descripción
-  // 3 - Promo
-  // 4 - Cate
+// function processShopRows(slug, rows, shops) {
+//   // 0 - Título
+//   // 1 - Precio
+//   // 2 - Descripción
+//   // 3 - Promo
+//   // 4 - Cate
 
-  if (
-    slug.startsWith("NO") ||
-    slug.startsWith("REVISAR") ||
-    slug.startsWith("Sheet")
-  ) {
-    // console.log("SKIP: Sheet " + slug);
-    console.log("--------------------  " + slug);
+//   if (
+//     slug.startsWith("NO") ||
+//     slug.startsWith("REVISAR") ||
+//     slug.startsWith("Sheet")
+//   ) {
+//     // console.log("SKIP: Sheet " + slug);
+//     console.log("--------------------  " + slug);
 
-    return;
-  }
+//     return;
+//   }
 
-  let shop = shops.find((o) => o.slug === slug);
+//   let shop = shops.find((o) => o.slug === slug);
 
-  console.log("https://hacerpedido.com/" + slug);
+//   console.log("https://hacerpedido.com/" + slug);
 
-  if (shop === undefined) {
-    console.log("ERROR: Shop not found");
+//   if (shop === undefined) {
+//     console.log("ERROR: Shop not found");
 
-    return;
-  }
+//     return;
+//   }
 
-  let shopID = shop.id;
+//   let shopID = shop.id;
 
-  // console.log("shopID: " + shopID);
-  // console.log("Dirección: " + rows[0][6]);
-  // console.log("Horario: " + rows[1][6]);
-  // console.log("Envío a domicilio: " + rows[2][6]);
-  // console.log("Logo: " + rows[3][6]);
-  // console.log("Fondo: " + rows[4][6]);
-  // console.log("Visibility: " + rows[5][6]);
-  // console.log("ordersPhoneNumber: " + rows[6][6]);
-  // console.log("whatsAppNumber: " + rows[7][6]);
-  // console.log("region: " + rows[8][6]);
-  // console.log("category: " + rows[9][6]);
+//   // console.log("shopID: " + shopID);
+//   // console.log("Dirección: " + rows[0][6]);
+//   // console.log("Horario: " + rows[1][6]);
+//   // console.log("Envío a domicilio: " + rows[2][6]);
+//   // console.log("Logo: " + rows[3][6]);
+//   // console.log("Fondo: " + rows[4][6]);
+//   // console.log("Visibility: " + rows[5][6]);
+//   // console.log("ordersPhoneNumber: " + rows[6][6]);
+//   // console.log("whatsAppNumber: " + rows[7][6]);
+//   // console.log("region: " + rows[8][6]);
+//   // console.log("category: " + rows[9][6]);
 
-  // let newShopValues = {
-  //   id: shopID,
-  //   address: rows[0][6],
-  //   openTimes: rows[1][6],
-  //   deliveryCost: rows[2][6],
-  //   logo: rows[3][6],
-  //   background: rows[4][6],
-  //   visibility: rows[5][6],
-  //   ordersPhoneNumber: rows[6][6],
-  //   ordersWhatsAppNumber: rows[7][6],
-  //   region: rows[8][6],
-  //   category: rows[9][6],
-  // };
+//   // let newShopValues = {
+//   //   id: shopID,
+//   //   address: rows[0][6],
+//   //   openTimes: rows[1][6],
+//   //   deliveryCost: rows[2][6],
+//   //   logo: rows[3][6],
+//   //   background: rows[4][6],
+//   //   visibility: rows[5][6],
+//   //   ordersPhoneNumber: rows[6][6],
+//   //   ordersWhatsAppNumber: rows[7][6],
+//   //   region: rows[8][6],
+//   //   category: rows[9][6],
+//   // };
 
-  // if (rows.length > 9) {
-  //   newShopValues.notes = rows[10][6];
-  // }
+//   // if (rows.length > 9) {
+//   //   newShopValues.notes = rows[10][6];
+//   // }
 
-  // let shopValues = removeEmptyStringElements(newShopValues);
+//   // let shopValues = removeEmptyStringElements(newShopValues);
 
-  // updateShopApi(shopValues).catch((error) => {
-  //   console.log(JSON.stringify(error, null, 2));
-  // });
+//   // updateShopApi(shopValues).catch((error) => {
+//   //   console.log(JSON.stringify(error, null, 2));
+//   // });
 
-  deleteProducts(shop).catch((error) => {
-    console.log(JSON.stringify(error, null, 2));
-  });
+//   deleteProducts(shop).catch((error) => {
+//     console.log(JSON.stringify(error, null, 2));
+//   });
 
-  var section = "";
+//   var section = "";
 
-  var itemNumber = 0;
+//   var itemNumber = 0;
 
-  rows.forEach((row) => {
-    const name = row[0];
-    const price = row[1];
-    const description = row[2];
-    const isSection = row[4];
+//   rows.forEach((row) => {
+//     const name = row[0];
+//     const price = row[1];
+//     const description = row[2];
+//     const isSection = row[4];
 
-    if (name === "" || name === undefined) {
-      return;
-    }
+//     if (name === "" || name === undefined) {
+//       return;
+//     }
 
-    // Is a section?
-    if (isSection !== undefined && isSection.toUpperCase() === "SI") {
-      section = name;
+//     // Is a section?
+//     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
+//       section = name;
 
-      return;
-    }
+//       return;
+//     }
 
-    itemNumber++;
+//     itemNumber++;
 
-    let product = {
-      name: name,
-      price: parseFloat(price),
-      category: section,
-      productShopId: shopID,
-      itemNumber: itemNumber,
-    };
+//     let product = {
+//       name: name,
+//       price: parseFloat(price),
+//       category: section,
+//       productShopId: shopID,
+//       itemNumber: itemNumber,
+//     };
 
-    if (description !== undefined && description !== "") {
-      product.description = description;
-    }
+//     if (description !== undefined && description !== "") {
+//       product.description = description;
+//     }
 
-    // console.log(JSON.stringify(product, null, 2));
+//     // console.log(JSON.stringify(product, null, 2));
 
-    createProductApi(product).catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-  });
-}
+//     createProductApi(product).catch((error) => {
+//       console.log(JSON.stringify(error, null, 2));
+//     });
+//   });
+// }
 
 import_shops()
   .then(() => {
-    console.log("IMPORT PRODUCTS");
-    import_products();
+    // console.log("IMPORT PRODUCTS");
+    // import_products();
   })
   .catch((error) => {
     console.log(JSON.stringify(error, null, 2));

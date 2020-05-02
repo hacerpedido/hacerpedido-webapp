@@ -24,12 +24,23 @@ export function sanitizeWhatsAppNumber(phone) {
 
   return newPhone;
 }
-// console.log(sanitizeWhatsAppNumber("+5402235199043"));
-// console.log(sanitizeWhatsAppNumber("+5492235199043"));
-// console.log(sanitizeWhatsAppNumber("+542235199043"));
-// console.log(sanitizeWhatsAppNumber("542235199043"));
 
-// npx babel --presets es2015 -d build-scripts/ src/utils.js && node build-scripts/src/utils.js
+export const capitalize = (str) => {
+  if (typeof str !== "string") return "";
+
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export function sanitizeProductName(str) {
+  if (typeof str !== "string") return str;
+
+  if (str === str.toUpperCase()) {
+    return toTitleCase(str);
+  }
+
+  return capitalize(str);
+}
+
 export function sanitizeAddress(address) {
   if (typeof address !== "string") return "";
 
@@ -37,8 +48,21 @@ export function sanitizeAddress(address) {
 
   return toTitleCase(newAddress);
 }
-// console.log(sanitizeAddress("  ALGO   "));
-// console.log(sanitizeAddress("           ALGO MAS ALGO"));
-// console.log(sanitizeAddress("    NO"));
-// console.log(sanitizeAddress("no"));
-// console.log(sanitizeAddress(undefined));
+
+export function sleep(ms) {
+  // Usar: await sleep(1000);
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+export function sanitizePrice(str) {
+  if (typeof str !== "string") return str;
+
+  let newPrice = str
+    .trim()
+    .replace(/(\$|\.00$|,00$)/g, "")
+    .replace(/([.,])(\d{3}\D|\d{3}$)/g, "$2");
+
+  return parseFloat(newPrice);
+}
