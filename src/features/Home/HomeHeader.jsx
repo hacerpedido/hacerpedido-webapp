@@ -19,28 +19,28 @@ export default () => {
       </a>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  addShopButton: {
+    backgroundColor: "#3ECB7D",
+    borderColor: "#37B26E",
+    borderRadius: 3,
+    borderWidth: 1,
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "500",
+    padding: 7,
+  },
   button: {
     borderRadius: 3,
   },
-  addShopButton: {
-    fontWeight: "500",
-    fontSize: 14,
-    color: "#FFF",
-    backgroundColor: "#3ECB7D",
-    borderColor: "#37B26E",
-    borderWidth: 1,
-    borderRadius: 3,
-    padding: 7,
-  },
   container: {
-    padding: 16,
+    alignItems: "center",
+    backgroundColor: "#FFB233",
     flex: 1,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFB233",
+    padding: 16,
   },
 });
