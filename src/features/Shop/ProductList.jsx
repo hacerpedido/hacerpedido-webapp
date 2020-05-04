@@ -35,7 +35,7 @@ function ProductPromo({ product }) {
   );
 }
 
-export default ({products}) => {
+export default ({ products }) => {
   const listItems = [];
 
   let category = "";
@@ -65,7 +65,7 @@ export default ({products}) => {
   listItems.push(<Divider key={item++} />);
 
   return <>{listItems}</>;
-}
+};
 
 const productStyles = StyleSheet.create({
   container: {
@@ -73,13 +73,6 @@ const productStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-  },
-  price: {
-    marginLeft: 12,
-    fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 15,
-    color: "#B27D23",
   },
   description: {
     flex: 1,
@@ -99,38 +92,44 @@ const productStyles = StyleSheet.create({
     lineHeight: 18,
     marginBottom: 5,
   },
+  price: {
+    color: "#B27D23",
+    fontFamily: "Barlow",
+    fontSize: 15,
+    fontWeight: "600",
+    marginLeft: 12,
+  },
 });
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderWidth: 1,
     borderColor: "#E8E8E8",
     borderRadius: 7,
+    borderWidth: 1,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10,
     padding: 10,
     paddingLeft: 15,
     paddingRight: 15,
   },
-  product: {
-    marginTop: 15,
-    marginLeft: 16,
-    marginRight: 16,
-    paddingRight: 10,
-    borderBottomWidth: 1,
-    borderColor: "#edf1f7",
-    paddingBottom: 10,
-  },
   category: {
+    color: "#4D360F",
+    fontFamily: "Barlow",
+    fontSize: 17,
+    fontWeight: "800",
+    marginBottom: 2,
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
-    marginBottom: 2,
-    fontFamily: "Barlow",
-    fontWeight: "800",
-    fontSize: 17,
-    color: "#4D360F",
+  },
+  product: {
+    borderBottomWidth: 1,
+    borderColor: "#edf1f7",
+    marginLeft: 16,
+    marginRight: 16,
+    marginTop: 15,
+    paddingBottom: 10,
+    paddingRight: 10,
   },
 });
-

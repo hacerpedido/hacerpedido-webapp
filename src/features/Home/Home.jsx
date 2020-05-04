@@ -171,29 +171,29 @@ export default () => {
 };
 
 const styles = StyleSheet.create({
-  spinner: {
-    alignItems: "center",
-  },
-  header: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    zIndex: 2,
-  },
   body: {
+    backgroundColor: "#fafafa",
     flex: 1,
     marginTop: 110,
+    paddingBottom: 10,
     paddingLeft: 10,
     paddingRight: 10,
-    paddingBottom: 10,
-    backgroundColor: "#fafafa",
   },
   count: {
     color: "#8F9BB3",
-    marginVertical: 15,
-    fontSize: 14,
     fontFamily: "Barlow",
+    fontSize: 14,
     fontWeight: 400,
+    marginVertical: 15,
+  },
+  header: {
+    left: 0,
+    position: "fixed",
+    top: 0,
+    width: "100%",
+    zIndex: 2,
+  },
+  spinner: {
+    alignItems: "center",
   },
 });

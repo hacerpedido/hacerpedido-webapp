@@ -1,4 +1,3 @@
-
 export { default as Bebida } from "./bebida.jpg";
 export { default as Cafe } from "./cafe.jpg";
 export { default as Comida } from "./comida.jpg";

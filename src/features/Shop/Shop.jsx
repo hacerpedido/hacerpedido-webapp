@@ -113,18 +113,18 @@ export default () => {
 };
 
 const styles = StyleSheet.create({
-  spinner: {
-    alignItems: "center",
-  },
   container: {
-    marginBottom: 130,
     backgroundColor: "#fff",
+    marginBottom: 130,
   },
   footer: {
-    width: "100%",
-    height: 100,
     backgroundColor: "#fafcff",
-    position: "fixed",
     bottom: 0,
+    height: 100,
+    position: "fixed",
+    width: "100%",
+  },
+  spinner: {
+    alignItems: "center",
   },
 });
