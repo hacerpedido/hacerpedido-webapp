@@ -49,45 +49,44 @@ export default ({ shop, selected, onSelect }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: 6,
-    borderRadius: 7,
+    backgroundColor: "#fff",
     borderColor: "#E8E8E8",
+    borderRadius: 7,
     borderWidth: 1,
+    marginBottom: 6,
     paddingBottom: 20,
-    paddingTop: 20,
     paddingLeft: 15,
     paddingRight: 15,
-    backgroundColor: "#fff",
+    paddingTop: 20,
   },
   container: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },
-  containerLogo: {
-    flex: -1,
-    width: 75,
-    height: 75,
-    alignItems: "center",
-  },
   containerLabels: {
     flex: 1,
-    paddingLeft: 8,
     marginLeft: 8,
+    paddingLeft: 8,
+  },
+  containerLogo: {
+    alignItems: "center",
+    flex: -1,
+    height: 75,
+    width: 75,
   },
   logo: {
-    width: 75,
-    height: 75,
-    borderRadius: 37.5,
     backgroundColor: "#dadada",
+    borderRadius: 37.5,
+    height: 75,
+    width: 75,
   },
   shopName: {
     color: "#4D360F",
-    marginBottom: 4,
     fontFamily: "Barlow",
-    fontWeight: "700",
     fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 4,
     textTransform: "capitalize",
   },
 });
-

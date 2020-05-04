@@ -7,13 +7,13 @@ export default () => {
 
 const styles = StyleSheet.create({
   divider: {
-    borderColor: "#edf1f7",
     backgroundColor: "#fafafa",
-    height: 10,
-    width: "100%",
-    borderTopWidth: 1,
     borderBottomWidth: 1,
-    marginTop: 16,
+    borderColor: "#edf1f7",
+    borderTopWidth: 1,
+    height: 10,
     marginBottom: 16,
+    marginTop: 16,
+    width: "100%",
   },
 });
