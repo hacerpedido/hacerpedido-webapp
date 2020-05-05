@@ -122,7 +122,9 @@ function processShopRow(row, shops) {
   shop.slug = toSlug(shop.name, shops);
   shop.category = sanitizeCategory(shop.category);
   shop.address = utils.sanitizeAddress(shop.address);
-  shop.ordersWhatsAppNumber = utils.sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
+  shop.ordersWhatsAppNumber = utils.sanitizeWhatsAppNumber(
+    shop.ordersWhatsAppNumber
+  );
 
   shop = removeEmptyStringElements(shop);
 
