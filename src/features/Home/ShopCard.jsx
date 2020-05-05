@@ -25,18 +25,18 @@ export default ({ shop, selected, onSelect }) => {
               textColor={"#8F9BB3"}
             />
           ) : null}
-          {shop.openTimes ? (
+          {shop.opentimes ? (
             <DecoratedLabel
               iconName="clock"
-              text={shop.openTimes}
+              text={shop.opentimes}
               iconColor={"#C5CEE0"}
               textColor={"#8F9BB3"}
             />
           ) : null}
-          {shop.deliveryCost ? (
+          {shop.deliverycost ? (
             <DecoratedLabel
               iconName="car"
-              text={shop.deliveryCost}
+              text={shop.deliverycost}
               iconColor={"#C5CEE0"}
               textColor={"#8F9BB3"}
             />

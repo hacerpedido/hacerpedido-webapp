@@ -48,14 +48,6 @@ const client = new ApolloClient({
   uri: "http://35.170.42.44/graphql",
 });
 
-// client
-//   .query({
-//     query: gql`
-//       { allShops { totalCount } }
-//     `,
-//   })
-//   .then((result) => console.log(result));
-
 ReactDOM.render(
   // <React.StrictMode>
   <ApolloProvider client={client}>
