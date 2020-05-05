@@ -34,7 +34,7 @@ async function import_shops() {
     {
       auth: auth,
       spreadsheetId: "1jQIYS0E2A_qhxByXPNS0Ncg0SEDaqUx4VUDUvtnMdHo",
-      range: "HacerPedido V2!A2:M",
+      range: "HacerPedido V2!A2:P",
     },
     (err, res) => {
       if (err) {
