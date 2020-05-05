@@ -21,6 +21,7 @@
     "googleapis": "^48.0.0",
     "graphql": "^15.0.0",
     "history": "^4.10.1",
+    "node-fetch": "^2.6.0",
     "react": "^16.13.1",
     "react-div-100vh": "^0.3.8",
     "react-dom": "^16.13.1",
