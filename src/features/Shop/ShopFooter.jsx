@@ -6,29 +6,28 @@ import { sanitizeWhatsAppNumber } from "../../utils";
 
 export default ({ shop }) => {
   let callUrl;
-  if (shop.ordersPhoneNumber) {
-    callUrl = "tel:" + encodeURIComponent(shop.ordersPhoneNumber);
+  if (shop.ordersphonenumber) {
+    callUrl = "tel:" + encodeURIComponent(shop.ordersphonenumber);
   }
 
   let whatsappUrl;
 
-  if (shop.ordersWhatsAppNumber) {
-    let number = sanitizeWhatsAppNumber(shop.ordersWhatsAppNumber);
+  if (shop.orderswhatsappnumber) {
+    let number = sanitizeWhatsAppNumber(shop.orderswhatsappnumber);
 
     // TODO: Extraer y encapsular pensando en el carrito de compras
     whatsappUrl =
       "https://wa.me/" +
       number +
-      // "&text=Hola!%20Quiero%20hacer%20un%20pedido.%20Enviado%20a%20trav%C3%A9s%20de%20*HacerPedido.com*";
       "?text=%C2%A1Hola%21%20Quiero%20hacer%20un%20pedido%20via%20HacerPedido%20%F0%9F%92%AA";
   }
 
   return (
     <View style={styles.container}>
-      {shop.ordersWhatsAppNumber && (
+      {shop.orderswhatsappnumber && (
         <TouchableHighlight
           underlayColor={"none"}
-          style={{ flex: shop.ordersPhoneNumber ? 0.67 : 1 }}
+          style={{ flex: shop.ordersphonenumber ? 0.67 : 1 }}
         >
           <div className="bounza">
             <a href={whatsappUrl} style={{ textDecoration: "none" }}>
@@ -41,9 +40,9 @@ export default ({ shop }) => {
         </TouchableHighlight>
       )}
 
-      {shop.ordersPhoneNumber && (
+      {shop.ordersphonenumber && (
         <TouchableHighlight
-          style={{ flex: shop.ordersWhatsAppNumber ? 0.33 : 1 }}
+          style={{ flex: shop.orderswhatsappnumber ? 0.33 : 1 }}
           underlayColor={"none"}
         >
           <a href={callUrl} style={{ textDecoration: "none" }}>

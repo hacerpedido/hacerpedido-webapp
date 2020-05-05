@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import API, { graphqlOperation } from "@aws-amplify/api";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,11 +10,12 @@ import {
   View,
 } from "react-native";
 import { Helmet } from "react-helmet-async";
+import { useApolloClient } from "@apollo/react-hooks";
 
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
-import { listShopsForHome } from "../../graphql/queriesCustom";
+import { listShopsForHome } from "../../graphql/home";
 import {
   setCategory,
   loading,
@@ -47,9 +47,14 @@ const onViewableItemsChanged = ({ viewableItems, changed }) => {
 };
 
 export default () => {
-  const state = useSelector((state) => state); // TODO: limitar que se lee del store
+  const homeFirstVisibleItem = useSelector(
+    (state) => state.homeFirstVisibleItem
+  );
+  const category = useSelector((state) => state.selectedFilter);
+  const shops = useSelector((state) => state.shops);
   const dispatch = useDispatch();
   const history = useHistory();
+  const client = useApolloClient();
 
   const onSelect = React.useCallback(
     (slug) => {
@@ -66,32 +71,19 @@ export default () => {
     dispatch(loading(true));
 
     async function getData() {
-      const shopData = await API.graphql(
-        graphqlOperation(listShopsForHome, {
-          filter: {
-            visibility: { eq: "public" },
-            category: { eq: state.selectedFilter },
-          },
-          limit: 10000,
-        })
-      );
-      const shops = shopData.data.listShops.items;
+      const shopData = await client.query({
+        query: listShopsForHome,
+        variables: { category },
+      });
+      let shops = shopData.data.allShops.nodes;
       dispatch(query(shops));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
-  }, [state.selectedFilter, dispatch]);
+  }, [dispatch, client, category]);
 
-  // TODO: mover a un modelo?
-  let shops = state.shops.filter(
-    (x) => x.visibility === "public" && x.category === state.selectedFilter
-  );
-
-  // TODO: mover a un modelo?
-  shops = shops.sort((a, b) => (a.name > b.name ? 1 : -1));
-
-  let initialScrollIndex = state.homeFirstVisibleItem ?? 0;
+  let initialScrollIndex = homeFirstVisibleItem ?? 0;
 
   return (
     <View>
@@ -101,7 +93,7 @@ export default () => {
       <View style={styles.header}>
         <HomeHeader />
         <HomeFilterBar
-          selectedFilter={state.selectedFilter}
+          selectedFilter={category}
           onSelectFilter={(selected) => {
             firstVisibleItem = 0;
             dispatch(setCategory(selected));
@@ -109,11 +101,11 @@ export default () => {
         />
       </View>
       <View style={styles.body}>
-        {shops.length === 0 && state.loading ? (
+        {shops.length === 0 && loading ? (
           <ActivityIndicator
             size="large"
             color="#FFB233"
-            style={{ margin: 30 }}
+            style={styles.spinner}
           />
         ) : (
           <>
@@ -123,12 +115,12 @@ export default () => {
                 viewabilityConfig={{
                   itemVisiblePercentThreshold: 50,
                 }}
-                style={{ height: "100vh" }}
+                style={styles.list}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={renderHeader(shops.length)}
                 ListFooterComponent={
                   // TODO: Remover. Para que al hacer scroll se vea la última celda
-                  <View style={{ height: 250, backgroundColor: "none" }} />
+                  <View style={styles.lastView} />
                 }
                 data={shops}
                 renderItem={({ item }) => (
@@ -193,7 +185,14 @@ const styles = StyleSheet.create({
     width: "100%",
     zIndex: 2,
   },
+  lastView: {
+    height: 250,
+    backgroundColor: "none",
+  },
+  list: {
+    height: "100vh",
+  },
   spinner: {
-    alignItems: "center",
+    margin: 30,
   },
 });
