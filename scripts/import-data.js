@@ -94,7 +94,7 @@ function toSlug(name, shops) {
 }
 
 function processShopRow(row, shops) {
-  const typeformToken = row[12];
+  const typeformToken = row[13];
 
   let shopExists =
     shops.find((o) => o.typeformToken === typeformToken) !== undefined;
@@ -114,8 +114,9 @@ function processShopRow(row, shops) {
     ordersPhoneNumber: row[8], // 8 - Escribí tu otro teléfono:
     email: row[9], // 9 - ¿Cuál es tu e-mail?
     deliveryCost: row[10],
-    submittedAt: row[11], // 11 - Submitted At
-    typeformToken: typeformToken, // 12 - Token
+    // 11 - otro teléfono
+    submittedAt: row[12], // 12 - Submitted At
+    typeformToken: typeformToken, // 13 - Token
     visibility: "private",
   };
 
