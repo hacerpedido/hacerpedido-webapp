@@ -66,3 +66,14 @@ export function sanitizePrice(str) {
 
   return parseFloat(newPrice);
 }
+
+export function removeEmptyStringElements(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "object") {
+      removeEmptyStringElements(obj[prop]);
+    } else if (obj[prop] === "") {
+      delete obj[prop];
+    }
+  }
+  return obj;
+}

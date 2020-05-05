@@ -35,3 +35,64 @@ export const listShopsWithProducts = /* GraphQL */ gql`
     }
   }
 `;
+
+export const listAllShopsWithProducts = /* GraphQL */ gql`
+  query AllShopsWithProducts {
+    allShops {
+      totalCount
+      nodes {
+        id
+        name
+        slug
+        region
+        category
+        address
+        notes
+        opentimes
+        deliverycost
+        visibility
+        logo
+        background
+        ordersphonenumber
+        orderswhatsappnumber
+        typeformtoken
+        submittedat
+        productsByShopid {
+          nodes {
+            id
+            category
+            name
+            price
+            description
+            itemnumber
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const createShop = /* GraphQL */ gql`
+  mutation CreateShop($input: CreateShopInput!) {
+    createShop(input: $input) {
+      shop {
+        id
+        name
+        slug
+        region
+        category
+        address
+        notes
+        opentimes
+        deliverycost
+        visibility
+        logo
+        background
+        ordersphonenumber
+        orderswhatsappnumber
+        typeformtoken
+        submittedat
+      }
+    }
+  }
+`;

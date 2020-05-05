@@ -385,11 +385,15 @@ function processShopRow(row, shops) {
 //   });
 // }
 
-import_shops()
-  .then(() => {
-    // console.log("IMPORT PRODUCTS");
-    // import_products();
-  })
-  .catch((error) => {
-    console.log(JSON.stringify(error, null, 2));
-  });
+// import_shops()
+//   .then(() => {
+//     // console.log("IMPORT PRODUCTS");
+//     // import_products();
+//   })
+//   .catch((error) => {
+//     console.log(JSON.stringify(error, null, 2));
+//   });
+
+console.log(
+  "\n\n\n\n\nNadie debería ejecutar este sucio y viejo código. Pero ante la duda, preguntar a Sebastián.\n\n\n\n\n"
+);
