@@ -15,6 +15,8 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
 
 import * as serviceWorker from "./serviceWorker";
 import shopsReducer from "./shopsSlice";
@@ -42,16 +44,30 @@ const store = configureStore({
 
 let persistor = persistStore(store);
 
+const client = new ApolloClient({
+  uri: "http://35.170.42.44/graphql",
+});
+
+// client
+//   .query({
+//     query: gql`
+//       { allShops { totalCount } }
+//     `,
+//   })
+//   .then((result) => console.log(result));
+
 ReactDOM.render(
   // <React.StrictMode>
-  <HelmetProvider>
-    <Provider store={store}>
-      <Helmet titleTemplate="%s | Hacer Pedido" defaultTitle="Hacer Pedido" />
-      <PersistGate loading={null} persistor={persistor}>
-        <App />
-      </PersistGate>
-    </Provider>
-  </HelmetProvider>,
+  <ApolloProvider client={client}>
+    <HelmetProvider>
+      <Provider store={store}>
+        <Helmet titleTemplate="%s | Hacer Pedido" defaultTitle="Hacer Pedido" />
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </HelmetProvider>
+  </ApolloProvider>,
   // </React.StrictMode>
   document.getElementById("root")
 );
