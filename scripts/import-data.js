@@ -7,8 +7,12 @@ import fetch from "node-fetch";
 
 import { sanitizeCategory } from "../src/categories";
 import * as utils from "../src/utils";
-// import { createProduct, deleteProduct, createShop } from "../mutations";
-import { listAllShopsWithProducts, createShop } from "../shop.js";
+import {
+  listAllShopsWithProducts,
+  createProduct,
+  createShop,
+  deleteProductById,
+} from "../shop.js";
 
 const { google } = require("googleapis");
 
@@ -22,7 +26,7 @@ const client = new ApolloClient({
   fetch: fetch,
 });
 
-async function import_shops(fetch) {
+async function import_shops() {
   console.log("IMPORT SHOPS FROM TYPEFORM");
 
   let shopsData = await client.query({
@@ -50,11 +54,11 @@ async function import_shops(fetch) {
         for (const row of rows) {
           // console.log("------------------------------------------------------");
           // console.log(`${row}`);
-          let shop = processShopRow(row, shops, fetch);
+          let shop = processShopRow(row, shops);
+          // console.log(`SHOP: ${shop}`);
+
           if (shop !== undefined) {
             shops.push(shop);
-
-            return;
           }
         }
       }
@@ -86,12 +90,14 @@ function toSlug(name, shops) {
   return slug + "-" + i;
 }
 
-async function processShopRow(row, shops, fetch) {
+function processShopRow(row, shops) {
   const typeformToken = row[13];
 
   let shopExists =
     shops.find((o) => o.typeformtoken === typeformToken) !== undefined;
   if (shopExists) {
+    // console.log(`SKIP: ${typeformToken}`);
+
     return;
   }
 
@@ -125,191 +131,168 @@ async function processShopRow(row, shops, fetch) {
   console.log("add: " + shop.slug);
   console.log(shop);
 
-  const client2 = new ApolloClient({
-    uri: "http://35.170.42.44/graphql",
-    fetch: fetch,
-  });
-
-  // client2
-  //   .query({
-  //     query: createShop,
-  //     variables: {
-  //       input: { shop: shop },
-  //     },
-  //   })
-  //   .catch((error) => {
-  //     console.log(JSON.stringify(error, null, 2));
-  //   });
-
-  client2
+  client
     .mutate({
+      variables: { input: { shop: shop } },
       mutation: createShop,
-      // variables: {
-      //   shop: shop,
-      // },
     })
+    // .then((data) => {
+    //   console.log(JSON.stringify(data, null, 2));
+    // })
     .catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
+      console.log("ERROR: " + JSON.stringify(error, null, 2));
     });
-
-  console.log(JSON.stringify(shop, null, 2));
 
   return shop;
 }
 
-// async function import_products() {
-//   const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
+async function import_products() {
+  const spreadsheetId = "1BlSWW56-1--6kQ7sgygddsGiM9s4EBrYFTKFVnkTRys";
 
-//   // TODO: 3
-//   // const shopsData = await API.graphql(
-//   //   graphqlOperation(listShopsWithProducts, {
-//   //     limit: 10000,
-//   //   })
-//   // );
+  let shopsData = await client.query({
+    query: listAllShopsWithProducts,
+  });
+  let shops = shopsData.data.allShops.nodes;
 
-//   const shopsData = undefined;
+  const request = {
+    auth: auth,
+    spreadsheetId: spreadsheetId,
+    ranges: [],
+    includeGridData: false,
+  };
+  const response = await sheets.spreadsheets.get(request);
+  response.data.sheets.forEach(function (sheet) {
+    const title = sheet.properties.title;
+    sheets.spreadsheets.values.get(
+      {
+        auth: auth,
+        spreadsheetId: spreadsheetId,
+        range: title + "!A2:G",
+      },
+      (err, res) => {
+        // console.log("--------------------  " + sheet.properties.title);
+        // console.log(sheet.properties.title);
+        if (err) {
+          console.error("The API returned an error.");
+          throw err;
+        }
+        // console.log(JSON.stringify(res, null, 2));
+        const rows = res.data.values;
+        if (rows.length === 0) {
+          console.log("No data found.");
+        } else {
+          processShopRows(sheet.properties.title, rows, shops);
+        }
+        // console.log("-----------------------------------");
+      }
+    );
+  });
+}
 
-//   const shops = shopsData.data.listShops.items;
-//   const request = {
-//     auth: auth,
-//     spreadsheetId: spreadsheetId,
-//     ranges: [],
-//     includeGridData: false,
-//   };
-//   const response = await sheets.spreadsheets.get(request);
-//   response.data.sheets.forEach(function (sheet) {
-//     const title = sheet.properties.title;
-//     sheets.spreadsheets.values.get(
-//       {
-//         auth: auth,
-//         spreadsheetId: spreadsheetId,
-//         range: title + "!A2:G",
-//       },
-//       (err, res) => {
-//         // console.log("--------------------  " + sheet.properties.title);
-//         // console.log(sheet.properties.title);
-//         if (err) {
-//           console.error("The API returned an error.");
-//           throw err;
-//         }
-//         // console.log(JSON.stringify(res, null, 2));
-//         const rows = res.data.values;
-//         if (rows.length === 0) {
-//           console.log("No data found.");
-//         } else {
-//           processShopRows(sheet.properties.title, rows, shops);
-//         }
-//         // console.log("-----------------------------------");
-//       }
-//     );
-//   });
-// }
+async function deleteProducts(shop) {
+  if (
+    shop.productsByShopid === undefined ||
+    shop.productsByShopid.nodes === undefined ||
+    shop.productsByShopid.nodes.length === 0
+  ) {
+    console.log("No products to delete.");
 
-// async function deleteProducts(shop) {
-//   if (shop.products.items.length === 0) {
-//     console.log("No products to delete.");
+    return;
+  }
+  shop.productsByShopid.nodes.forEach((product) => {
+    // console.log("DELETING: " + shop.id + "  -   " + product.id);
+    client
+      .mutate({
+        variables: { input: { id: product.id } },
+        mutation: deleteProductById,
+      })
+      .catch((error) => {
+        console.log("ERROR: " + JSON.stringify(error, null, 2));
+      });
+  });
+}
 
-//     return;
-//   }
-//   await sleep(1000 + Math.random() * 100);
-//   shop.products.items.forEach((product) => {
-//     // console.log("DELETING: " + shop.id + "  -   " + product.id);
-//     // TODO: 2
-//     // API.graphql(
-//     //   graphqlOperation(deleteProduct, { input: { id: product.id } })
-//     // ).catch((error) => {
-//     //   console.log(JSON.stringify(error, null, 2));
-//     // });
-//   });
-// }
+function processShopRows(slug, rows, shops) {
+  // 0 - Título
+  // 1 - Precio
+  // 2 - Descripción
+  // 3 - Promo
+  // 4 - Cate
 
-// // TODO: Crear biblioteca de funciones:
+  if (slug.startsWith("NO")) {
+    // console.log("SKIP: Sheet " + slug);
+    console.log("--------------------  " + slug);
 
-// function sleep(ms) {
-//   return new Promise((resolve) => {
-//     setTimeout(resolve, ms);
-//   });
-// }
+    return;
+  }
 
-// function processShopRows(slug, rows, shops) {
-//   // 0 - Título
-//   // 1 - Precio
-//   // 2 - Descripción
-//   // 3 - Promo
-//   // 4 - Cate
+  let shop = shops.find((o) => o.slug === slug);
 
-//   if (slug.startsWith("NO")) {
-//     // console.log("SKIP: Sheet " + slug);
-//     console.log("--------------------  " + slug);
+  console.log("https://hacerpedido.com/" + slug);
 
-//     return;
-//   }
+  if (shop === undefined) {
+    console.log("ERROR: Shop not found");
 
-//   let shop = shops.find((o) => o.slug === slug);
+    return;
+  }
 
-//   console.log("https://hacerpedido.com/" + slug);
+  let shopID = shop.id;
 
-//   if (shop === undefined) {
-//     console.log("ERROR: Shop not found");
+  deleteProducts(shop).catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
 
-//     return;
-//   }
+  var section = "";
+  var itemNumber = 0;
 
-//   let shopID = shop.id;
+  rows.forEach((row) => {
+    const name = row[0];
+    const price = row[1];
+    const description = row[2];
+    const isSection = row[4];
 
-//   deleteProducts(shop).catch((error) => {
-//     console.log(JSON.stringify(error, null, 2));
-//   });
+    if (name === "" || name === undefined) {
+      return;
+    }
 
-//   var section = "";
-//   var itemNumber = 0;
+    // Is a section?
+    if (isSection !== undefined && isSection.toUpperCase() === "SI") {
+      section = utils.toTitleCase(name);
 
-//   rows.forEach((row) => {
-//     const name = row[0];
-//     const price = row[1];
-//     const description = row[2];
-//     const isSection = row[4];
+      return;
+    }
 
-//     if (name === "" || name === undefined) {
-//       return;
-//     }
+    itemNumber++;
 
-//     // Is a section?
-//     if (isSection !== undefined && isSection.toUpperCase() === "SI") {
-//       section = utils.toTitleCase(name);
+    let product = {
+      name: utils.sanitizeProductName(name),
+      price: price ? utils.sanitizePrice(price).toString() : "",
+      category: section,
+      shopid: shopID,
+      itemnumber: itemNumber,
+    };
 
-//       return;
-//     }
+    if (description !== undefined && description !== "") {
+      product.description = description;
+    }
 
-//     itemNumber++;
+    // console.log(JSON.stringify(product, null, 2));
 
-//     let product = {
-//       name: utils.sanitizeProductName(name),
-//       price: utils.sanitizePrice(price),
-//       category: section,
-//       productShopId: shopID,
-//       itemNumber: itemNumber,
-//     };
+    client
+      .mutate({
+        variables: { input: { product: product } },
+        mutation: createProduct,
+      })
+      .catch((error) => {
+        console.log("ERROR: " + JSON.stringify(error, null, 2));
+      });
+  });
+}
 
-//     if (description !== undefined && description !== "") {
-//       product.description = description;
-//     }
-
-//     // console.log(JSON.stringify(product, null, 2));
-
-//     // TODO: 3333
-//     // API.graphql(graphqlOperation(createProduct, { input: product })).catch(
-//     //   (error) => {
-//     //     console.log(JSON.stringify(error, null, 2));
-//     //   }
-//     // );
-//   });
-// }
-
-import_shops(fetch)
-  // .then(() => {
-  // import_products();
-  // })
+import_shops()
+  .then(() => {
+    import_products();
+  })
   .catch((error) => {
     console.log(JSON.stringify(error, null, 2));
   });
