@@ -83,6 +83,10 @@ export default () => {
     });
   }, [dispatch, client, category]);
 
+  let filteredShops = shops.filter(
+    (x) => x.visibility === "public" && x.category === category
+  );
+
   let initialScrollIndex = homeFirstVisibleItem ?? 0;
 
   return (
@@ -101,7 +105,7 @@ export default () => {
         />
       </View>
       <View style={styles.body}>
-        {shops.length === 0 && loading ? (
+        {filteredShops.length === 0 && loading ? (
           <ActivityIndicator
             size="large"
             color="#FFB233"
@@ -109,7 +113,7 @@ export default () => {
           />
         ) : (
           <>
-            {shops.length > 0 && (
+            {filteredShops.length > 0 && (
               <FlatList
                 onViewableItemsChanged={onViewableItemsChanged}
                 viewabilityConfig={{
@@ -117,7 +121,7 @@ export default () => {
                 }}
                 style={styles.list}
                 showsVerticalScrollIndicator={false}
-                ListHeaderComponent={renderHeader(shops.length)}
+                ListHeaderComponent={renderHeader(filteredShops.length)}
                 ListFooterComponent={
                   // TODO: Remover. Para que al hacer scroll se vea la última celda
                   <View style={styles.lastView} />
