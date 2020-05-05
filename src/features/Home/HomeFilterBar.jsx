@@ -75,10 +75,10 @@ export default ({ selectedFilter, onSelectFilter }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#FFFFFF",
-    borderColor: "#F3F0EB",
     borderBottomWidth: 1,
+    borderColor: "#F3F0EB",
+    flex: 1,
     paddingLeft: 4,
     paddingRight: 4,
   },
@@ -93,9 +93,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    fontSize: 16,
-    fontFamily: "Barlow",
-    fontWeight: 600,
     color: "#E5A130",
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontWeight: 600,
   },
 });

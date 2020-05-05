@@ -59,15 +59,16 @@ export default ({ shop }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  button: {
+    alignItems: "center",
+    borderRadius: 4,
+    borderWidth: 1,
     flexDirection: "row",
+    justifyContent: "center",
     marginHorizontal: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: "#3ECB7D",
-    borderColor: "#37B36E",
-    marginVertical: 10,
+    marginTop: 12,
+    minHeight: 50,
+    padding: 10,
   },
   buttonCall: {
     backgroundColor: "#ffb234",
@@ -75,22 +76,20 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   buttonText: {
-    fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 16,
     color: "#fff",
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontWeight: "600",
     marginLeft: 5,
   },
-  button: {
-    minHeight: 50,
-    marginTop: 12,
+  buttonWhatsApp: {
+    backgroundColor: "#3ECB7D",
+    borderColor: "#37B36E",
+    marginVertical: 10,
+  },
+  container: {
+    flex: 1,
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 10,
-    borderRadius: 4,
-    borderWidth: 1,
     marginHorizontal: 5,
   },
 });
-

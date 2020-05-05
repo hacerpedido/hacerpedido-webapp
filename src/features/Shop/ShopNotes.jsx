@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet,  View, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 export default ({ shop }) => {
   if (shop.notes) {
@@ -12,32 +12,31 @@ export default ({ shop }) => {
   }
 
   return null;
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   category: {
+    color: "#4D360F",
+    fontFamily: "Barlow",
+    fontSize: 17,
+    fontWeight: "800",
+    marginBottom: 2,
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
-    marginBottom: 2,
-    fontFamily: "Barlow",
-    fontWeight: "800",
-    fontSize: 17,
-    color: "#4D360F",
+  },
+  container: {
+    flex: 1,
   },
   notes: {
+    color: "#666666",
+    fontFamily: "Roboto Slab",
+    fontSize: 12,
+    fontWeight: "400",
+    lineHeight: 16,
+    marginBottom: 2,
     marginLeft: 16,
     marginRight: 16,
     marginTop: 8,
-    marginBottom: 2,
-    fontFamily: "Roboto Slab",
-    fontWeight: "400",
-    fontSize: 12,
-    lineHeight: 16,
-    color: "#666666"
-  }
+  },
 });
-

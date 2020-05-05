@@ -1,4 +1,3 @@
-
 export const categories = [
   "Comida",
   "Cervecerías",
@@ -54,7 +53,9 @@ export function sanitizeCategory(oldCategory) {
       return "Comida";
 
     default:
-      console.log("ERROR: " + oldCategory + " no está considerada como una categoría.");
+      console.log(
+        "ERROR: " + oldCategory + " no está considerada como una categoría."
+      );
       return oldCategory;
   }
 }

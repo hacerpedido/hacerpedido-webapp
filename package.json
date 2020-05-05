@@ -47,9 +47,6 @@
     "import-data": "npx babel --presets es2015 -d build-scripts/ src/graphql scripts/import-data.js src/utils.js src/aws-exports.js src/categories.js && node build-scripts/scripts/import-data.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -67,6 +64,14 @@
     "@babel/core": "^7.9.0",
     "@svgr/cli": "^5.3.1",
     "babel-preset-es2015": "^6.24.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "eslint-plugin-react-native": "^3.8.1",
+    "prettier": "^2.0.5",
     "redux-devtools": "^3.5.0"
   }
 }

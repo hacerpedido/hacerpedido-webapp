@@ -91,55 +91,55 @@ export default ({ shop }) => {
 };
 
 const styles = StyleSheet.create({
+  buttonBack: {
+    backgroundColor: "none",
+    border: 0,
+    left: 0,
+    padding: 16,
+    position: "absolute",
+    top: 0,
+  },
   container: {
     marginBottom: 16,
   },
-  containerNavigator: {
-    zIndex: 2,
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    backgroundColor: "none",
-  },
   containerData: {
-    zIndex: 0,
+    alignItems: "center",
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
     marginTop: 16,
-  },
-  containerLogo: {
-    flex: -1,
-    width: 100,
-    height: 100,
-    alignItems: "center",
+    zIndex: 0,
   },
   containerLabels: {
     flex: 1,
     paddingStart: 8,
   },
-  shopName: {
-    color: "#fff",
-    padding: 6,
-    fontFamily: "Barlow",
-    fontWeight: "700",
-    fontSize: 19,
-    marginVertical: 5,
-    textTransform: "capitalize",
+  containerLogo: {
+    alignItems: "center",
+    flex: -1,
+    height: 100,
+    width: 100,
+  },
+  containerNavigator: {
+    backgroundColor: "none",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    zIndex: 2,
   },
   logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
     backgroundColor: "#fff",
+    borderRadius: 50,
+    height: 100,
+    width: 100,
   },
-  buttonBack: {
-    backgroundColor: "none",
-    border: 0,
-    padding: 16,
-    position: "absolute",
-    top: 0,
-    left: 0,
+  shopName: {
+    color: "#fff",
+    fontFamily: "Barlow",
+    fontSize: 19,
+    fontWeight: "700",
+    marginVertical: 5,
+    padding: 6,
+    textTransform: "capitalize",
   },
 });
