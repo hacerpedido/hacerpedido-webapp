@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Link } from "react-router-dom";
 import * as Icons from "../../assets/icons/";
+import * as colors from "../../assets/colors";
 
 export default () => {
   return (
@@ -23,21 +24,18 @@ export default () => {
 
 const styles = StyleSheet.create({
   addShopButton: {
-    backgroundColor: "#3ECB7D",
-    borderColor: "#37B26E",
+    backgroundColor: colors.addShopButtonBg,
+    borderColor: colors.addShopButtonBorder,
     borderRadius: 3,
     borderWidth: 1,
-    color: "#FFF",
+    color: colors.white,
     fontSize: 14,
     fontWeight: "500",
     padding: 7,
   },
-  button: {
-    borderRadius: 3,
-  },
   container: {
     alignItems: "center",
-    backgroundColor: "#FFB233",
+    backgroundColor: colors.orangeHP,
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
