@@ -6,9 +6,10 @@ import { Helmet } from "react-helmet-async";
 
 import { loading, query } from "../../shopsSlice";
 import { listShopsWithProducts } from "../../graphql/shop";
-import ShopView from "./Shop";
+import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
+import colors from "../../assets/colors";
 
 export default () => {
   const isLoading = useSelector((state) => state.loading);
@@ -16,7 +17,14 @@ export default () => {
   const dispatch = useDispatch();
   const client = useApolloClient();
 
-  let { slug } = useParams();
+  let { slug, token } = useParams();
+
+  if (slug === undefined || token === undefined) {
+    return <Text>Error cargando {slug} (1)</Text>;
+  }
+
+  // Para probar: http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
+  // http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
 
   useLayoutEffect(() => {
     dispatch(loading(true));
@@ -43,8 +51,14 @@ export default () => {
     return isLoading ? (
       <Loading />
     ) : (
-      <Text>Sin comercios en la base de datos para {slug}</Text>
+      <Text>No hay un comercio en la base de datos para {slug}</Text>
     );
+  }
+
+  console.log(shop.typeformtoken)
+
+  if (shop.typeformtoken !== token) {
+    return <Text>Error cargando {slug} (2)</Text>;
   }
 
   let products = shop?.productsByShopid?.nodes ?? [];
@@ -74,7 +88,40 @@ export default () => {
         />
       </Helmet>
 
-      <ShopView products={products} shop={shop} />
+      <View style={styles.container}>
+        <View style={styles.leftContainer}></View>
+        <View style={styles.rightContainer}>
+          <ShopView
+            products={products}
+            shop={shop}
+            style={styles.shopContainer}
+            isPreview={true}
+          />
+        </View>
+      </View>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.white,
+    flex: 1,
+    flexDirection: "row",
+    padding: 10,
+    height: "100vh",
+  },
+  leftContainer: {
+    backgroundColor: colors.lightBackground,
+    flex: 1,
+  },
+  rightContainer: {
+    backgroundColor: colors.black,
+    padding: 10,
+    width: 400,
+  },
+  shopContainer: {
+    backgroundColor: colors.black,
+    width: 375,
+  },
+});

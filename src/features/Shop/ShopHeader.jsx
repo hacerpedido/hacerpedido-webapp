@@ -14,6 +14,7 @@ import {
   getBackgroundColorForCategory,
 } from "../../categoriesHelper";
 import DecoratedLabel from "../../components/DecoratedLabel";
+import colors from "../../assets/colors";
 
 function getBackgroundForShop(shop) {
   if (shop.background) {
@@ -23,25 +24,27 @@ function getBackgroundForShop(shop) {
   return getBackgroundForCategory(shop.category);
 }
 
-export default ({ shop }) => {
+export default ({ shop, isPreview }) => {
   const history = useHistory();
 
   const address = shop.address ?? shop.region;
 
+  const containerStyles = {
+    ...styles.container,
+    background: getBackgroundForShop(shop),
+    backgroundSize: shop.background ? "100% auto" : "auto",
+    backgroundColor: getBackgroundColorForCategory(shop.category),
+  };
+
   return (
-    <View
-      style={{
-        ...styles.container,
-        background: getBackgroundForShop(shop),
-        backgroundSize: shop.background ? "100% auto" : "auto",
-        backgroundColor: getBackgroundColorForCategory(shop.category),
-      }}
-    >
+    <View style={containerStyles}>
       <View style={styles.containerNavigator}>
         <TouchableHighlight
           underlayColor={"none"}
           onPress={() => {
-            history.push("/");
+            if (!isPreview) {
+              history.push("/");
+            }
           }}
           style={styles.buttonBack}
         >
@@ -93,7 +96,7 @@ export default ({ shop }) => {
 
 const styles = StyleSheet.create({
   buttonBack: {
-    backgroundColor: "none",
+    backgroundColor: colors.none,
     border: 0,
     left: 0,
     padding: 16,
@@ -111,10 +114,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     zIndex: 0,
   },
-  containerLabels: {
-    flex: 1,
-    paddingStart: 8,
-  },
   containerLogo: {
     alignItems: "center",
     flex: -1,
@@ -122,20 +121,20 @@ const styles = StyleSheet.create({
     width: 100,
   },
   containerNavigator: {
-    backgroundColor: "none",
+    backgroundColor: colors.none,
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
     zIndex: 2,
   },
   logo: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.white,
     borderRadius: 50,
     height: 100,
     width: 100,
   },
   shopName: {
-    color: "#fff",
+    color: colors.white,
     fontFamily: "Barlow",
     fontSize: 19,
     fontWeight: "700",
