@@ -8,6 +8,7 @@ export const addShopButtonBg = "#3ECB7D";
 export const addShopButtonBorder = "#37B26E";
 export const cardBorder = "#E8E8E8";
 export const darkGray = "#4D360F";
+export const dividerBorder = "#edf1f7";
 
 // Named colors
 export const none = "none";
