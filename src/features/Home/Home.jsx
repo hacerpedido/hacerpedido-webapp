@@ -22,6 +22,7 @@ import {
   query,
   setHomeFirstVisibleItem,
 } from "../../shopsSlice";
+import * as colors from "../../assets/colors";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
@@ -89,10 +90,12 @@ export default () => {
 
   let initialScrollIndex = homeFirstVisibleItem ?? 0;
 
+  let title = "Pedí a tu comercio favorito por WhatsApp";
+
   return (
     <View>
       <Helmet>
-        <title>Pedí a tu comercio favorito por WhatsApp</title>
+        <title>{title}</title>
       </Helmet>
       <View style={styles.header}>
         <HomeHeader />
@@ -168,7 +171,7 @@ export default () => {
 
 const styles = StyleSheet.create({
   body: {
-    backgroundColor: "#fafafa",
+    backgroundColor: colors.lightBackground,
     flex: 1,
     marginTop: 110,
     paddingBottom: 10,
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   count: {
-    color: "#8F9BB3",
+    color: colors.lightGrey,
     fontFamily: "Barlow",
     fontSize: 14,
     fontWeight: 400,
@@ -190,8 +193,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   lastView: {
+    backgroundColor: colors.none,
     height: 250,
-    backgroundColor: "none",
   },
   list: {
     height: "100vh",
