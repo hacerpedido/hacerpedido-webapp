@@ -45,7 +45,7 @@ const store = configureStore({
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://backend-restapi.hacerpedido.com/graphql",
+  uri: "https://backend-restapi.hacerpedido.com/graphql",
 });
 
 ReactDOM.render(
