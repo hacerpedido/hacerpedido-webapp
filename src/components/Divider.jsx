@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
+import * as colors from "../assets/colors";
 
 export default () => {
   return <View style={styles.divider} />;
@@ -7,9 +8,9 @@ export default () => {
 
 const styles = StyleSheet.create({
   divider: {
-    backgroundColor: "#fafafa",
+    backgroundColor: colors.lightBackground,
     borderBottomWidth: 1,
-    borderColor: "#edf1f7",
+    borderColor: colors.dividerBorder,
     borderTopWidth: 1,
     height: 10,
     marginBottom: 16,
