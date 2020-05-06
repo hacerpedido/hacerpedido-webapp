@@ -14,6 +14,7 @@ import {
   getBackgroundColorForCategory,
 } from "../../categoriesHelper";
 import DecoratedLabel from "../../components/DecoratedLabel";
+
 function getBackgroundForShop(shop) {
   if (shop.background) {
     return `url(${shop.background})`;
@@ -65,20 +66,20 @@ export default ({ shop }) => {
           fontSize={13}
           marginBottom={4}
         />
-        {shop.openTimes && (
+        {shop.opentimes && (
           <DecoratedLabel
             iconName="clock"
-            text={shop.openTimes}
+            text={shop.opentimes}
             iconColor={"#fff"}
             textColor={"#fff"}
             fontSize={13}
             marginBottom={4}
           />
         )}
-        {shop.deliveryCost && (
+        {shop.deliverycost && (
           <DecoratedLabel
             iconName="car"
-            text={"Delivery: " + shop.deliveryCost}
+            text={"Delivery: " + shop.deliverycost}
             iconColor={"#fff"}
             textColor={"#fff"}
             fontSize={13}
