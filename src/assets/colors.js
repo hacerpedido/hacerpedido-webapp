@@ -1,16 +1,19 @@
-export const lightBackground = "#fafafa";
-export const lightGrey = "#8F9BB3";
-export const orangeHP = "#FFB233";
-export const filterButtonTitle = "#E5A130";
-export const filterButtonBorder = "#E6A02E";
-export const filterBarBorder = "#F3F0EB";
-export const addShopButtonBg = "#3ECB7D";
-export const addShopButtonBorder = "#37B26E";
-export const cardBorder = "#E8E8E8";
-export const darkGray = "#4D360F";
-export const dividerBorder = "#edf1f7";
+// TODO: A ver con el Chango si usamos semantic
+// color names or los nombramos directamente
 
-// Named colors
-export const none = "none";
-export const white = "#fff";
-export const black = "#000";
+export default {
+  addShopButtonBg: "#3ECB7D",
+  addShopButtonBorder: "#37B26E",
+  black: "#000",
+  cardBorder: "#E8E8E8",
+  darkGray: "#4D360F",
+  dividerBorder: "#edf1f7",
+  filterBarBorder: "#F3F0EB",
+  filterButtonBorder: "#E6A02E",
+  filterButtonTitle: "#E5A130",
+  lightBackground: "#fafafa",
+  lightGrey: "#8F9BB3",
+  orangeHP: "#FFB233",
+  none: "none",
+  white: "#fff",
+};

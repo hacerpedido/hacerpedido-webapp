@@ -5,12 +5,9 @@ module.exports = {
     "plugin:prettier/recommended",
     "prettier/react",
   ],
-  plugins: [
-    "react-native",
-    "prettier",
-  ],
+  plugins: ["react-native", "prettier"],
   rules: {
     "react/display-name": 0,
     "react/prop-types": 0,
-  }
+  },
 };
