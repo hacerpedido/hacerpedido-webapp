@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { categories } from "../../categories";
-import * as colors from "../../assets/colors";
+import colors from "../../assets/colors";
 
 function Item({ id, title, selected, onSelect }) {
   return (

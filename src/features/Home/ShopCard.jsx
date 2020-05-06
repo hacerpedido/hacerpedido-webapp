@@ -2,7 +2,7 @@ import React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 
 import DecoratedLabel from "../../components/DecoratedLabel";
-import * as colors from "../../assets/colors";
+import colors from "../../assets/colors";
 
 export default ({ shop, selected, onSelect }) => {
   return (

@@ -22,7 +22,7 @@ import {
   query,
   setHomeFirstVisibleItem,
 } from "../../shopsSlice";
-import * as colors from "../../assets/colors";
+import colors from "../../assets/colors";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
