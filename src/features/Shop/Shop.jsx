@@ -1,22 +1,23 @@
 import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import API, { graphqlOperation } from "@aws-amplify/api";
 import { StyleSheet, ScrollView, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
 import { loading, query } from "../../shopsSlice";
-import { listShopsWithProducts } from "../../graphql/queriesCustom";
+import { listShopsWithProducts } from "../../graphql/shop";
 import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
 import ShopFooter from "./ShopFooter";
 import ProductList from "./ProductList";
 import Loading from "../../components/Loading";
+import { useApolloClient } from "@apollo/react-hooks";
 
 // TODO: Dividir en Shop y ShopPage
 export default () => {
   const state = useSelector((state) => state); // TODO: limitar que parte del estado usar
   const dispatch = useDispatch();
+  const client = useApolloClient();
 
   let { slug } = useParams();
 
@@ -24,21 +25,19 @@ export default () => {
     dispatch(loading(true));
 
     async function getData() {
-      const shopData = await API.graphql(
-        graphqlOperation(listShopsWithProducts, {
-          filter: { slug: { eq: slug } },
-          limit: 10000,
-        })
-      );
-      // console.log("SLUG: " + slug);
-      // console.log("ITEMS: " + shopData.data.listShops.items.length);
-      let shops = shopData.data.listShops.items;
+      const shopData = await client.query({
+        query: listShopsWithProducts,
+        variables: {
+          slug,
+        },
+      });
+      let shops = shopData.data.allShops.nodes;
       dispatch(query(shops));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
-  }, [slug, dispatch]);
+  }, [slug, dispatch, client]);
 
   // Just in case
   const shop = state.shops.find((x) => x.slug === slug);
@@ -51,14 +50,7 @@ export default () => {
     );
   }
 
-  let prods = [];
-
-  // TODO: Mover a un modelo?
-  if (shop.products !== undefined && shop.products.items !== undefined) {
-    prods = [...shop.products.items].sort((a, b) =>
-      a.itemNumber > b.itemNumber ? 1 : -1
-    );
-  }
+  let prods = shop?.productsByShopid?.nodes ?? [];
 
   return (
     <>
@@ -92,9 +84,7 @@ export default () => {
             <Loading />
           ) : (
             <>
-              {prods.length === 0 ? (
-                <View />
-              ) : (
+              {prods.length > 0 && (
                 <>
                   <ProductList products={prods} />
                   <ShopNotes shop={shop} />
