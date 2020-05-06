@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { StyleSheet, ScrollView, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
 import { loading, query } from "../../shopsSlice";
@@ -55,7 +55,7 @@ export default () => {
     );
   }
 
-  console.log(shop.typeformtoken)
+  console.log(shop.typeformtoken);
 
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
@@ -67,25 +67,6 @@ export default () => {
     <>
       <Helmet>
         <title>{shop.name}</title>
-        <meta
-          property="og:image"
-          content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"
-        />
-        <meta property="og:description" content={shop.name} />
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content={shop.name} />
-        <meta
-          property="og:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={shop.name} />
-        <meta property="twitter:description" content={shop.name} />
-        <meta
-          property="twitter:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
       </Helmet>
 
       <View style={styles.container}>
@@ -94,7 +75,7 @@ export default () => {
           <ShopView
             products={products}
             shop={shop}
-            style={styles.shopContainer}
+            // style={styles.shopContainer}
             isPreview={true}
           />
         </View>
@@ -108,20 +89,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     flex: 1,
     flexDirection: "row",
-    padding: 10,
     height: "100vh",
   },
   leftContainer: {
     backgroundColor: colors.lightBackground,
     flex: 1,
+    padding: 10,
   },
   rightContainer: {
-    backgroundColor: colors.black,
-    padding: 10,
+    backgroundColor: colors.lightGrey2,
+    padding: 30,
     width: 400,
-  },
-  shopContainer: {
-    backgroundColor: colors.black,
-    width: 375,
   },
 });

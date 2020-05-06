@@ -13,6 +13,7 @@ export default {
   filterButtonTitle: "#E5A130",
   lightBackground: "#fafafa",
   lightGrey: "#8F9BB3",
+  lightGrey2: "#ECECEC",
   orangeHP: "#FFB233",
   none: "none",
   white: "#fff",
