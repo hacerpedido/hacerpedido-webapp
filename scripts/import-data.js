@@ -22,7 +22,7 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets("v4");
 
 const client = new ApolloClient({
-  uri: "http://35.170.42.44/graphql",
+  uri: "http://backend-restapi.hacerpedido.com/graphql",
   fetch: fetch,
 });
 
