@@ -2,6 +2,7 @@ import React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 
 import DecoratedLabel from "../../components/DecoratedLabel";
+import * as colors from "../../assets/colors";
 
 export default ({ shop, selected, onSelect }) => {
   return (
@@ -49,8 +50,8 @@ export default ({ shop, selected, onSelect }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderColor: "#E8E8E8",
+    backgroundColor: colors.white,
+    borderColor: colors.cardBorder,
     borderRadius: 7,
     borderWidth: 1,
     marginBottom: 6,
@@ -76,13 +77,13 @@ const styles = StyleSheet.create({
     width: 75,
   },
   logo: {
-    backgroundColor: "#dadada",
+    backgroundColor: colors.lightBackground,
     borderRadius: 37.5,
     height: 75,
     width: 75,
   },
   shopName: {
-    color: "#4D360F",
+    color: colors.darkGray,
     fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: "700",

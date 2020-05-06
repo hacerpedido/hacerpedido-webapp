@@ -8,16 +8,17 @@ import {
 } from "react-native";
 
 import { categories } from "../../categories";
+import * as colors from "../../assets/colors";
 
 function Item({ id, title, selected, onSelect }) {
   return (
     <TouchableHighlight
-      underlayColor={"#fafafa"}
+      underlayColor={colors.lightBackground}
       onPress={() => onSelect(id)}
       style={[
         styles.item,
         {
-          backgroundColor: selected ? "#FFB233" : "#FFFFFF",
+          backgroundColor: selected ? colors.orangeHP : colors.white,
         },
       ]}
     >
@@ -25,7 +26,7 @@ function Item({ id, title, selected, onSelect }) {
         style={[
           styles.title,
           {
-            color: selected ? "#FFFFFF" : "#FFB233",
+            color: selected ? colors.white : colors.orangeHP,
           },
         ]}
       >
@@ -75,25 +76,25 @@ export default ({ selectedFilter, onSelectFilter }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderColor: "#F3F0EB",
+    borderColor: colors.filterBarBorder,
     flex: 1,
     paddingLeft: 4,
     paddingRight: 4,
   },
   item: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     padding: 15,
     paddingVertical: 10,
     marginVertical: 8,
     marginHorizontal: 4,
     borderRadius: 4,
-    borderColor: "#E6A02E",
+    borderColor: colors.filterButtonBorder,
     borderWidth: 1,
   },
   title: {
-    color: "#E5A130",
+    color: colors.filterButtonTitle,
     fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: 600,

@@ -1,8 +1,14 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 
 export default () => {
   return (
-    <ActivityIndicator size="large" color="#FFB233" style={{ margin: 30 }} />
+    <ActivityIndicator size="large" color="#FFB233" style={styles.default} />
   );
 };
+
+const styles = StyleSheet.create({
+  default: {
+    margin: 30,
+  },
+});
