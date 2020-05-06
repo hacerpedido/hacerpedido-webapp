@@ -1,14 +1,16 @@
 import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
 import { loading, query } from "../../shopsSlice";
 import { listShopsWithProducts } from "../../graphql/shop";
 import ShopView from "./Shop";
+import ShopFooter from "./ShopFooter";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
+import colors from "../../assets/colors";
 
 export default () => {
   const isLoading = useSelector((state) => state.loading);
@@ -75,6 +77,20 @@ export default () => {
       </Helmet>
 
       <ShopView products={products} shop={shop} />
+      {/* TODO: Quitar el view */}
+      <View style={styles.footer}>
+        <ShopFooter shop={shop} />
+      </View>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  footer: {
+    backgroundColor: colors.lightBackground,
+    bottom: 0,
+    height: 100,
+    position: "fixed",
+    width: "100%",
+  },
+});

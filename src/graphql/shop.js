@@ -21,6 +21,7 @@ export const listShopsWithProducts = /* GraphQL */ gql`
         background
         ordersphonenumber
         orderswhatsappnumber
+        typeformtoken
         productsByShopid(orderBy: ITEMNUMBER_ASC) {
           nodes {
             id
