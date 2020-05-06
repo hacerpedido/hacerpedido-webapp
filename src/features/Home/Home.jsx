@@ -126,7 +126,7 @@ export default () => {
                   // TODO: Remover. Para que al hacer scroll se vea la última celda
                   <View style={styles.lastView} />
                 }
-                data={shops}
+                data={filteredShops}
                 renderItem={({ item }) => (
                   <TouchableHighlight
                     delayPressIn={5000}
