@@ -10,6 +10,8 @@ import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
 import colors from "../../assets/colors";
+import EditProductsForm from "./EditProductsForm";
+import EditShopForm from "./EditShopForm";
 
 export default () => {
   const isLoading = useSelector((state) => state.loading);
@@ -55,8 +57,6 @@ export default () => {
     );
   }
 
-  console.log(shop.typeformtoken);
-
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
   }
@@ -70,7 +70,10 @@ export default () => {
       </Helmet>
 
       <View style={styles.container}>
-        <View style={styles.leftContainer}></View>
+        <View style={styles.leftContainer}>
+          <EditShopForm shop={shop} />
+          <EditProductsForm shop={shop} />
+        </View>
         <View style={styles.rightContainer}>
           <ShopView
             products={products}
@@ -93,6 +96,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     backgroundColor: colors.lightBackground,
+    flexDirection: "column",
     flex: 1,
     padding: 10,
   },
