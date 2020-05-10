@@ -8,6 +8,7 @@ import Input from "../../components/Input";
 import Form from "../../components/Form";
 import validation from "./validation";
 import { setTempShop } from "../../redux/shopEditSlice";
+import { saveShop } from "../../api/shops";
 
 import theme from "../../assets/theme";
 
@@ -21,7 +22,15 @@ export default ({ shop, products }) => {
   });
 
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
+    let dataToSave = {
+      ...data,
+      id: shop.id,
+      slug: shop.slug,
+      region: shop.region,
+    };
+
+    // alert(JSON.stringify(data));
+    saveShop(dataToSave);
   };
 
   let isDirty = false;

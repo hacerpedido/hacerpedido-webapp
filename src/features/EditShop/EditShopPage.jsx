@@ -16,7 +16,6 @@ import EditShopForm from "./EditShopForm";
 export default () => {
   const isLoading = useSelector((state) => state.website.loading);
   const editedShops = useSelector((state) => state.shopEdit.shops);
-  // const isDirty = useSelector((state) => state.shopEdit.isDirty);
   const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
   const client = useApolloClient();
@@ -27,7 +26,8 @@ export default () => {
     return <Text>Error cargando {slug} (1)</Text>;
   }
 
-  // Para probar: http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
+  // Para probar:
+  // http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
   // http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
 
   useLayoutEffect(() => {
@@ -77,15 +77,10 @@ export default () => {
       <View style={styles.container}>
         <View style={styles.leftContainer}>
           <EditShopForm shop={tempShop} />
-          <EditProductsForm shop={tempShop} products={products} />
+          {/* <EditProductsForm shop={tempShop} products={products} /> */}
         </View>
         <View style={styles.rightContainer}>
-          <ShopView
-            products={products}
-            shop={tempShop}
-            // style={styles.shopContainer}
-            isPreview={true}
-          />
+          <ShopView products={products} shop={tempShop} isPreview={true} />
         </View>
       </View>
     </>
