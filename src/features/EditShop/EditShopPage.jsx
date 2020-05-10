@@ -4,18 +4,20 @@ import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { loading, query } from "../../shopsSlice";
+import { loading, query } from "../../redux/shopsSlice";
 import { listShopsWithProducts } from "../../graphql/shop";
 import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
-import colors from "../../assets/colors";
+import theme from "../../assets/theme";
 import EditProductsForm from "./EditProductsForm";
 import EditShopForm from "./EditShopForm";
 
 export default () => {
-  const isLoading = useSelector((state) => state.loading);
-  const shops = useSelector((state) => state.shops);
+  const isLoading = useSelector((state) => state.website.loading);
+  const editedShop = useSelector((state) => state.shopEdit.shop);
+  // const isDirty = useSelector((state) => state.shopEdit.isDirty);
+  const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
   const client = useApolloClient();
 
@@ -46,7 +48,6 @@ export default () => {
     });
   }, [slug, dispatch, client]);
 
-  // Just in case
   const shop = shops.find((x) => x.slug === slug);
 
   if (shop === undefined) {
@@ -61,23 +62,28 @@ export default () => {
     return <Text>Error cargando {slug} (2)</Text>;
   }
 
+  let tempShop = { ...shop, ...editedShop };
+
+  // console.log(editedShop);
+  // console.log(tempShop);
+
   let products = shop?.productsByShopid?.nodes ?? [];
 
   return (
     <>
       <Helmet>
-        <title>{shop.name}</title>
+        <title>{tempShop.name}</title>
       </Helmet>
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <EditShopForm shop={shop} />
-          <EditProductsForm shop={shop} />
+          <EditShopForm shop={tempShop} />
+          <EditProductsForm shop={tempShop} products={products} />
         </View>
         <View style={styles.rightContainer}>
           <ShopView
             products={products}
-            shop={shop}
+            shop={tempShop}
             // style={styles.shopContainer}
             isPreview={true}
           />
@@ -89,19 +95,20 @@ export default () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.white,
+    backgroundColor: theme.colors.white,
     flex: 1,
     flexDirection: "row",
     height: "100vh",
+    minWidth: 1000,
   },
   leftContainer: {
-    backgroundColor: colors.lightBackground,
+    backgroundColor: theme.colors.lightBackground,
     flexDirection: "column",
     flex: 1,
     padding: 10,
   },
   rightContainer: {
-    backgroundColor: colors.lightGrey2,
+    backgroundColor: theme.colors.lightGrey2,
     padding: 30,
     width: 400,
   },

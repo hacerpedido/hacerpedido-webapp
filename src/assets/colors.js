@@ -8,6 +8,7 @@ export default {
   cardBorder: "#E8E8E8",
   darkGray: "#4D360F",
   dividerBorder: "#edf1f7",
+  error: "#fc6d47",
   filterBarBorder: "#F3F0EB",
   filterButtonBorder: "#E6A02E",
   filterButtonTitle: "#E5A130",

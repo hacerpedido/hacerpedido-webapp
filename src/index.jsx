@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import {
@@ -19,7 +23,8 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 
 import * as serviceWorker from "./serviceWorker";
-import shopsReducer from "./shopsSlice";
+import shopsReducer from "./redux/shopsSlice";
+import shopEditReducer from "./redux/shopEditSlice";
 import App from "./app/App";
 
 import "./index.css";
@@ -28,10 +33,15 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["shops", "loading", "homeFirstVisibleItem", "homeInitialOffset"],
+  blacklist: ["shops", "loading", "homeFirstVisibleItem", "homeInitialOffset"], // TODO: ver como limitar
 };
 
-const persistedReducer = persistReducer(persistConfig, shopsReducer);
+const rootReducer = combineReducers({
+  website: shopsReducer,
+  shopEdit: shopEditReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
   reducer: persistedReducer,
