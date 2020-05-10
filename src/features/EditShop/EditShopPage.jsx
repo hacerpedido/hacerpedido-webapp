@@ -15,7 +15,7 @@ import EditShopForm from "./EditShopForm";
 
 export default () => {
   const isLoading = useSelector((state) => state.website.loading);
-  const editedShop = useSelector((state) => state.shopEdit.shop);
+  const editedShops = useSelector((state) => state.shopEdit.shops);
   // const isDirty = useSelector((state) => state.shopEdit.isDirty);
   const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
@@ -62,10 +62,9 @@ export default () => {
     return <Text>Error cargando {slug} (2)</Text>;
   }
 
-  let tempShop = { ...shop, ...editedShop };
+  const editedShop = editedShops ? editedShops[shop.id] : {};
 
-  // console.log(editedShop);
-  // console.log(tempShop);
+  let tempShop = { ...shop, ...editedShop };
 
   let products = shop?.productsByShopid?.nodes ?? [];
 

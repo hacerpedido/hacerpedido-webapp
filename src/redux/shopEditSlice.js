@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  shop: undefined,
-  isDirty: false,
+  shops: {},
 };
 
 const shopEditSlice = createSlice({
@@ -10,14 +9,16 @@ const shopEditSlice = createSlice({
   initialState: initialState,
   reducers: {
     setTempShop(state, action) {
-      state.shop = action.payload;
-    },
-    setDirty(state, action) {
-      state.isDirty = action.payload;
+      // console.log(state.shops);
+      let shopId = action.payload.id.toString();
+      if (state.shops === undefined) {
+        state.shops = {};
+      }
+      state.shops[shopId] = action.payload.values;
     },
   },
 });
 
-export const { setTempShop, setDirty } = shopEditSlice.actions;
+export const { setTempShop } = shopEditSlice.actions;
 
 export default shopEditSlice.reducer;

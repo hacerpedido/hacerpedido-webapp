@@ -35,7 +35,7 @@ export default ({ shop, products }) => {
   }
 
   if (isDirty) {
-    dispatch(setTempShop(tempValues));
+    dispatch(setTempShop({ id: shop.id, values: tempValues }));
   }
 
   return (
