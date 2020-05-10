@@ -16,9 +16,13 @@ const shopEditSlice = createSlice({
       }
       state.shops[shopId] = action.payload.values;
     },
+    saveTempShop(state, action) {
+      let shopId = action.payload.id.toString();
+      state.shops[shopId] = {};
+    },
   },
 });
 
-export const { setTempShop } = shopEditSlice.actions;
+export const { setTempShop, saveTempShop } = shopEditSlice.actions;
 
 export default shopEditSlice.reducer;

@@ -98,6 +98,26 @@ export const createShop = /* GraphQL */ gql`
   }
 `;
 
+export const updateShop = /* GraphQL */ gql`
+  mutation UpdateShop($input: UpdateShopByIdInput!) {
+    updateShopById(input: $input) {
+      shop {
+        id
+        name
+        address
+        notes
+        opentimes
+        deliverycost
+        visibility
+        logo
+        background
+        ordersphonenumber
+        orderswhatsappnumber
+      }
+    }
+  }
+`;
+
 export const deleteProductById = /* GraphQL */ gql`
   mutation DeleteProduct($input: DeleteProductByIdInput!) {
     deleteProductById(input: $input) {
