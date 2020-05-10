@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { loading, query } from "../../shopsSlice";
+import { loading, query } from "../../redux/shopsSlice";
 import { listShopsWithProducts } from "../../graphql/shop";
 import ShopView from "./Shop";
 import ShopFooter from "./ShopFooter";
@@ -13,8 +13,8 @@ import { useApolloClient } from "@apollo/react-hooks";
 import colors from "../../assets/colors";
 
 export default () => {
-  const isLoading = useSelector((state) => state.loading);
-  const shops = useSelector((state) => state.shops);
+  const isLoading = useSelector((state) => state.website.loading);
+  const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
   const client = useApolloClient();
 

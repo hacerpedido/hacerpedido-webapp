@@ -9,7 +9,7 @@ import Loading from "../../components/Loading";
 import colors from "../../assets/colors";
 
 export default ({ shop, products, isPreview }) => {
-  const isLoading = useSelector((state) => state.loading);
+  const isLoading = useSelector((state) => state.website.loading);
 
   return (
     <ScrollView>

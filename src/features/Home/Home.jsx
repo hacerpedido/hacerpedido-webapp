@@ -21,7 +21,7 @@ import {
   loading,
   query,
   setHomeFirstVisibleItem,
-} from "../../shopsSlice";
+} from "../../redux/shopsSlice";
 import colors from "../../assets/colors";
 
 let touchStartingPoint = 0;
@@ -49,10 +49,10 @@ const onViewableItemsChanged = ({ viewableItems, changed }) => {
 
 export default () => {
   const homeFirstVisibleItem = useSelector(
-    (state) => state.homeFirstVisibleItem
+    (state) => state.website.homeFirstVisibleItem
   );
-  const category = useSelector((state) => state.selectedFilter);
-  const shops = useSelector((state) => state.shops);
+  const category = useSelector((state) => state.website.selectedFilter);
+  const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
   const history = useHistory();
   const client = useApolloClient();
