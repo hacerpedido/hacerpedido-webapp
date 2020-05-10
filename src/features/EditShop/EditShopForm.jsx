@@ -3,16 +3,19 @@ import { useDispatch } from "react-redux";
 import { Text, View, StyleSheet, Button, ScrollView } from "react-native";
 // import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useForm, Controller } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 
 import Input from "../../components/Input";
 import Form from "../../components/Form";
 import validation from "./validation";
 import { setTempShop } from "../../redux/shopEditSlice";
+import { query } from "../../redux/shopsSlice";
 import { saveShop } from "../../api/shops";
 
 import theme from "../../assets/theme";
 
 export default ({ shop, products }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const { handleSubmit, register, setValue, errors, control, watch } = useForm({
     mode: "onChange",
@@ -29,8 +32,12 @@ export default ({ shop, products }) => {
       region: shop.region,
     };
 
+    // console.log(editedShop);
     // alert(JSON.stringify(data));
-    saveShop(dataToSave);
+    saveShop(dataToSave, history);
+
+    let editedShop = { ...shop, ...dataToSave };
+    dispatch(query([editedShop]));
   };
 
   let isDirty = false;
