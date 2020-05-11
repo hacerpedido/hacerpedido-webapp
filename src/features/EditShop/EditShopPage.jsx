@@ -10,7 +10,7 @@ import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
 import theme from "../../assets/theme";
-import EditProductsForm from "./EditProductsForm";
+// import EditProductsForm from "./EditProductsForm";
 import EditShopForm from "./EditShopForm";
 
 export default () => {
