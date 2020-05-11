@@ -28,6 +28,7 @@ const shopsSlice = createSlice({
       state.shops = newShops.concat(
         state.shops.filter((bo) => newShops.every((ao) => ao.id !== bo.id))
       );
+      // console.log(newShops);
 
       state.loading = false;
     },

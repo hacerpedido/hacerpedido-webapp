@@ -21,6 +21,7 @@ export const listShopsWithProducts = /* GraphQL */ gql`
         background
         ordersphonenumber
         orderswhatsappnumber
+        typeformtoken
         productsByShopid(orderBy: ITEMNUMBER_ASC) {
           nodes {
             id
@@ -92,6 +93,26 @@ export const createShop = /* GraphQL */ gql`
         orderswhatsappnumber
         typeformtoken
         submittedat
+      }
+    }
+  }
+`;
+
+export const updateShop = /* GraphQL */ gql`
+  mutation UpdateShop($input: UpdateShopByIdInput!) {
+    updateShopById(input: $input) {
+      shop {
+        id
+        name
+        address
+        notes
+        opentimes
+        deliverycost
+        visibility
+        logo
+        background
+        ordersphonenumber
+        orderswhatsappnumber
       }
     }
   }
