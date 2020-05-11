@@ -77,3 +77,11 @@ export function removeEmptyStringElements(obj) {
   }
   return obj;
 }
+
+export function generateWhatsappURL(number) {
+  const sanitizedNumber = sanitizeWhatsAppNumber(number);
+  const message = "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
+  const encodedMessage = encodeURIComponent(message);
+
+  return `https://wa.me/${sanitizedNumber}?text=${encodedMessage}`;
+}

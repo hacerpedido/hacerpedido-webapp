@@ -1,36 +1,28 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 
+import { generateWhatsappURL } from "../../utils";
 import * as Icons from "../../assets/icons/";
-import { sanitizeWhatsAppNumber } from "../../utils";
 
 export default ({ shop }) => {
+  const { ordersphonenumber, orderswhatsappnumber } = shop;
   let callUrl;
-  if (shop.ordersphonenumber) {
-    callUrl = "tel:" + encodeURIComponent(shop.ordersphonenumber);
-  }
-
-  let whatsappUrl;
-
-  if (shop.orderswhatsappnumber) {
-    let number = sanitizeWhatsAppNumber(shop.orderswhatsappnumber);
-
-    // TODO: Extraer y encapsular pensando en el carrito de compras
-    whatsappUrl =
-      "https://wa.me/" +
-      number +
-      "?text=%C2%A1Hola%21%20Quiero%20hacer%20un%20pedido%20via%20HacerPedido%20%F0%9F%92%AA";
+  if (ordersphonenumber) {
+    callUrl = "tel:" + encodeURIComponent(ordersphonenumber);
   }
 
   return (
     <View style={styles.container}>
-      {shop.orderswhatsappnumber && (
+      {orderswhatsappnumber && (
         <TouchableHighlight
           underlayColor={"none"}
-          style={{ flex: shop.ordersphonenumber ? 0.67 : 1 }}
+          style={{ flex: ordersphonenumber ? 0.67 : 1 }}
         >
           <div className="bounza">
-            <a href={whatsappUrl} style={{ textDecoration: "none" }}>
+            <a
+              href={generateWhatsappURL(orderswhatsappnumber)}
+              style={{ textDecoration: "none" }}
+            >
               <View style={[styles.buttonWhatsApp, styles.button]}>
                 <Icons.WhatsappFill color={"white"} />
                 <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
@@ -40,9 +32,9 @@ export default ({ shop }) => {
         </TouchableHighlight>
       )}
 
-      {shop.ordersphonenumber && (
+      {ordersphonenumber && (
         <TouchableHighlight
-          style={{ flex: shop.orderswhatsappnumber ? 0.33 : 1 }}
+          style={{ flex: orderswhatsappnumber ? 0.33 : 1 }}
           underlayColor={"none"}
         >
           <a href={callUrl} style={{ textDecoration: "none" }}>
