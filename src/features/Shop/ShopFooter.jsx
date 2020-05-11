@@ -11,44 +11,42 @@ export default ({ shop }) => {
     callUrl = "tel:" + encodeURIComponent(ordersphonenumber);
   }
 
-  if (orderswhatsappnumber) {
-    return (
-      <View style={styles.container}>
-        {orderswhatsappnumber && (
-          <TouchableHighlight
-            underlayColor={"none"}
-            style={{ flex: ordersphonenumber ? 0.67 : 1 }}
-          >
-            <div className="bounza">
-              <a
-                href={generateWhatsappURL(orderswhatsappnumber)}
-                style={{ textDecoration: "none" }}
-              >
-                <View style={[styles.buttonWhatsApp, styles.button]}>
-                  <Icons.WhatsappFill color={"white"} />
-                  <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
-                </View>
-              </a>
-            </div>
-          </TouchableHighlight>
-        )}
-
-        {ordersphonenumber && (
-          <TouchableHighlight
-            style={{ flex: orderswhatsappnumber ? 0.33 : 1 }}
-            underlayColor={"none"}
-          >
-            <a href={callUrl} style={{ textDecoration: "none" }}>
-              <View style={[styles.buttonCall, styles.button]}>
-                <Icons.PhoneCall color={"white"} />
-                <Text style={styles.buttonText}>Llamar</Text>
+  return (
+    <View style={styles.container}>
+      {orderswhatsappnumber && (
+        <TouchableHighlight
+          underlayColor={"none"}
+          style={{ flex: ordersphonenumber ? 0.67 : 1 }}
+        >
+          <div className="bounza">
+            <a
+              href={generateWhatsappURL(orderswhatsappnumber)}
+              style={{ textDecoration: "none" }}
+            >
+              <View style={[styles.buttonWhatsApp, styles.button]}>
+                <Icons.WhatsappFill color={"white"} />
+                <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
               </View>
             </a>
-          </TouchableHighlight>
-        )}
-      </View>
-    );
-  }
+          </div>
+        </TouchableHighlight>
+      )}
+
+      {ordersphonenumber && (
+        <TouchableHighlight
+          style={{ flex: orderswhatsappnumber ? 0.33 : 1 }}
+          underlayColor={"none"}
+        >
+          <a href={callUrl} style={{ textDecoration: "none" }}>
+            <View style={[styles.buttonCall, styles.button]}>
+              <Icons.PhoneCall color={"white"} />
+              <Text style={styles.buttonText}>Llamar</Text>
+            </View>
+          </a>
+        </TouchableHighlight>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
