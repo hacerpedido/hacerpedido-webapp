@@ -12,7 +12,7 @@ import * as Icons from "../../assets/icons/";
 import {
   getBackgroundForCategory,
   getBackgroundColorForCategory,
-} from "../../categoriesHelper";
+} from "../../utils/categoriesHelper";
 import DecoratedLabel from "../../components/DecoratedLabel";
 import colors from "../../assets/colors";
 

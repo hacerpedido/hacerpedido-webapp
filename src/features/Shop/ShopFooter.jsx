@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 
-import { generateWhatsappURL } from "../../utils";
+import { generateWhatsappURL } from "../../utils/utils";
 import * as Icons from "../../assets/icons/";
 
 export default ({ shop }) => {
