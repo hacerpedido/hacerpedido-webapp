@@ -27,6 +27,7 @@ import shopsReducer from "./redux/shopsSlice";
 import shopEditReducer from "./redux/shopEditSlice";
 import App from "./app/App";
 
+import "react-datasheet/lib/react-datasheet.css";
 import "./index.css";
 
 const persistConfig = {
