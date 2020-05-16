@@ -4,12 +4,12 @@ import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { loading, query } from "../../redux/shopsSlice";
-import { listShopsWithProducts } from "../../graphql/shop";
-import ShopView from "../Shop/Shop";
-import Loading from "../../components/Loading";
+import { loading, query } from "redux/shopsSlice";
+import { listShopsWithProducts } from "graphql/shop";
+import ShopView from "features/Shop/Shop";
+import Loading from "components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
-import theme from "../../assets/theme";
+import theme from "assets/theme";
 // import EditProductsForm from "./EditProductsForm";
 import EditShopForm from "./EditShopForm";
 

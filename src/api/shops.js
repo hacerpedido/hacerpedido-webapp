@@ -1,5 +1,5 @@
 import { updateShop } from "../graphql/shop.js";
-import HPGraphqlClient from "./index";
+import { HPGraphqlClient } from "./index";
 
 export function saveShop(shop) {
   HPGraphqlClient.mutate({
