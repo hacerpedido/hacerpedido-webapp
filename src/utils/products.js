@@ -12,7 +12,7 @@ export function extractSections(products) {
       // ignore the first case
       if (category !== "") {
         sections.push({
-          category: product.category,
+          category: category,
           products: items,
         });
       }
@@ -29,6 +29,8 @@ export function extractSections(products) {
       products: items,
     });
   }
+
+  //   console.log(JSON.stringify(sections, null, 2));
 
   return sections;
 }

@@ -1,28 +1,17 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Text, View, StyleSheet, Button, ScrollView } from "react-native";
-// import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useForm, Controller } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { Text, View, StyleSheet, Button } from "react-native";
+import { Controller } from "react-hook-form";
 
-import Input from "../../components/Input";
-import Form from "../../components/Form";
-import validation from "./validation";
-import { setTempShop } from "../../redux/shopEditSlice";
-import { query } from "../../redux/shopsSlice";
-import { saveShop } from "../../api/shops";
+import Input from "components/Input";
+import { setTempShop } from "redux/shopEditSlice";
+import { query } from "redux/shopsSlice";
+import { saveShop } from "api/shops";
 
-import theme from "../../assets/theme";
+import theme from "assets/theme";
 
-export default ({ shop, products }) => {
-  const history = useHistory();
+export default ({ shop, watch, control, handleSubmit }) => {
   const dispatch = useDispatch();
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
-    mode: "onChange",
-    defaultValues: {
-      ...shop,
-    },
-  });
 
   const onSubmit = (data) => {
     let dataToSave = {
@@ -34,7 +23,7 @@ export default ({ shop, products }) => {
 
     // console.log(editedShop);
     // alert(JSON.stringify(data));
-    saveShop(dataToSave, history);
+    saveShop(dataToSave);
 
     let editedShop = { ...shop, ...dataToSave };
     dispatch(query([editedShop]));
@@ -58,68 +47,64 @@ export default ({ shop, products }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Datos de tu Comercio</Text>
       <View style={styles.formContainer}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.formContainer}>
-            <Form {...{ register, validation, setValue, errors, control }}>
-              <View style={styles.formColumnLeft}>
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="name"
-                  label="Nombre del Comercio:"
-                />
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="address"
-                  label="Dirección:"
-                />
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="opentimes"
-                  label="Horario:"
-                />
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="deliverycost"
-                  label="Costo del Delivery:"
-                />
-              </View>
-              <View style={styles.formColumnRight}>
-                <Controller
-                  as={Input}
-                  control={control}
-                  placeholder={"¿Querés hacer alguna aclaración?"}
-                  name="notes"
-                  multiline
-                  numberOfLines={4}
-                  // onChangeText={(text) => setValue("notes", text)}
-                  label="Notas:"
-                />
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="orderswhatsappnumber"
-                  label="Teléfono para WhatsApp:"
-                />
-                <Controller
-                  as={Input}
-                  control={control}
-                  name="ordersphonenumber"
-                  label="Teléfono Fijo:"
-                />
-                {/*
+        <View style={styles.formContainer}>
+          <View style={styles.formColumnLeft}>
+            <Controller
+              as={Input}
+              control={control}
+              name="name"
+              label="Nombre del Comercio:"
+            />
+            <Controller
+              as={Input}
+              control={control}
+              name="address"
+              label="Dirección:"
+            />
+            <Controller
+              as={Input}
+              control={control}
+              name="opentimes"
+              label="Horario:"
+            />
+            <Controller
+              as={Input}
+              control={control}
+              name="deliverycost"
+              label="Costo del Delivery:"
+            />
+          </View>
+          <View style={styles.formColumnRight}>
+            <Controller
+              as={Input}
+              control={control}
+              placeholder={"¿Querés hacer alguna aclaración?"}
+              name="notes"
+              multiline
+              numberOfLines={4}
+              // onChangeText={(text) => setValue("notes", text)}
+              label="Notas:"
+            />
+            <Controller
+              as={Input}
+              control={control}
+              name="orderswhatsappnumber"
+              label="Teléfono para WhatsApp:"
+            />
+            <Controller
+              as={Input}
+              control={control}
+              name="ordersphonenumber"
+              label="Teléfono Fijo:"
+            />
+            {/*
                     logo
                     background
                   */}
 
-                <Button title="Grabar" onPress={handleSubmit(onSubmit)} />
-              </View>
-            </Form>
+            <Button title="Grabar" onPress={handleSubmit(onSubmit)} />
           </View>
-        </ScrollView>
+        </View>
       </View>
     </View>
   );
@@ -128,7 +113,6 @@ export default ({ shop, products }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightBackground,
-    flex: 1,
     justifyContent: "center",
     paddingTop: 10,
   },

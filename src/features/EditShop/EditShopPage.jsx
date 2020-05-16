@@ -3,15 +3,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
 
 import { loading, query } from "redux/shopsSlice";
 import { listShopsWithProducts } from "graphql/shop";
 import ShopView from "features/Shop/Shop";
+import Form from "components/Form";
 import Loading from "components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
 import theme from "assets/theme";
-// import EditProductsForm from "./EditProductsForm";
+import EditProductsForm from "./EditProductsForm";
 import EditShopForm from "./EditShopForm";
+import validation from "./validation";
 
 export default () => {
   const isLoading = useSelector((state) => state.website.loading);
@@ -58,6 +61,13 @@ export default () => {
     );
   }
 
+  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      ...shop,
+    },
+  });
+
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
   }
@@ -76,8 +86,15 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <EditShopForm shop={tempShop} />
-          {/* <EditProductsForm shop={tempShop} products={products} /> */}
+          <Form {...{ register, validation, setValue, errors, control }}>
+            <EditShopForm
+              shop={tempShop}
+              watch={watch}
+              control={control}
+              handleSubmit={handleSubmit}
+            />
+            <EditProductsForm shop={tempShop} products={products} />
+          </Form>
         </View>
         <View style={styles.rightContainer}>
           <ShopView products={products} shop={tempShop} isPreview={true} />
