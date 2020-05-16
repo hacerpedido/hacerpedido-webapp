@@ -4,21 +4,14 @@ import { View, TextInput, Text, StyleSheet } from "react-native";
 import theme from "../assets/theme";
 
 export default React.forwardRef((props, ref) => {
-  const {
-    label,
-    labelStyle,
-    error,
-    numberOfLines,
-    value,
-    ...inputProps
-  } = props;
+  const { label, error, numberOfLines, value, ...inputProps } = props;
 
   let borderColor = error ? theme.colors.error : theme.colors.lightGrey2;
   let height = numberOfLines ? numberOfLines * 31 : 40;
 
   return (
     <View style={styles.container}>
-      {label && <Text style={[styles.label, labelStyle]}>{label}</Text>}
+      {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
         autoCapitalize="none"
         ref={ref}
@@ -26,7 +19,7 @@ export default React.forwardRef((props, ref) => {
         value={value || ""}
         {...inputProps}
       />
-      <Text style={styles.textError}>{error && error.message}</Text>
+      {error && <Text style={styles.textError}>{error.message}</Text>}
     </View>
   );
 });

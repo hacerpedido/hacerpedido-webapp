@@ -12,8 +12,8 @@ import Form from "components/Form";
 import Loading from "components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
 import theme from "assets/theme";
-import EditProductsForm from "./EditProductsForm";
-import EditShopForm from "./EditShopForm";
+import EditProductsForm from "./EditProducts";
+import EditShopForm from "./EditShop";
 import validation from "./validation";
 
 export default () => {
@@ -93,7 +93,7 @@ export default () => {
               control={control}
               handleSubmit={handleSubmit}
             />
-            <EditProductsForm shop={tempShop} products={products} />
+            <EditProductsForm products={products} control={control} />
           </Form>
         </View>
         <View style={styles.rightContainer}>
