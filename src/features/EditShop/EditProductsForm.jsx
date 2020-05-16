@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import ReactDataSheet from "react-datasheet";
 import "react-datasheet/lib/react-datasheet.css";
 
-import theme from "../../assets/theme";
+import theme from "assets/theme";
 
 export default ({ shop, products }) => {
   let grid = products.map((p) => [
