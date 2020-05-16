@@ -15,14 +15,14 @@ import { useApolloClient } from "@apollo/react-hooks";
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
-import { listShopsForHome } from "../../graphql/home";
+import { listShopsForHome } from "graphql/home";
 import {
   setCategory,
   loading,
   query,
   setHomeFirstVisibleItem,
-} from "../../redux/shopsSlice";
-import colors from "../../assets/colors";
+} from "redux/shopsSlice";
+import colors from "assets/colors";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
