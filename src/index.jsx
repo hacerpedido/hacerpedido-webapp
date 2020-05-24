@@ -5,8 +5,8 @@ import {
   configureStore,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
-import { Helmet, HelmetProvider } from "react-helmet-async";
+import {Provider} from "react-redux";
+import {Helmet, HelmetProvider} from "react-helmet-async";
 import {
   persistStore,
   persistReducer,
@@ -18,9 +18,10 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { PersistGate } from "redux-persist/integration/react";
+import {PersistGate} from "redux-persist/integration/react";
 import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "@apollo/react-hooks";
+import {ApolloProvider} from "@apollo/react-hooks";
+import * as Sentry from "@sentry/browser";
 
 import * as serviceWorker from "./serviceWorker";
 import shopsReducer from "./redux/shopsSlice";
@@ -28,6 +29,8 @@ import shopEditReducer from "./redux/shopEditSlice";
 import App from "./app/App";
 
 import "./index.css";
+
+Sentry.init({dsn: process.env.HP_SENTRY_DSN});
 
 const persistConfig = {
   key: "root",
