@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  loading: false,
+  loading: true,
   shops: [],
   selectedFilter: "Comida",
   firstVisibleItem: 0
@@ -9,7 +9,7 @@ const initialState = {
 
 const homeSlice = createSlice({
   name: "home",
-  initialState: initialState,
+  initialState,
   reducers: {
     setFirstVisibleItem(state, {payload}) {
       state.firstVisibleItem = payload;
@@ -20,6 +20,12 @@ const homeSlice = createSlice({
     },
     loading(state, {payload}) {
       state.loading = payload;
+    },
+    query(state, action) {	
+      let newShops = action.payload;	
+      state.shops = newShops.concat(	
+        state.shops.filter((bo) => newShops.every((ao) => ao.id !== bo.id))	
+      );	
     },
   },
 });

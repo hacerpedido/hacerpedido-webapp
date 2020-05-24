@@ -75,6 +75,7 @@ export default () => {
       });
       let shops = shopData.data.allShops.nodes;
       dispatch(query(shops));
+      dispatch(loading(false));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
