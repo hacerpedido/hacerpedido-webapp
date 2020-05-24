@@ -14,7 +14,6 @@ import {
   getBackgroundForCategory,
   getBackgroundColorForCategory,
 } from "categoriesHelper";
-import {generateCallUrl} from "utils";
 import DecoratedLabel from "components/DecoratedLabel";
 
 function getBackgroundForShop({background, category}) {
@@ -24,7 +23,7 @@ function getBackgroundForShop({background, category}) {
 }
 
 export default ({shop, isPreview}) => {
-  const {ordersphonenumber, background, category} = shop;
+  const {background, category} = shop;
   const history = useHistory();
   const address = shop.address ?? shop.region;
 
