@@ -1,12 +1,11 @@
 import React from "react";
-import {useDispatch} from "react-redux";
-import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 
 import colors from "assets/colors";
 
 export default ({product, promo = false}) => {
   const containerStyle = promo ? styles.card : styles.product;
-  const {id, name, description, price, amount} = product;
+  const {id, name, description, price} = product;
 
   return (
     <View key={id} style={[styles.container, containerStyle]}>

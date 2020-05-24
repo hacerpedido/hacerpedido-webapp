@@ -8,14 +8,15 @@ import {useApolloClient} from "@apollo/react-hooks";
 import ShopView from "./Shop";
 import ShopFooter from "./ShopFooter";
 import colors from "assets/colors";
-import {loading, setShop} from "redux/shopSlice";
+import {loading} from "redux/homeSlice";
+import {setShop} from "redux/shopSlice";
 import {getShopWithDetails} from "graphql/shop";
 import Loading from "components/Loading";
 
 export default () => {
   const dispatch = useDispatch();
   const client = useApolloClient();
-  const isLoading = useSelector((state) => state.shop.loading);
+  const isLoading = useSelector((state) => state.home.loading);
   const shop = useSelector((state) => state.shop.shop);
   let {slug} = useParams();
 
