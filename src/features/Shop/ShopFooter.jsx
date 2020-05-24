@@ -1,27 +1,23 @@
 import React from "react";
-import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
+import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
 
-import { generateWhatsappURL } from "../../utils";
-import * as Icons from "../../assets/icons/";
+import {generateWhatsappURL, generateCallUrl} from "utils";
+import * as Icons from "assets/icons/";
 
-export default ({ shop }) => {
-  const { ordersphonenumber, orderswhatsappnumber } = shop;
-  let callUrl;
-  if (ordersphonenumber) {
-    callUrl = "tel:" + encodeURIComponent(ordersphonenumber);
-  }
+export default ({shop}) => {
+  const {ordersphonenumber, orderswhatsappnumber} = shop;
 
   return (
     <View style={styles.container}>
       {orderswhatsappnumber && (
         <TouchableHighlight
           underlayColor={"none"}
-          style={{ flex: ordersphonenumber ? 0.67 : 1 }}
+          style={{flex: ordersphonenumber ? 0.67 : 1}}
         >
           <div className="bounza">
             <a
               href={generateWhatsappURL(orderswhatsappnumber)}
-              style={{ textDecoration: "none" }}
+              style={{textDecoration: "none"}}
             >
               <View style={[styles.buttonWhatsApp, styles.button]}>
                 <Icons.WhatsappFill color={"white"} />
@@ -34,10 +30,13 @@ export default ({ shop }) => {
 
       {ordersphonenumber && (
         <TouchableHighlight
-          style={{ flex: orderswhatsappnumber ? 0.33 : 1 }}
+          style={{flex: orderswhatsappnumber ? 0.33 : 1}}
           underlayColor={"none"}
         >
-          <a href={callUrl} style={{ textDecoration: "none" }}>
+          <a
+            href={generateCallUrl(ordersphonenumber)}
+            style={{textDecoration: "none"}}
+          >
             <View style={[styles.buttonCall, styles.button]}>
               <Icons.PhoneCall color={"white"} />
               <Text style={styles.buttonText}>Llamar</Text>

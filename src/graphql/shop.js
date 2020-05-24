@@ -1,6 +1,36 @@
 import { gql } from "apollo-boost";
 
-/* eslint-disable */
+export const getShopWithDetails = /* GraphQL */ gql`
+  query shopBySlug($slug: String!) {
+    shopBySlug(slug: $slug) {
+      id
+      name
+      slug
+      region
+      category
+      address
+      notes
+      opentimes
+      deliverycost
+      visibility
+      logo
+      background
+      ordersphonenumber
+      orderswhatsappnumber
+      typeformtoken
+      productsByShopid(orderBy: ITEMNUMBER_ASC) {
+        nodes {
+          id
+          category
+          name
+          price
+          description
+          itemnumber
+        }
+      }
+    }
+  }
+`;
 
 export const listShopsWithProducts = /* GraphQL */ gql`
   query ListShops($slug: String) {

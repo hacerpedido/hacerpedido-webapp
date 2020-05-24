@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { loading, query } from "../../redux/shopsSlice";
-import { listShopsWithProducts } from "../../graphql/shop";
+import { setShop, loading } from "../../redux/shopSlice";
+import { getShopWithDetails } from "../../graphql/shop";
 import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
 import { useApolloClient } from "@apollo/react-hooks";
@@ -14,9 +14,9 @@ import theme from "../../assets/theme";
 import EditShopForm from "./EditShopForm";
 
 export default () => {
-  const isLoading = useSelector((state) => state.website.loading);
+  const isLoading = useSelector((state) => state.shop.loading);
   const editedShops = useSelector((state) => state.shopEdit.shops);
-  const shops = useSelector((state) => state.website.shops);
+  const shop = useSelector((state) => state.shop.shop);
   const dispatch = useDispatch();
   const client = useApolloClient();
 
@@ -35,20 +35,16 @@ export default () => {
 
     async function getData() {
       const shopData = await client.query({
-        query: listShopsWithProducts,
-        variables: {
-          slug,
-        },
+        query: getShopWithDetails,
+        variables: {slug},
       });
-      let fetchedShops = shopData.data.allShops.nodes;
-      dispatch(query(fetchedShops));
+      dispatch(setShop(shopData.data.shopBySlug));
+      dispatch(loading(false));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   }, [slug, dispatch, client]);
-
-  const shop = shops.find((x) => x.slug === slug);
 
   if (shop === undefined) {
     return isLoading ? (
