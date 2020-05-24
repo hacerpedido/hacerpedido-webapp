@@ -85,3 +85,7 @@ export function generateWhatsappURL(number) {
 
   return `https://wa.me/${sanitizedNumber}?text=${encodedMessage}`;
 }
+
+export function generateCallUrl(number) {
+  return `tel: ${encodeURIComponent(number)}`;
+}

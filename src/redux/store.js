@@ -14,7 +14,8 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import shopsReducer from "./shopsSlice";
+import homeReducer from "./homeSlice";
+import shopReducer from "./shopSlice";
 import shopEditReducer from "./shopEditSlice";
 
 const persistConfig = {
@@ -25,7 +26,8 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  website: shopsReducer,
+  home: homeReducer,
+  shop: shopReducer,
   shopEdit: shopEditReducer,
 });
 

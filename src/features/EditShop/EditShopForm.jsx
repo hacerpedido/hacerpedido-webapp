@@ -9,7 +9,7 @@ import Input from "../../components/Input";
 import Form from "../../components/Form";
 import validation from "./validation";
 import { setTempShop } from "../../redux/shopEditSlice";
-import { query } from "../../redux/shopsSlice";
+import { setShop, loading } from "../../redux/shopSlice";
 import { saveShop } from "../../api/shops";
 
 import theme from "../../assets/theme";
@@ -32,12 +32,12 @@ export default ({ shop, products }) => {
       region: shop.region,
     };
 
+    let editedShop = { ...shop, ...dataToSave };
     // console.log(editedShop);
     // alert(JSON.stringify(data));
     saveShop(dataToSave, history);
-
-    let editedShop = { ...shop, ...dataToSave };
-    dispatch(query([editedShop]));
+    dispatch(loading(false));
+    dispatch(setShop([editedShop]));
   };
 
   let isDirty = false;
