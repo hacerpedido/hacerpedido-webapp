@@ -1,61 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import {Helmet, HelmetProvider} from "react-helmet-async";
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import {PersistGate} from "redux-persist/integration/react";
 import ApolloClient from "apollo-boost";
 import {ApolloProvider} from "@apollo/react-hooks";
 import * as Sentry from "@sentry/browser";
-
 import * as serviceWorker from "./serviceWorker";
-import shopsReducer from "./redux/shopsSlice";
-import shopEditReducer from "./redux/shopEditSlice";
 import App from "./app/App";
+import {store, persistor} from 'redux/store'
 
 import "./index.css";
 
 Sentry.init({dsn: process.env.HP_SENTRY_DSN});
-
-const persistConfig = {
-  key: "root",
-  version: 1,
-  storage,
-  blacklist: ["shops", "loading", "homeFirstVisibleItem", "homeInitialOffset"], // TODO: ver como limitar
-};
-
-const rootReducer = combineReducers({
-  website: shopsReducer,
-  shopEdit: shopEditReducer,
-});
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-const store = configureStore({
-  reducer: persistedReducer,
-  middleware: getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),
-});
-
-let persistor = persistStore(store);
 
 const client = new ApolloClient({
   uri: "https://backend-restapi.hacerpedido.com/graphql",
