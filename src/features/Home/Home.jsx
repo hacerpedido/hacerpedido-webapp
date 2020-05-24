@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import React, {useEffect} from "react";
+import {useSelector, useDispatch} from "react-redux";
+import {useHistory} from "react-router-dom";
 import {
   ActivityIndicator,
   FlatList,
@@ -9,25 +9,21 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { Helmet } from "react-helmet-async";
-import { useApolloClient } from "@apollo/react-hooks";
+import {Helmet} from "react-helmet-async";
+import {useApolloClient} from "@apollo/react-hooks";
 
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
-import { listShopsForHome } from "../../graphql/home";
-import {
-  setCategory,
-  loading,
-  query,
-  setHomeFirstVisibleItem,
-} from "../../redux/shopsSlice";
-import colors from "../../assets/colors";
+import {listShopsForHome} from "graphql/home";
+import {setCategory, loading, query, setFirstVisibleItem} from "redux/homeSlice";
+import {setShop} from "redux/shopSlice";
+import colors from "assets/colors";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
 
-let firstVisibleItem = 0;
+let firstVisibleItemIndex = 0;
 let ITEM_HEIGHT = 130;
 
 const renderHeader = (count) => {
@@ -41,28 +37,29 @@ const renderHeader = (count) => {
   );
 };
 
-const onViewableItemsChanged = ({ viewableItems, changed }) => {
+const onViewableItemsChanged = ({viewableItems, changed}) => {
   if (viewableItems !== undefined && viewableItems.length > 0) {
-    firstVisibleItem = viewableItems[0].index;
+    firstVisibleItemIndex = viewableItems[0].index;
   }
 };
 
 export default () => {
-  const homeFirstVisibleItem = useSelector(
-    (state) => state.website.homeFirstVisibleItem
+  const firstVisibleItem = useSelector(
+    (state) => state.home.firstVisibleItem
   );
-  const category = useSelector((state) => state.website.selectedFilter);
-  const shops = useSelector((state) => state.website.shops);
+  const category = useSelector((state) => state.home.selectedFilter);
+  const shops = useSelector((state) => state.home.shops);
   const dispatch = useDispatch();
   const history = useHistory();
   const client = useApolloClient();
 
   const onSelect = React.useCallback(
-    (slug) => {
+    (shop) => {
       let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
       if (distance <= 10) {
-        dispatch(setHomeFirstVisibleItem(firstVisibleItem));
-        history.push("/" + slug);
+        dispatch(setFirstVisibleItem(firstVisibleItemIndex));
+        dispatch(setShop(shop));
+        history.push("/" + shop.slug);
       }
     },
     [history, dispatch]
@@ -74,7 +71,7 @@ export default () => {
     async function getData() {
       const shopData = await client.query({
         query: listShopsForHome,
-        variables: { category },
+        variables: {category},
       });
       let shops = shopData.data.allShops.nodes;
       dispatch(query(shops));
@@ -88,7 +85,7 @@ export default () => {
     (x) => x.visibility === "public" && x.category === category
   );
 
-  let initialScrollIndex = homeFirstVisibleItem ?? 0;
+  let initialScrollIndex = firstVisibleItem ?? 0;
 
   let title = "Pedí a tu comercio favorito por WhatsApp";
 
@@ -102,7 +99,7 @@ export default () => {
         <HomeFilterBar
           selectedFilter={category}
           onSelectFilter={(selected) => {
-            firstVisibleItem = 0;
+            firstVisibleItemIndex = 0;
             dispatch(setCategory(selected));
           }}
         />
@@ -111,59 +108,59 @@ export default () => {
         {filteredShops.length === 0 && loading ? (
           <ActivityIndicator
             size="large"
-            color="#FFB233"
+            color={colors.orangeHp}
             style={styles.spinner}
           />
         ) : (
-          <>
-            {filteredShops.length > 0 && (
-              <FlatList
-                onViewableItemsChanged={onViewableItemsChanged}
-                viewabilityConfig={{
-                  itemVisiblePercentThreshold: 50,
-                }}
-                style={styles.list}
-                showsVerticalScrollIndicator={false}
-                ListHeaderComponent={renderHeader(filteredShops.length)}
-                ListFooterComponent={
-                  // TODO: Remover. Para que al hacer scroll se vea la última celda
-                  <View style={styles.lastView} />
-                }
-                data={filteredShops}
-                renderItem={({ item }) => (
-                  <TouchableHighlight
-                    delayPressIn={5000}
-                    underlayColor={"#fafafa"}
-                    onTouchStart={(evt) => {
-                      if (evt.touches.length > 0) {
-                        touchStartingPoint = evt.touches[0].clientY;
-                        touchCurrentPoint = touchStartingPoint;
-                      }
-                    }}
-                    onTouchMove={(evt) => {
-                      if (evt.touches.length > 0) {
-                        touchCurrentPoint = evt.touches[0].clientY;
-                      }
-                    }}
-                    onPress={() => {
-                      onSelect(item.slug);
-                    }}
-                  >
-                    <ShopCard shop={item} />
-                  </TouchableHighlight>
-                )}
-                keyExtractor={(shop) => shop.id}
-                initialScrollIndex={initialScrollIndex ?? 0}
-                getItemLayout={(data, index) => ({
-                  length: ITEM_HEIGHT,
-                  offset: ITEM_HEIGHT * index + 110,
-                  index,
-                })}
-                scrollEventThrottle={160}
-              />
-            )}
-          </>
-        )}
+            <>
+              {filteredShops.length > 0 && (
+                <FlatList
+                  onViewableItemsChanged={onViewableItemsChanged}
+                  viewabilityConfig={{
+                    itemVisiblePercentThreshold: 50,
+                  }}
+                  style={styles.list}
+                  showsVerticalScrollIndicator={false}
+                  ListHeaderComponent={renderHeader(filteredShops.length)}
+                  ListFooterComponent={
+                    // TODO: Remover. Para que al hacer scroll se vea la última celda
+                    <View style={styles.lastView} />
+                  }
+                  data={filteredShops}
+                  renderItem={({item}) => (
+                    <TouchableHighlight
+                      delayPressIn={5000}
+                      underlayColor={colors.lightBackground}
+                      onTouchStart={(evt) => {
+                        if (evt.touches.length > 0) {
+                          touchStartingPoint = evt.touches[0].clientY;
+                          touchCurrentPoint = touchStartingPoint;
+                        }
+                      }}
+                      onTouchMove={(evt) => {
+                        if (evt.touches.length > 0) {
+                          touchCurrentPoint = evt.touches[0].clientY;
+                        }
+                      }}
+                      onPress={() => {
+                        onSelect(item);
+                      }}
+                    >
+                      <ShopCard shop={item} />
+                    </TouchableHighlight>
+                  )}
+                  keyExtractor={(shop) => shop.id}
+                  initialScrollIndex={initialScrollIndex ?? 0}
+                  getItemLayout={(data, index) => ({
+                    length: ITEM_HEIGHT,
+                    offset: ITEM_HEIGHT * index + 110,
+                    index,
+                  })}
+                  scrollEventThrottle={160}
+                />
+              )}
+            </>
+          )}
       </View>
     </View>
   );
