@@ -1,19 +1,10 @@
 import React from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import {useSelector} from "react-redux";
+import {Image, StyleSheet, Text, TouchableHighlight, View, } from "react-native";
 import {useHistory} from "react-router-dom";
-
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
-import {
-  getBackgroundForCategory,
-  getBackgroundColorForCategory,
-} from "categoriesHelper";
+import {getBackgroundForCategory, getBackgroundColorForCategory} from "categoriesHelper";
 import DecoratedLabel from "components/DecoratedLabel";
 
 function getBackgroundForShop({background, category}) {
@@ -22,10 +13,10 @@ function getBackgroundForShop({background, category}) {
   return getBackgroundForCategory(category);
 }
 
-export default ({shop, isPreview}) => {
-  const {background, category} = shop;
+export default ({isPreview}) => {
+  const shop = useSelector((state) => state.shop.shop);
+  const {name, background, category, address, region} = shop;
   const history = useHistory();
-  const address = shop.address ?? shop.region;
 
   const containerStyles = {
     ...styles.container,
@@ -59,10 +50,10 @@ export default ({shop, isPreview}) => {
             style={styles.logo}
           />
         </View>
-        <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
+        <Text style={styles.shopName}>{name.toLowerCase()}</Text>
         <DecoratedLabel
           iconName="pin"
-          text={address}
+          text={address ?? region}
           iconColor={colors.white}
           textColor={colors.white}
           fontSize={13}

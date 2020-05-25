@@ -17,7 +17,7 @@ export default () => {
   const dispatch = useDispatch();
   const client = useApolloClient();
   const isLoading = useSelector((state) => state.app.loading);
-  const shop = useSelector((state) => state.shop.shop);
+  const {name} = useSelector((state) => state.shop.shop);
   let {slug} = useParams();
 
   useLayoutEffect(() => {
@@ -36,7 +36,7 @@ export default () => {
     });
   }, [slug, dispatch, client]);
 
-  if (shop === undefined) {
+  if (name === undefined) {
     return isLoading ? (
       <Loading />
     ) : (
@@ -47,32 +47,32 @@ export default () => {
   return (
     <>
       <Helmet>
-        <title>{shop.name}</title>
+        <title>{name}</title>
         <meta
           property="og:image"
           content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"
         />
-        <meta property="og:description" content={shop.name} />
+        <meta property="og:description" content={name} />
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content={shop.name} />
+        <meta property="og:title" content={name} />
         <meta
           property="og:url"
-          content={"https://hacerpedido.com/" + shop.slug}
+          content={"https://hacerpedido.com/" + slug}
         />
         <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={shop.name} />
-        <meta property="twitter:description" content={shop.name} />
+        <meta property="twitter:title" content={name} />
+        <meta property="twitter:description" content={name} />
         <meta
           property="twitter:url"
-          content={"https://hacerpedido.com/" + shop.slug}
+          content={"https://hacerpedido.com/" + slug}
         />
       </Helmet>
 
-      <ShopView shop={shop} />
+      <ShopView />
       {/* TODO: Quitar el view */}
       <View style={styles.footer}>
-        <ShopFooter shop={shop} />
+        <ShopFooter />
       </View>
     </>
   );
