@@ -4,8 +4,8 @@ import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
 
-import { setShop } from "../../redux/shopSlice";
-import { loading } from "../../redux/homeSlice";
+import { setShop } from "../../reducers/shopSlice";
+import { loading } from "../../reducers/appSlice";
 import { getShopWithDetails } from "../../graphql/shop";
 import ShopView from "../Shop/Shop";
 import Loading from "../../components/Loading";
@@ -15,7 +15,7 @@ import theme from "../../assets/theme";
 import EditShopForm from "./EditShopForm";
 
 export default () => {
-  const isLoading = useSelector((state) => state.home.loading);
+  const isLoading = useSelector((state) => state.app.loading);
   const editedShops = useSelector((state) => state.shopEdit.shops);
   const shop = useSelector((state) => state.shop.shop);
   const dispatch = useDispatch();
