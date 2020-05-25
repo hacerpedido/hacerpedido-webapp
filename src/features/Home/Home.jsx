@@ -12,12 +12,13 @@ import {
 import {Helmet} from "react-helmet-async";
 import {useApolloClient} from "@apollo/react-hooks";
 
+import {loading} from "reducers/appSlice";
+import {setCategory, query, setFirstVisibleItem} from "reducers/homeSlice";
+import {setShop} from "reducers/shopSlice";
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
 import {listShopsForHome} from "graphql/home";
-import {setCategory, loading, query, setFirstVisibleItem} from "redux/homeSlice";
-import {setShop} from "redux/shopSlice";
 import colors from "assets/colors";
 
 let touchStartingPoint = 0;

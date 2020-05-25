@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  loading: true,
   shops: [],
   selectedFilter: "Comida",
   firstVisibleItem: 0
@@ -18,9 +17,6 @@ const homeSlice = createSlice({
       state.firstVisibleItem = 0;
       state.selectedFilter = payload;
     },
-    loading(state, {payload}) {
-      state.loading = payload;
-    },
     query(state, action) {	
       let newShops = action.payload;	
       state.shops = newShops.concat(	
@@ -30,11 +26,6 @@ const homeSlice = createSlice({
   },
 });
 
-export const {
-  setCategory,
-  setFirstVisibleItem,
-  query,
-  loading,
-} = homeSlice.actions;
+export const { setCategory, setFirstVisibleItem, query } = homeSlice.actions;
 
 export default homeSlice.reducer;

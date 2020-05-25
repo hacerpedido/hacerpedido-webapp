@@ -8,9 +8,9 @@ import { useHistory } from "react-router-dom";
 import Input from "../../components/Input";
 import Form from "../../components/Form";
 import validation from "./validation";
-import { setTempShop } from "../../redux/shopEditSlice";
-import { setShop } from "../../redux/shopSlice";
-import { loading } from "../../redux/homeSlice";
+import { setTempShop } from "../../reducers/shopEditSlice";
+import { setShop } from "../../reducers/shopSlice";
+import { loading } from "../../reducers/appSlice";
 import { saveShop } from "../../api/shops";
 
 import theme from "../../assets/theme";

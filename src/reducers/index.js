@@ -1,19 +1,9 @@
+import { combineReducers, configureStore, getDefaultMiddleware, } from "@reduxjs/toolkit";
 import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from "@reduxjs/toolkit";
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
+  persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import appReducer from "./appSlice";
 import homeReducer from "./homeSlice";
 import shopReducer from "./shopSlice";
 import shopEditReducer from "./shopEditSlice";
@@ -22,10 +12,11 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["shops", "loading", "homeFirstVisibleItem", "homeInitialOffset"], // TODO: ver como limitar
+  blacklist: ["shops", "products", "loading", "firstVisibleItem"], // TODO: ver como limitar
 };
 
 const rootReducer = combineReducers({
+  app: appReducer,
   home: homeReducer,
   shop: shopReducer,
   shopEdit: shopEditReducer,

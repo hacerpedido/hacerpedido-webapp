@@ -9,7 +9,7 @@ import Loading from "components/Loading";
 import colors from "assets/colors";
 
 export default ({shop, isPreview}) => {
-  const isLoading = useSelector((state) => state.home.loading);
+  const isLoading = useSelector((state) => state.app.loading);
   let products = shop?.productsByShopid?.nodes ?? [];
   products = products.map(obj => ({...obj, amount: 0}))
 

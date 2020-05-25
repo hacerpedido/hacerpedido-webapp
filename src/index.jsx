@@ -8,7 +8,7 @@ import {ApolloProvider} from "@apollo/react-hooks";
 import * as Sentry from "@sentry/browser";
 import * as serviceWorker from "./serviceWorker";
 import App from "./app/App";
-import {store, persistor} from 'redux/store'
+import {store, persistor} from './reducers'
 
 import "./index.css";
 
