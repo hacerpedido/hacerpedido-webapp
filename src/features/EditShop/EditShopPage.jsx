@@ -23,7 +23,7 @@ export default () => {
 
   let { slug, token } = useParams();
 
-  if (slug === undefined || token === undefined) {
+  if (!isLoading && slug === undefined || token === undefined) {
     return <Text>Error cargando {slug} (1)</Text>;
   }
 

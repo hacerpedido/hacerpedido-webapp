@@ -1,11 +1,12 @@
 import React from "react";
+import {useSelector} from "react-redux";
 import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
-
 import {generateWhatsappURL, generateCallUrl} from "utils";
 import * as Icons from "assets/icons/";
+import colors from "assets/colors";
 
-export default ({shop}) => {
-  const {ordersphonenumber, orderswhatsappnumber} = shop;
+export default () => {
+  const {ordersphonenumber, orderswhatsappnumber} = useSelector((state) => state.shop.shop);
 
   return (
     <View style={styles.container}>
@@ -20,7 +21,7 @@ export default ({shop}) => {
               style={{textDecoration: "none"}}
             >
               <View style={[styles.buttonWhatsApp, styles.button]}>
-                <Icons.WhatsappFill color={"white"} />
+                <Icons.WhatsappFill color={colors.white} />
                 <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
               </View>
             </a>
@@ -38,7 +39,7 @@ export default ({shop}) => {
             style={{textDecoration: "none"}}
           >
             <View style={[styles.buttonCall, styles.button]}>
-              <Icons.PhoneCall color={"white"} />
+              <Icons.PhoneCall color={colors.white} />
               <Text style={styles.buttonText}>Llamar</Text>
             </View>
           </a>
