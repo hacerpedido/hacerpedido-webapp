@@ -12,12 +12,12 @@ import {
 import {Helmet} from "react-helmet-async";
 import {useApolloClient} from "@apollo/react-hooks";
 
-import {loading} from "reducers/appSlice";
-import {setCategory, query, setFirstVisibleItem} from "reducers/homeSlice";
-import {setShop} from "reducers/shopSlice";
 import HomeHeader from "./HomeHeader";
 import HomeFilterBar from "./HomeFilterBar";
 import ShopCard from "./ShopCard";
+import {loading} from "reducers/appSlice";
+import {setCategory, query, setFirstVisibleItem} from "reducers/homeSlice";
+import {setShop} from "reducers/shopSlice";
 import {listShopsForHome} from "graphql/home";
 import colors from "assets/colors";
 
@@ -60,7 +60,7 @@ export default () => {
       if (distance <= 10) {
         dispatch(setFirstVisibleItem(firstVisibleItemIndex));
         dispatch(setShop(shop));
-        history.push("/" + shop.slug);
+        history.push(`/${shop.slug}`);
       }
     },
     [history, dispatch]
