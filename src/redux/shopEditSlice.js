@@ -9,7 +9,6 @@ const shopEditSlice = createSlice({
   initialState: initialState,
   reducers: {
     setTempShop(state, action) {
-      // console.log(state.shops);
       let shopId = action.payload.id.toString();
       if (state.shops === undefined) {
         state.shops = {};
