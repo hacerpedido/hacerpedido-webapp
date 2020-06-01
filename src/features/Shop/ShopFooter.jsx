@@ -1,12 +1,12 @@
 import React from "react";
-import {useSelector} from "react-redux";
+// import {useSelector} from "react-redux";
 import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
-import {generateWhatsappURL, generateCallUrl} from "utils";
+import {generateWhatsappURL, generateCallUrl} from "utils/utils";
 import * as Icons from "assets/icons/";
 import colors from "assets/colors";
 
-export default () => {
-  const {ordersphonenumber, orderswhatsappnumber} = useSelector((state) => state.shop.shop);
+export default ({shop}) => {
+  const {ordersphonenumber, orderswhatsappnumber} = shop;
 
   return (
     <View style={styles.container}>
