@@ -1,85 +1,78 @@
-import React, { useLayoutEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { StyleSheet, Text, View } from "react-native";
-import { Helmet } from "react-helmet-async";
+import React, {useLayoutEffect} from "react";
+import {useSelector, useDispatch} from "react-redux";
+import {useParams} from "react-router-dom";
+import {StyleSheet, Text, View} from "react-native";
+import {Helmet} from "react-helmet-async";
 
-import { loading, query } from "../../redux/shopsSlice";
-import { listShopsWithProducts } from "../../graphql/shop";
+import {useApolloClient} from "@apollo/react-hooks";
 import ShopView from "./Shop";
 import ShopFooter from "./ShopFooter";
-import Loading from "../../components/Loading";
-import { useApolloClient } from "@apollo/react-hooks";
-import colors from "../../assets/colors";
+import colors from "assets/colors";
+import {loading} from "reducers/appSlice";
+import {setShop} from "reducers/shopSlice";
+import {getShopWithDetails} from "graphql/shop";
+import Loading from "components/Loading";
 
 export default () => {
-  const isLoading = useSelector((state) => state.website.loading);
-  const shops = useSelector((state) => state.website.shops);
   const dispatch = useDispatch();
   const client = useApolloClient();
-
-  let { slug } = useParams();
+  const isLoading = useSelector((state) => state.app.loading);
+  const {name} = useSelector((state) => state.shop.shop);
+  let {slug} = useParams();
 
   useLayoutEffect(() => {
     dispatch(loading(true));
 
     async function getData() {
       const shopData = await client.query({
-        query: listShopsWithProducts,
-        variables: {
-          slug,
-        },
+        query: getShopWithDetails,
+        variables: {slug},
       });
-      let fetchedShops = shopData.data.allShops.nodes;
-      dispatch(query(fetchedShops));
+      dispatch(setShop(shopData.data.shopBySlug));
+      dispatch(loading(false));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   }, [slug, dispatch, client]);
 
-  // Just in case
-  const shop = shops.find((x) => x.slug === slug);
-
-  if (shop === undefined) {
+  if (name === undefined) {
     return isLoading ? (
       <Loading />
     ) : (
-      <Text>Sin comercios en la base de datos para {slug}</Text>
-    );
+        <Text>Sin comercios en la base de datos para {slug}</Text>
+      );
   }
-
-  let products = shop?.productsByShopid?.nodes ?? [];
 
   return (
     <>
       <Helmet>
-        <title>{shop.name}</title>
+        <title>{name}</title>
         <meta
           property="og:image"
           content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"
         />
-        <meta property="og:description" content={shop.name} />
+        <meta property="og:description" content={name} />
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content={shop.name} />
+        <meta property="og:title" content={name} />
         <meta
           property="og:url"
-          content={"https://hacerpedido.com/" + shop.slug}
+          content={"https://hacerpedido.com/" + slug}
         />
         <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={shop.name} />
-        <meta property="twitter:description" content={shop.name} />
+        <meta property="twitter:title" content={name} />
+        <meta property="twitter:description" content={name} />
         <meta
           property="twitter:url"
-          content={"https://hacerpedido.com/" + shop.slug}
+          content={"https://hacerpedido.com/" + slug}
         />
       </Helmet>
 
-      <ShopView products={products} shop={shop} />
+      <ShopView />
       {/* TODO: Quitar el view */}
       <View style={styles.footer}>
-        <ShopFooter shop={shop} />
+        <ShopFooter />
       </View>
     </>
   );
