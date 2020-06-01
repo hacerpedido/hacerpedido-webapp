@@ -15,6 +15,7 @@ import theme from "assets/theme";
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
 import validation from "./validation";
+import { extractSections } from "utils/products";
 
 export default () => {
   const isLoading = useSelector((state) => state.website.loading);
@@ -61,13 +62,6 @@ export default () => {
     );
   }
 
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
-    mode: "onChange",
-    defaultValues: {
-      ...shop,
-    },
-  });
-
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
   }
@@ -77,6 +71,15 @@ export default () => {
   let tempShop = { ...shop, ...editedShop };
 
   let products = shop?.productsByShopid?.nodes ?? [];
+
+  let sections = extractSections(products);
+
+  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      ...tempShop,
+    },
+  });
 
   return (
     <>
@@ -93,7 +96,11 @@ export default () => {
               control={control}
               handleSubmit={handleSubmit}
             />
-            <EditProductsForm products={products} control={control} />
+            <EditProductsForm
+              shopId={shop.id}
+              sections={sections}
+              // control={control}
+            />
           </Form>
         </View>
         <View style={styles.rightContainer}>
