@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ReactDataSheet from "react-datasheet";
 import "react-datasheet/lib/react-datasheet.css";
@@ -7,7 +7,7 @@ import "react-datasheet/lib/react-datasheet.css";
 import theme from "assets/theme";
 
 export default ({ shopId, sections }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [editedSections, setEditedSections] = useState({});
 
   let tempSections = sections;

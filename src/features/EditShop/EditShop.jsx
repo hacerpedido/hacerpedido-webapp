@@ -1,47 +1,11 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { Text, View, StyleSheet, Button } from "react-native";
 import { Controller } from "react-hook-form";
 
 import Input from "components/Input";
-import { setTempShop } from "redux/shopEditSlice";
-import { query } from "redux/shopsSlice";
-import { saveShop } from "api/shops";
-
 import theme from "assets/theme";
 
-export default ({ shop, watch, control, handleSubmit }) => {
-  const dispatch = useDispatch();
-
-  const onSubmit = (data) => {
-    let dataToSave = {
-      ...data,
-      id: shop.id,
-      slug: shop.slug,
-      region: shop.region,
-    };
-
-    // console.log(editedShop);
-    // alert(JSON.stringify(data));
-    saveShop(dataToSave);
-
-    let editedShop = { ...shop, ...dataToSave };
-    dispatch(query([editedShop]));
-  };
-
-  let isDirty = false;
-  const tempValues = watch();
-  for (var key in tempValues) {
-    if (tempValues[key] !== shop[key]) {
-      console.log(key + " : " + tempValues[key]);
-      isDirty = true;
-      break;
-    }
-  }
-
-  if (isDirty) {
-    dispatch(setTempShop({ id: shop.id, values: tempValues }));
-  }
+export default ({ control, handleSubmit }) => {
 
   return (
     <View style={styles.container}>
@@ -102,7 +66,7 @@ export default ({ shop, watch, control, handleSubmit }) => {
                     background
                   */}
 
-            <Button title="Grabar" onPress={handleSubmit(onSubmit)} />
+            <Button title="Grabar" onPress={handleSubmit} />
           </View>
         </View>
       </View>

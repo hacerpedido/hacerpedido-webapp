@@ -6,10 +6,10 @@ export function saveShop(shop) {
     variables: { input: { id: shop.id, shopPatch: shop } },
     mutation: updateShop,
   })
-    .then(() => {
+  .then(() => {
       alert("Saved OK");
-    })
+      })
     .catch((error) => {
-      console.log("ERROR: " + JSON.stringify(error, null, 2));
+      console.log("ERROR: ", error);
     });
 }
