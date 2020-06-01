@@ -1,30 +1,27 @@
 import React from "react";
-import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
+import {useSelector} from "react-redux";
+import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
+import {generateWhatsappURL, generateCallUrl} from "utils";
+import * as Icons from "assets/icons/";
+import colors from "assets/colors";
 
-import { generateWhatsappURL } from "../../utils/utils";
-import * as Icons from "../../assets/icons/";
-
-export default ({ shop }) => {
-  const { ordersphonenumber, orderswhatsappnumber } = shop;
-  let callUrl;
-  if (ordersphonenumber) {
-    callUrl = "tel:" + encodeURIComponent(ordersphonenumber);
-  }
+export default () => {
+  const {ordersphonenumber, orderswhatsappnumber} = useSelector((state) => state.shop.shop);
 
   return (
     <View style={styles.container}>
       {orderswhatsappnumber && (
         <TouchableHighlight
           underlayColor={"none"}
-          style={{ flex: ordersphonenumber ? 0.67 : 1 }}
+          style={{flex: ordersphonenumber ? 0.67 : 1}}
         >
           <div className="bounza">
             <a
               href={generateWhatsappURL(orderswhatsappnumber)}
-              style={{ textDecoration: "none" }}
+              style={{textDecoration: "none"}}
             >
               <View style={[styles.buttonWhatsApp, styles.button]}>
-                <Icons.WhatsappFill color={"white"} />
+                <Icons.WhatsappFill color={colors.white} />
                 <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
               </View>
             </a>
@@ -34,12 +31,15 @@ export default ({ shop }) => {
 
       {ordersphonenumber && (
         <TouchableHighlight
-          style={{ flex: orderswhatsappnumber ? 0.33 : 1 }}
+          style={{flex: orderswhatsappnumber ? 0.33 : 1}}
           underlayColor={"none"}
         >
-          <a href={callUrl} style={{ textDecoration: "none" }}>
+          <a
+            href={generateCallUrl(ordersphonenumber)}
+            style={{textDecoration: "none"}}
+          >
             <View style={[styles.buttonCall, styles.button]}>
-              <Icons.PhoneCall color={"white"} />
+              <Icons.PhoneCall color={colors.white} />
               <Text style={styles.buttonText}>Llamar</Text>
             </View>
           </a>
