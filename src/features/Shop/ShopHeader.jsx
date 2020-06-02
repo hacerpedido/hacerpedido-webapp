@@ -1,10 +1,10 @@
 import React from "react";
-import {useSelector} from "react-redux";
 import {Image, StyleSheet, Text, TouchableHighlight, View, } from "react-native";
 import {useHistory} from "react-router-dom";
+
+import {getBackgroundForCategory, getBackgroundColorForCategory} from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
-import {getBackgroundForCategory, getBackgroundColorForCategory} from "categoriesHelper";
 import DecoratedLabel from "components/DecoratedLabel";
 
 function getBackgroundForShop({background, category}) {
@@ -13,8 +13,7 @@ function getBackgroundForShop({background, category}) {
   return getBackgroundForCategory(category);
 }
 
-export default ({isPreview}) => {
-  const shop = useSelector((state) => state.shop.shop);
+export default ({isPreview=false, shop={}}) => {
   const {name, background, category, address, region} = shop;
   const history = useHistory();
 
@@ -50,7 +49,7 @@ export default ({isPreview}) => {
             style={styles.logo}
           />
         </View>
-        <Text style={styles.shopName}>{name.toLowerCase()}</Text>
+        <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         <DecoratedLabel
           iconName="pin"
           text={address ?? region}

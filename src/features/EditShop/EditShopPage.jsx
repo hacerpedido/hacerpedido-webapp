@@ -3,27 +3,31 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 import { Helmet } from "react-helmet-async";
-
-import { setShop } from "../../reducers/shopSlice";
-import { loading } from "../../reducers/appSlice";
-import { getShopWithDetails } from "../../graphql/shop";
-import ShopView from "../Shop/Shop";
-import Loading from "../../components/Loading";
+import { useForm } from "react-hook-form";
 import { useApolloClient } from "@apollo/react-hooks";
-import theme from "../../assets/theme";
-// import EditProductsForm from "./EditProductsForm";
-import EditShopForm from "./EditShopForm";
+
+import EditProductsForm from "./EditProducts";
+import EditShopForm from "./EditShop";
+import validation from "./validation";
+import { setShop } from "reducers/shopSlice";
+// import { loading } from "reducers/appSlice";
+import { getShopWithDetails } from "graphql/shop";
+import ShopView from "features/Shop/Shop";
+import Loading from "components/Loading";
+import Form from "components/Form";
+import theme from "assets/theme";
+import { extractSections } from "utils/products";
+import { saveShop } from "api/shops";
 
 export default () => {
-  const isLoading = useSelector((state) => state.app.loading);
-  const editedShops = useSelector((state) => state.shopEdit.shops);
-  const shop = useSelector((state) => state.shop.shop);
   const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state.app.loading);
+  const shop = useSelector((state) => state.shop.shop);
   const client = useApolloClient();
 
   let { slug, token } = useParams();
 
-  if (!isLoading && slug === undefined || token === undefined) {
+  if (!isLoading && (slug === undefined || token === undefined)) {
     return <Text>Error cargando {slug} (1)</Text>;
   }
 
@@ -32,7 +36,7 @@ export default () => {
   // http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
 
   useLayoutEffect(() => {
-    dispatch(loading(true));
+    // dispatch(loading(true));
 
     async function getData() {
       const shopData = await client.query({
@@ -40,14 +44,28 @@ export default () => {
         variables: {slug},
       });
       dispatch(setShop(shopData.data.shopBySlug));
-      dispatch(loading(false));
+      // dispatch(loading(false));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
     });
   }, [slug, dispatch, client]);
 
-  if (shop === undefined) {
+  const onSubmit = (data) => {
+    let dataToSave = {
+      ...data,
+      id: shop.id,
+      slug: shop.slug,
+      region: shop.region,
+    };
+
+    console.log('dataToSave:', dataToSave);
+    saveShop(dataToSave)
+      let editedShop = { ...shop, ...dataToSave };
+      dispatch(setShop(editedShop));
+  };
+
+  if (shop == null) {
     return isLoading ? (
       <Loading />
     ) : (
@@ -59,11 +77,19 @@ export default () => {
     return <Text>Error cargando {slug} (2)</Text>;
   }
 
-  const editedShop = editedShops ? editedShops[shop.id] : {};
+  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      ...shop,
+    },
+  });
 
-  let tempShop = { ...shop, ...editedShop };
+  const tempValues = watch();
+  let tempShop = { ...shop, ...tempValues };
+  // console.log('', tempShop);
 
   let products = shop?.productsByShopid?.nodes ?? [];
+  let sections = extractSections(products);
 
   return (
     <>
@@ -73,8 +99,18 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <EditShopForm shop={tempShop} />
-          {/* <EditProductsForm shop={tempShop} products={products} /> */}
+          <Form {...{ register, validation, setValue, errors, control }}>
+            <EditShopForm
+              control={control}
+              handleSubmit={handleSubmit(onSubmit)}
+              // onSubmit={onSubmit}
+            />
+            <EditProductsForm
+              shopId={shop.id}
+              sections={sections}
+              // control={control}
+            />
+          </Form>
         </View>
         <View style={styles.rightContainer}>
           <ShopView products={products} shop={tempShop} isPreview={true} />

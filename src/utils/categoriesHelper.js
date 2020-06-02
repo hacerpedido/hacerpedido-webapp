@@ -1,4 +1,4 @@
-import * as Backgrounds from "./assets/images/backgrounds";
+import * as Backgrounds from "../assets/images/backgrounds";
 
 //
 // TODO: Rearmar todo esto en un modelo

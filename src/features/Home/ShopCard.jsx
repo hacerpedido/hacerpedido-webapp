@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 
-import DecoratedLabel from "../../components/DecoratedLabel";
-import colors from "../../assets/colors";
+import DecoratedLabel from "components/DecoratedLabel";
+import colors from "assets/colors";
 
 export default ({ shop, selected, onSelect }) => {
   return (

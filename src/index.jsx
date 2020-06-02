@@ -10,6 +10,7 @@ import * as serviceWorker from "./serviceWorker";
 import App from "./app/App";
 import {store, persistor} from './reducers'
 
+import "react-datasheet/lib/react-datasheet.css";
 import "./index.css";
 
 Sentry.init({dsn: process.env.HP_SENTRY_DSN});
