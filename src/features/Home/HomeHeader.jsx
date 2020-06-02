@@ -2,8 +2,8 @@ import React from "react";
 
 import { StyleSheet, Text, View } from "react-native";
 import { Link } from "react-router-dom";
-import * as Icons from "../../assets/icons/";
-import colors from "../../assets/colors";
+import * as Icons from "assets/icons/";
+import colors from "assets/colors";
 
 export default () => {
   return (

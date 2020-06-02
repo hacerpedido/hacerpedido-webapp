@@ -5,8 +5,8 @@ import slugify from "slugify";
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
 
-import { sanitizeCategory } from "../src/categories";
-import * as utils from "../src/utils";
+import { sanitizeCategory } from "../src/utils/categories";
+import * as utils from "../src/utils/utils";
 import {
   listAllShopsWithProducts,
   createProduct,
