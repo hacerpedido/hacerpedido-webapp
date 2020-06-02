@@ -34,3 +34,25 @@ export function extractSections(products) {
 
   return sections;
 }
+
+export function productForGrid(products) {
+  if (!Array.isArray(products) || products.length === 0) {
+    return [];
+  }
+  const result = [];
+  let category = "";
+
+  products.forEach((product) => {
+    if (category !== product.category) {
+      category = product.category;
+      result.push(["", "", "", ""]);
+      result.push(["", category, "", ""]);
+      result.push(["", "", "", ""]);
+    }
+    result.push(["", product.name, product.description, product.price]);
+  });
+
+  // console.log(JSON.stringify(result, null, 2));
+
+  return result;
+}

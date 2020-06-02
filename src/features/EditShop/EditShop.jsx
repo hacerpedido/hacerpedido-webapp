@@ -6,10 +6,12 @@ import Input from "components/Input";
 import theme from "assets/theme";
 
 export default ({ control, handleSubmit }) => {
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Datos de tu Comercio</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Datos de tu Comercio</Text>
+        <Button style={styles.button} title="Grabar" onPress={handleSubmit} />
+      </View>
       <View style={styles.formContainer}>
         <View style={styles.formContainer}>
           <View style={styles.formColumnLeft}>
@@ -42,16 +44,6 @@ export default ({ control, handleSubmit }) => {
             <Controller
               as={Input}
               control={control}
-              placeholder={"¿Querés hacer alguna aclaración?"}
-              name="notes"
-              multiline
-              numberOfLines={4}
-              // onChangeText={(text) => setValue("notes", text)}
-              label="Notas:"
-            />
-            <Controller
-              as={Input}
-              control={control}
               name="orderswhatsappnumber"
               label="Teléfono para WhatsApp:"
             />
@@ -61,12 +53,20 @@ export default ({ control, handleSubmit }) => {
               name="ordersphonenumber"
               label="Teléfono Fijo:"
             />
+            <Controller
+              as={Input}
+              control={control}
+              placeholder={"¿Querés hacer alguna aclaración?"}
+              name="notes"
+              multiline
+              numberOfLines={3.5}
+              // onChangeText={(text) => setValue("notes", text)}
+              label="Notas:"
+            />
             {/*
                     logo
                     background
                   */}
-
-            <Button title="Grabar" onPress={handleSubmit} />
           </View>
         </View>
       </View>
@@ -75,10 +75,10 @@ export default ({ control, handleSubmit }) => {
 };
 
 const styles = StyleSheet.create({
+  button: {},
   container: {
     backgroundColor: theme.colors.lightBackground,
     justifyContent: "center",
-    paddingTop: 10,
   },
   formColumnLeft: {
     backgroundColor: theme.colors.white,
@@ -97,5 +97,9 @@ const styles = StyleSheet.create({
   title: {
     ...theme.text.title,
     marginVertical: 10,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

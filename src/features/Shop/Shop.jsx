@@ -8,10 +8,18 @@ import ProductList from "./ProductList";
 import Loading from "components/Loading";
 import colors from "assets/colors";
 
-export default ({isPreview, shop}) => {
+export default ({isPreview, shop, previewProducts}) => {
   const isLoading = useSelector((state) => state.app.loading);
-  let products = shop?.productsByShopid?.nodes ?? [];
 
+  // TODO: Esto habría que limpiarlo, lo dejo 
+  // por ahora para no romper el carrito
+  let products;
+  if (isPreview) {
+    products = previewProducts ?? [];
+  } else {
+    products = shop?.productsByShopid?.nodes ?? [];
+  }
+  
   return (
     <ScrollView>
       <ShopHeader isPreview={isPreview} shop={shop} />

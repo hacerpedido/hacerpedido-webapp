@@ -10,15 +10,15 @@ module.exports = {
     "react/display-name": 0,
     "react/prop-types": 0,
     "import/order": 1,
-    "import/newline-after-import": 1 
+    "import/newline-after-import": 1,
   },
-  "settings": {
+  settings: {
     "import/ignore": ["react-native"],
     "import/resolver": {
-      "node": {
-        "paths": ["src"],
-        "extensions": [".js", ".jsx"]
-      }
+      node: {
+        paths: ["src"],
+        extensions: [".js", ".jsx"],
+      },
     },
-  }
+  },
 };
