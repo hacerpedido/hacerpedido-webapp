@@ -47,11 +47,11 @@ export function productForGrid(products) {
   products.forEach((product) => {
     if (category !== product.category) {
       category = product.category;
-      result.push(["", "", ""]);
-      result.push([category, "", ""]);
-      result.push(["", "", ""]);
+      result.push([false, "", "", ""]);
+      result.push([true, category, "", ""]);
+      result.push([false, "", "", ""]);
     }
-    result.push([product.name, product.description, product.price]);
+    result.push([false, product.name, product.description, product.price]);
   });
 
   // console.log(JSON.stringify(result, null, 2));
@@ -69,18 +69,16 @@ export function productsFromGrid(shopID, rows) {
   var itemNumber = 0;
 
   rows.forEach((row) => {
-    const name = row[0];
-    const description = row[1];
-    const price = row[2];
+    const isCategory = row[0];
+    const name = row[1];
+    const description = row[2];
+    const price = row[3];
 
     if (name == null || name === "") {
       return;
     }
 
-    const isSection = name !== "" && price === "" && description === "";
-
-    // Is a section?
-    if (isSection) {
+    if (isCategory) {
       section = utils.toTitleCase(name);
 
       return;
