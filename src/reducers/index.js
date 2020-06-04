@@ -12,7 +12,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["shops", "products", "loading", "firstVisibleItem"],
+  blacklist: ["shops", "products", "loading", "firstVisibleItem", "shopEdit"],
 };
 
 const rootReducer = combineReducers({
