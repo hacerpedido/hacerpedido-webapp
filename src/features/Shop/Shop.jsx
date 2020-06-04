@@ -24,7 +24,7 @@ export default ({isPreview, shop, previewProducts}) => {
     <ScrollView>
       <ShopHeader isPreview={isPreview} shop={shop} />
       <View style={styles.container}>
-        {isLoading ? <Loading /> : (
+        {(!isPreview && isLoading) ? <Loading /> : (
           <>
             {products.length > 0 && (
               <>

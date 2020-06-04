@@ -1,45 +1,42 @@
-import React from "react";
+import React, { useMemo, useRef } from "react";
 // import React, { useState } from "react";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.css";
 
-import { productForGrid } from "utils/products";
+import { productForGrid, productsFromGrid } from "utils/products";
+import { setTempProducts } from "reducers/shopEditSlice";
 import theme from "assets/theme";
 
-export default ({ products, shopId, sections }) => {
-  // const dispatch = useDispatch();
+export default ({ products, shopId }) => {
+  const dispatch = useDispatch();
+  const grid = useRef(null);
 
-  let grid = productForGrid(products);
+  let gridData = useMemo(() => productForGrid(products), [products]);
 
-  const afterChange = (changes, source) => {
-    if (changes == null) {
+  const afterChange = (changes) => {
+    if (changes == null || grid.current == null) {
       return;
     }
-    changes.forEach(([row, prop, oldValue, newValue]) => {
-      console.log("FC:", [row, prop, oldValue, newValue]);
-      console.log("FC:", source);
-      console.log("FC:", products[row]);
-    });
+
+    let tempData = grid.current.hotInstance.getData();
+    let tempProducts = productsFromGrid(shopId, tempData);
+
+    dispatch(setTempProducts({ shopId, tempProducts }));
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}> Tu menú o listado de precios</Text>
       <HotTable
-        data={grid}
+        ref={grid}
+        data={gridData}
         style={{ ...styles.grid }}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
-        // startCols={3}
-        // startRows={grid.length}
         minSpareRows={5}
-        colWidths={[0, 300, 300, 90]}
-        hiddenColumns={{
-          indicators: false,
-          columns: [0],
-        }}
+        colWidths={[300, 300, 90]}
       />
     </View>
   );

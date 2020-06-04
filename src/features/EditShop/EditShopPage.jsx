@@ -21,6 +21,7 @@ export default () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
+  const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
 
   let { slug, token } = useParams();
@@ -85,12 +86,11 @@ export default () => {
 
   const tempValues = watch();
   let tempShop = { ...shop, ...tempValues };
-  // console.log('', tempShop);
 
   let products = shop?.productsByShopid?.nodes ?? [];
-  // let sections = extractSections(products);
+  let previewProducts = tempProducts??products;
 
-  let tempProducts = products;
+  // console.log('temp', tempProducts)
 
   return (
     <>
@@ -110,7 +110,7 @@ export default () => {
         </View>
         <View style={styles.rightContainer}>
           <ShopView
-            previewProducts={tempProducts}
+            previewProducts={previewProducts}
             shop={tempShop}
             isPreview={true}
           />
