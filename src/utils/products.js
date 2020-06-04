@@ -1,3 +1,5 @@
+import * as utils from "utils/utils";
+
 export function extractSections(products) {
   if (!Array.isArray(products) || products.length === 0) {
     return [];
@@ -33,4 +35,75 @@ export function extractSections(products) {
   //   console.log(JSON.stringify(sections, null, 2));
 
   return sections;
+}
+
+export function productForGrid(products) {
+  if (!Array.isArray(products) || products.length === 0) {
+    return [];
+  }
+  const result = [];
+  let category = "";
+
+  products.forEach((product) => {
+    if (category !== product.category) {
+      category = product.category;
+      result.push(["", "", ""]);
+      result.push([category, "", ""]);
+      result.push(["", "", ""]);
+    }
+    result.push([product.name, product.description, product.price]);
+  });
+
+  // console.log(JSON.stringify(result, null, 2));
+
+  return result;
+}
+
+export function productsFromGrid(shopID, rows) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return [];
+  }
+
+  const result = [];
+  var section = "";
+  var itemNumber = 0;
+
+  rows.forEach((row) => {
+    const name = row[0];
+    const description = row[1];
+    const price = row[2];
+
+    if (name == null || name === "") {
+      return;
+    }
+
+    const isSection = name !== "" && price === "" && description === "";
+
+    // Is a section?
+    if (isSection) {
+      section = utils.toTitleCase(name);
+
+      return;
+    }
+
+    itemNumber++;
+
+    let product = {
+      name: utils.sanitizeProductName(name),
+      price: price ? utils.sanitizePrice(price).toString() : "",
+      category: section,
+      shopid: shopID,
+      itemnumber: itemNumber,
+    };
+
+    if (description != null && description !== "") {
+      product.description = description;
+    }
+    result.push(product);
+  });
+
+
+    // console.log(JSON.stringify(product, null, 2));
+
+  return result;
 }

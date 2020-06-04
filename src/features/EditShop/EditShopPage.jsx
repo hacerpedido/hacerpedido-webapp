@@ -10,19 +10,18 @@ import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
 import validation from "./validation";
 import { setShop } from "reducers/shopSlice";
-// import { loading } from "reducers/appSlice";
 import { getShopWithDetails } from "graphql/shop";
 import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
 import Form from "components/Form";
 import theme from "assets/theme";
-import { extractSections } from "utils/products";
 import { saveShop } from "api/shops";
 
 export default () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
+  const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
 
   let { slug, token } = useParams();
@@ -41,7 +40,7 @@ export default () => {
     async function getData() {
       const shopData = await client.query({
         query: getShopWithDetails,
-        variables: {slug},
+        variables: { slug },
       });
       dispatch(setShop(shopData.data.shopBySlug));
       // dispatch(loading(false));
@@ -59,10 +58,11 @@ export default () => {
       region: shop.region,
     };
 
-    console.log('dataToSave:', dataToSave);
-    saveShop(dataToSave)
-      let editedShop = { ...shop, ...dataToSave };
-      dispatch(setShop(editedShop));
+    // console.log("dataToSave:", dataToSave);
+    saveShop(dataToSave);
+
+    let editedShop = { ...shop, ...dataToSave };
+    dispatch(setShop(editedShop));
   };
 
   if (shop == null) {
@@ -78,7 +78,7 @@ export default () => {
   }
 
   const { handleSubmit, register, setValue, errors, control, watch } = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       ...shop,
     },
@@ -86,10 +86,11 @@ export default () => {
 
   const tempValues = watch();
   let tempShop = { ...shop, ...tempValues };
-  // console.log('', tempShop);
 
   let products = shop?.productsByShopid?.nodes ?? [];
-  let sections = extractSections(products);
+  let previewProducts = tempProducts??products;
+
+  // console.log('temp', tempProducts)
 
   return (
     <>
@@ -103,17 +104,16 @@ export default () => {
             <EditShopForm
               control={control}
               handleSubmit={handleSubmit(onSubmit)}
-              // onSubmit={onSubmit}
             />
-            <EditProductsForm
-              shopId={shop.id}
-              sections={sections}
-              // control={control}
-            />
+            <EditProductsForm products={products} shopId={shop.id} />
           </Form>
         </View>
         <View style={styles.rightContainer}>
-          <ShopView products={products} shop={tempShop} isPreview={true} />
+          <ShopView
+            previewProducts={previewProducts}
+            shop={tempShop}
+            isPreview={true}
+          />
         </View>
       </View>
     </>
@@ -125,12 +125,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     flex: 1,
     flexDirection: "row",
-    height: "100vh",
+    // height: "100vh",
     minWidth: 1000,
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
-    flexDirection: "column",
     flex: 1,
     padding: 10,
   },
