@@ -26,23 +26,23 @@ export default React.forwardRef((props, ref) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: "0.25em",
   },
   input: {
     borderRadius: 3,
     borderStyle: "solid",
     borderWidth: 1,
-    fontSize: 16,
-    paddingLeft: 5,
-    paddingVertical: 5,
+    fontSize: "1em",
+    paddingLeft: "0.5em",
+    paddingVertical: "0.25em",
   },
   label: {
     color: theme.colors.lightGrey,
-    fontSize: 14,
-    paddingVertical: 5,
+    fontSize: "0.75em",
+    paddingVertical: "0.25em",
   },
   textError: {
     color: theme.colors.error,
-    fontSize: 14,
+    fontSize: "0.75em",
   },
 });
