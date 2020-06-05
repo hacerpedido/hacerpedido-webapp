@@ -64,7 +64,13 @@ export function sanitizePrice(str) {
     .replace(/(\$|\.00$|,00$)/g, "")
     .replace(/([.,])(\d{3}\D|\d{3}$)/g, "$2");
 
-  return parseFloat(newPrice);
+  let parsedPrice = parseFloat(newPrice)
+
+  if (Number.isNaN(parsedPrice)) {
+    return "";
+  }
+
+  return parsedPrice;
 }
 
 export function removeEmptyStringElements(obj) {
