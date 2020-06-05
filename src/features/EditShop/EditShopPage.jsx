@@ -15,7 +15,7 @@ import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
 import Form from "components/Form";
 import theme from "assets/theme";
-import { saveShop } from "api/shops";
+import { saveShopWithProducts } from "api/shops";
 
 export default () => {
   const dispatch = useDispatch();
@@ -58,10 +58,13 @@ export default () => {
       region: shop.region,
     };
 
-    // console.log("dataToSave:", dataToSave);
-    saveShop(dataToSave);
+    saveShopWithProducts(dataToSave, tempProducts);
 
     let editedShop = { ...shop, ...dataToSave };
+    if (tempProducts != null ) {
+      editedShop.productsByShopid = {nodes: tempProducts}
+    }
+
     dispatch(setShop(editedShop));
   };
 
@@ -88,9 +91,9 @@ export default () => {
   let tempShop = { ...shop, ...tempValues };
 
   let products = shop?.productsByShopid?.nodes ?? [];
-  let previewProducts = tempProducts??products;
+  let previewProducts = tempProducts ?? products;
 
-  // console.log('temp', tempProducts)
+  // console.log("previewProducts:" + previewProducts.length);
 
   return (
     <>
