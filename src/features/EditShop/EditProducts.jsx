@@ -31,21 +31,16 @@ export default ({ products, shopId }) => {
 
   const columns = [
     {
-      // data: "isCategory",
       type: "checkbox",
       className: "htCenter",
     },
     {
       type: "text",
-      // data: "name",
     },
     {
       type: "text",
-      // data: "description",
     },
     {
-      // data: "price",
-      // type: "numeric",
       type: "text",
       className: "htRight",
     },
@@ -62,7 +57,7 @@ export default ({ products, shopId }) => {
   ) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);
 
-    if (!value || value === "") {
+    if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";
     }
 
@@ -76,13 +71,12 @@ export default ({ products, shopId }) => {
     if (grid.current != null) {
       let tempData = grid.current.hotInstance.getDataAtRow(row);
 
-      if (col === 1 && tempData[0]) {
+      if (tempData[0] && col > 0) {
         cellProperties.renderer = categoryRenderer;
-      }
 
-      if ((col === 2 || col === 3) && tempData[0]) {
-        cellProperties.readOnly = true;
-        cellProperties.renderer = categoryRenderer;
+        if (col === 2 || col === 3) {
+          cellProperties.readOnly = true;
+        }
       }
     }
 

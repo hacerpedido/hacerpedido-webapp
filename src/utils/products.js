@@ -101,7 +101,7 @@ export function productsFromGrid(shopID, rows) {
   });
 
 
-    // console.log(JSON.stringify(product, null, 2));
+    console.log(JSON.stringify(result, null, 2));
 
   return result;
 }
