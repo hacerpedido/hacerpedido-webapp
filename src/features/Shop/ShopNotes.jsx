@@ -1,12 +1,15 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import {useSelector} from "react-redux";
+import {StyleSheet, View, Text} from "react-native";
 
-export default ({ shop }) => {
-  if (shop.notes) {
+export default () => {
+  const {notes} = useSelector((state) => state.shop.shop);
+
+  if (notes) {
     return (
       <View style={styles.container}>
         <Text style={styles.category}>Notas</Text>
-        <Text style={styles.notes}>{shop.notes}</Text>
+        <Text style={styles.notes}>{notes}</Text>
       </View>
     );
   }

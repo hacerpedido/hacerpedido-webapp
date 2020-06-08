@@ -13,13 +13,14 @@ export default ({isPreview, shop, previewProducts}) => {
 
   // TODO: Esto habría que limpiarlo, lo dejo 
   // por ahora para no romper el carrito
+  // const products = useSelector((state) => state.shop.products);
   let products;
   if (isPreview) {
     products = previewProducts ?? [];
   } else {
     products = shop?.productsByShopid?.nodes ?? [];
   }
-  
+
   return (
     <ScrollView>
       <ShopHeader isPreview={isPreview} shop={shop} />
@@ -29,7 +30,7 @@ export default ({isPreview, shop, previewProducts}) => {
             {products.length > 0 && (
               <>
                 <ProductList products={products} />
-                <ShopNotes shop={shop} />
+                <ShopNotes />
               </>
             )}
           </>

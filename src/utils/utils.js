@@ -78,10 +78,29 @@ export function removeEmptyStringElements(obj) {
   return obj;
 }
 
-export function generateWhatsappURL(number) {
+function generateWhatsappMessage(userData, items) {
+  const { name, address, notes, takeAwayEnabled } = userData;
+
+  const intro = `¡Hola! soy *${name}* y quiero hacer un pedido via HacerPedido 💪\n`;
+  const addressStr = takeAwayEnabled || `📍 *Mi dirección:* ${address}`;
+  const notesStr = notes && `📝 *Notas*: ${notes}`;
+
+  let order = "\n*Mi pedido:*\n";
+  order += items
+    .map(({ amount, name }) => {
+      return `✅ ${amount} x ${name}`;
+    })
+    .join("\n");
+
+  return [intro, addressStr, notesStr, order].join("\n");
+}
+
+export function generateWhatsappURL(number, userData, items) {
   const sanitizedNumber = sanitizeWhatsAppNumber(number);
-  const message = "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
-  const encodedMessage = encodeURIComponent(message);
+
+  const encodedMessage = encodeURIComponent(
+    generateWhatsappMessage(userData, items)
+  );
 
   return `https://wa.me/${sanitizedNumber}?text=${encodedMessage}`;
 }

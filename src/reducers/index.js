@@ -4,6 +4,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import appReducer from "./appSlice";
+import cartReducer from "./cartSlice";
 import homeReducer from "./homeSlice";
 import shopReducer from "./shopSlice";
 import shopEditReducer from "./shopEditSlice";
@@ -12,11 +13,12 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["shops", "products", "loading", "firstVisibleItem", "shopEdit"],
+  blacklist: ["shops", "products", "loading", "firstVisibleItem", "shopEdit", "totalCartProducts"],
 };
 
 const rootReducer = combineReducers({
   app: appReducer,
+  cart: cartReducer,
   home: homeReducer,
   shop: shopReducer,
   shopEdit: shopEditReducer,

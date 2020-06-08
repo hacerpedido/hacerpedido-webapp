@@ -1,39 +1,39 @@
 import React from "react";
-// import {useSelector} from "react-redux";
+import {useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
 import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
-import {generateWhatsappURL, generateCallUrl} from "utils/utils";
+import {generateCallUrl} from "utils/utils";
 import * as Icons from "assets/icons/";
 import colors from "assets/colors";
 
 export default ({shop}) => {
   const {ordersphonenumber, orderswhatsappnumber} = shop;
+  const history = useHistory();
+  const cartProducts =
+    useSelector((state) => state.cart.products);
+  const statusOpacity = cartProducts.length || {opacity: 0.3}
 
   return (
     <View style={styles.container}>
       {orderswhatsappnumber && (
         <TouchableHighlight
+          disabled={cartProducts.length === 0}
           underlayColor={"none"}
-          style={{flex: ordersphonenumber ? 0.67 : 1}}
+          onPress={() => history.push("/cart")}
+          style={{flex: 1}}
         >
-          <div className="bounza">
-            <a
-              href={generateWhatsappURL(orderswhatsappnumber)}
-              style={{textDecoration: "none"}}
-            >
-              <View style={[styles.buttonWhatsApp, styles.button]}>
-                <Icons.WhatsappFill color={colors.white} />
-                <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
-              </View>
-            </a>
-          </div>
+          <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
+            <Icons.WhatsappFill color={"white"} />
+            <Text style={styles.buttonText}>
+              {`Revisar mi pedido (${cartProducts.length})`}
+            </Text>
+          </View>
         </TouchableHighlight>
       )}
 
-      {ordersphonenumber && (
-        <TouchableHighlight
-          style={{flex: orderswhatsappnumber ? 0.33 : 1}}
-          underlayColor={"none"}
-        >
+      {ordersphonenumber && !orderswhatsappnumber && (
+        // TODO: Extract component, to be reused in header
+        <TouchableHighlight style={{flex: 1}} underlayColor={"none"}>
           <a
             href={generateCallUrl(ordersphonenumber)}
             style={{textDecoration: "none"}}
@@ -49,6 +49,7 @@ export default ({shop}) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonCall: {
-    backgroundColor: "#ffb234",
+    backgroundColor: colors.orangeHP,
     borderColor: "#E5A02F",
     marginVertical: 10,
   },

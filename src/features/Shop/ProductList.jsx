@@ -46,7 +46,7 @@ export default ({ products }) => {
 
 const styles = StyleSheet.create({
   category: {
-    color: colors.darkGray,
+    color: colors.darkBrown,
     fontFamily: "Barlow",
     fontSize: 17,
     fontWeight: "800",

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  shop: null
+  shop: null,
+  products: []
 };
 
 const shopSlice = createSlice({
@@ -10,7 +11,8 @@ const shopSlice = createSlice({
   reducers: {
     setShop(state, { payload }) {
       state.shop = payload;
-    },
+      state.products = state.shop.productsByShopid?.nodes ?? [];
+    }
   },
 });
 

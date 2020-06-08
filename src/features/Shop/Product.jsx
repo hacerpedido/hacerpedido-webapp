@@ -1,11 +1,16 @@
-import React from "react";
-import {StyleSheet, Text, View} from "react-native";
-
+import React, {useState} from "react";
+// import {useDispatch} from "react-redux";
+import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
+import ProductAmountPopup from "./ProductAmountPopup";
 import colors from "assets/colors";
 
 export default ({product, promo = false}) => {
+  // const dispatch = useDispatch();
+  const [show, setShow] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
   const {id, name, description, price} = product;
+
+  const onAmountShow = () => setShow(!show)
 
   return (
     <View key={id} style={[styles.container, containerStyle]}>
@@ -13,35 +18,43 @@ export default ({product, promo = false}) => {
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
+
       <Text style={styles.price}>{price && `$${price}`}</Text>
-    </View>
+
+      <TouchableHighlight onPress={() => onAmountShow()} underlayColor={"none"} >
+        <View>
+          <View style={styles.buttonQty}>
+            <Text style={styles.buttonQtyText}>+</Text>
+          </View>
+
+          <ProductAmountPopup product={product} show={show} handleShow={onAmountShow} />
+        </View>
+      </TouchableHighlight>
+    </View >
   );
 };
 
-const anotherBrown = "#B27D23";
-const anotherGray = "#8f9bb3";
-const yetAnotherOrange = "#FFB234";
-
 const styles = StyleSheet.create({
-  ButtonQty: {
-    alignItems: "center",
-    backgroundColor: yetAnotherOrange,
-    borderRadius: "50%",
-    borderWidth: 0,
-    height: 28,
+  buttonQty: {
+    borderColor: colors.lightGreen,
+    borderRadius: 2,
+    borderWidth: 1,
+    height: 20,
     justifyContent: "center",
-    marginHorizontal: 5,
-    marginTop: 12,
-    marginVertical: 10,
-    width: 28,
+    marginLeft: 11,
+    textAlign: "center",
+    width: 20,
+    // marginHorizontal: 5,
+    // marginTop: 12,
+    // marginVertical: 10,
   },
   buttonQtyText: {
-    color: colors.white,
+    color: colors.lightGreen,
     fontFamily: "Barlow",
-    fontSize: 20,
-    fontWeight: "600",
-    padding: 5,
-    paddingBottom: 8, // TODO: Remove this. I used it to vertically center char
+    fontSize: 16,
+    fontWeight: "500",
+    lineHeight: 20,
+    paddingBottom: 2
   },
   card: {
     borderColor: colors.cardBorder,
@@ -55,16 +68,15 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   container: {
-    flex: 1,
+    alignItems: "center",
     flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   description: {
     flex: 1,
     flexWrap: "wrap",
-    color: anotherGray,
-    fontFamily: "Roboto Slab",
+    color: colors.lightGrey,
+    fotiFamily: "Roboto Slab",
     fontSize: 13,
     lineHeight: 17,
   },
@@ -73,7 +85,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "Barlow",
     fontWeight: "600",
-    color: colors.darkGray,
+    color: colors.darkBrown,
     fontSize: 15,
     lineHeight: 18,
     marginBottom: 5,
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   price: {
-    color: anotherBrown,
+    color: colors.green,
     fontFamily: "Barlow",
     fontSize: 15,
     fontWeight: "600",

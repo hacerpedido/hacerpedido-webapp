@@ -1,7 +1,7 @@
 import React from "react";
 import {Image, StyleSheet, Text, TouchableHighlight, View, } from "react-native";
 import {useHistory} from "react-router-dom";
-
+import {generateCallUrl} from "utils/utils"
 import {getBackgroundForCategory, getBackgroundColorForCategory} from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
@@ -13,8 +13,8 @@ function getBackgroundForShop({background, category}) {
   return getBackgroundForCategory(category);
 }
 
-export default ({isPreview=false, shop={}}) => {
-  const {name, background, category, address, region} = shop;
+export default ({isPreview = false, shop = {}}) => {
+  const {name, background, category, address, region, ordersphonenumber} = shop;
   const history = useHistory();
 
   const containerStyles = {
@@ -36,18 +36,31 @@ export default ({isPreview=false, shop={}}) => {
           onPress={onButtonBackPress}
           style={styles.buttonBack}
         >
-          <Icons.ArrowLeft color={colors.white} />
+          <Icons.ArrowLeft />
         </TouchableHighlight>
+      </View>
+
+
+
+      <View style={styles.buttonCallContainer}>
+        {ordersphonenumber && (
+          <TouchableHighlight underlayColor={"none"}>
+            <a
+              href={generateCallUrl(ordersphonenumber)}
+              style={{textDecoration: "none"}}
+            >
+              <View style={styles.buttonCall}>
+                <Icons.PhoneCall />
+                <Text style={styles.buttonText}>Llamar</Text>
+              </View>
+            </a>
+          </TouchableHighlight>
+        )}
       </View>
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image
-            source={{
-              uri: shop.logo,
-            }}
-            style={styles.logo}
-          />
+          <Image source={{uri: shop.logo, }} style={styles.logo} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         <DecoratedLabel
@@ -58,6 +71,7 @@ export default ({isPreview=false, shop={}}) => {
           fontSize={13}
           marginBottom={4}
         />
+
         {shop.opentimes && (
           <DecoratedLabel
             iconName="clock"
@@ -68,6 +82,7 @@ export default ({isPreview=false, shop={}}) => {
             marginBottom={4}
           />
         )}
+
         {shop.deliverycost && (
           <DecoratedLabel
             iconName="car"
@@ -83,36 +98,40 @@ export default ({isPreview=false, shop={}}) => {
   );
 };
 
-const anotherOrange = "#E5A02F";
-
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginHorizontal: 5,
-    marginTop: 12,
-    minHeight: 50,
-    padding: 10,
-  },
   buttonBack: {
-    backgroundColor: colors.none,
-    border: 0,
-    padding: 16,
+    left: 0,
+    padding: 24,
+    position: "absolute",
+    top: 0,
   },
   buttonCall: {
+    alignItems: "center",
     backgroundColor: colors.none,
-    borderColor: anotherOrange,
-    marginVertical: 10,
+    borderColor: colors.white,
+    borderRadius: 4,
+    borderWidth: 1,
+    color: colors.white,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginRight: 12,
+    marginTop: 20,
+    opacity: 0.7,
+    paddingHorizontal: 9,
+    paddingTop: 8,
+  },
+  buttonCallContainer: {
+    alignItems: "right",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    zIndex: 1,
   },
   buttonText: {
     color: colors.white,
     fontFamily: "Barlow",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    marginLeft: 5,
+    marginBottom: 8,
   },
   container: {
     marginBottom: 16,
@@ -122,8 +141,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-    marginTop: -24,
     zIndex: 0,
+    marginTop: -20
   },
   containerLogo: {
     alignItems: "center",
@@ -132,10 +151,8 @@ const styles = StyleSheet.create({
     width: 100,
   },
   containerNavigator: {
-    backgroundColor: colors.none,
-    flex: 1,
+    color: colors.white,
     flexDirection: "row",
-    justifyContent: "space-between",
     zIndex: 2,
   },
   logo: {

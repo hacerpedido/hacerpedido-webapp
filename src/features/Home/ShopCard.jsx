@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     width: 75,
   },
   shopName: {
-    color: colors.darkGray,
+    color: colors.darkBrown,
     fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: "700",

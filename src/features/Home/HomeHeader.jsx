@@ -9,7 +9,7 @@ export default () => {
   return (
     <View style={styles.container}>
       <Link to="/">
-        <Icons.LogoHacerpedido width={177} height={19} color={"white"} />
+        <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
       </Link>
 
       <a

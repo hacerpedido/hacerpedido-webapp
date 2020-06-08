@@ -1,21 +1,21 @@
-import React, { useLayoutEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { StyleSheet, Text, View } from "react-native";
-import { Helmet } from "react-helmet-async";
-import { useForm } from "react-hook-form";
-import { useApolloClient } from "@apollo/react-hooks";
+import React, {useLayoutEffect} from "react";
+import {useSelector, useDispatch} from "react-redux";
+import {useParams} from "react-router-dom";
+import {StyleSheet, Text, View} from "react-native";
+import {Helmet} from "react-helmet-async";
+import {useForm} from "react-hook-form";
+import {useApolloClient} from "@apollo/react-hooks";
 
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
 import validation from "./validation";
-import { setShop } from "reducers/shopSlice";
-import { getShopWithDetails } from "graphql/shop";
+import {setShop} from "reducers/shopSlice";
+import {getShopWithDetails} from "graphql/shop";
 import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
 import Form from "components/Form";
 import theme from "assets/theme";
-import { saveShopWithProducts } from "api/shops";
+import {saveShopWithProducts} from "api/shops";
 
 export default () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ export default () => {
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
 
-  let { slug, token } = useParams();
+  let {slug, token} = useParams();
 
   if (!isLoading && (slug === undefined || token === undefined)) {
     return <Text>Error cargando {slug} (1)</Text>;
@@ -40,7 +40,7 @@ export default () => {
     async function getData() {
       const shopData = await client.query({
         query: getShopWithDetails,
-        variables: { slug },
+        variables: {slug},
       });
       dispatch(setShop(shopData.data.shopBySlug));
       // dispatch(loading(false));
@@ -60,8 +60,8 @@ export default () => {
 
     saveShopWithProducts(dataToSave, tempProducts);
 
-    let editedShop = { ...shop, ...dataToSave };
-    if (tempProducts != null ) {
+    let editedShop = {...shop, ...dataToSave};
+    if (tempProducts != null) {
       editedShop.productsByShopid = {nodes: tempProducts}
     }
 
@@ -72,15 +72,15 @@ export default () => {
     return isLoading ? (
       <Loading />
     ) : (
-      <Text>No hay un comercio en la base de datos para {slug}</Text>
-    );
+        <Text>No hay un comercio en la base de datos para {slug}</Text>
+      );
   }
 
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
   }
 
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+  const {handleSubmit, register, setValue, errors, control, watch} = useForm({
     mode: "onBlur",
     defaultValues: {
       ...shop,
@@ -88,7 +88,7 @@ export default () => {
   });
 
   const tempValues = watch();
-  let tempShop = { ...shop, ...tempValues };
+  let tempShop = {...shop, ...tempValues};
 
   let products = shop?.productsByShopid?.nodes ?? [];
   let previewProducts = tempProducts ?? products;
@@ -103,7 +103,7 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Form {...{ register, validation, setValue, errors, control }}>
+          <Form {...{register, validation, setValue, errors, control}}>
             <EditShopForm
               control={control}
               handleSubmit={handleSubmit(onSubmit)}

@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from "react";
+import React, {useEffect, useLayoutEffect} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {useParams} from "react-router-dom";
 import {StyleSheet, Text, View} from "react-native";
@@ -9,6 +9,7 @@ import ShopView from "./Shop";
 import ShopFooter from "./ShopFooter";
 import colors from "assets/colors";
 import {loading} from "reducers/appSlice";
+import {resetCart} from "reducers/cartSlice";
 import {setShop} from "reducers/shopSlice";
 import {getShopWithDetails} from "graphql/shop";
 import Loading from "components/Loading";
@@ -20,9 +21,10 @@ export default () => {
   const shop = useSelector((state) => state.shop.shop);
   let {slug} = useParams();
 
+  useEffect(() => {dispatch(resetCart());})
+
   useLayoutEffect(() => {
     dispatch(loading(true));
-
     async function getData() {
       const shopData = await client.query({
         query: getShopWithDetails,
@@ -37,11 +39,9 @@ export default () => {
   }, [slug, dispatch, client]);
 
   if (shop == null) {
-    return isLoading ? (
-      <Loading />
-    ) : (
-        <Text>Sin comercios en la base de datos para {slug}</Text>
-      );
+    return isLoading ? (<Loading />) : (
+      <Text>Sin comercios en la base de datos para {slug}</Text>
+    );
   }
 
   return (
@@ -72,7 +72,7 @@ export default () => {
       <ShopView shop={shop} />
       {/* TODO: Quitar el view */}
       <View style={styles.footer}>
-        <ShopFooter shop={shop}/>
+        <ShopFooter shop={shop} />
       </View>
     </>
   );
