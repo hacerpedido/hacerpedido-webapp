@@ -30,17 +30,13 @@ export default ({isPreview = false, shop = {}}) => {
 
   return (
     <View style={containerStyles}>
-      <View style={styles.containerNavigator}>
-        <TouchableHighlight
-          underlayColor={"none"}
-          onPress={onButtonBackPress}
-          style={styles.buttonBack}
-        >
-          <Icons.ArrowLeft />
-        </TouchableHighlight>
-      </View>
-
-
+      <TouchableHighlight
+        underlayColor={"none"}
+        onPress={onButtonBackPress}
+        style={styles.buttonBack}
+      >
+        <Icons.ArrowLeft />
+      </TouchableHighlight>
 
       <View style={styles.buttonCallContainer}>
         {ordersphonenumber && (
@@ -100,30 +96,28 @@ export default ({isPreview = false, shop = {}}) => {
 
 const styles = StyleSheet.create({
   buttonBack: {
-    left: 0,
-    padding: 24,
+    color: colors.white,
+    left: 24,
     position: "absolute",
-    top: 0,
+    top: 24,
+    zIndex: 2,
   },
   buttonCall: {
-    alignItems: "center",
-    backgroundColor: colors.none,
     borderColor: colors.white,
     borderRadius: 4,
     borderWidth: 1,
     color: colors.white,
     flexDirection: "row",
     justifyContent: "center",
-    marginRight: 12,
-    marginTop: 20,
     opacity: 0.7,
     paddingHorizontal: 9,
     paddingTop: 8,
+    zIndex: 2,
   },
   buttonCallContainer: {
-    alignItems: "right",
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    position: "absolute",
+    right: 24,
+    top: 16,
     zIndex: 1,
   },
   buttonText: {
@@ -142,18 +136,13 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     zIndex: 0,
-    marginTop: -20
+    marginTop: 40
   },
   containerLogo: {
     alignItems: "center",
     flex: -1,
     height: 100,
     width: 100,
-  },
-  containerNavigator: {
-    color: colors.white,
-    flexDirection: "row",
-    zIndex: 2,
   },
   logo: {
     backgroundColor: colors.white,
