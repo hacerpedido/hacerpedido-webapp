@@ -1,9 +1,13 @@
 import React from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import {ActivityIndicator, StyleSheet} from "react-native";
+import colors from "assets/colors"
 
 export default () => {
   return (
-    <ActivityIndicator size="large" color="#FFB233" style={styles.default} />
+    <ActivityIndicator
+      size="large"
+      color={colors.orangeHP}
+      style={styles.default} />
   );
 };
 

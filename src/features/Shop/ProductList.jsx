@@ -1,17 +1,18 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import {StyleSheet, Text} from "react-native";
 
 import Product from "./Product";
 import Divider from "components/Divider";
 import colors from "assets/colors";
 
-export default ({ products }) => {
+// TODO: Merge with cart/productList.jsx
+export default ({products, isPreview = false}) => {
   const listItems = [];
   let lastCategory = "";
   let item = 0;
 
   products.forEach((product) => {
-    const { category } = product;
+    const {category} = product;
     const isPromo = category === "Promociones";
 
     if (lastCategory !== category) {
@@ -20,9 +21,7 @@ export default ({ products }) => {
       }
 
       listItems.push(
-        <Text key={item++} style={styles.category}>
-          {category}
-        </Text>
+        <Text key={item++} style={styles.category}> {category} </Text>
       );
 
       lastCategory = category;
@@ -31,11 +30,7 @@ export default ({ products }) => {
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar
     // el nombre "Promociones"
     listItems.push(
-      <Product
-        key={item++}
-        product={product}
-        promo={category === "Promociones"}
-      />
+      <Product key={item++} product={product} promo={isPromo} isPreview={isPreview} />
     );
   });
 
@@ -46,10 +41,10 @@ export default ({ products }) => {
 
 const styles = StyleSheet.create({
   category: {
-    color: colors.darkGray,
+    color: colors.brown,
     fontFamily: "Barlow",
     fontSize: 17,
-    fontWeight: "800",
+    fontWeight: "700",
     marginBottom: 2,
     marginLeft: 16,
     marginRight: 16,

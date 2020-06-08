@@ -1,52 +1,54 @@
 import React from "react";
-import { View, Image, StyleSheet, Text } from "react-native";
+import {View, Image, StyleSheet, Text} from "react-native";
 
 import DecoratedLabel from "components/DecoratedLabel";
 import colors from "assets/colors";
 
-export default ({ shop, selected, onSelect }) => {
+export default ({shop}) => {
+  const {logo, name, address, opentimes, deliverycost} = shop
+
   return (
     <View style={styles.card}>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
-          <Image
-            source={{
-              uri: shop.logo,
-            }}
-            style={styles.logo}
-          />
+          <Image source={{uri: logo}} style={styles.logo} />
         </View>
         <View style={styles.containerLabels}>
-          <Text style={styles.shopName}>{shop.name.toLowerCase()}</Text>
-          {shop.address ? (
+          <Text style={styles.shopName}>{name.toLowerCase()}</Text>
+
+          {address && (
             <DecoratedLabel
               iconName="pin"
-              text={shop.address}
-              iconColor={"#C5CEE0"}
-              textColor={"#8F9BB3"}
+              text={address}
+              iconColor={iconColor}
+              textColor={colors.lightGrey}
             />
-          ) : null}
-          {shop.opentimes ? (
+          )}
+
+          {opentimes && (
             <DecoratedLabel
               iconName="clock"
-              text={shop.opentimes}
-              iconColor={"#C5CEE0"}
-              textColor={"#8F9BB3"}
+              text={opentimes}
+              iconColor={iconColor}
+              textColor={colors.lightGrey}
             />
-          ) : null}
-          {shop.deliverycost ? (
+          )}
+
+          {deliverycost && (
             <DecoratedLabel
               iconName="car"
-              text={shop.deliverycost}
-              iconColor={"#C5CEE0"}
-              textColor={"#8F9BB3"}
+              text={deliverycost}
+              iconColor={iconColor}
+              textColor={colors.lightGrey}
             />
-          ) : null}
+          )}
         </View>
       </View>
     </View>
   );
 };
+
+const iconColor = "#C5CEE0"
 
 const styles = StyleSheet.create({
   card: {
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     width: 75,
   },
   shopName: {
-    color: colors.darkGray,
+    color: colors.brown,
     fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: "700",

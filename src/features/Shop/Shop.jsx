@@ -5,35 +5,30 @@ import {StyleSheet, ScrollView, View} from "react-native";
 import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
 import ProductList from "./ProductList";
-import Loading from "components/Loading";
 import colors from "assets/colors";
+import Loading from "components/Loading";
 
-export default ({isPreview, shop, previewProducts}) => {
+export default ({isPreview = false, shop, previewProducts = []}) => {
   const isLoading = useSelector((state) => state.app.loading);
 
-  // TODO: Esto habría que limpiarlo, lo dejo
-  // por ahora para no romper el carrito
-  let products;
-  if (isPreview) {
-    products = previewProducts ?? [];
-  } else {
-    products = shop?.productsByShopid?.nodes ?? [];
-  }
+  const products =
+    isPreview ? previewProducts : useSelector(state => state.shop.products);
 
   return (
     <ScrollView>
       <ShopHeader isPreview={isPreview} shop={shop} />
+
       <View style={styles.container}>
-        {(!isPreview && isLoading) ? <Loading /> : (
+        {(!isPreview && isLoading) ? <Loading /> :
           <>
-            {products.length > 0 && (
+            {products.length && (
               <>
-                <ProductList products={products} />
+                <ProductList products={products} isPreview={isPreview} />
                 <ShopNotes shop={shop} />
               </>
             )}
           </>
-        )}
+        }
       </View>
     </ScrollView>
   );

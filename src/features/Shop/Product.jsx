@@ -1,50 +1,106 @@
-import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import React, {useEffect, useState, useRef} from "react";
+import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
+import {useSelector} from "react-redux";
 
+import ProductAmountPopup from "./ProductAmountPopup";
+import {isBetaTester} from "utils/utils";
 import colors from "assets/colors";
 import {sanitizePrice} from "utils/utils"
 
-export default ({product, promo = false}) => {
+export default ({product, promo = false, isPreview = false}) => {
+  const ref = useRef(null);
+  const [popupVisible, setPopupVisible] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
-  const {id, name, description, price} = product;
+  const shop = useSelector((state) => state.shop.shop);
+  const {slug} = shop
+
+  const {name, amount, description, price} = product;
+
+  useEffect(() => {
+    const listener = event => {
+      if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
+    };
+
+    document.addEventListener("mousedown", listener);
+
+    return () => {
+      document.removeEventListener("mousedown", listener);
+    };
+  }, [ref, setPopupVisible]);
 
   const displayPrice = sanitizePrice(price)
 
   return (
-    <View key={id} style={[styles.container, containerStyle]}>
-      <View style={styles.nameDescription}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.description}>{description}</Text>
-      </View>
-      <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
-    </View>
+    <div ref={ref}>
+      <TouchableHighlight onPress={() => setPopupVisible(!popupVisible)} underlayColor={"none"}>
+        <View style={[styles.container, containerStyle]}>
+          <View style={styles.nameDescription}>
+            <Text style={styles.name}>
+              {name}
+
+              {amount > 0 &&
+                <View style={styles.amountContainer}>
+                  <Text style={styles.amountText}>{amount}</Text>
+                </View>
+              }
+            </Text>
+            <Text style={styles.description}>{description}</Text>
+          </View>
+
+          <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
+
+
+          {!isPreview && isBetaTester(slug) &&
+            < View style={styles.buttonQty}>
+              <Text style={styles.buttonQtyText}>+</Text>
+
+              <ProductAmountPopup
+                product={product}
+                amount={amount}
+                visible={popupVisible}
+                handleClose={() => setPopupVisible(false)} />
+            </View>
+          }
+        </View>
+      </TouchableHighlight >
+    </div >
   );
 };
 
-const anotherBrown = "#B27D23";
-const anotherGray = "#8f9bb3";
-const yetAnotherOrange = "#FFB234";
-
 const styles = StyleSheet.create({
-  ButtonQty: {
+  amountContainer: {
     alignItems: "center",
-    backgroundColor: yetAnotherOrange,
-    borderRadius: "50%",
+    backgroundColor: colors.orangeHP,
+    borderRadius: 3,
     borderWidth: 0,
-    height: 28,
+    height: 20,
     justifyContent: "center",
-    marginHorizontal: 5,
-    marginTop: 12,
-    marginVertical: 10,
-    width: 28,
+    marginLeft: 11,
+    width: 20,
   },
-  buttonQtyText: {
+  amountText: {
     color: colors.white,
     fontFamily: "Barlow",
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "600",
-    padding: 5,
-    paddingBottom: 8, // TODO: Remove this. I used it to vertically center char
+  },
+  buttonQty: {
+    borderColor: colors.lightGreen,
+    borderRadius: 2,
+    borderWidth: 1,
+    height: 20,
+    justifyContent: "center",
+    marginLeft: 11,
+    textAlign: "center",
+    width: 20,
+  },
+  buttonQtyText: {
+    color: colors.lightGreen,
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontWeight: "500",
+    lineHeight: 20,
+    paddingBottom: 2
   },
   card: {
     borderColor: colors.cardBorder,
@@ -58,16 +114,16 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   container: {
-    flex: 1,
+    alignItems: "center",
     flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    minHeight: 52,
   },
   description: {
     flex: 1,
     flexWrap: "wrap",
-    color: anotherGray,
-    fontFamily: "Roboto Slab",
+    color: colors.lightGrey,
+    fotiFamily: "Roboto Slab",
     fontSize: 13,
     lineHeight: 17,
   },
@@ -76,7 +132,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     fontFamily: "Barlow",
     fontWeight: "600",
-    color: colors.darkGray,
+    color: colors.brown,
     fontSize: 15,
     lineHeight: 18,
     marginBottom: 5,
@@ -85,7 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   price: {
-    color: anotherBrown,
+    color: colors.green,
     fontFamily: "Barlow",
     fontSize: 15,
     fontWeight: "600",

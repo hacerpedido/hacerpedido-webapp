@@ -1,33 +1,29 @@
 import * as utils from "utils/utils";
 
-export function extractSections(products) {
-  if (!Array.isArray(products) || products.length === 0) {
-    return [];
-  }
+// TODO: Promociones should go first
+export function extractSections(products=[]) {
   const sections = [];
-
-  let category = "";
+  let lastCategory = "";
   let items = [];
 
   products.forEach((product) => {
-    if (category !== product.category) {
+    if (lastCategory !== product.category) {
+
       // ignore the first case
-      if (category !== "") {
-        sections.push({
-          category: category,
-          products: items,
-        });
+      if (lastCategory !== "") {
+        sections.push({ name: lastCategory, products: items });
       }
-      category = product.category;
+
+      lastCategory = product.category;
       items = [];
     }
 
     items.push(product);
   });
 
-  if (category !== "") {
+  if (lastCategory !== "") {
     sections.push({
-      category: category,
+      name: lastCategory,
       products: items,
     });
   }

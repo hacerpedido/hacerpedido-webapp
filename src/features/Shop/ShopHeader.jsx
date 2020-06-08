@@ -6,29 +6,37 @@ import {
   TouchableHighlight,
   View,
 } from "react-native";
-import { useHistory } from "react-router-dom";
 
-import {
-  getBackgroundForCategory,
-  getBackgroundColorForCategory,
-} from "utils/categoriesHelper";
+import {useHistory} from "react-router-dom";
+import {generateCallUrl, isBetaTester} from "utils/utils";
+import {getBackgroundForCategory, getBackgroundColorForCategory, } from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
 import DecoratedLabel from "components/DecoratedLabel";
 
-function getBackgroundForShop({ background, category }) {
+function getBackgroundForShop({background, category}) {
   if (background) return `url(${background})`;
 
   return getBackgroundForCategory(category);
 }
 
-export default ({ isPreview = false, shop = {} }) => {
-  const { name, background, category, address, region } = shop;
+export default ({isPreview = false, shop = {}}) => {
+  const {
+    name,
+    background,
+    category,
+    address,
+    region,
+    ordersphonenumber,
+    orderswhatsappnumber,
+    slug
+  } = shop;
+
   const history = useHistory();
 
   const containerStyles = {
     ...styles.container,
-    background: getBackgroundForShop(shop),
+    backgroundImage: getBackgroundForShop(shop),
     backgroundSize: background ? "100% auto" : "auto",
     backgroundColor: getBackgroundColorForCategory(category),
   };
@@ -36,6 +44,21 @@ export default ({ isPreview = false, shop = {} }) => {
   const onButtonBackPress = () => {
     !isPreview && history.push("/");
   };
+
+  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview && isBetaTester(slug)
+
+  const ButtonCall = () => (
+    <TouchableHighlight underlayColor={"none"}>
+      <a href={generateCallUrl(ordersphonenumber)}
+        style={{textDecoration: "none"}}
+      >
+        <View style={styles.buttonCall}>
+          <Icons.PhoneCall />
+          <Text style={styles.buttonText}>Llamar</Text>
+        </View>
+      </a>
+    </TouchableHighlight>
+  );
 
   const displayAddress = address?.trim() ?? region;
   const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
@@ -45,7 +68,7 @@ export default ({ isPreview = false, shop = {} }) => {
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
-        {!isPreview && (
+        {!isPreview &&
           <TouchableHighlight
             underlayColor={"none"}
             onPress={onButtonBackPress}
@@ -53,17 +76,18 @@ export default ({ isPreview = false, shop = {} }) => {
           >
             <Icons.ArrowLeft color={colors.white} />
           </TouchableHighlight>
-        )}
+        }
+
+        {showButtonCall &&
+          <View style={styles.buttonCallContainer}>
+            <ButtonCall />
+          </View>
+        }
       </View>
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image
-            source={{
-              uri: shop.logo,
-            }}
-            style={styles.logo}
-          />
+          <Image source={{uri: shop.logo}} style={styles.logo} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
@@ -97,19 +121,46 @@ export default ({ isPreview = false, shop = {} }) => {
           />
         )}
       </View>
-    </View>
+    </View >
   );
 };
 
+// TODO: poner el ButtonCall y el ButtonBack en la misma fila
+// usando flex y posicionando con absolute
 const styles = StyleSheet.create({
   buttonBack: {
-    backgroundColor: colors.none,
-    border: 0,
-    padding: 16,
+    color: colors.white,
+    padding: 24,
+    position: "absolute",
+    zIndex: 2,
   },
-  container: {
-    marginBottom: 16,
+  buttonCall: {
+    borderColor: colors.white,
+    borderRadius: 4,
+    borderWidth: 1,
+    color: colors.white,
+    flexDirection: "row",
+    justifyContent: "center",
+    opacity: 0.7,
+    paddingHorizontal: 9,
+    paddingTop: 8,
+    zIndex: 2,
   },
+  buttonCallContainer: {
+    position: "absolute",
+    right: 24,
+    top: 16,
+    zIndex: 1,
+  },
+  buttonText: {
+    color: colors.white,
+    fontFamily: "Barlow",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 8,
+    marginLeft: 9,
+  },
+  container: {},
   containerData: {
     alignItems: "center",
     flexDirection: "column",

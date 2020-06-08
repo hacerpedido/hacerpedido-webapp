@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import {StyleSheet, View, Text} from "react-native";
 
 import theme from "assets/theme";
 
-export default ({ shop }) => {
+export default ({shop}) => {
   if (shop.notes) {
     return (
       <View style={styles.container}>
@@ -18,7 +18,7 @@ export default ({ shop }) => {
 
 const styles = StyleSheet.create({
   category: {
-    color: theme.colors.darkGray,
+    color: theme.colors.brown,
     fontFamily: "Barlow",
     fontSize: 17,
     fontWeight: "800",
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 
   },
   notes: {
-    color: theme.colors.gray3,
+    color: theme.colors.lightGrey,
     fontFamily: "Roboto Slab",
     fontSize: 12,
     fontWeight: "400",
