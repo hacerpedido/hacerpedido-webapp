@@ -1,12 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import {useDispatch} from "react-redux";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 import {updateProductAmount} from "reducers/cartSlice";
 import colors from "assets/colors";
 
-export default ({product, show, handleShow}) => {
+export default ({product, show, handleShow, amount, setAmount}) => {
   const dispatch = useDispatch();
-  const [amount, setAmount] = useState(0);
 
   const updateAmount = (amount) => {
     if (amount < 0) return false

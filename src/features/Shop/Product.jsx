@@ -7,6 +7,7 @@ import colors from "assets/colors";
 export default ({product, promo = false}) => {
   // const dispatch = useDispatch();
   const [show, setShow] = useState(false);
+  const [amount, setAmount] = useState(0);
   const containerStyle = promo ? styles.card : styles.product;
   const {id, name, description, price} = product;
 
@@ -15,7 +16,15 @@ export default ({product, promo = false}) => {
   return (
     <View key={id} style={[styles.container, containerStyle]}>
       <View style={styles.nameDescription}>
-        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.name}>
+          {name}
+
+          {amount > 0 &&
+            <View style={styles.amountContainer}>
+              <Text style={styles.amountText}>{amount}</Text>
+            </View>
+          }
+        </Text>
         <Text style={styles.description}>{description}</Text>
       </View>
 
@@ -27,7 +36,7 @@ export default ({product, promo = false}) => {
             <Text style={styles.buttonQtyText}>+</Text>
           </View>
 
-          <ProductAmountPopup product={product} show={show} handleShow={onAmountShow} />
+          <ProductAmountPopup product={product} show={show} handleShow={onAmountShow} amount={amount} setAmount={setAmount} />
         </View>
       </TouchableHighlight>
     </View >
@@ -35,6 +44,22 @@ export default ({product, promo = false}) => {
 };
 
 const styles = StyleSheet.create({
+  amountContainer: {
+    alignItems: "center",
+    backgroundColor: colors.orangeHP,
+    borderRadius: 3,
+    borderWidth: 0,
+    height: 20,
+    justifyContent: "center",
+    marginLeft: 11,
+    width: 20,
+  },
+  amountText: {
+    color: colors.white,
+    fontFamily: "Barlow",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   buttonQty: {
     borderColor: colors.lightGreen,
     borderRadius: 2,
