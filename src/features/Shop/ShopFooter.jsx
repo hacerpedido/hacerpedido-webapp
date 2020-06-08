@@ -9,25 +9,26 @@ import colors from "assets/colors";
 export default ({shop}) => {
   const {ordersphonenumber, orderswhatsappnumber} = shop;
   const history = useHistory();
-  const cartProducts =
-    useSelector((state) => state.cart.products);
-  const statusOpacity = cartProducts.length || {opacity: 0.3}
+  const totalAmount = useSelector((state) => state.cart.totalAmount);
+  const statusOpacity = totalAmount ? {opacity: 1} : {opacity: 0.3}
 
   return (
     <View style={styles.container}>
       {orderswhatsappnumber && (
         <TouchableHighlight
-          disabled={cartProducts.length === 0}
+          disabled={!totalAmount}
           underlayColor={"none"}
           onPress={() => history.push("/cart")}
           style={{flex: 1}}
         >
+
           <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
-            <Icons.WhatsappFill color={"white"} />
-            <Text style={styles.buttonText}>
-              {`Revisar mi pedido (${cartProducts.length})`}
-            </Text>
+            <Text style={styles.buttonText}> Revisar mi pedido </Text>
+            <View style={styles.totalAmountContainer}>
+              <Text style={styles.totalAmountText}> {totalAmount} </Text>
+            </View>
           </View>
+
         </TouchableHighlight>
       )}
 
@@ -49,6 +50,7 @@ export default ({shop}) => {
   );
 };
 
+const anotherOrange = "#E5A02F"
 
 const styles = StyleSheet.create({
   button: {
@@ -56,32 +58,51 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     flexDirection: "row",
+    height: 50,
     justifyContent: "center",
     marginHorizontal: 5,
     marginTop: 12,
-    minHeight: 50,
     padding: 10,
   },
   buttonCall: {
     backgroundColor: colors.orangeHP,
-    borderColor: "#E5A02F",
+    borderColor: anotherOrange,
     marginVertical: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: colors.white,
     fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 5,
   },
   buttonWhatsApp: {
-    backgroundColor: "#3ECB7D",
-    borderColor: "#37B36E",
+    backgroundColor: colors.addShopButtonBg,
+    borderColor: colors.addShopButtonBorder,
     marginVertical: 10,
   },
   container: {
     flex: 1,
     flexDirection: "row",
     marginHorizontal: 5,
+  },
+  totalAmountContainer: {
+    alignItems: "center",
+    borderColor: colors.white,
+    borderRadius: "50%",
+    borderWidth: 1.5,
+    height: 24,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    top: 13,
+    width: 24,
+  },
+  totalAmountText: {
+    color: colors.white,
+    fontFamily: "Barlow",
+    fontSize: 14,
+    fontWeight: 600,
+    marginBottom: 1,
   },
 });

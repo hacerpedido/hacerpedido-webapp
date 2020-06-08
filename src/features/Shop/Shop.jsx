@@ -27,7 +27,7 @@ export default ({isPreview, shop, previewProducts}) => {
       <View style={styles.container}>
         {(!isPreview && isLoading) ? <Loading /> : (
           <>
-            {products.length > 0 && (
+            {products.length && (
               <>
                 <ProductList products={products} />
                 <ShopNotes />
