@@ -22,6 +22,8 @@ const cartSlice = createSlice({
     },
     updateProductAmount(state, { payload }) {
       const {product, amount} = payload
+      console.log(amount)
+      console.log(payload)
       const index = state.products.findIndex(p => p.id === product.id)
 
       if (index !== -1) {

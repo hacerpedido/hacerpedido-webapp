@@ -1,12 +1,28 @@
-import React, {useState} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 import {updateProductAmount} from "reducers/cartSlice";
 import colors from "assets/colors";
 
 export default ({product, amount, setAmount, setShow}) => {
+  const wrapperRef = useRef(null);
   const dispatch = useDispatch();
   const [popUpAmount, setPopUpAmount] = useState(amount)
+
+  // TODO: Extract into a hook
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setShow(false)
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef, setShow]);
 
   const updateAmount = (newAmount, persist = false) => {
     if (newAmount < 0) return false
@@ -15,52 +31,55 @@ export default ({product, amount, setAmount, setShow}) => {
 
     if (persist) {
       setAmount(newAmount)
-      dispatch(updateProductAmount({product, newAmount}));
+      dispatch(updateProductAmount({product, amount: newAmount}));
+      setShow(false)
     }
   }
 
   return (
-    <View style={styles.container} >
-      <TouchableHighlight
-        underlayColor={"none"}
-        onPress={() => updateAmount(popUpAmount - 1)}
-      >
-        <View style={styles.buttonQty}>
-          <Text style={styles.buttonQtyText}>-</Text>
-        </View>
-      </TouchableHighlight>
+    <div ref={wrapperRef}>
+      <View style={styles.container} >
+        <TouchableHighlight
+          underlayColor={"none"}
+          onPress={() => updateAmount(popUpAmount - 1)}
+        >
+          <View style={styles.buttonQty}>
+            <Text style={styles.buttonQtyText}>-</Text>
+          </View>
+        </TouchableHighlight>
 
-      <Text style={styles.amountText}>{popUpAmount}</Text>
+        <Text style={styles.amountText}>{popUpAmount}</Text>
 
-      <TouchableHighlight
-        underlayColor={"none"}
-        onPress={() => updateAmount(popUpAmount + 1)}
-      >
-        <View style={[styles.buttonQty, styles.buttonPlus]}>
-          <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
-        </View>
-      </TouchableHighlight>
+        <TouchableHighlight
+          underlayColor={"none"}
+          onPress={() => updateAmount(popUpAmount + 1)}
+        >
+          <View style={[styles.buttonQty, styles.buttonPlus]}>
+            <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
+          </View>
+        </TouchableHighlight>
 
-      <View style={styles.lineBreak} />
+        <View style={styles.lineBreak} />
 
-      <TouchableHighlight
-        onPress={() => updateAmount(popUpAmount, true)}
-        underlayColor={"none"}>
-        <View style={styles.buttonSubmit}>
-          <Text style={styles.buttonSubmitText}>Agregar</Text>
-        </View>
-      </TouchableHighlight>
+        <TouchableHighlight
+          onPress={() => updateAmount(popUpAmount, true)}
+          underlayColor={"none"}>
+          <View style={styles.buttonSubmit}>
+            <Text style={styles.buttonSubmitText}>Agregar</Text>
+          </View>
+        </TouchableHighlight>
 
-      <View style={styles.lineBreak} />
+        <View style={styles.lineBreak} />
 
-      <TouchableHighlight
-        onPress={() => setShow(false)}
-        underlayColor={"none"}>
-        <View style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>x</Text>
-        </View>
-      </TouchableHighlight>
-    </View >
+        <TouchableHighlight
+          onPress={() => setShow(false)}
+          underlayColor={"none"}>
+          <View style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>x</Text>
+          </View>
+        </TouchableHighlight>
+      </View>
+    </div>
   );
 };
 
