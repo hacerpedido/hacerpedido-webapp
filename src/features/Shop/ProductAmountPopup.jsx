@@ -1,62 +1,65 @@
-import React from "react";
+import React, {useState} from "react";
 import {useDispatch} from "react-redux";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 import {updateProductAmount} from "reducers/cartSlice";
 import colors from "assets/colors";
 
-export default ({product, show, handleShow, amount, setAmount}) => {
+export default ({product, amount, setAmount, setShow}) => {
   const dispatch = useDispatch();
+  const [popUpAmount, setPopUpAmount] = useState(amount)
 
-  const updateAmount = (amount) => {
-    if (amount < 0) return false
-    setAmount(amount)
-    dispatch(updateProductAmount({product, amount}));
+  const updateAmount = (newAmount, persist = false) => {
+    if (newAmount < 0) return false
+
+    setPopUpAmount(newAmount)
+
+    if (persist) {
+      setAmount(newAmount)
+      dispatch(updateProductAmount({product, newAmount}));
+    }
   }
 
   return (
-    <View >
-      {show ? (
-        <View style={styles.container} >
-          <TouchableHighlight
-            underlayColor={"none"}
-            onPress={() => updateAmount(amount - 1)}
-          >
-            <View style={styles.buttonQty}>
-              <Text style={styles.buttonQtyText}>-</Text>
-            </View>
-          </TouchableHighlight>
+    <View style={styles.container} >
+      <TouchableHighlight
+        underlayColor={"none"}
+        onPress={() => updateAmount(popUpAmount - 1)}
+      >
+        <View style={styles.buttonQty}>
+          <Text style={styles.buttonQtyText}>-</Text>
+        </View>
+      </TouchableHighlight>
 
-          <Text style={styles.amountText}>{amount}</Text>
+      <Text style={styles.amountText}>{popUpAmount}</Text>
 
-          <TouchableHighlight
-            underlayColor={"none"}
-            onPress={() => updateAmount(amount + 1)}
-          >
-            <View style={[styles.buttonQty, styles.buttonPlus]}>
-              <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
-            </View>
-          </TouchableHighlight>
+      <TouchableHighlight
+        underlayColor={"none"}
+        onPress={() => updateAmount(popUpAmount + 1)}
+      >
+        <View style={[styles.buttonQty, styles.buttonPlus]}>
+          <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
+        </View>
+      </TouchableHighlight>
 
-          <View style={styles.lineBreak} />
+      <View style={styles.lineBreak} />
 
-          <TouchableHighlight underlayColor={"none"}>
-            <View style={styles.buttonSubmit}>
-              <Text style={styles.buttonSubmitText}>Agregar</Text>
-            </View>
-          </TouchableHighlight>
+      <TouchableHighlight
+        onPress={() => updateAmount(popUpAmount, true)}
+        underlayColor={"none"}>
+        <View style={styles.buttonSubmit}>
+          <Text style={styles.buttonSubmitText}>Agregar</Text>
+        </View>
+      </TouchableHighlight>
 
-          <View style={styles.lineBreak} />
+      <View style={styles.lineBreak} />
 
-          <TouchableHighlight
-            onPress={() => handleShow()}
-            underlayColor={"none"}>
-            <View style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>x</Text>
-            </View>
-          </TouchableHighlight>
-        </View >
-      ) : null}
-
+      <TouchableHighlight
+        onPress={() => setShow(false)}
+        underlayColor={"none"}>
+        <View style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>x</Text>
+        </View>
+      </TouchableHighlight>
     </View >
   );
 };

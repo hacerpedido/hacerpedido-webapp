@@ -1,45 +1,46 @@
 import React, {useState} from "react";
-// import {useDispatch} from "react-redux";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 import ProductAmountPopup from "./ProductAmountPopup";
 import colors from "assets/colors";
 
 export default ({product, promo = false}) => {
-  // const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [amount, setAmount] = useState(0);
   const containerStyle = promo ? styles.card : styles.product;
   const {id, name, description, price} = product;
 
-  const onAmountShow = () => setShow(!show)
-
   return (
-    <View key={id} style={[styles.container, containerStyle]}>
-      <View style={styles.nameDescription}>
-        <Text style={styles.name}>
-          {name}
+    <TouchableHighlight key={id} onPress={() => setShow(true)} underlayColor={"none"}>
+      <View style={[styles.container, containerStyle]}>
+        <View style={styles.nameDescription}>
+          <Text style={styles.name}>
+            {name}
 
-          {amount > 0 &&
-            <View style={styles.amountContainer}>
-              <Text style={styles.amountText}>{amount}</Text>
-            </View>
-          }
-        </Text>
-        <Text style={styles.description}>{description}</Text>
-      </View>
-
-      <Text style={styles.price}>{price && `$${price}`}</Text>
-
-      <TouchableHighlight onPress={() => onAmountShow()} underlayColor={"none"} >
-        <View>
-          <View style={styles.buttonQty}>
-            <Text style={styles.buttonQtyText}>+</Text>
-          </View>
-
-          <ProductAmountPopup product={product} show={show} handleShow={onAmountShow} amount={amount} setAmount={setAmount} />
+            {amount > 0 &&
+              <View style={styles.amountContainer}>
+                <Text style={styles.amountText}>{amount}</Text>
+              </View>
+            }
+          </Text>
+          <Text style={styles.description}>{description}</Text>
         </View>
-      </TouchableHighlight>
-    </View >
+
+        <Text style={styles.price}>{price && `$${price}`}</Text>
+
+        <View style={styles.buttonQty}>
+          <Text style={styles.buttonQtyText}>+</Text>
+
+          {show &&
+            <ProductAmountPopup
+              product={product}
+              amount={amount}
+              setShow={setShow}
+              setAmount={setAmount} />
+          }
+        </View>
+
+      </View>
+    </TouchableHighlight >
   );
 };
 
@@ -69,9 +70,6 @@ const styles = StyleSheet.create({
     marginLeft: 11,
     textAlign: "center",
     width: 20,
-    // marginHorizontal: 5,
-    // marginTop: 12,
-    // marginVertical: 10,
   },
   buttonQtyText: {
     color: colors.lightGreen,
