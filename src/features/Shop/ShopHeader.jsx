@@ -94,6 +94,8 @@ export default ({isPreview = false, shop = {}}) => {
   );
 };
 
+// TODO: poner el ButtonCall y el ButtonBack en la misma fila
+// usando flex y posicionando con absolute
 const styles = StyleSheet.create({
   buttonBack: {
     color: colors.white,

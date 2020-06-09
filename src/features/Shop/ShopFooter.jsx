@@ -10,7 +10,7 @@ export default ({shop}) => {
   const {ordersphonenumber, orderswhatsappnumber} = shop;
   const history = useHistory();
   const totalAmount = useSelector((state) => state.cart.totalAmount);
-  const statusOpacity = totalAmount ? {opacity: 1} : {opacity: 0.3}
+  const statusOpacity = totalAmount ? {opacity: 1} : {opacity: 0.7}
 
   return (
     <View style={styles.container}>
@@ -60,14 +60,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 50,
     justifyContent: "center",
-    marginHorizontal: 5,
+    marginHorizontal: 18,
     marginTop: 12,
-    padding: 10,
   },
   buttonCall: {
     backgroundColor: colors.orangeHP,
     borderColor: anotherOrange,
-    marginVertical: 10,
   },
   buttonText: {
     color: colors.white,
@@ -79,12 +77,15 @@ const styles = StyleSheet.create({
   buttonWhatsApp: {
     backgroundColor: colors.addShopButtonBg,
     borderColor: colors.addShopButtonBorder,
-    marginVertical: 10,
   },
   container: {
+    backgroundColor: colors.lightBackground,
+    bottom: 0,
     flex: 1,
     flexDirection: "row",
-    marginHorizontal: 5,
+    height: 100,
+    position: "fixed",
+    width: "100%",
   },
   totalAmountContainer: {
     alignItems: "center",

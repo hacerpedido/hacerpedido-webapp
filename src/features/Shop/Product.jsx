@@ -38,7 +38,6 @@ export default ({product, promo = false}) => {
               setAmount={setAmount} />
           }
         </View>
-
       </View>
     </TouchableHighlight >
   );

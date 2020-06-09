@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 33,
-    marginHorizontal: 5,
     marginTop: 19,
     padding: 10,
   },

@@ -75,7 +75,7 @@ export default ({product, amount, setAmount, setShow}) => {
           onPress={() => setShow(false)}
           underlayColor={"none"}>
           <View style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonIcon}>+</Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   buttonSubmitText: {
     color: colors.white,
-    fontFamily: "barlow",
+    fontFamily: "Barlow",
     fontWeight: 600,
     lineHeight: 18,
     paddingBottom: 5.5,
@@ -130,23 +130,45 @@ const styles = StyleSheet.create({
     paddingTop: 4.5,
   },
   closeButton: {
-    backgroundColor: "yellow",
-    width: 10
+    backgroundColor: colors.white,
+    borderColor: colors.lightGrey3,
+    borderRadius: 2,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderTopWidth: 0,
+    borderWidth: 1,
+    bottom: -20,
+    height: 20,
+    position: 'absolute',
+    right: -1,
+    shadowColor: shadowColor,
+    shadowOffset: {width: 1.14, height: 5.55},
+    shadowRadius: 10,
+    width: 20,
+  },
+  closeButtonIcon: {
+    color: colors.addShopButtonBg,
+    fontFamily: 'Barlow',
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: 600,
+    lineHeight: 19,
+    transform: "rotate(-45deg)",
   },
   container: {
     alignItems: "center",
     backgroundColor: colors.white,
+    borderBottomRightRadius: 0,
     borderColor: colors.lightGrey3,
     borderRadius: 5.6,
     borderWidth: 1,
-    bottom: 0,
+    bottom: 18,
     flexDirection: "row",
     flexWrap: 'wrap',
     justifyContent: "center",
-    paddingBo6tom: 18,
     paddingTop: 16,
     position: "absolute",
-    right: 0,
+    right: -1,
     shadowColor: shadowColor,
     shadowOffset: {width: 1.14, height: 5.55},
     shadowRadius: 10,

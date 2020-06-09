@@ -70,7 +70,7 @@ export default () => {
       </Helmet>
 
       <ShopView shop={shop} />
-      {/* TODO: Quitar el view */}
+
       <View style={styles.footer}>
         <ShopFooter shop={shop} />
       </View>
@@ -80,7 +80,6 @@ export default () => {
 
 const styles = StyleSheet.create({
   footer: {
-    backgroundColor: colors.lightBackground,
     bottom: 0,
     height: 100,
     position: "fixed",
