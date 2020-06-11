@@ -71,22 +71,17 @@ async function createProducts(shopid, newProducts) {
 
     let newProduct = {
       name,
-      price,
-      category,
+      price: price ?? "",
+      category: category ?? "",
       itemnumber,
       shopid,
+      description: description ?? "",
     };
-
-    if (description != null && description !== "") {
-      newProduct.description = description;
-    }
 
     productsToInsert.push(newProduct);
   });
 
   console.log("createProducts:", productsToInsert);
 
-  return axios.post("/products", productsToInsert).catch((error) => {
-    console.log("ERROR: " + JSON.stringify(error, null, 2));
-  });
+  return axios.post("/products", productsToInsert);
 }
