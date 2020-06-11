@@ -11,7 +11,9 @@ export async function saveShopWithProducts(shopPatch, newProducts) {
       mutation: updateShop,
     });
   } catch (error) {
-    alert(`Error al grabar los datos del comercio. (3: ${error})`);
+    alert(
+      `Error al grabar los datos del comercio. (${error} Error: ${error.response.data.message})`
+    );
 
     return;
   }
@@ -35,7 +37,7 @@ export async function saveShopWithProducts(shopPatch, newProducts) {
 
   // Insert new Products
   try {
-    await createProducts(shopPatch.id, newProducts)
+    await createProducts(shopPatch.id, newProducts);
   } catch (error) {
     alert(
       `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
