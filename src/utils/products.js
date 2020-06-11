@@ -97,11 +97,11 @@ export function productsFromGrid(shopID, rows) {
     if (description != null && description !== "") {
       product.description = description;
     }
+    
     result.push(product);
   });
 
-
-    console.log(JSON.stringify(result, null, 2));
+  // console.log(JSON.stringify(result, null, 2));
 
   return result;
 }
