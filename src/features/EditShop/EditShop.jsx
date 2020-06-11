@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 import { Controller } from "react-hook-form";
 
-import Input from "components/Input";
+import Input from "components/ShopInput";
 import theme from "assets/theme";
 
 export default ({ control, handleSubmit }) => {
