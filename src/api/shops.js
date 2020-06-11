@@ -1,89 +1,92 @@
-import {
-  createProduct,
-  deleteProductById,
-  getShopByIdWithDetails,
-  updateShop,
-} from "../graphql/shop.js";
+import axios from "axios";
+
+import { updateShop } from "../graphql/shop.js";
 import { HPGraphqlClient } from "./index";
 
-export function saveShopWithProducts(shopPatch, newProducts) {
-  // console.log(
-  //   "saveShopWithProducts: " +
-  //     JSON.stringify({ shopPatch, newProducts }, null, 2)
-  // );
-
-  HPGraphqlClient.mutate({
-    variables: { input: { id: shopPatch.id, shopPatch } },
-    mutation: updateShop,
-  })
-    .then(() => {
-      if (newProducts == null) {
-        alert("Datos del comercio guardados. Sin cambios en los productos.");
-      } else {
-        deleteProducts(shopPatch.id).then(() => {
-          createProducts(shopPatch.id, newProducts).then(() => {
-            alert("Datos del comercio y los productos guardados.");
-          });
-        });
-      }
-    })
-    .catch((error) => {
-      console.log("ERROR: ", error);
+export async function saveShopWithProducts(shopPatch, newProducts) {
+  // Save Shop
+  try {
+    await HPGraphqlClient.mutate({
+      variables: { input: { id: shopPatch.id, shopPatch } },
+      mutation: updateShop,
     });
-}
+  } catch (error) {
+    alert(`Error al grabar los datos del comercio. (3: ${error})`);
 
-async function deleteProducts(shopid) {
-  const shopData = await HPGraphqlClient.query({
-    query: getShopByIdWithDetails,
-    variables: { id: shopid },
-  }).catch((error) => {
-    console.log("ERROR: ", error);
-  });
-
-  let oldProducts = shopData?.data?.shopById?.productsByShopid?.nodes;
-
-  if (oldProducts == null || oldProducts.length === 0) {
     return;
   }
 
-  oldProducts.forEach(async (product) => {
-    if (product.id == null) {
-      return;
-    }
+  if (newProducts == null) {
+    alert("Datos del comercio guardados. Sin cambios en los productos.");
 
-    // console.log("DELETING: " + product.id);
-    await HPGraphqlClient.mutate({
-      variables: { input: { id: product.id } },
-      mutation: deleteProductById,
-    }).catch((error) => {
-      console.log("ERROR: ", error);
+    return;
+  }
+
+  // Delete old Products
+  try {
+    await axios.delete(`/products?shopid=eq.${shopPatch.id}`);
+  } catch (error) {
+    alert(
+      `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
+    );
+
+    return;
+  }
+
+  // Insert new Products
+  try {
+    await createProducts(shopPatch.id, newProducts).then(() => {
+      alert("Datos del comercio y los productos guardados.");
     });
-  });
+  } catch (error) {
+    alert(
+      `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
+    );
+  }
 }
 
 async function createProducts(shopid, newProducts) {
-  var itemNumber = 0;
+  if (shopid == null || shopid === "") {
+    console.log("ERROR: createProducts, shopid is null or empty");
+    return;
+  }
 
-  newProducts.forEach(async (product) => {
+  if (!Array.isArray(newProducts) || newProducts.length === 0) {
+    console.log("ERROR: createProducts, no new products");
+
+    return;
+  }
+
+  const productsToInsert = [];
+  var itemnumber = 0;
+
+  newProducts.forEach((product) => {
     let { name, description, price, category } = product;
 
     if (name == null || name === "") {
       return;
     }
 
-    itemNumber++;
+    itemnumber++;
 
-    let newProduct = { name, price, category, itemnumber: itemNumber, shopid };
+    let newProduct = {
+      name,
+      price,
+      category,
+      itemnumber,
+      shopid,
+    };
 
     if (description != null && description !== "") {
       newProduct.description = description;
     }
 
-    await HPGraphqlClient.mutate({
-      variables: { input: { product: newProduct } },
-      mutation: createProduct,
-    }).catch((error) => {
-      console.log("ERROR: " + JSON.stringify(error, null, 2));
-    });
+    productsToInsert.push(newProduct);
+  });
+
+  console.log("createProducts:", productsToInsert);
+
+  return axios.post("/products", productsToInsert).catch((error) => {
+    console.log("ERROR: " + JSON.stringify(error, null, 2));
   });
 }
