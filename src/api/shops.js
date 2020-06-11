@@ -35,14 +35,16 @@ export async function saveShopWithProducts(shopPatch, newProducts) {
 
   // Insert new Products
   try {
-    await createProducts(shopPatch.id, newProducts).then(() => {
-      alert("Datos del comercio y los productos guardados.");
-    });
+    await createProducts(shopPatch.id, newProducts)
   } catch (error) {
     alert(
       `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
     );
+
+    return;
   }
+
+  alert("Datos del comercio y los productos guardados.");
 }
 
 async function createProducts(shopid, newProducts) {
@@ -81,7 +83,7 @@ async function createProducts(shopid, newProducts) {
     productsToInsert.push(newProduct);
   });
 
-  console.log("createProducts:", productsToInsert);
+  // console.log("createProducts:", productsToInsert);
 
   return axios.post("/products", productsToInsert);
 }
