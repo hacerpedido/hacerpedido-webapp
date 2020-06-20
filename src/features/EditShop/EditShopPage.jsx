@@ -69,7 +69,7 @@ export default () => {
 
   // console.log(JSON.stringify(shop, null, 2));
 
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+  const { handleSubmit, register, setValue, errors, control, watch, getValues } = useForm({
     mode: "onBlur",
   });
 
@@ -111,6 +111,7 @@ export default () => {
               control={control}
               errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
+              getValues={getValues}
             />
             <EditProductsForm products={products} shopId={shop.id} />
           </Form>

@@ -9,7 +9,7 @@ export function toTitleCase(str) {
 export function validatePhoneNumber(phone) {
   let valid = false;
   if (typeof phone === "string") {
-    const regex = /^\+?[0-9]{10,13}$/;
+    const regex = /^(\+?[0-9]{10,13})?$/;
 
     valid = regex.exec(phone) !== null;
   }

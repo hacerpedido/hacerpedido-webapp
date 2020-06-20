@@ -6,7 +6,7 @@ import Input from "components/ShopInput";
 import theme from "assets/theme";
 import { validatePhoneNumber } from "utils/utils";
 
-export default ({ shop, control, errors, handleSubmit }) => {
+export default ({ shop, control, errors, handleSubmit, getValues }) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -79,7 +79,22 @@ export default ({ shop, control, errors, handleSubmit }) => {
               label="Teléfono Fijo:"
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
-              rules={{ validate: validatePhoneNumber }}
+              rules={{
+                validate: {
+                  matchesAtLeastAPhone: (value) => {
+                    const phoneValidationResult = validatePhoneNumber(value);
+                    if (typeof phoneValidationResult === "string") {
+                      return phoneValidationResult;
+                    }
+                    const { orderswhatsappnumber } = getValues();
+                    return (
+                      orderswhatsappnumber !== "" ||
+                      value !== "" ||
+                      "Al menos un número de teléfono debe ser ingresado."
+                    );
+                  },
+                },
+              }}
             />
             <Controller
               as={Input}
