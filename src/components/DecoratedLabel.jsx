@@ -40,7 +40,7 @@ export default ({
   return (
     <View style={styles.container}>
       {icons[iconName]}
-      <Text style={styles.text}>{text}</Text>
+      {text && <Text style={styles.text}>{text}</Text>}
     </View>
   );
 };

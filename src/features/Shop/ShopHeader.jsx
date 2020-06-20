@@ -37,6 +37,9 @@ export default ({ isPreview = false, shop = {} }) => {
     !isPreview && history.push("/");
   };
 
+  const opentimes = shop?.opentimes !== "" ? shop.opentimes : null;
+  const deliverycost = shop?.deliverycost !== "" ? shop.deliverycost : null;
+
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
@@ -67,20 +70,20 @@ export default ({ isPreview = false, shop = {} }) => {
           fontSize={13}
           marginBottom={4}
         />
-        {shop.opentimes && (
+        {opentimes && (
           <DecoratedLabel
             iconName="clock"
-            text={shop.opentimes}
+            text={opentimes}
             iconColor={colors.white}
             textColor={colors.white}
             fontSize={13}
             marginBottom={4}
           />
         )}
-        {shop.deliverycost && (
+        {deliverycost && (
           <DecoratedLabel
             iconName="car"
-            text={"Delivery: " + shop.deliverycost}
+            text={"Delivery: " + deliverycost}
             iconColor={colors.white}
             textColor={colors.white}
             fontSize={13}
