@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
@@ -9,7 +9,8 @@ import { useApolloClient } from "@apollo/react-hooks";
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
 import validation from "./validation";
-import { setShop } from "reducers/shopSlice";
+import { loading } from "reducers/appSlice";
+// import { setShop } from "reducers/shopSlice";
 import { getShopWithDetails } from "graphql/shop";
 import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
@@ -17,33 +18,33 @@ import Form from "components/Form";
 import theme from "assets/theme";
 import { saveShopWithProducts } from "api/shops";
 
+// Para probar:
+// http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
+// http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
+// https://hacerpedido.com/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
+
 export default () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
-  const shop = useSelector((state) => state.shop.shop);
+  // const shop = useSelector((state) => state.shop.shop);
+  const [shop, setShop] = useState(null);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
 
   let { slug, token } = useParams();
 
-  if (!isLoading && (slug === undefined || token === undefined)) {
-    return <Text>Error cargando {slug} (1)</Text>;
-  }
+  // console.log(JSON.stringify(slug, null, 2));
 
-  // Para probar:
-  // http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
-  // http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
-
-  useLayoutEffect(() => {
-    // dispatch(loading(true));
+  useEffect(() => {
+    dispatch(loading(true));
 
     async function getData() {
       const shopData = await client.query({
         query: getShopWithDetails,
         variables: { slug },
       });
-      dispatch(setShop(shopData.data.shopBySlug));
-      // dispatch(loading(false));
+      setShop(shopData.data.shopBySlug);
+      dispatch(loading(false));
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
@@ -57,16 +58,26 @@ export default () => {
       slug: shop.slug,
       region: shop.region,
     };
-
     saveShopWithProducts(dataToSave, tempProducts);
-
     let editedShop = { ...shop, ...dataToSave };
-    if (tempProducts != null ) {
-      editedShop.productsByShopid = {nodes: tempProducts}
+    if (tempProducts != null) {
+      editedShop.productsByShopid = { nodes: tempProducts };
     }
-
-    dispatch(setShop(editedShop));
+    setShop(editedShop);
   };
+
+  // console.log(JSON.stringify(shop, null, 2));
+
+  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      ...shop,
+    },
+  });
+
+  if (slug == null || token == null) {
+    return <Text>Error cargando {slug} (1)</Text>;
+  }
 
   if (shop == null) {
     return isLoading ? (
@@ -79,13 +90,6 @@ export default () => {
   if (shop.typeformtoken !== token) {
     return <Text>Error cargando {slug} (2)</Text>;
   }
-
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
-    mode: "onBlur",
-    defaultValues: {
-      ...shop,
-    },
-  });
 
   const tempValues = watch();
   let tempShop = { ...shop, ...tempValues };
