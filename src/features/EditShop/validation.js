@@ -1,5 +1,7 @@
 export default {
-  name: { required: { value: true, message: "Name is required" } },
+  // name: { required: { value: true, message: "El nombre del comercio es requerido." } },
+  // address: { required: { value: true, message: "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery." } },
+  // deliverycost: { required: { value: true, message: "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery." } },
   //   email: {
   //     required: { value: true, message: "Email is required" },
   //     pattern: {
