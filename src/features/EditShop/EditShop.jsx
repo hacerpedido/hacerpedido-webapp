@@ -50,7 +50,7 @@ export default ({ shop, control, errors, handleSubmit }) => {
               name="opentimes"
               label="Horario:"
               defaultValue={shop.opentimes}
-              error={errors.opentimes}
+              // error={errors.opentimes}
             />
             <Controller
               as={Input}
