@@ -4,6 +4,7 @@ import { Controller } from "react-hook-form";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
+import { validatePhoneNumber } from "utils/utils";
 
 export default ({ shop, control, errors, handleSubmit }) => {
   return (
@@ -50,7 +51,7 @@ export default ({ shop, control, errors, handleSubmit }) => {
               name="opentimes"
               label="Horario:"
               defaultValue={shop.opentimes}
-              // error={errors.opentimes}
+              error={errors.opentimes}
             />
             <Controller
               as={Input}
@@ -69,6 +70,7 @@ export default ({ shop, control, errors, handleSubmit }) => {
               label="Teléfono para WhatsApp:"
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
+              rules={{ validate: validatePhoneNumber }}
             />
             <Controller
               as={Input}
@@ -77,6 +79,7 @@ export default ({ shop, control, errors, handleSubmit }) => {
               label="Teléfono Fijo:"
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
+              rules={{ validate: validatePhoneNumber }}
             />
             <Controller
               as={Input}
@@ -85,15 +88,14 @@ export default ({ shop, control, errors, handleSubmit }) => {
               name="notes"
               multiline
               numberOfLines={3.5}
-              // onChangeText={(text) => setValue("notes", text)}
               label="Notas:"
               defaultValue={shop.notes}
               error={errors.notes}
             />
             {/*
-                    logo
-                    background
-                  */}
+                logo
+                background
+            */}
           </View>
         </View>
       </View>
