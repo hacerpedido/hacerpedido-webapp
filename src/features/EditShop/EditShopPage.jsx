@@ -52,6 +52,8 @@ export default () => {
   }, [slug, dispatch, client]);
 
   const onSubmit = (data) => {
+    console.log("onSubmit:" + JSON.stringify(data, null, 2));
+
     let dataToSave = {
       ...data,
       id: shop.id,
@@ -70,9 +72,6 @@ export default () => {
 
   const { handleSubmit, register, setValue, errors, control, watch } = useForm({
     mode: "onBlur",
-    defaultValues: {
-      ...shop,
-    },
   });
 
   if (slug == null || token == null) {
@@ -97,7 +96,7 @@ export default () => {
   let products = shop?.productsByShopid?.nodes ?? [];
   let previewProducts = tempProducts ?? products;
 
-  // console.log("previewProducts:" + previewProducts.length);
+  console.log("errors:", errors);
 
   return (
     <>
@@ -109,7 +108,9 @@ export default () => {
         <View style={styles.leftContainer}>
           <Form {...{ register, validation, setValue, errors, control }}>
             <EditShopForm
+              shop={shop}
               control={control}
+              errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
             />
             <EditProductsForm products={products} shopId={shop.id} />

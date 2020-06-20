@@ -5,7 +5,7 @@ import { Controller } from "react-hook-form";
 import Input from "components/ShopInput";
 import theme from "assets/theme";
 
-export default ({ control, handleSubmit }) => {
+export default ({ shop, control, errors, handleSubmit }) => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -20,24 +20,45 @@ export default ({ control, handleSubmit }) => {
               control={control}
               name="name"
               label="Nombre del Comercio:"
+              defaultValue={shop.name}
+              rules={{
+                required: {
+                  value: true,
+                  message: "El nombre del comercio es requerido.",
+                },
+              }}
+              error={errors.name}
             />
             <Controller
               as={Input}
               control={control}
               name="address"
               label="Dirección:"
+              defaultValue={shop.address}
+              rules={{
+                required: {
+                  value: true,
+                  message:
+                    "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery.",
+                },
+              }}
+              error={errors.address}
             />
             <Controller
               as={Input}
               control={control}
               name="opentimes"
               label="Horario:"
+              defaultValue={shop.opentimes}
+              error={errors.opentimes}
             />
             <Controller
               as={Input}
               control={control}
               name="deliverycost"
               label="Costo del Delivery:"
+              defaultValue={shop.deliverycost}
+              error={errors.deliverycost}
             />
           </View>
           <View style={styles.formColumnRight}>
@@ -46,12 +67,16 @@ export default ({ control, handleSubmit }) => {
               control={control}
               name="orderswhatsappnumber"
               label="Teléfono para WhatsApp:"
+              defaultValue={shop.orderswhatsappnumber}
+              error={errors.orderswhatsappnumber}
             />
             <Controller
               as={Input}
               control={control}
               name="ordersphonenumber"
               label="Teléfono Fijo:"
+              defaultValue={shop.ordersphonenumber}
+              error={errors.ordersphonenumber}
             />
             <Controller
               as={Input}
@@ -62,6 +87,8 @@ export default ({ control, handleSubmit }) => {
               numberOfLines={3.5}
               // onChangeText={(text) => setValue("notes", text)}
               label="Notas:"
+              defaultValue={shop.notes}
+              error={errors.notes}
             />
             {/*
                     logo
