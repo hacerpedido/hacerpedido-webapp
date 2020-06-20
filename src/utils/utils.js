@@ -6,6 +6,20 @@ export function toTitleCase(str) {
   });
 }
 
+export function validatePhoneNumber(phone) {
+  let valid = false;
+  if (typeof phone === "string") {
+    const regex = /^\+?[0-9]{10,13}$/;
+
+    valid = regex.exec(phone) !== null;
+  }
+
+  return (
+    valid ||
+    "No parece un número de teléfono. Puede ser +542230000000 o +5492230000000. Sin espacios ni guiones."
+  );
+}
+
 export function sanitizeWhatsAppNumber(phone) {
   if (typeof phone !== "string") return phone;
 
@@ -64,7 +78,7 @@ export function sanitizePrice(str) {
     .replace(/(\$|\.00$|,00$)/g, "")
     .replace(/([.,])(\d{3}\D|\d{3}$)/g, "$2");
 
-  let parsedPrice = parseFloat(newPrice)
+  let parsedPrice = parseFloat(newPrice);
 
   if (Number.isNaN(parsedPrice)) {
     return "";
