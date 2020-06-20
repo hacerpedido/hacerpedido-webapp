@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
+    minWidth: 780,
     padding: 10,
   },
   rightContainer: {
