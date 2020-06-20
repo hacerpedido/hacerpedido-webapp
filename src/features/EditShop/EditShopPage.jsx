@@ -8,7 +8,6 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
-import validation from "./validation";
 import { loading } from "reducers/appSlice";
 // import { setShop } from "reducers/shopSlice";
 import { getShopWithDetails } from "graphql/shop";
@@ -52,7 +51,7 @@ export default () => {
   }, [slug, dispatch, client]);
 
   const onSubmit = (data) => {
-    console.log("onSubmit:" + JSON.stringify(data, null, 2));
+    // console.log("onSubmit:" + JSON.stringify(data, null, 2));
 
     let dataToSave = {
       ...data,
@@ -96,7 +95,7 @@ export default () => {
   let products = shop?.productsByShopid?.nodes ?? [];
   let previewProducts = tempProducts ?? products;
 
-  console.log("errors:", errors);
+  // console.log("errors:", errors);
 
   return (
     <>
@@ -106,7 +105,7 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Form {...{ register, validation, setValue, errors, control }}>
+          <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
               shop={shop}
               control={control}

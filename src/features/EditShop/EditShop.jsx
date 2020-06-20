@@ -35,13 +35,13 @@ export default ({ shop, control, errors, handleSubmit }) => {
               name="address"
               label="Dirección:"
               defaultValue={shop.address}
-              rules={{
-                required: {
-                  value: true,
-                  message:
-                    "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery.",
-                },
-              }}
+              // rules={{
+              //   required: {
+              //     value: true,
+              //     message:
+              //       "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery.",
+              //   },
+              // }}
               error={errors.address}
             />
             <Controller

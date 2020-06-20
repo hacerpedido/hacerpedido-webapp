@@ -5,7 +5,7 @@ import { HPGraphqlClient } from "./index";
 
 export async function saveShopWithProducts(shopPatch, newProducts) {
 
-    console.log("saveShopWithProducts:", shopPatch);
+    // console.log("saveShopWithProducts:", shopPatch);
 
   // Save Shop
   try {

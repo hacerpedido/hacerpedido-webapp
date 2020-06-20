@@ -1,20 +1,29 @@
 import React from "react";
-import {Image, StyleSheet, Text, TouchableHighlight, View, } from "react-native";
-import {useHistory} from "react-router-dom";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
+import { useHistory } from "react-router-dom";
 
-import {getBackgroundForCategory, getBackgroundColorForCategory} from "utils/categoriesHelper";
+import {
+  getBackgroundForCategory,
+  getBackgroundColorForCategory,
+} from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
 import DecoratedLabel from "components/DecoratedLabel";
 
-function getBackgroundForShop({background, category}) {
+function getBackgroundForShop({ background, category }) {
   if (background) return `url(${background})`;
 
   return getBackgroundForCategory(category);
 }
 
-export default ({isPreview=false, shop={}}) => {
-  const {name, background, category, address, region} = shop;
+export default ({ isPreview = false, shop = {} }) => {
+  const { name, background, category, address, region } = shop;
   const history = useHistory();
 
   const containerStyles = {
@@ -83,36 +92,11 @@ export default ({isPreview=false, shop={}}) => {
   );
 };
 
-const anotherOrange = "#E5A02F";
-
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginHorizontal: 5,
-    marginTop: 12,
-    minHeight: 50,
-    padding: 10,
-  },
   buttonBack: {
     backgroundColor: colors.none,
     border: 0,
     padding: 16,
-  },
-  buttonCall: {
-    backgroundColor: colors.none,
-    borderColor: anotherOrange,
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: colors.white,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 5,
   },
   container: {
     marginBottom: 16,
