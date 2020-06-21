@@ -3,9 +3,17 @@ import axios from "axios";
 import { updateShop } from "../graphql/shop.js";
 import { HPGraphqlClient } from "./index";
 
-export async function saveShopWithProducts(shopPatch, newProducts) {
+export async function getShopWithProductsByToken(token) {
+  let productFields = "id,category,name,price,description,itemnumber";
+  let shopFields =
+    "id,name,slug,region,category,address,notes,opentimes,deliverycost,visibility,logo,background,ordersphonenumber,orderswhatsappnumber,typeformtoken";
+  let url = `/shops?typeformtoken=eq.${token}&select=${shopFields},products(${productFields})&products.order=itemnumber`;
 
-    // console.log("saveShopWithProducts:", shopPatch);
+  return axios.get(url);
+}
+
+export async function saveShopWithProducts(shopPatch, newProducts) {
+  // console.log("saveShopWithProducts:", shopPatch);
 
   // Save Shop
   try {

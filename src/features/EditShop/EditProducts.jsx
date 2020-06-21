@@ -1,7 +1,6 @@
 import React, { useMemo, useRef } from "react";
-// import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.css";
 import Handsontable from "handsontable";
