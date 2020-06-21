@@ -10,7 +10,7 @@ export default () => {
     <React.Fragment>
       <Router>
         <Switch>
-          <Route path={`/:slug/edit/:token`} component={EditShopPage} />
+          <Route path={`/:token/edit`} component={EditShopPage} />
           <Route path={`/:slug`} component={ShopPage} />
           <Route exact path="/" component={Home} />
         </Switch>
