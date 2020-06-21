@@ -17,17 +17,17 @@ import theme from "assets/theme";
 import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
 // Para probar:
-// http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
-// http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
-// https://hacerpedido.com/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
-
+// http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
 // http://localhost:3000/test6grt3kg7w8x0w250yunjc6gru6f6/edit
+// https://hacerpedido.com/test6grt3kg7w8x0w250yunjc6gru6f6/edit
 
 export default () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
   const [shop, setShop] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isError, setError] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
 
@@ -40,7 +40,7 @@ export default () => {
 
     async function getData() {
       try {
-        const shopData = await getShopWithProductsByToken(token)
+        const shopData = await getShopWithProductsByToken(token);
         setShop(shopData.data[0]);
       } catch (error) {
         alert(
@@ -48,34 +48,38 @@ export default () => {
         );
       } finally {
         dispatch(loading(false));
-
       }
     }
     getData();
   }, [token, dispatch, client]);
 
   const onSubmit = (data) => {
-    // console.log("onSubmit:" + JSON.stringify(data, null, 2));
+    async function saveData() {
+      let dataToSave = {
+        ...data,
+        id: shop.id,
+        slug: shop.slug,
+        region: shop.region,
+      };
 
-    console.log("save");
-    setShowMessage(true)
+      const result = await saveShopWithProducts(dataToSave, tempProducts);
 
-    let dataToSave = {
-      ...data,
-      id: shop.id,
-      slug: shop.slug,
-      region: shop.region,
-    };
-    saveShopWithProducts(dataToSave, tempProducts);
-    let editedShop = { ...shop, ...dataToSave };
-    if (tempProducts != null) {
-      editedShop.products = { nodes: tempProducts };
+      setError(result.error != null);
+      setMessage(result.message);
+
+      if (result.error == null) {
+        let editedShop = { ...shop, ...dataToSave };
+        if (tempProducts != null) {
+          editedShop.products = tempProducts;
+        }
+        setShop(editedShop);
+      }
+      setShowMessage(true);
     }
-    setShop(editedShop);
+    saveData();
   };
 
-  function toggle() {
-    console.log("toggle:");
+  function onMessagePress() {
     setShowMessage(!showMessage);
   }
 
@@ -139,7 +143,13 @@ export default () => {
         </View>
       </View>
 
-      {showMessage && <MessageBox message={"Tus cambios fueron guardados."} onMessagePress={toggle} />}
+      {showMessage && (
+        <MessageBox
+          message={message}
+          isError={isError}
+          onMessagePress={onMessagePress}
+        />
+      )}
     </>
   );
 };

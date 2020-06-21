@@ -22,47 +22,47 @@ export async function saveShopWithProducts(shopPatch, newProducts) {
       mutation: updateShop,
     });
   } catch (error) {
-    alert(
-      `Error al grabar los datos del comercio. (${error} Error: ${error.response.data.message})`
-    );
-
-    return;
+    return {
+      message: `Error al grabar los datos del comercio. (${error} Error: ${error.response.data.message})`,
+      error: 1,
+    };
   }
 
   if (newProducts == null) {
-    alert("Datos del comercio guardados. Sin cambios en los productos.");
-
-    return;
+    return {
+      message: "Tus cambios fueron guardados.",
+    };
   }
 
   // Delete old Products
   try {
     await axios.delete(`/products?shopid=eq.${shopPatch.id}`);
   } catch (error) {
-    alert(
-      `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
-    );
-
-    return;
+    return {
+      message: `Error al grabar los datos. (${error} Error: ${error.response.data.message})`,
+      error: 1,
+    };
   }
 
   // Insert new Products
   try {
     await createProducts(shopPatch.id, newProducts);
   } catch (error) {
-    alert(
-      `Error al grabar los datos. (${error} Error: ${error.response.data.message})`
-    );
-
-    return;
+    return {
+      message: `Error al grabar los datos. (${error} Error: ${error.response.data.message})`,
+      error: 1,
+    };
   }
 
-  alert("Datos del comercio y los productos guardados.");
+  return {
+    message: "Tus cambios fueron guardados.",
+  };
 }
 
 async function createProducts(shopid, newProducts) {
   if (shopid == null || shopid === "") {
     console.log("ERROR: createProducts, shopid is null or empty");
+
     return;
   }
 
