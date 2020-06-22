@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
+    height: "100vh",
     padding: 50,
     width: 400,
   },
