@@ -162,7 +162,7 @@ export default () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.lightGrey2,
     flex: 1,
     flexDirection: "row",
     // height: "100vh",
