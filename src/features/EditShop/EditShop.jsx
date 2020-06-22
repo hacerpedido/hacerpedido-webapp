@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { Controller } from "react-hook-form";
 
 import Input from "components/ShopInput";
@@ -11,7 +11,13 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Datos de tu Comercio</Text>
-        <Button style={styles.button} title="Grabar" onPress={handleSubmit} />
+        <TouchableHighlight
+          underlayColor={"none"}
+          onPress={handleSubmit}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Guardar</Text>
+        </TouchableHighlight>
       </View>
       <View style={styles.formContainer}>
         <View style={styles.formContainer}>
@@ -36,13 +42,6 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               name="address"
               label="Dirección:"
               defaultValue={shop.address}
-              // rules={{
-              //   required: {
-              //     value: true,
-              //     message:
-              //       "Ingresá la dirección del comercio o ingresá 'NO' en caso que sólo hagas delivery.",
-              //   },
-              // }}
               error={errors.address}
             />
             <Controller
@@ -119,7 +118,18 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
 };
 
 const styles = StyleSheet.create({
-  button: {},
+  button: {
+    alignItems: "center",
+    backgroundColor: theme.colors.button1,
+    borderRadius: 5,
+    marginVertical: 10,
+    padding: 10,
+    width: 100,
+  },
+  buttonText: {
+    color: theme.colors.white,
+    fontWeight: "bold",
+  },
   container: {
     backgroundColor: theme.colors.lightBackground,
     justifyContent: "center",
@@ -128,13 +138,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     flex: 0.5,
     marginRight: 8,
+    paddingLeft: 20,
+    paddingVertical: 20,
   },
   formColumnRight: {
     backgroundColor: theme.colors.white,
     flex: 0.5,
+    padding: 20,
   },
   formContainer: {
     backgroundColor: theme.colors.white,
+    borderColor: theme.colors.gray2,
+    borderRadius: 5,
+    borderStyle: "solid",
+    borderWidth: 1,
     flex: 1,
     flexDirection: "row",
   },
@@ -143,6 +160,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   titleContainer: {
+    alignItems: "flex-end",
     flexDirection: "row",
     justifyContent: "space-between",
   },

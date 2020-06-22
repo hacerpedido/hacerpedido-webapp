@@ -125,7 +125,7 @@ export default ({ products, shopId }) => {
             case 3:
               return 90;
             default:
-              const otherElementsWidth = (width >= 1000) ? 560 : 160;
+              const otherElementsWidth = (width >= 1000) ? 620 : 220;
               return (width - otherElementsWidth) / 2;
           }
         }}
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
   grid: {},
   title: {
     ...theme.text.title,
+    marginTop: 30,
     marginVertical: 10,
   },
 });
