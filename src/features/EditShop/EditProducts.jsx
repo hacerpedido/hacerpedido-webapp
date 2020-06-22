@@ -9,10 +9,12 @@ import { productForGrid, productsFromGrid } from "utils/products";
 import { setTempProducts } from "reducers/shopEditSlice";
 import theme from "assets/theme";
 import { sanitizePrice } from "utils/utils";
+import { useWindowDimensions } from "components/WindowDimensionsProvider";
 
 export default ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
+  const { width } = useWindowDimensions();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -111,12 +113,23 @@ export default ({ products, shopId }) => {
         style={{ ...styles.grid }}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
+        beforeChange={beforeChanges}
         minSpareRows={5}
         cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
-        colWidths={[70, 300, 300, 90]}
-        beforeChange={beforeChanges}
+        colWidths={(index) => {
+          switch (index) {
+            case 0:
+              return 50;
+            case 3:
+              return 90;
+            default:
+              const otherElementsWidth = (width >= 1000) ? 560 : 160;
+              return (width - otherElementsWidth) / 2;
+          }
+        }}
+        backgroundColor="red"
       />
     </View>
   );

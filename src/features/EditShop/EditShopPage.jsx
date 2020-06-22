@@ -166,12 +166,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     // height: "100vh",
-    // minWidth: 1000,
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    minWidth: 780,
     padding: 10,
   },
   rightContainer: {
