@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+
+// import * as Icons from "../assets/icons/";
 import theme from "assets/theme";
 
 export default ({ message, onMessagePress }) => {
@@ -13,7 +15,10 @@ export default ({ message, onMessagePress }) => {
   return (
     <View style={styles.container}>
       <TouchableHighlight onPress={onMessagePress} style={styles.touchable}>
+        <>
         <Text style={styles.text}>{message}</Text>
+        <Text style={styles.textClose}>x</Text>
+        </>
       </TouchableHighlight>
     </View>
   );
@@ -21,10 +26,8 @@ export default ({ message, onMessagePress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
     backgroundColor: theme.colors.black,
     height: "5em",
-    justifyContent: "center",
     left: 0,
     opacity: 0.8,
     position: "absolute",
@@ -32,17 +35,22 @@ const styles = StyleSheet.create({
     top: 0,
   },
   text: {
+    alignSelf: 'center',
     color: theme.colors.white,
-    fontSize: "1.2em"
+    flex: 1,
+    fontSize: "1.2em",
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  textClose: {
+    color: theme.colors.white,
+    fontSize: "1.5em",
+    textAlign: "center",
+    width: 60,
   },
   touchable: {
-    alignItems: "center",
-    backgroundColor: theme.colors.black,
-    height: 100,
-    justifyContent: "center",
-    left: 0,
-    position: "absolute",
-    right: 0,
-    top: 0,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'space-between',
   },
 });

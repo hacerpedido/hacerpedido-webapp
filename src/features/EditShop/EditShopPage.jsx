@@ -170,6 +170,8 @@ const styles = StyleSheet.create({
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
+    height: "100vh",
+    overflow: "scroll",
     paddingHorizontal: 40,
     paddingVertical: 40,
   },

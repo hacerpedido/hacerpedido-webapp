@@ -114,7 +114,7 @@ export default ({ products, shopId }) => {
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
         beforeChange={beforeChanges}
-        minSpareRows={5}
+        minSpareRows={10}
         cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
@@ -129,7 +129,6 @@ export default ({ products, shopId }) => {
               return (width - otherElementsWidth) / 2;
           }
         }}
-        backgroundColor="red"
       />
     </View>
   );
