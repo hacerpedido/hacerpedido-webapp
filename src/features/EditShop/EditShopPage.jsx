@@ -170,11 +170,12 @@ const styles = StyleSheet.create({
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    padding: 10,
+    paddingHorizontal: 40,
+    paddingVertical: 40,
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
-    padding: 30,
+    padding: 50,
     width: 400,
   },
 });
