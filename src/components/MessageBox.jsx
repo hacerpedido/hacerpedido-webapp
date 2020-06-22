@@ -23,8 +23,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: theme.colors.black,
-    color: theme.colors.white,
-    height: 100,
+    height: "5em",
     justifyContent: "center",
     left: 0,
     opacity: 0.8,
@@ -34,16 +33,14 @@ const styles = StyleSheet.create({
   },
   text: {
     color: theme.colors.white,
-    fontSize: "2em"
+    fontSize: "1.2em"
   },
   touchable: {
     alignItems: "center",
     backgroundColor: theme.colors.black,
-
     height: 100,
     justifyContent: "center",
     left: 0,
-    opacity: 0.9,
     position: "absolute",
     right: 0,
     top: 0,

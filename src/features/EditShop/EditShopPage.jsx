@@ -14,6 +14,7 @@ import Loading from "components/Loading";
 import Form from "components/Form";
 import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
+import { useWindowDimensions } from "components/WindowDimensionsProvider";
 import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
 // Para probar:
@@ -30,6 +31,7 @@ export default () => {
   const [isError, setError] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
+  const { width } = useWindowDimensions();
 
   let { token } = useParams();
 
@@ -115,6 +117,8 @@ export default () => {
 
   // console.log("errors:", errors);
 
+  const showPreview = width > 1000;
+
   return (
     <>
       <Helmet>
@@ -134,13 +138,15 @@ export default () => {
             <EditProductsForm products={products} shopId={shop.id} />
           </Form>
         </View>
-        <View style={styles.rightContainer}>
-          <ShopView
-            previewProducts={previewProducts}
-            shop={tempShop}
-            isPreview={true}
-          />
-        </View>
+        {showPreview && (
+          <View style={styles.rightContainer}>
+            <ShopView
+              previewProducts={previewProducts}
+              shop={tempShop}
+              isPreview={true}
+            />
+          </View>
+        )}
       </View>
 
       {showMessage && (
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     // height: "100vh",
-    minWidth: 1000,
+    // minWidth: 1000,
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
