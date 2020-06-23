@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.css";
 import Handsontable from "handsontable";
+import "handsontable/languages/es-MX";
 
 import { productForGrid, productsFromGrid } from "utils/products";
 import { setTempProducts } from "reducers/shopEditSlice";
@@ -105,19 +106,21 @@ export default ({ products, shopId }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
+        height={4 + 23 * (gridData.length + 10)}
         ref={grid}
         data={gridData}
-        style={{ ...styles.grid }}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
         beforeChange={beforeChanges}
         minSpareRows={10}
+        language={"es-MX"}
         cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
+        contextMenu={["row_above", "row_below", "remove_row"]}
         colWidths={(index) => {
           switch (index) {
             case 0:
@@ -125,7 +128,7 @@ export default ({ products, shopId }) => {
             case 3:
               return 90;
             default:
-              const otherElementsWidth = (width >= 1000) ? 620 : 220;
+              const otherElementsWidth = width >= 1000 ? 620 : 220;
               return (width - otherElementsWidth) / 2;
           }
         }}
@@ -137,11 +140,12 @@ export default ({ products, shopId }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightBackground,
+    display: "block",
     flex: 1,
   },
-  grid: {},
   title: {
     ...theme.text.title,
+    lineHeight: "2em",
     marginTop: 30,
     marginVertical: 10,
   },

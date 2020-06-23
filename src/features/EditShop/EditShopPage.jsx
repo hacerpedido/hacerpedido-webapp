@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     // height: "100vh",
+    // overflow: "scroll",
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,

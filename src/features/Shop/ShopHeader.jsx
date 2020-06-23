@@ -43,13 +43,15 @@ export default ({ isPreview = false, shop = {} }) => {
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
-        <TouchableHighlight
-          underlayColor={"none"}
-          onPress={onButtonBackPress}
-          style={styles.buttonBack}
-        >
-          <Icons.ArrowLeft color={colors.white} />
-        </TouchableHighlight>
+        {!isPreview && (
+          <TouchableHighlight
+            underlayColor={"none"}
+            onPress={onButtonBackPress}
+            style={styles.buttonBack}
+          >
+            <Icons.ArrowLeft color={colors.white} />
+          </TouchableHighlight>
+        )}
       </View>
 
       <View style={styles.containerData}>
@@ -123,6 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    minHeight: "4em",
     zIndex: 2,
   },
   logo: {
