@@ -43,7 +43,6 @@ export default ({
       {text && (
         <>
           <View>{icons[iconName]}</View>
-
           <Text style={styles.text}>{text}</Text>
         </>
       )}

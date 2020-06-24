@@ -98,6 +98,15 @@ export function removeEmptyStringElements(obj) {
   return obj;
 }
 
+export function trimObject(obj) {
+  for (var prop in obj) {
+    if (typeof obj[prop] === "string") {
+      obj[prop] = obj[prop].trim();
+    }
+  }
+  return obj;
+}
+
 export function generateWhatsappURL(number) {
   const sanitizedNumber = sanitizeWhatsAppNumber(number);
   const message = "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
