@@ -14,9 +14,9 @@ export default ({
   marginBottom,
 }) => {
   const icons = {
-    car: <Icons.Car color={iconColor} />,
-    clock: <Icons.Clock color={iconColor} />,
-    pin: <Icons.Pin color={iconColor} />,
+    car: <Icons.Car color={iconColor} width={18} />,
+    clock: <Icons.Clock color={iconColor} width={18} />,
+    pin: <Icons.Pin color={iconColor} width={18} />,
   };
 
   const styles = {
@@ -34,13 +34,19 @@ export default ({
       alignItems: "center",
       textAlignVertical: "center",
       marginBottom: marginBottom ?? 0,
+      maxWidth: "92%",
     },
   };
 
   return (
     <View style={styles.container}>
-      {icons[iconName]}
-      {text && <Text style={styles.text}>{text}</Text>}
+      {text && (
+        <>
+          <View>{icons[iconName]}</View>
+
+          <Text style={styles.text}>{text}</Text>
+        </>
+      )}
     </View>
   );
 };
