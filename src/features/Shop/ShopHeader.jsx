@@ -37,8 +37,10 @@ export default ({ isPreview = false, shop = {} }) => {
     !isPreview && history.push("/");
   };
 
-  const opentimes = shop?.opentimes !== "" ? shop.opentimes : null;
-  const deliverycost = shop?.deliverycost !== "" ? shop.deliverycost : null;
+  const displayAddress = address.trim() ?? region;
+  const opentimes = shop?.opentimes.trim() !== "" ? shop.opentimes : null;
+  const deliverycost =
+    shop?.deliverycost.trim() !== "" ? shop.deliverycost : null;
 
   return (
     <View style={containerStyles}>
@@ -64,14 +66,16 @@ export default ({ isPreview = false, shop = {} }) => {
           />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
-        <DecoratedLabel
-          iconName="pin"
-          text={address ?? region}
-          iconColor={colors.white}
-          textColor={colors.white}
-          fontSize={13}
-          marginBottom={4}
-        />
+        {displayAddress && (
+          <DecoratedLabel
+            iconName="pin"
+            text={displayAddress}
+            iconColor={colors.white}
+            textColor={colors.white}
+            fontSize={13}
+            marginBottom={4}
+          />
+        )}
         {opentimes && (
           <DecoratedLabel
             iconName="clock"
@@ -89,7 +93,7 @@ export default ({ isPreview = false, shop = {} }) => {
             iconColor={colors.white}
             textColor={colors.white}
             fontSize={13}
-            marginBottom={30}
+            marginBottom={4}
           />
         )}
       </View>
@@ -113,6 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: -24,
     zIndex: 0,
+    marginBottom: 26,
   },
   containerLogo: {
     alignItems: "center",

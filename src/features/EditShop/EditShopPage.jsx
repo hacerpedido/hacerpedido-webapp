@@ -14,6 +14,7 @@ import Loading from "components/Loading";
 import Form from "components/Form";
 import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
+import { trimObject } from "utils/utils"
 import { useWindowDimensions } from "components/WindowDimensionsProvider";
 import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
@@ -56,6 +57,8 @@ export default () => {
   }, [token, dispatch, client]);
 
   const onSubmit = (data) => {
+    trimObject(data);
+    
     async function saveData() {
       let dataToSave = {
         ...data,
@@ -109,8 +112,8 @@ export default () => {
     );
   }
 
-  const tempValues = watch();
-  let tempShop = { ...shop, ...tempValues };
+  const tempValues = watch(); ///trimObject();
+  let tempShop = trimObject({ ...shop, ...tempValues });
 
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
