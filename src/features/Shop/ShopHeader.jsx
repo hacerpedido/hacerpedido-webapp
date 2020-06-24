@@ -37,10 +37,10 @@ export default ({ isPreview = false, shop = {} }) => {
     !isPreview && history.push("/");
   };
 
-  const displayAddress = address.trim() ?? region;
-  const opentimes = shop?.opentimes.trim() !== "" ? shop.opentimes : null;
+  const displayAddress = address?.trim() ?? region;
+  const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
   const deliverycost =
-    shop?.deliverycost.trim() !== "" ? shop.deliverycost : null;
+    shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
 
   return (
     <View style={containerStyles}>
