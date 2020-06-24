@@ -106,7 +106,7 @@ export default ({ products, shopId }) => {
   };
 
   return (
-    <View style={styles.container} >
+    <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
         height={4 + 23 * (gridData.length + 10)}
@@ -117,6 +117,7 @@ export default ({ products, shopId }) => {
         beforeChange={beforeChanges}
         minSpareRows={10}
         language={"es-MX"}
+        preventOverflow={"horizontal"}
         cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
@@ -128,7 +129,7 @@ export default ({ products, shopId }) => {
             case 3:
               return 90;
             default:
-              const otherElementsWidth = width >= 1000 ? 620 : 220;
+              const otherElementsWidth = width >= 1000 ? 644 : 244;
               return (width - otherElementsWidth) / 2;
           }
         }}
@@ -142,6 +143,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.lightBackground,
     display: "block",
     flex: 1,
+    maxWidth: "100%",
+    // overflowX: "hidden",
   },
   title: {
     ...theme.text.title,
