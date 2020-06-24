@@ -73,7 +73,24 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Teléfono para WhatsApp:"
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
-              rules={{ validate: validatePhoneNumber }}
+              rules={{
+                validate: {
+                  matchesAtLeastAPhone: (value) => {
+                    if (value !== "") {
+                      const phoneValidationResult = validatePhoneNumber(value);
+                      if (typeof phoneValidationResult === "string") {
+                        return phoneValidationResult;
+                      }
+                    }
+                    const { ordersphonenumber } = getValues();
+                    return (
+                      ordersphonenumber !== "" ||
+                      value !== "" ||
+                      "Al menos un número de teléfono debe ser ingresado."
+                    );
+                  },
+                },
+              }}
               maxLength={20}
             />
             <Controller
@@ -95,7 +112,8 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
                     }
                     const { orderswhatsappnumber } = getValues();
                     return (
-                      orderswhatsappnumber !== "" || value !== "" ||
+                      orderswhatsappnumber !== "" ||
+                      value !== "" ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
