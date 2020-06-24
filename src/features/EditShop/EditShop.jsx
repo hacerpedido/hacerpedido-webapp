@@ -35,6 +35,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
                 },
               }}
               error={errors.name}
+              maxLength={50}
             />
             <Controller
               as={Input}
@@ -43,6 +44,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Dirección:"
               defaultValue={shop.address}
               error={errors.address}
+              maxLength={50}
             />
             <Controller
               as={Input}
@@ -51,6 +53,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Horario:"
               defaultValue={shop.opentimes}
               error={errors.opentimes}
+              maxLength={50}
             />
             <Controller
               as={Input}
@@ -59,6 +62,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Costo del Delivery:"
               defaultValue={shop.deliverycost}
               error={errors.deliverycost}
+              maxLength={50}
             />
           </View>
           <View style={styles.formColumnRight}>
@@ -70,6 +74,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
               rules={{ validate: validatePhoneNumber }}
+              maxLength={20}
             />
             <Controller
               as={Input}
@@ -78,6 +83,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Teléfono Fijo:"
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
+              maxLength={20}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
