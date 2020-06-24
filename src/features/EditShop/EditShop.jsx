@@ -87,14 +87,15 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
-                    const phoneValidationResult = validatePhoneNumber(value);
-                    if (typeof phoneValidationResult === "string") {
-                      return phoneValidationResult;
+                    if (value !== "") {
+                      const phoneValidationResult = validatePhoneNumber(value);
+                      if (typeof phoneValidationResult === "string") {
+                        return phoneValidationResult;
+                      }
                     }
                     const { orderswhatsappnumber } = getValues();
                     return (
-                      orderswhatsappnumber !== "" ||
-                      value !== "" ||
+                      orderswhatsappnumber !== "" || value !== "" ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
