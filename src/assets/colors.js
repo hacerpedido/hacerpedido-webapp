@@ -21,6 +21,7 @@ const colors = {
   brown: "#4D360F",
   gray1: "#ECECEC",
   gray2: "#EDEDED",
+  gray3: "#666666",
   gray4: "#999999",
   danger: "#DD5D50",
 };

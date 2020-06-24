@@ -111,6 +111,7 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               label="Notas:"
               defaultValue={shop.notes}
               error={errors.notes}
+              maxLength={1000}
             />
             {/*
                 logo
