@@ -2,10 +2,13 @@ import React from "react";
 import {StyleSheet, Text, View} from "react-native";
 
 import colors from "assets/colors";
+import {sanitizePrice} from "utils/utils"
 
 export default ({product, promo = false}) => {
   const containerStyle = promo ? styles.card : styles.product;
   const {id, name, description, price} = product;
+
+  const displayPrice = sanitizePrice(price)
 
   return (
     <View key={id} style={[styles.container, containerStyle]}>
@@ -13,7 +16,7 @@ export default ({product, promo = false}) => {
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
-      <Text style={styles.price}>{price && `$${price}`}</Text>
+      <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
     </View>
   );
 };
