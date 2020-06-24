@@ -112,13 +112,11 @@ export default () => {
     );
   }
 
-  const tempValues = watch(); ///trimObject();
+  const tempValues = watch();
   let tempShop = trimObject({ ...shop, ...tempValues });
 
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
-
-  // console.log("errors:", errors);
 
   const showPreview = width > 1000;
 
@@ -168,8 +166,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.lightGrey2,
     flex: 1,
     flexDirection: "row",
-    // height: "100vh",
-    // overflow: "scroll",
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
