@@ -58,7 +58,7 @@ export default () => {
 
   const onSubmit = (data) => {
     trimObject(data);
-    
+
     async function saveData() {
       let dataToSave = {
         ...data,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
     height: "100vh",
-    padding: 50,
+    padding: 30,
     width: 400,
   },
 });
