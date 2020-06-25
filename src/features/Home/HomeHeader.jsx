@@ -25,7 +25,7 @@ export default () => {
 const styles = StyleSheet.create({
   addShopButton: {
     backgroundColor: colors.addShopButtonBg,
-    borderColor: colors.addShopButtonBorder,
+    borderColor: colors.button1,
     borderRadius: 3,
     borderWidth: 1,
     color: colors.white,

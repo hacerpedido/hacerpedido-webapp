@@ -1,20 +1,29 @@
 import React from "react";
-import {Image, StyleSheet, Text, TouchableHighlight, View, } from "react-native";
-import {useHistory} from "react-router-dom";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
+import { useHistory } from "react-router-dom";
 
-import {getBackgroundForCategory, getBackgroundColorForCategory} from "utils/categoriesHelper";
+import {
+  getBackgroundForCategory,
+  getBackgroundColorForCategory,
+} from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
 import DecoratedLabel from "components/DecoratedLabel";
 
-function getBackgroundForShop({background, category}) {
+function getBackgroundForShop({ background, category }) {
   if (background) return `url(${background})`;
 
   return getBackgroundForCategory(category);
 }
 
-export default ({isPreview=false, shop={}}) => {
-  const {name, background, category, address, region} = shop;
+export default ({ isPreview = false, shop = {} }) => {
+  const { name, background, category, address, region } = shop;
   const history = useHistory();
 
   const containerStyles = {
@@ -28,16 +37,23 @@ export default ({isPreview=false, shop={}}) => {
     !isPreview && history.push("/");
   };
 
+  const displayAddress = address?.trim() ?? region;
+  const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
+  const deliverycost =
+    shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
+
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
-        <TouchableHighlight
-          underlayColor={"none"}
-          onPress={onButtonBackPress}
-          style={styles.buttonBack}
-        >
-          <Icons.ArrowLeft color={colors.white} />
-        </TouchableHighlight>
+        {!isPreview && (
+          <TouchableHighlight
+            underlayColor={"none"}
+            onPress={onButtonBackPress}
+            style={styles.buttonBack}
+          >
+            <Icons.ArrowLeft color={colors.white} />
+          </TouchableHighlight>
+        )}
       </View>
 
       <View style={styles.containerData}>
@@ -50,32 +66,34 @@ export default ({isPreview=false, shop={}}) => {
           />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
-        <DecoratedLabel
-          iconName="pin"
-          text={address ?? region}
-          iconColor={colors.white}
-          textColor={colors.white}
-          fontSize={13}
-          marginBottom={4}
-        />
-        {shop.opentimes && (
+        {displayAddress && (
           <DecoratedLabel
-            iconName="clock"
-            text={shop.opentimes}
+            iconName="pin"
+            text={displayAddress}
             iconColor={colors.white}
             textColor={colors.white}
             fontSize={13}
             marginBottom={4}
           />
         )}
-        {shop.deliverycost && (
+        {opentimes && (
           <DecoratedLabel
-            iconName="car"
-            text={"Delivery: " + shop.deliverycost}
+            iconName="clock"
+            text={opentimes}
             iconColor={colors.white}
             textColor={colors.white}
             fontSize={13}
-            marginBottom={30}
+            marginBottom={4}
+          />
+        )}
+        {deliverycost && (
+          <DecoratedLabel
+            iconName="car"
+            text={"Delivery: " + deliverycost}
+            iconColor={colors.white}
+            textColor={colors.white}
+            fontSize={13}
+            marginBottom={4}
           />
         )}
       </View>
@@ -83,36 +101,11 @@ export default ({isPreview=false, shop={}}) => {
   );
 };
 
-const anotherOrange = "#E5A02F";
-
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginHorizontal: 5,
-    marginTop: 12,
-    minHeight: 50,
-    padding: 10,
-  },
   buttonBack: {
     backgroundColor: colors.none,
     border: 0,
     padding: 16,
-  },
-  buttonCall: {
-    backgroundColor: colors.none,
-    borderColor: anotherOrange,
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: colors.white,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 5,
   },
   container: {
     marginBottom: 16,
@@ -124,6 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: -24,
     zIndex: 0,
+    marginBottom: 26,
   },
   containerLogo: {
     alignItems: "center",
@@ -136,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    minHeight: "4em",
     zIndex: 2,
   },
   logo: {

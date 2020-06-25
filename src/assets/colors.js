@@ -3,8 +3,8 @@
 
 const colors = {
   addShopButtonBg: "#3ECB7D",
-  addShopButtonBorder: "#37B26E",
   black: "#000",
+  button1: "#37B26E",
   cardBorder: "#E8E8E8",
   darkGray: "#4D360F",
   dividerBorder: "#EDF1F7",
@@ -20,6 +20,8 @@ const colors = {
   white: "#FFF",
   brown: "#4D360F",
   gray1: "#ECECEC",
+  gray2: "#EDEDED",
+  gray3: "#666666",
   gray4: "#999999",
   danger: "#DD5D50",
 };
