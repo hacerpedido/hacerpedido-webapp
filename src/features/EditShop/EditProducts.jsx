@@ -1,18 +1,21 @@
 import React, { useMemo, useRef } from "react";
-// import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
 import { HotTable } from "@handsontable/react";
 import "handsontable/dist/handsontable.full.css";
 import Handsontable from "handsontable";
+import "handsontable/languages/es-MX";
 
 import { productForGrid, productsFromGrid } from "utils/products";
 import { setTempProducts } from "reducers/shopEditSlice";
 import theme from "assets/theme";
+import { sanitizePrice } from "utils/utils";
+import { useWindowDimensions } from "components/WindowDimensionsProvider";
 
 export default ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
+  const { width } = useWindowDimensions();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -83,20 +86,53 @@ export default ({ products, shopId }) => {
     return cellProperties;
   };
 
+  const beforeChanges = (changes, source) => {
+    if (source !== "CopyPaste.paste") {
+      return;
+    }
+
+    var j;
+    for (j = 0; j < changes.length; j++) {
+      // título?
+      if (changes[j][1] === 0) {
+        if (typeof changes[j][3] === "string") {
+          changes[j][3] = changes[j][3].toLowerCase() === "true";
+        }
+      } else if (changes[j][1] === 3) {
+        // precio
+        changes[j][3] = sanitizePrice(changes[j][3]);
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
+        height={4 + 23 * (gridData.length + 10)}
         ref={grid}
         data={gridData}
-        style={{ ...styles.grid }}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
-        minSpareRows={5}
+        beforeChange={beforeChanges}
+        minSpareRows={10}
+        language={"es-MX"}
+        preventOverflow={"horizontal"}
         cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
-        colWidths={[70, 300, 300, 90]}
+        contextMenu={["row_above", "row_below", "remove_row"]}
+        colWidths={(index) => {
+          switch (index) {
+            case 0:
+              return 50;
+            case 3:
+              return 90;
+            default:
+              const otherElementsWidth = width >= 1000 ? 644 : 244;
+              return (width - otherElementsWidth) / 2;
+          }
+        }}
       />
     </View>
   );
@@ -105,11 +141,15 @@ export default ({ products, shopId }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightBackground,
+    display: "block",
     flex: 1,
+    maxWidth: "100%",
+    // overflowX: "hidden",
   },
-  grid: {},
   title: {
     ...theme.text.title,
+    lineHeight: "2em",
+    marginTop: 30,
     marginVertical: 10,
   },
 });

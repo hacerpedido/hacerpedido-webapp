@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
@@ -8,92 +8,117 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
-import validation from "./validation";
-import { setShop } from "reducers/shopSlice";
-import { getShopWithDetails } from "graphql/shop";
+import { loading } from "reducers/appSlice";
 import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
 import Form from "components/Form";
+import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
-import { saveShopWithProducts } from "api/shops";
+import { trimObject } from "utils/utils"
+import { useWindowDimensions } from "components/WindowDimensionsProvider";
+import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
+
+// Para probar:
+// http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
+// http://localhost:3000/test6grt3kg7w8x0w250yunjc6gru6f6/edit
+// https://hacerpedido.com/test6grt3kg7w8x0w250yunjc6gru6f6/edit
 
 export default () => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
-  const shop = useSelector((state) => state.shop.shop);
+  const [shop, setShop] = useState(null);
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isError, setError] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
+  const { width } = useWindowDimensions();
 
-  let { slug, token } = useParams();
+  let { token } = useParams();
 
-  if (!isLoading && (slug === undefined || token === undefined)) {
-    return <Text>Error cargando {slug} (1)</Text>;
-  }
+  // console.log(JSON.stringify(slug, null, 2));
 
-  // Para probar:
-  // http://localhost:3000/deguarda/edit/cfb6d51e87pfxuosysumcfb6d51vpka4
-  // http://localhost:3000/test-4/edit/test6grt3kg7w8x0w250yunjc6gru6f6
-
-  useLayoutEffect(() => {
-    // dispatch(loading(true));
+  useEffect(() => {
+    dispatch(loading(true));
 
     async function getData() {
-      const shopData = await client.query({
-        query: getShopWithDetails,
-        variables: { slug },
-      });
-      dispatch(setShop(shopData.data.shopBySlug));
-      // dispatch(loading(false));
+      try {
+        const shopData = await getShopWithProductsByToken(token);
+        setShop(shopData.data[0]);
+      } catch (error) {
+        alert(
+          `Error al leer los datos. (${error} Error: ${error.response.data.message})`
+        );
+      } finally {
+        dispatch(loading(false));
+      }
     }
-    getData().catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-  }, [slug, dispatch, client]);
+    getData();
+  }, [token, dispatch, client]);
 
   const onSubmit = (data) => {
-    let dataToSave = {
-      ...data,
-      id: shop.id,
-      slug: shop.slug,
-      region: shop.region,
-    };
+    trimObject(data);
 
-    saveShopWithProducts(dataToSave, tempProducts);
+    async function saveData() {
+      let dataToSave = {
+        ...data,
+        id: shop.id,
+        slug: shop.slug,
+        region: shop.region,
+      };
 
-    let editedShop = { ...shop, ...dataToSave };
-    if (tempProducts != null ) {
-      editedShop.productsByShopid = {nodes: tempProducts}
+      const result = await saveShopWithProducts(dataToSave, tempProducts);
+
+      setError(result.error != null);
+      setMessage(result.message);
+
+      if (result.error == null) {
+        let editedShop = { ...shop, ...dataToSave };
+        if (tempProducts != null) {
+          editedShop.products = tempProducts;
+        }
+        setShop(editedShop);
+      }
+      setShowMessage(true);
     }
-
-    dispatch(setShop(editedShop));
+    saveData();
   };
+
+  function onMessagePress() {
+    setShowMessage(!showMessage);
+  }
+
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    errors,
+    control,
+    watch,
+    getValues,
+  } = useForm({
+    mode: "onBlur",
+  });
+
+  if (token == null) {
+    return <Text>Error cargando el comercio.</Text>;
+  }
 
   if (shop == null) {
     return isLoading ? (
       <Loading />
     ) : (
-      <Text>No hay un comercio en la base de datos para {slug}</Text>
+      <Text>No hay un comercio en la base de datos para el token {token}</Text>
     );
   }
 
-  if (shop.typeformtoken !== token) {
-    return <Text>Error cargando {slug} (2)</Text>;
-  }
-
-  const { handleSubmit, register, setValue, errors, control, watch } = useForm({
-    mode: "onBlur",
-    defaultValues: {
-      ...shop,
-    },
-  });
-
   const tempValues = watch();
-  let tempShop = { ...shop, ...tempValues };
+  let tempShop = trimObject({ ...shop, ...tempValues });
 
-  let products = shop?.productsByShopid?.nodes ?? [];
+  let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
 
-  // console.log("previewProducts:" + previewProducts.length);
+  const showPreview = width > 1000;
 
   return (
     <>
@@ -103,41 +128,56 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Form {...{ register, validation, setValue, errors, control }}>
+          <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
+              shop={shop}
               control={control}
+              errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
+              getValues={getValues}
             />
             <EditProductsForm products={products} shopId={shop.id} />
           </Form>
         </View>
-        <View style={styles.rightContainer}>
-          <ShopView
-            previewProducts={previewProducts}
-            shop={tempShop}
-            isPreview={true}
-          />
-        </View>
+        {showPreview && (
+          <View style={styles.rightContainer}>
+            <ShopView
+              previewProducts={previewProducts}
+              shop={tempShop}
+              isPreview={true}
+            />
+          </View>
+        )}
       </View>
+
+      {showMessage && (
+        <MessageBox
+          message={message}
+          isError={isError}
+          onMessagePress={onMessagePress}
+        />
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.lightGrey2,
     flex: 1,
     flexDirection: "row",
-    // height: "100vh",
-    minWidth: 1000,
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    padding: 10,
+    height: "100vh",
+    overflow: "scroll",
+    paddingHorizontal: 40,
+    paddingVertical: 40,
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
+    height: "100vh",
     padding: 30,
     width: 400,
   },

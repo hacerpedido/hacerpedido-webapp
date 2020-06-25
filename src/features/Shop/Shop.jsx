@@ -11,7 +11,7 @@ import colors from "assets/colors";
 export default ({isPreview, shop, previewProducts}) => {
   const isLoading = useSelector((state) => state.app.loading);
 
-  // TODO: Esto habría que limpiarlo, lo dejo 
+  // TODO: Esto habría que limpiarlo, lo dejo
   // por ahora para no romper el carrito
   let products;
   if (isPreview) {
@@ -19,7 +19,7 @@ export default ({isPreview, shop, previewProducts}) => {
   } else {
     products = shop?.productsByShopid?.nodes ?? [];
   }
-  
+
   return (
     <ScrollView>
       <ShopHeader isPreview={isPreview} shop={shop} />
