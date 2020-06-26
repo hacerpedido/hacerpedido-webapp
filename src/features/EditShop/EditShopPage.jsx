@@ -29,7 +29,6 @@ export default () => {
   const [shop, setShop] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
-  const [isError, setError] = useState(false);
   const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
@@ -42,7 +41,7 @@ export default () => {
 
   useEffect(() => {
     dispatch(loading(true));
-    setShop(null)
+    setShop(null);
 
     async function getData() {
       try {
@@ -73,7 +72,6 @@ export default () => {
 
       const result = await saveShopWithProducts(dataToSave, tempProducts);
 
-      setError(result.error != null);
       setMessage(result.message);
 
       if (result.error == null) {
@@ -83,6 +81,7 @@ export default () => {
         }
         setShop(editedShop);
       }
+
       setShowMessage(true);
       setSaving(false);
       setReloadCount(reloadCount + 1);
@@ -106,6 +105,17 @@ export default () => {
     mode: "onBlur",
   });
 
+  // TODO: Falta remover el mensage anterior al salir del estado de error
+  // function onSavePress(data) {
+  //   if (Object.keys(errors).length > 0) {
+  //     setShowMessage(true);
+
+  //     return;
+  //   }
+
+  //   handleSubmit(onSubmit(getValues()));
+  // }
+
   if (token == null) {
     return <Text>Error cargando el comercio.</Text>;
   }
@@ -126,6 +136,8 @@ export default () => {
 
   const showPreview = width > 1000;
 
+  const isError = Object.keys(errors).length > 0;
+
   return (
     <>
       <Helmet>
@@ -139,6 +151,7 @@ export default () => {
               shop={shop}
               control={control}
               errors={errors}
+              // handleSubmit={onSavePress}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
@@ -159,7 +172,11 @@ export default () => {
 
       {showMessage && (
         <MessageBox
-          message={message}
+          message={
+            isError
+              ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
+              : message
+          }
           isError={isError}
           onMessagePress={onMessagePress}
         />
