@@ -37,7 +37,7 @@ export default () => {
 
   let { token } = useParams();
 
-  // console.log(JSON.stringify(slug, null, 2));
+  console.log(JSON.stringify(shop, null, 2));
 
   useEffect(() => {
     dispatch(loading(true));
