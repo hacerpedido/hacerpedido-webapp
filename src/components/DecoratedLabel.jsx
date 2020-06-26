@@ -21,15 +21,14 @@ export default ({
 
   const styles = {
     text: {
-      padding: 3,
       color: textColor,
       fontFamily: "Roboto Slab",
       fontWeight: "400",
       fontSize: fontSize ?? 12,
       lineHeight: 14,
+      padding: 3,
     },
     container: {
-      flex: 1,
       flexDirection: "row",
       alignItems: "center",
       textAlignVertical: "center",
