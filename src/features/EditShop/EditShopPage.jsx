@@ -168,20 +168,17 @@ export default () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightGrey2,
-    flex: 1,
     flexDirection: "row",
+    height: "100vh",
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    height: "100vh",
-    overflow: "scroll",
-    paddingHorizontal: 40,
-    paddingVertical: 40,
+    overflowY: "scroll",
+    padding: 40,
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
-    height: "100vh",
     padding: 30,
     width: 400,
   },

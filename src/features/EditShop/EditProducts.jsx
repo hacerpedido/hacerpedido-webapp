@@ -105,17 +105,19 @@ export default ({ products, shopId }) => {
     }
   };
 
+  const spareRows = 10;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
-        height={4 + 23 * (gridData.length + 10)}
+        height={40 + 23 * (gridData.length + spareRows)}
         ref={grid}
         data={gridData}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
         beforeChange={beforeChanges}
-        minSpareRows={10}
+        minSpareRows={spareRows}
         language={"es-MX"}
         preventOverflow={"horizontal"}
         cells={getCells}
@@ -141,10 +143,6 @@ export default ({ products, shopId }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightBackground,
-    display: "block",
-    flex: 1,
-    maxWidth: "100%",
-    // overflowX: "hidden",
   },
   title: {
     ...theme.text.title,
