@@ -14,7 +14,7 @@ import Loading from "components/Loading";
 import Form from "components/Form";
 import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
-import { trimObject } from "utils/utils"
+import { trimObject } from "utils/utils";
 import { useWindowDimensions } from "components/WindowDimensionsProvider";
 import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
@@ -34,6 +34,7 @@ export default () => {
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
   const { width } = useWindowDimensions();
+  const [reloadCount, setReloadCount] = useState(0);
 
   let { token } = useParams();
 
@@ -41,6 +42,7 @@ export default () => {
 
   useEffect(() => {
     dispatch(loading(true));
+    setShop(null)
 
     async function getData() {
       try {
@@ -55,13 +57,13 @@ export default () => {
       }
     }
     getData();
-  }, [token, dispatch, client]);
+  }, [token, dispatch, client, reloadCount]);
 
   const onSubmit = (data) => {
     trimObject(data);
 
     async function saveData() {
-      setSaving(true)
+      setSaving(true);
       let dataToSave = {
         ...data,
         id: shop.id,
@@ -82,7 +84,8 @@ export default () => {
         setShop(editedShop);
       }
       setShowMessage(true);
-      setSaving(false)
+      setSaving(false);
+      setReloadCount(reloadCount + 1);
     }
     saveData();
   };
