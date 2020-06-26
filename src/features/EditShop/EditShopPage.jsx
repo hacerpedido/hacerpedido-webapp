@@ -30,6 +30,7 @@ export default () => {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setError] = useState(false);
+  const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
   const { width } = useWindowDimensions();
@@ -60,6 +61,7 @@ export default () => {
     trimObject(data);
 
     async function saveData() {
+      setSaving(true)
       let dataToSave = {
         ...data,
         id: shop.id,
@@ -80,6 +82,7 @@ export default () => {
         setShop(editedShop);
       }
       setShowMessage(true);
+      setSaving(false)
     }
     saveData();
   };
@@ -135,6 +138,7 @@ export default () => {
               errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
+              isSaving={isSaving}
             />
             <EditProductsForm products={products} shopId={shop.id} />
           </Form>
