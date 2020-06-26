@@ -107,7 +107,7 @@ export default ({
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
-                    if (value !== "") {
+                    if (value != null && value !== "") {
                       const phoneValidationResult = validatePhoneNumber(value);
                       if (typeof phoneValidationResult === "string") {
                         return phoneValidationResult;
@@ -115,8 +115,8 @@ export default ({
                     }
                     const { ordersphonenumber } = getValues();
                     return (
-                      ordersphonenumber !== "" ||
-                      value !== "" ||
+                      (ordersphonenumber != null && ordersphonenumber !== "") ||
+                      (value != null && value !== "") ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
@@ -149,7 +149,7 @@ export default ({
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
-                    if (value !== "") {
+                    if (value != null && value !== "") {
                       const phoneValidationResult = validatePhoneNumber(value);
                       if (typeof phoneValidationResult === "string") {
                         return phoneValidationResult;
@@ -157,8 +157,9 @@ export default ({
                     }
                     const { orderswhatsappnumber } = getValues();
                     return (
-                      orderswhatsappnumber !== "" ||
-                      value !== "" ||
+                      (orderswhatsappnumber != null &&
+                        orderswhatsappnumber !== "") ||
+                      (value != null && value !== "") ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
