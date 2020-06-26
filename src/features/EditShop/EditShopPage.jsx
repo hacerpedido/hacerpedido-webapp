@@ -14,7 +14,7 @@ import Loading from "components/Loading";
 import Form from "components/Form";
 import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
-import { trimObject } from "utils/utils"
+import { trimObject } from "utils/utils";
 import { useWindowDimensions } from "components/WindowDimensionsProvider";
 import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
@@ -29,17 +29,19 @@ export default () => {
   const [shop, setShop] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
-  const [isError, setError] = useState(false);
+  const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
   const { width } = useWindowDimensions();
+  const [reloadCount, setReloadCount] = useState(0);
 
   let { token } = useParams();
 
-  // console.log(JSON.stringify(slug, null, 2));
+  // console.log(JSON.stringify(shop, null, 2));
 
   useEffect(() => {
     dispatch(loading(true));
+    setShop(null);
 
     async function getData() {
       try {
@@ -54,12 +56,13 @@ export default () => {
       }
     }
     getData();
-  }, [token, dispatch, client]);
+  }, [token, dispatch, client, reloadCount]);
 
   const onSubmit = (data) => {
     trimObject(data);
 
     async function saveData() {
+      setSaving(true);
       let dataToSave = {
         ...data,
         id: shop.id,
@@ -69,7 +72,6 @@ export default () => {
 
       const result = await saveShopWithProducts(dataToSave, tempProducts);
 
-      setError(result.error != null);
       setMessage(result.message);
 
       if (result.error == null) {
@@ -79,7 +81,10 @@ export default () => {
         }
         setShop(editedShop);
       }
+
       setShowMessage(true);
+      setSaving(false);
+      setReloadCount(reloadCount + 1);
     }
     saveData();
   };
@@ -99,6 +104,17 @@ export default () => {
   } = useForm({
     mode: "onBlur",
   });
+
+  // TODO: Falta remover el mensaje anterior al salir del estado de error
+  // function onSavePress(data) {
+  //   if (Object.keys(errors).length > 0) {
+  //     setShowMessage(true);
+
+  //     return;
+  //   }
+
+  //   handleSubmit(onSubmit(getValues()));
+  // }
 
   if (token == null) {
     return <Text>Error cargando el comercio.</Text>;
@@ -120,6 +136,8 @@ export default () => {
 
   const showPreview = width > 1000;
 
+  const isError = Object.keys(errors).length > 0;
+
   return (
     <>
       <Helmet>
@@ -133,8 +151,10 @@ export default () => {
               shop={shop}
               control={control}
               errors={errors}
+              // handleSubmit={onSavePress}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
+              isSaving={isSaving}
             />
             <EditProductsForm products={products} shopId={shop.id} />
           </Form>
@@ -152,7 +172,11 @@ export default () => {
 
       {showMessage && (
         <MessageBox
-          message={message}
+          message={
+            isError
+              ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
+              : message
+          }
           isError={isError}
           onMessagePress={onMessagePress}
         />
@@ -164,20 +188,17 @@ export default () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightGrey2,
-    flex: 1,
     flexDirection: "row",
+    height: "100vh",
   },
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    height: "100vh",
-    overflow: "scroll",
-    paddingHorizontal: 40,
-    paddingVertical: 40,
+    overflowY: "scroll",
+    padding: 40,
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
-    height: "100vh",
     padding: 30,
     width: 400,
   },

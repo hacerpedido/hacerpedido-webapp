@@ -1,23 +1,54 @@
 import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Controller } from "react-hook-form";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
 import { validatePhoneNumber } from "utils/utils";
 
-export default ({ shop, control, errors, handleSubmit, getValues }) => {
+export default ({
+  shop,
+  control,
+  errors,
+  handleSubmit,
+  getValues,
+  isSaving,
+}) => {
+  const buttonStyles = {
+    alignItems: "center",
+    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
+    borderRadius: 5,
+    flexDirection: "row",
+    marginVertical: 10,
+    padding: 10,
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Datos de tu Comercio</Text>
-        <TouchableHighlight
+        <TouchableOpacity
           underlayColor={"none"}
           onPress={handleSubmit}
-          style={styles.button}
+          style={buttonStyles}
+          disabled={isSaving}
         >
-          <Text style={styles.buttonText}>Guardar</Text>
-        </TouchableHighlight>
+          <>
+            <Text style={styles.buttonText}>Guardar</Text>
+            {isSaving && (
+              <ActivityIndicator
+                animating={isSaving}
+                color={theme.colors.white}
+              />
+            )}
+          </>
+        </TouchableOpacity>
       </View>
       <View style={styles.formContainer}>
         <View style={styles.formContainer}>
@@ -70,13 +101,13 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               as={Input}
               control={control}
               name="orderswhatsappnumber"
-              label="Teléfono para WhatsApp:"
+              label="WhatsApp del comercio:"
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
-                    if (value !== "") {
+                    if (value != null && value !== "") {
                       const phoneValidationResult = validatePhoneNumber(value);
                       if (typeof phoneValidationResult === "string") {
                         return phoneValidationResult;
@@ -84,14 +115,21 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
                     }
                     const { ordersphonenumber } = getValues();
                     return (
-                      ordersphonenumber !== "" ||
-                      value !== "" ||
+                      (ordersphonenumber != null && ordersphonenumber !== "") ||
+                      (value != null && value !== "") ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
                 },
               }}
               maxLength={20}
+              placeholder={"Escribilo así: +5492234470974"}
+              pattern={"\\+?[0-9]*"}
+              keyboardType={"phone-pad"}
+              onChange={([e]) => {
+                let value = e.target.value ?? "";
+                return value.replace(/[^0-9+]/g, "");
+              }}
             />
             <Controller
               as={Input}
@@ -101,10 +139,17 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
               maxLength={20}
+              placeholder={"Escribilo así: +5492234470974"}
+              pattern={"\\+?[0-9]*"}
+              keyboardType={"phone-pad"}
+              onChange={([e]) => {
+                let value = e.target.value ?? "";
+                return value.replace(/[^0-9+]/g, "");
+              }}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
-                    if (value !== "") {
+                    if (value != null && value !== "") {
                       const phoneValidationResult = validatePhoneNumber(value);
                       if (typeof phoneValidationResult === "string") {
                         return phoneValidationResult;
@@ -112,8 +157,9 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
                     }
                     const { orderswhatsappnumber } = getValues();
                     return (
-                      orderswhatsappnumber !== "" ||
-                      value !== "" ||
+                      (orderswhatsappnumber != null &&
+                        orderswhatsappnumber !== "") ||
+                      (value != null && value !== "") ||
                       "Al menos un número de teléfono debe ser ingresado."
                     );
                   },
@@ -144,17 +190,10 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
 };
 
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    backgroundColor: theme.colors.button1,
-    borderRadius: 5,
-    marginVertical: 10,
-    padding: 10,
-    width: 100,
-  },
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
+    paddingHorizontal: 10,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,

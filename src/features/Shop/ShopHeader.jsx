@@ -112,16 +112,14 @@ const styles = StyleSheet.create({
   },
   containerData: {
     alignItems: "center",
-    flex: 1,
     flexDirection: "column",
     justifyContent: "center",
+    marginBottom: 26,
     marginTop: -24,
     zIndex: 0,
-    marginBottom: 26,
   },
   containerLogo: {
     alignItems: "center",
-    flex: -1,
     height: 100,
     width: 100,
   },
