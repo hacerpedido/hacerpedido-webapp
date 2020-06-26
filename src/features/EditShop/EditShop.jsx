@@ -101,7 +101,7 @@ export default ({
               as={Input}
               control={control}
               name="orderswhatsappnumber"
-              label="Teléfono para WhatsApp:"
+              label="WhatsApp del comercio:"
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
               rules={{
@@ -123,6 +123,13 @@ export default ({
                 },
               }}
               maxLength={20}
+              placeholder={"Escribilo así: +5492234470974"}
+              pattern={"\\+?[0-9]*"}
+              keyboardType={"phone-pad"}
+              onChange={([e]) => {
+                let value = e.target.value ?? "";
+                return value.replace(/[^0-9+]/g, "");
+              }}
             />
             <Controller
               as={Input}
@@ -132,6 +139,13 @@ export default ({
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
               maxLength={20}
+              placeholder={"Escribilo así: +5492234470974"}
+              pattern={"\\+?[0-9]*"}
+              keyboardType={"phone-pad"}
+              onChange={([e]) => {
+                let value = e.target.value ?? "";
+                return value.replace(/[^0-9+]/g, "");
+              }}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
