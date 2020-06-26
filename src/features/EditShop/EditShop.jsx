@@ -1,23 +1,54 @@
 import React from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Controller } from "react-hook-form";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
 import { validatePhoneNumber } from "utils/utils";
 
-export default ({ shop, control, errors, handleSubmit, getValues }) => {
+export default ({
+  shop,
+  control,
+  errors,
+  handleSubmit,
+  getValues,
+  isSaving,
+}) => {
+  const buttonStyles = {
+    alignItems: "center",
+    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
+    borderRadius: 5,
+    flexDirection: "row",
+    marginVertical: 10,
+    padding: 10,
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Datos de tu Comercio</Text>
-        <TouchableHighlight
+        <TouchableOpacity
           underlayColor={"none"}
           onPress={handleSubmit}
-          style={styles.button}
+          style={buttonStyles}
+          disabled={isSaving}
         >
-          <Text style={styles.buttonText}>Guardar</Text>
-        </TouchableHighlight>
+          <>
+            <Text style={styles.buttonText}>Guardar</Text>
+            {isSaving && (
+              <ActivityIndicator
+                animating={isSaving}
+                color={theme.colors.white}
+              />
+            )}
+          </>
+        </TouchableOpacity>
       </View>
       <View style={styles.formContainer}>
         <View style={styles.formContainer}>
@@ -144,17 +175,10 @@ export default ({ shop, control, errors, handleSubmit, getValues }) => {
 };
 
 const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    backgroundColor: theme.colors.button1,
-    borderRadius: 5,
-    marginVertical: 10,
-    padding: 10,
-    width: 100,
-  },
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
+    paddingHorizontal: 10,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
