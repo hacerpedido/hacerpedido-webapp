@@ -18,10 +18,10 @@ export default ({product, promo = false, isPreview = false, shop = null}) => {
       if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
     };
 
-    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchend", listener);
 
     return () => {
-      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchend", listener);
     };
   }, [ref, setPopupVisible]);
   console.log(shop?.slug)
