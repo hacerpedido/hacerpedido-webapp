@@ -1,18 +1,15 @@
 import React, {useEffect, useState, useRef} from "react";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
-import {useSelector} from "react-redux";
 
 import ProductAmountPopup from "./ProductAmountPopup";
 import {isBetaTester} from "utils/utils";
 import colors from "assets/colors";
 import {sanitizePrice} from "utils/utils"
 
-export default ({product, promo = false, isPreview = false}) => {
+export default ({product, promo = false, isPreview = false, shop = null}) => {
   const ref = useRef(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
-  const shop = useSelector((state) => state.shop.shop);
-  const {slug} = shop
 
   const {name, amount, description, price} = product;
 
@@ -27,8 +24,9 @@ export default ({product, promo = false, isPreview = false}) => {
       document.removeEventListener("mousedown", listener);
     };
   }, [ref, setPopupVisible]);
-
+  console.log(shop?.slug)
   const displayPrice = sanitizePrice(price)
+
 
   return (
     <div ref={ref}>
@@ -50,7 +48,7 @@ export default ({product, promo = false, isPreview = false}) => {
           <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
 
 
-          {!isPreview && isBetaTester(slug) &&
+          {!isPreview && isBetaTester(shop?.slug) &&
             < View style={styles.buttonQty}>
               <Text style={styles.buttonQtyText}>+</Text>
 

@@ -9,6 +9,7 @@ import colors from "assets/colors";
 import Loading from "components/Loading";
 
 export default ({isPreview = false, shop, previewProducts = []}) => {
+  // TODO: se esta renderizando 2 veces todo el componente. Deberia renderizar solo el prodlist?
   const isLoading = useSelector((state) => state.app.loading);
 
   const products =
@@ -23,7 +24,7 @@ export default ({isPreview = false, shop, previewProducts = []}) => {
           <>
             {products.length && (
               <>
-                <ProductList products={products} isPreview={isPreview} />
+                <ProductList products={products} isPreview={isPreview} shop={shop} />
                 <ShopNotes shop={shop} />
               </>
             )}

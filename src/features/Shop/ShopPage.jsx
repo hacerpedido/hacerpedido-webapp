@@ -46,7 +46,6 @@ export default () => {
     )
   }
 
-
   return (
     <View style={styles.container}>
       <Helmet>

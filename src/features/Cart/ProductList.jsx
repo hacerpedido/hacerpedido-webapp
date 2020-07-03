@@ -4,12 +4,12 @@ import {StyleSheet, Text, View} from "react-native";
 import Product from "./Product";
 import colors from "assets/colors";
 
-export default ({products}) => {
+export default ({products, shop}) => {
   const Products = ({categoryProducts}) => {
     return (
       <View>
         {categoryProducts.map(product =>
-          <Product key={product.id} product={product} />
+          <Product key={product.id} product={product} shop={shop} />
         )}
       </View>
     )

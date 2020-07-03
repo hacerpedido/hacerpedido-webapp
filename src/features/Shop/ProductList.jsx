@@ -6,7 +6,7 @@ import Divider from "components/Divider";
 import colors from "assets/colors";
 
 // TODO: Merge with cart/productList.jsx
-export default ({products, isPreview = false}) => {
+export default ({products, isPreview = false, shop = null}) => {
   const listItems = [];
   let lastCategory = "";
   let item = 0;
@@ -30,7 +30,7 @@ export default ({products, isPreview = false}) => {
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar
     // el nombre "Promociones"
     listItems.push(
-      <Product key={item++} product={product} promo={isPromo} isPreview={isPreview} />
+      <Product key={item++} product={product} promo={isPromo} isPreview={isPreview} shop={shop} />
     );
   });
 

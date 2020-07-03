@@ -132,18 +132,13 @@ const styles = StyleSheet.create({
     height: 20,
     left: 57,
     position: 'relative',
-    shadowColor: shadowColor,
-    shadowOffset: {width: 1.14, height: 5.55},
-    shadowRadius: 10,
     width: 20,
   },
   closeButtonIcon: {
     color: colors.lightGreen,
     fontFamily: 'Barlow',
     fontSize: 16,
-    fontStyle: 'normal',
     fontWeight: 600,
-    lineHeight: 19,
     transform: "rotate(-45deg)",
   },
   container: {
@@ -164,7 +159,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 1.14, height: 5.55},
     shadowRadius: 10,
     width: 135,
-    zIndex: 9999
+    zIndex: 9999,
   },
   lineBreak: {width: "100%"},
 });

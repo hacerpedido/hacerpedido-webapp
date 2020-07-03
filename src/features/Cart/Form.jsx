@@ -5,7 +5,7 @@ import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 // import {useSpring, animated} from "react-spring";
 
 import colors from "assets/colors";
-import {setName, setAddress, setNotes} from "reducers/cartSlice";
+// import {setName, setAddress, setNotes} from "reducers/cartSlice";
 import Switch from "components/Switch";
 import Input from "components/Input";
 import {WhatsappFill as WhatsappFillIcon} from "assets/icons";
