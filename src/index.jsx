@@ -16,6 +16,11 @@ import "index.css";
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({dsn: process.env.HP_SENTRY_DSN});
+  Sentry.init({
+    dsn: "https://8e96a82130a1425ea338a576fdcea77f@o397502.ingest.sentry.io/5252008",
+    debug: true,
+  });
+
 }
 
 const client = new ApolloClient({

@@ -13,7 +13,7 @@ const shopSlice = createSlice({
     setShop(state, { payload }) {
       const shopHasChanged = state.shop?.slug !== payload.slug
 
-      if (shopHasChanged || !state.products.length) {
+      if (shopHasChanged || !state.products?.length) {
         const products = payload.productsByShopid?.nodes || []
 
         state.shop = payload;
