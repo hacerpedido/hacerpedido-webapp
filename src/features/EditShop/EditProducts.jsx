@@ -1,21 +1,21 @@
-import React, { useMemo, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { StyleSheet, Text, View } from "react-native";
-import { HotTable } from "@handsontable/react";
+import React, {useMemo, useRef} from "react";
+import {useDispatch} from "react-redux";
+import {StyleSheet, Text, View} from "react-native";
+import {HotTable} from "@handsontable/react";
 import "handsontable/dist/handsontable.full.css";
 import Handsontable from "handsontable";
 import "handsontable/languages/es-MX";
 
-import { productForGrid, productsFromGrid } from "utils/products";
-import { setTempProducts } from "reducers/shopEditSlice";
+import {productForGrid, productsFromGrid} from "utils/products";
+import {setTempProducts} from "reducers/shopEditSlice";
 import theme from "assets/theme";
-import { sanitizePrice } from "utils/utils";
-import { useWindowDimensions } from "components/WindowDimensionsProvider";
+import {sanitizePrice} from "utils/utils";
+import {useWindowDimensions} from "components/WindowDimensionsProvider";
 
-export default ({ products, shopId }) => {
+export default ({products, shopId}) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
-  const { width } = useWindowDimensions();
+  const {width} = useWindowDimensions();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -27,7 +27,7 @@ export default ({ products, shopId }) => {
     let tempData = grid.current.hotInstance.getData();
     let tempProducts = productsFromGrid(shopId, tempData);
 
-    dispatch(setTempProducts({ shopId, tempProducts }));
+    dispatch(setTempProducts({shopId, tempProducts}));
   };
 
   const colHeaders = ["Título", "Nombre", "Descripción", "Precio"];
@@ -111,7 +111,7 @@ export default ({ products, shopId }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
-        height={40 + 23 * (gridData.length + spareRows)}
+        // height={40 + 23 * (gridData.length + spareRows)}
         ref={grid}
         data={gridData}
         licenseKey={"non-commercial-and-evaluation"}
