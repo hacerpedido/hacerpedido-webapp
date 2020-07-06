@@ -9,7 +9,7 @@ import WindowDimensionsProvider from "components/WindowDimensionsProvider";
 
 export default () => {
   return (
-    <>
+    <React.StrictMode>
       <WindowDimensionsProvider>
         <Router>
           <Switch>
@@ -20,6 +20,6 @@ export default () => {
           </Switch>
         </Router>
       </WindowDimensionsProvider>
-    </>
+    </React.StrictMode>
   );
 };
