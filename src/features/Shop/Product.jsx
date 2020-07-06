@@ -12,6 +12,7 @@ export default ({product, promo = false, isPreview = false, shop = null}) => {
   const containerStyle = promo ? styles.card : styles.product;
 
   const {name, amount, description, price} = product;
+  const displayPrice = sanitizePrice(price)
 
   useEffect(() => {
     const listener = event => {
@@ -24,9 +25,6 @@ export default ({product, promo = false, isPreview = false, shop = null}) => {
       document.removeEventListener("touchend", listener);
     };
   }, [ref, setPopupVisible]);
-  console.log(shop?.slug)
-  const displayPrice = sanitizePrice(price)
-
 
   return (
     <div ref={ref}>
