@@ -1,3 +1,5 @@
+import ReactGA from "react-ga"
+
 import React from "react";
 import {useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
@@ -12,11 +14,22 @@ export default ({shop}) => {
   const totalAmount = useSelector((state) => state.shop.totalAmount);
   const statusOpacity = totalAmount ? {opacity: 1} : {opacity: 0.7}
 
+  const goToCart = () => {
+    ReactGA.event({
+      category: 'User',
+      action: 'Initiate Checkout'
+    });
+
+    history.push("/cart")
+  }
+
+
+
   const ButtonWhatsapp = () => (
     <TouchableHighlight
       disabled={!totalAmount}
       underlayColor={"none"}
-      onPress={() => history.push("/cart")}
+      onPress={goToCart}
       style={styles.buttonContainer}>
 
       <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>

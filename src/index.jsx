@@ -1,4 +1,3 @@
-import './wdyr';
 import React from "react";
 import ReactDOM from "react-dom";
 import {Provider} from "react-redux";
@@ -6,6 +5,8 @@ import {Helmet, HelmetProvider} from "react-helmet-async";
 import {PersistGate} from "redux-persist/integration/react";
 import ApolloClient from "apollo-boost";
 import {ApolloProvider} from "@apollo/react-hooks";
+
+import './wdyr';
 import * as serviceWorker from "./serviceWorker";
 import App from "./app/App";
 import {store, persistor} from "./reducers";
@@ -16,7 +17,6 @@ import "index.css";
 const client = new ApolloClient({
   uri: "https://backend-restapi.hacerpedido.com/graphql",
 });
-
 
 ReactDOM.render(
   <ApolloProvider client={client}>

@@ -1,3 +1,5 @@
+import ReactGA from "react-ga"
+
 import React, {useState} from "react";
 import {useDispatch} from "react-redux";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
@@ -24,6 +26,11 @@ export default ({product, amount, visible, handleClose}) => {
     setPopUpAmount(newAmount)
 
     if (persist) {
+      ReactGA.event({
+        category: 'User',
+        action: 'Add/Remove from cart'
+      });
+
       handleClose()
       dispatch(setAmount({product, amount: newAmount}));
     }

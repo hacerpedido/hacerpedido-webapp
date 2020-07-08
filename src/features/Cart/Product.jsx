@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
   },
   description: {
     color: colors.lightGrey,
+    fontFamily: "Barlow",
     fontSize: 13,
-    fotiFamily: "Roboto Slab",
     lineHeight: 17,
   },
   nameDescription: {

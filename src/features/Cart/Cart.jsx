@@ -2,6 +2,7 @@ import React from "react";
 import {StyleSheet, View} from "react-native";
 import {Redirect} from 'react-router-dom';
 import {useSelector} from "react-redux";
+import ReactGA from "react-ga"
 
 import Form from "./Form";
 import ProductList from "./ProductList";
@@ -22,6 +23,12 @@ export default () => {
   const onSubmit = (data) => {
     const {orderswhatsappnumber} = shop;
     const url = generateWhatsappURL(orderswhatsappnumber, data, productsByCategory);
+
+    ReactGA.event({
+      category: 'User',
+      action: 'Purchase'
+    });
+
     window.location.href = url;
   };
 
