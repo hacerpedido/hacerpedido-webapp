@@ -10,7 +10,7 @@ let basicList = [
 ];
 
 test("handle undefined", () => {
-  expect(products.extractSections("undefined")).toEqual([]);
+  expect(products.extractSections()).toEqual([]);
 });
 
 test("handle empty list", () => {
@@ -32,12 +32,13 @@ test("handle one section", () => {
   expect(result[0].products).toHaveLength(2);
 });
 
+
 test("return multiple sections", () => {
   let result = products.extractSections(basicList);
   expect(result).toHaveLength(3);
-  expect(result[0].category).toBe("a");
-  expect(result[1].category).toBe("b");
-  expect(result[2].category).toBe("c");
+  expect(result[0].name).toBe("a");
+  expect(result[1].name).toBe("b");
+  expect(result[2].name).toBe("c");
   expect(result[0].products).toHaveLength(2);
   expect(result[1].products).toHaveLength(3);
   expect(result[2].products).toHaveLength(1);

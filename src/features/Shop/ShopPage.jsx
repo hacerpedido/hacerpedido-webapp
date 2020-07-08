@@ -7,7 +7,6 @@ import {Helmet} from "react-helmet-async";
 import {useApolloClient} from "@apollo/react-hooks";
 import ShopView from "./Shop";
 import ShopFooter from "./ShopFooter";
-import colors from "assets/colors";
 import {loading} from "reducers/appSlice";
 import {setShop} from "reducers/shopSlice";
 import {getShopWithDetails} from "graphql/shop";
@@ -16,36 +15,39 @@ import Loading from "components/Loading";
 export default () => {
   const dispatch = useDispatch();
   const client = useApolloClient();
+  let {slug} = useParams();
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
-  let {slug} = useParams();
 
   useLayoutEffect(() => {
-    dispatch(loading(true));
+    const getData = async () => {
+      dispatch(loading(true));
 
-    async function getData() {
-      const shopData = await client.query({
-        query: getShopWithDetails,
-        variables: {slug},
-      });
-      dispatch(setShop(shopData.data.shopBySlug));
-      dispatch(loading(false));
+      try {
+        const shopData = await client.query({
+          query: getShopWithDetails,
+          variables: {slug},
+        });
+
+        dispatch(setShop(shopData.data.shopBySlug));
+      } catch (error) {
+        console.log(JSON.stringify(error, null, 2));
+      } finally {dispatch(loading(false));}
     }
-    getData().catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-  }, [slug, dispatch, client]);
 
-  if (shop == null) {
-    return isLoading ? (
-      <Loading />
-    ) : (
-        <Text>Sin comercios en la base de datos para {slug}</Text>
-      );
+    getData()
+  }, [client, dispatch, shop, slug]);
+
+  if (shop?.slug !== slug) {
+    return (
+      isLoading
+        ? <Loading />
+        : <Text>Sin comercios en la base de datos para {slug}</Text>
+    )
   }
 
   return (
-    <>
+    <View style={styles.container}>
       <Helmet>
         <title>{shop.name}</title>
         <meta
@@ -58,32 +60,27 @@ export default () => {
         <meta property="og:title" content={shop.name} />
         <meta
           property="og:url"
-          content={"https://hacerpedido.com/" + slug}
+          content={"https://hacerpedido.com/" + shop.slug}
         />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content={shop.name} />
         <meta property="twitter:description" content={shop.name} />
         <meta
           property="twitter:url"
-          content={"https://hacerpedido.com/" + slug}
+          content={"https://hacerpedido.com/" + shop.slug}
         />
       </Helmet>
 
       <ShopView shop={shop} />
-      {/* TODO: Quitar el view */}
-      <View style={styles.footer}>
-        <ShopFooter shop={shop}/>
-      </View>
-    </>
+
+      <ShopFooter shop={shop} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  footer: {
-    backgroundColor: colors.lightBackground,
-    bottom: 0,
-    height: 100,
-    position: "fixed",
-    width: "100%",
+  container: {
+    // position: 'absolute',
+    // width: '100%',
   },
 });

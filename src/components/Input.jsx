@@ -14,8 +14,8 @@ export default React.forwardRef((props, ref) => {
 
       <TextInput
         autoCapitalize="none"
+        placeholderTextColor={theme.colors.lighterBrown}
         ref={ref}
-        placeholderTextColor={theme.colors.darkBrown}
         style={[styles.input, {borderColor: borderColor}]}
         value={value}
         {...inputProps}
@@ -29,17 +29,16 @@ export default React.forwardRef((props, ref) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 10,
-    marginHorizontal: 24,
-    marginVertical: "0.25em",
+    marginTop: "0.25em",
   },
   input: {
     borderRadius: 2,
     borderWidth: 1,
-    color: theme.colors.darkBrown,
+    color: theme.colors.brown,
     fontFamily: "Barlow",
     fontSize: 15,
     paddingHorizontal: 11,
-    paddingVertical: 4,
+    paddingVertical: 10
   },
   label: {
     color: theme.colors.lightGrey3,

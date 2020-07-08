@@ -24,7 +24,7 @@ export default ({ register, errors, setValue, validation, children }) => {
                       ? Inputs.current[i + 1].focus()
                       : Inputs.current[i].blur();
                   },
-                  //onBlur: () => triggerValidation(child.props.name),
+                  //onBlur: () => trigger(child.props.name),
                   blurOnSubmit: false,
                   fgf: child.props.name,
                   error: errors[child.props.name],

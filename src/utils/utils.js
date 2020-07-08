@@ -107,9 +107,41 @@ export function trimObject(obj) {
   return obj;
 }
 
-export function generateWhatsappURL(number) {
+function categoryProducts(products) {
+  return products.map(({ amount, name }) => (
+    `✅ ${amount} x ${name}`
+  )).join("\n")
+}
+
+
+function productListForMessage(productsByCategory) {
+  return productsByCategory.map((category) => (
+    `*${ category.name }*\n${categoryProducts(category.products)}` 
+  )).join("\n")
+}
+
+function generateSimpleWhatsappMessage() {
+  return "¡Hola! Quiero hacer un pedido via HacerPedido 💪"
+}
+
+function generateWhatsappMessage(formData, products) {
+  const { name, address, notes } = formData;
+
+  const intro = `¡Hola! soy *${name}* y quiero hacer un pedido via HacerPedido 💪\n\n`;
+  const addressStr = address && `📍 *Mi dirección:* ${address}\n`;
+  const notesStr = notes && `📝 *Notas:* ${notes}\n`;
+  const order = "\n*Mi pedido:*\n" + productListForMessage(products)
+
+  return [intro, addressStr, notesStr, order].join("");
+}
+
+export function generateWhatsappURL(number, userData, items) {
   const sanitizedNumber = sanitizeWhatsAppNumber(number);
-  const message = "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
+
+  const message = typeof userData !== "undefined" ?
+    generateWhatsappMessage(userData, items) :
+    generateSimpleWhatsappMessage()
+
   const encodedMessage = encodeURIComponent(message);
 
   return `https://wa.me/${sanitizedNumber}?text=${encodedMessage}`;

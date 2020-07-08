@@ -1,4 +1,25 @@
 {
+    "qa": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-hacerpedido-webapp-qa-204614-authRole",
+            "UnauthRoleArn": "arn:aws:iam::813977654622:role/amplify-hacerpedido-webapp-qa-204614-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::813977654622:role/amplify-hacerpedido-webapp-qa-204614-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-hacerpedido-webapp-qa-204614-deployment",
+            "UnauthRoleName": "amplify-hacerpedido-webapp-qa-204614-unauthRole",
+            "StackName": "amplify-hacerpedido-webapp-qa-204614",
+            "StackId": "arn:aws:cloudformation:us-east-1:813977654622:stack/amplify-hacerpedido-webapp-qa-204614/2ebf7bc0-9f81-11ea-88ed-0eb21ddd4aff",
+            "AmplifyAppId": "d1th04hi80a6nd"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d1th04hi80a6nd",
+                    "type": "manual"
+                }
+            }
+        }
+    },
     "dev": {
         "awscloudformation": {
             "AuthRoleName": "amplify-hacerpedido-webapp-dev-122614-authRole",
