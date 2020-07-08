@@ -10,6 +10,7 @@ const colors = {
   filterBarBorder: "#F3F0EB",
   filterButtonBorder: "#E6A02E",
   filterButtonTitle: "#E5A130",
+  homeBackground: "#FBFBFB",
   lightBackground: "#FAFAFA",
   lightGrey: "#8F9BB3",
   lightGrey2: "#ECECEC",

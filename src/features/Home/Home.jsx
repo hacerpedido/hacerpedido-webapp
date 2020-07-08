@@ -46,6 +46,10 @@ export default () => {
   const history = useHistory();
   const client = useApolloClient();
 
+  let initialScrollIndex = firstVisibleItem ?? 0;
+
+  let title = "Pedí a tu comercio favorito por WhatsApp";
+
   const onSelect = React.useCallback(
     (shop) => {
       let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
@@ -80,15 +84,57 @@ export default () => {
     (x) => x.visibility === "public" && x.category === category
   );
 
-  let initialScrollIndex = firstVisibleItem ?? 0;
-
-  let title = "Pedí a tu comercio favorito por WhatsApp";
+  const ShopList = () => (
+    <FlatList
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={{
+        itemVisiblePercentThreshold: 50,
+      }}
+      style={styles.list}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={renderHeader(filteredShops.length)}
+      ListFooterComponent={
+        // TODO: Remover. Para que al hacer scroll se vea la última celda
+        <View style={styles.lastView} />
+      }
+      data={filteredShops}
+      renderItem={({item}) => (
+        <TouchableHighlight
+          delayPressIn={5000}
+          underlayColor={colors.lightBackground}
+          onTouchStart={(evt) => {
+            if (evt.touches.length > 0) {
+              touchStartingPoint = evt.touches[0].clientY;
+              touchCurrentPoint = touchStartingPoint;
+            }
+          }}
+          onTouchMove={(evt) => {
+            if (evt.touches.length > 0) {
+              touchCurrentPoint = evt.touches[0].clientY;
+            }
+          }}
+          onPress={() => onSelect(item)}
+        >
+          <ShopCard shop={item} />
+        </TouchableHighlight>
+      )}
+      keyExtractor={(shop) => shop.id}
+      initialScrollIndex={initialScrollIndex ?? 0}
+      getItemLayout={(data, index) => ({
+        length: ITEM_HEIGHT,
+        offset: ITEM_HEIGHT * index + 110,
+        index,
+      })}
+      scrollEventThrottle={160}
+    />
+  )
 
   return (
     <View style={styles.container}>
       <Helmet>
         <title>{title}</title>
       </Helmet>
+
       <View style={styles.header}>
         <HomeHeader />
         <HomeFilterBar
@@ -99,57 +145,12 @@ export default () => {
           }}
         />
       </View>
+
       <View style={styles.body}>
-        {filteredShops.length === 0 && loading ? (
-          <Loading />
-        ) : (
-            <>
-              {filteredShops.length > 0 && (
-                <FlatList
-                  onViewableItemsChanged={onViewableItemsChanged}
-                  viewabilityConfig={{
-                    itemVisiblePercentThreshold: 50,
-                  }}
-                  style={styles.list}
-                  showsVerticalScrollIndicator={false}
-                  ListHeaderComponent={renderHeader(filteredShops.length)}
-                  ListFooterComponent={
-                    // TODO: Remover. Para que al hacer scroll se vea la última celda
-                    <View style={styles.lastView} />
-                  }
-                  data={filteredShops}
-                  renderItem={({item}) => (
-                    <TouchableHighlight
-                      delayPressIn={5000}
-                      underlayColor={colors.lightBackground}
-                      onTouchStart={(evt) => {
-                        if (evt.touches.length > 0) {
-                          touchStartingPoint = evt.touches[0].clientY;
-                          touchCurrentPoint = touchStartingPoint;
-                        }
-                      }}
-                      onTouchMove={(evt) => {
-                        if (evt.touches.length > 0) {
-                          touchCurrentPoint = evt.touches[0].clientY;
-                        }
-                      }}
-                      onPress={() => onSelect(item)}
-                    >
-                      <ShopCard shop={item} />
-                    </TouchableHighlight>
-                  )}
-                  keyExtractor={(shop) => shop.id}
-                  initialScrollIndex={initialScrollIndex ?? 0}
-                  getItemLayout={(data, index) => ({
-                    length: ITEM_HEIGHT,
-                    offset: ITEM_HEIGHT * index + 110,
-                    index,
-                  })}
-                  scrollEventThrottle={160}
-                />
-              )}
-            </>
-          )}
+        {filteredShops.length === 0 && loading ?
+          <Loading /> :
+          filteredShops.length && <ShopList />
+        }
       </View>
     </View >
   );
@@ -157,7 +158,7 @@ export default () => {
 
 const styles = StyleSheet.create({
   body: {
-    backgroundColor: colors.lightBackground,
+    backgroundColor: colors.homeBackground,
     flex: 1,
     marginTop: 110,
     paddingBottom: 10,

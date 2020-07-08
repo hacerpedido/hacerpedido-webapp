@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     backgroundColor: colors.orangeHP,
+    borderBottomWidth: 1,
+    borderColor: colors.filterButtonBorder,
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",

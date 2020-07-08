@@ -57,10 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     borderWidth: 1,
     marginBottom: 6,
-    paddingBottom: 20,
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 20,
+    padding: 15,
   },
   container: {
     flex: 1,
