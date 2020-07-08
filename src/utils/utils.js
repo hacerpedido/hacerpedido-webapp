@@ -150,9 +150,3 @@ export function generateWhatsappURL(number, userData, items) {
 export function generateCallUrl(number) {
   return `tel: ${encodeURIComponent(number)}`;
 }
-
-export function isBetaTester(slug) {
-  const testers = ['club-tri', 'parliamo', 'parliamo-centro', 'parliamo-guemes', 'buka-templo']
-
-  return testers.includes(slug) 
-}

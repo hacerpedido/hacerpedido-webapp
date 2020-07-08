@@ -2,15 +2,13 @@ import React, {useEffect, useState, useRef} from "react";
 import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 
 import ProductAmountPopup from "./ProductAmountPopup";
-import {isBetaTester} from "utils/utils";
 import colors from "assets/colors";
 import {sanitizePrice} from "utils/utils"
 
-export default ({product, promo = false, isPreview = false, shop = null}) => {
+export default ({product, promo = false, isCartEnabled = false}) => {
   const ref = useRef(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
-
   const {name, amount, description, price} = product;
   const displayPrice = sanitizePrice(price)
 
@@ -18,7 +16,6 @@ export default ({product, promo = false, isPreview = false, shop = null}) => {
     const listener = event => {
       if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
     };
-
     document.addEventListener("touchend", listener);
 
     return () => {
@@ -46,8 +43,8 @@ export default ({product, promo = false, isPreview = false, shop = null}) => {
           <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
 
 
-          {!isPreview && isBetaTester(shop?.slug) &&
-            < View style={styles.buttonQty}>
+          {isCartEnabled &&
+            <View style={styles.buttonQty}>
               <Text style={styles.buttonQtyText}>+</Text>
 
               <ProductAmountPopup

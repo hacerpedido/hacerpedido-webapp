@@ -2,7 +2,7 @@ import React from "react";
 import {useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import {StyleSheet, TouchableHighlight, View, Text} from "react-native";
-import {generateCallUrl, generateWhatsappURL, isBetaTester} from "utils/utils";
+import {generateCallUrl} from "utils/utils";
 import colors from "assets/colors";
 import {WhatsappFill as WhatsappFillIcon, PhoneCall as PhoneCallIcon} from "assets/icons";
 
@@ -28,62 +28,27 @@ export default ({shop}) => {
     </TouchableHighlight>
   )
 
+
+  const onCall = (number) => window.location.href = generateCallUrl(number)
+
   const ButtonCall = () => (
     // TODO: Extract component, to be reused in header
     <TouchableHighlight
+      onPress={() => onCall(ordersphonenumber)}
       underlayColor={"none"}
       style={styles.buttonContainer}>
-      <a href={generateCallUrl(ordersphonenumber)} style={{textDecoration: "none"}}>
-        <View style={[styles.buttonCall, styles.button]}>
-          <Text style={styles.textContainer} numberOfLines={1}>
-            <View style={styles.icon}><PhoneCallIcon color={colors.white} /></View>
-            <Text style={styles.buttonText}>Llamar</Text>
-          </Text>
-        </View>
-      </a>
+      <View style={[styles.buttonCall, styles.button]}>
+        <Text style={styles.textContainer} numberOfLines={1}>
+          <View style={styles.icon}><PhoneCallIcon color={colors.white} /></View>
+          <Text style={styles.buttonText}>Llamar</Text>
+        </Text>
+      </View>
     </TouchableHighlight>
   )
 
   return (
     <View style={styles.container}>
-      {/* { isBetaTester(slug) ? <ButtonWhatsapp /> : <ButtonCall />} */}
-
-      {isBetaTester(slug) && orderswhatsappnumber && <ButtonWhatsapp />}
-      {isBetaTester(slug) && !orderswhatsappnumber && <ButtonCall />}
-
-      {!isBetaTester(slug) && orderswhatsappnumber &&
-        <TouchableHighlight
-          underlayColor={"none"}
-          style={{flex: ordersphonenumber ? 0.67 : 1}} >
-          <div className="bounza">
-            <a href={generateWhatsappURL(orderswhatsappnumber)}
-              style={{textDecoration: "none"}} >
-              <View style={[styles.buttonWhatsApp, styles.button, styles.buttonWhatsApp2]}>
-                <Text style={styles.textContainer} numberOfLines={1}>
-                  <View style={styles.icon}><WhatsappFillIcon color={colors.white} /></View>
-                  <Text style={styles.buttonText}>Pedir por WhatsApp</Text>
-                </Text>
-              </View>
-            </a>
-          </div>
-        </TouchableHighlight>
-      }
-
-      {!isBetaTester(slug) && ordersphonenumber &&
-        <TouchableHighlight style={{flex: orderswhatsappnumber ? 0.33 : 1}}
-          underlayColor={"none"} >
-          <a href={generateCallUrl(ordersphonenumber)}
-            style={{textDecoration: "none"}} >
-            <View style={[styles.buttonCall, styles.button, styles.buttonCall2]}>
-              <Text style={styles.textContainer} numberOfLines={1}>
-                <View style={styles.icon}><PhoneCallIcon color={colors.white} /></View>
-                <Text style={styles.buttonText}>Llamar</Text>
-              </Text>
-            </View>
-          </a>
-        </TouchableHighlight>
-      }
-
+      {orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}
     </View>
   );
 };
@@ -103,9 +68,6 @@ const styles = StyleSheet.create({
   buttonCall: {
     backgroundColor: colors.orangeHP,
     borderColor: colors.filterButtonBorder,
-  },
-  buttonCall2: {
-    marginLeft: 0,
   },
   buttonContainer: {
     flex: 1,

@@ -14,6 +14,7 @@ export default ({isPreview = false, shop, previewProducts = []}) => {
 
   const products =
     isPreview ? previewProducts : useSelector(state => state.shop.products);
+  const isCartEnabled = !isPreview && shop.orderswhatsappnumber
 
   return (
     <ScrollView>
@@ -24,7 +25,7 @@ export default ({isPreview = false, shop, previewProducts = []}) => {
           <>
             {products.length && (
               <>
-                <ProductList products={products} isPreview={isPreview} shop={shop} />
+                <ProductList products={products} isCartEnabled={isCartEnabled} />
                 <ShopNotes shop={shop} />
               </>
             )}

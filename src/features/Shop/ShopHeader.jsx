@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import {useHistory} from "react-router-dom";
-import {generateCallUrl, isBetaTester} from "utils/utils";
+import {generateCallUrl} from "utils/utils";
 import {getBackgroundForCategory, getBackgroundColorForCategory, } from "utils/categoriesHelper";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
@@ -45,7 +45,7 @@ export default ({isPreview = false, shop = {}}) => {
     !isPreview && history.push("/");
   };
 
-  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview && isBetaTester(slug)
+  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview
 
   const ButtonCall = () => (
     <TouchableHighlight underlayColor={"none"}>
