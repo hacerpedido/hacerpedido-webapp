@@ -8,7 +8,7 @@ const initialState = {
 
 const homeSlice = createSlice({
   name: "home",
-  initialState,
+  initialState: initialState,
   reducers: {
     setFirstVisibleItem(state, {payload}) {
       state.firstVisibleItem = payload;
@@ -17,8 +17,8 @@ const homeSlice = createSlice({
       state.firstVisibleItem = 0;
       state.selectedFilter = payload;
     },
-    query(state, action) {	
-      let newShops = action.payload;	
+    setShops(state, action) {	
+      let newShops = action.payload;
       state.shops = newShops.concat(	
         state.shops.filter((bo) => newShops.every((ao) => ao.id !== bo.id))	
       );	
@@ -26,6 +26,6 @@ const homeSlice = createSlice({
   },
 });
 
-export const { setCategory, setFirstVisibleItem, query } = homeSlice.actions;
+export const { setCategory, setFirstVisibleItem, setShops } = homeSlice.actions;
 
 export default homeSlice.reducer;
