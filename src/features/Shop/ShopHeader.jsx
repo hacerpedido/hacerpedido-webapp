@@ -15,7 +15,7 @@ import * as Icons from "assets/icons/";
 import DecoratedLabel from "components/DecoratedLabel";
 
 function getBackgroundForShop({background, category}) {
-  if (background) return `url(${background})`;
+  if (background) return `url(${background.replace(/^[^.]*/, 'https://comercios')})`;
 
   return getBackgroundForCategory(category);
 }
@@ -30,6 +30,8 @@ export default ({isPreview = false, shop = {}}) => {
     ordersphonenumber,
     orderswhatsappnumber,
   } = shop;
+
+  const logo = shop?.logo?.replace(/^[^.]*/, 'https://comercios');
 
   const history = useHistory();
 
@@ -86,7 +88,7 @@ export default ({isPreview = false, shop = {}}) => {
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image source={{uri: shop.logo}} style={styles.logo} />
+          <Image source={{uri: logo}} style={styles.logo} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (

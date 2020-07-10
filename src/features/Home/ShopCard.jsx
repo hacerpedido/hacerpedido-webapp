@@ -5,7 +5,8 @@ import DecoratedLabel from "components/DecoratedLabel";
 import colors from "assets/colors";
 
 export default ({shop}) => {
-  const {logo, name, address, opentimes, deliverycost} = shop
+  const {name, address, opentimes, deliverycost} = shop
+  const logo = shop?.logo?.replace(/^[^.]*/, 'https://comercios')
 
   return (
     <View style={styles.card}>
