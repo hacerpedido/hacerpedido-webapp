@@ -4,9 +4,9 @@ import { updateShop } from "../graphql/shop.js";
 import { HPGraphqlClient } from "./index";
 
 export async function getShopWithProductsByToken(token) {
-  let productFields = "id,category,name,price,description,itemnumber";
+  let productFields = "id,category,name,price,description,itemnumber,updated_at";
   let shopFields =
-    "id,name,slug,region,category,address,notes,opentimes,deliverycost,visibility,logo,background,ordersphonenumber,orderswhatsappnumber,typeformtoken";
+    "id,name,slug,region,category,address,notes,opentimes,deliverycost,visibility,logo,background,ordersphonenumber,orderswhatsappnumber,typeformtoken,updated_at";
   let url = `/shops?typeformtoken=eq.${token}&select=${shopFields},products(${productFields})&products.order=itemnumber`;
 
   return axios.get(url);
