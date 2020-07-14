@@ -10,6 +10,14 @@ const textStyles = {
     fontStyle: "normal",
     lineHeight: 29,
   },
+  quiet: {
+    color: colors.lightGrey,
+    fontFamily: "Barlow",
+    fontSize: 12,
+    fontStyle: "normal",
+    fontWeight: "400",
+    // lineHeight: 29,
+  },
 };
 
 export default {

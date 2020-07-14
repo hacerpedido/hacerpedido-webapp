@@ -7,10 +7,15 @@ import {
   View,
 } from "react-native";
 import { Controller } from "react-hook-form";
+import TimeAgo from "react-timeago";
+import spanishStrings from "react-timeago/lib/language-strings/es";
+import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
 import { validatePhoneNumber } from "utils/utils";
+
+const formatter = buildFormatter(spanishStrings);
 
 export default ({
   shop,
@@ -32,7 +37,15 @@ export default ({
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Datos de tu Comercio</Text>
+        <View>
+          <Text style={styles.title}>
+            Datos de tu Comercio{" "}
+            <Text style={styles.updatedAt}>
+              Actualizado{" "}
+              <TimeAgo date={shop.updated_at} formatter={formatter} />
+            </Text>
+          </Text>
+        </View>
         <TouchableOpacity
           underlayColor={"none"}
           onPress={handleSubmit}
@@ -228,5 +241,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  updatedAt: {
+    ...theme.text.quiet,
+    marginLeft: 10,
   },
 });
