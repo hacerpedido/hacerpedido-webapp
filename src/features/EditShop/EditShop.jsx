@@ -42,7 +42,11 @@ export default ({
             Datos de tu Comercio{" "}
             <Text style={styles.updatedAt}>
               Actualizado{" "}
-              <TimeAgo date={shop.updated_at} formatter={formatter} />
+              <TimeAgo
+                date={shop.updated_at}
+                formatter={formatter}
+                minPeriod={60}
+              />
             </Text>
           </Text>
         </View>
