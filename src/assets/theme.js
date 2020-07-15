@@ -16,7 +16,6 @@ const textStyles = {
     fontSize: 12,
     fontStyle: "normal",
     fontWeight: "400",
-    // lineHeight: 29,
   },
 };
 
