@@ -1,22 +1,22 @@
-import React, {useEffect, useState} from "react";
-import {useSelector, useDispatch} from "react-redux";
-import {useParams} from "react-router-dom";
-import {StyleSheet, Text, View} from "react-native";
-import {Helmet} from "react-helmet-async";
-import {useForm} from "react-hook-form";
-import {useApolloClient} from "@apollo/react-hooks";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { useApolloClient } from "@apollo/react-hooks";
 
 import EditProductsForm from "./EditProducts";
 import EditShopForm from "./EditShop";
-import {loading} from "reducers/appSlice";
+import { loading } from "reducers/appSlice";
 import ShopView from "features/Shop/Shop";
 import Loading from "components/Loading";
 import Form from "components/Form";
 import MessageBox from "components/MessageBox";
 import theme from "assets/theme";
-import {trimObject} from "utils/utils";
-import {useWindowDimensions} from "components/WindowDimensionsProvider";
-import {getShopWithProductsByToken, saveShopWithProducts} from "api/shops";
+import { trimObject } from "utils/utils";
+import { useWindowDimensions } from "components/WindowDimensionsProvider";
+import { getShopWithProductsByToken, saveShopWithProducts } from "api/shops";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -32,10 +32,10 @@ export default () => {
   const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
-  const {width} = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const [reloadCount, setReloadCount] = useState(0);
 
-  let {token} = useParams();
+  let { token } = useParams();
 
   // console.log(JSON.stringify(shop, null, 2));
 
@@ -75,7 +75,7 @@ export default () => {
       setMessage(result.message);
 
       if (result.error == null) {
-        let editedShop = {...shop, ...dataToSave};
+        let editedShop = { ...shop, ...dataToSave };
         if (tempProducts != null) {
           editedShop.products = tempProducts;
         }
@@ -124,12 +124,12 @@ export default () => {
     return isLoading ? (
       <Loading />
     ) : (
-        <Text>No hay un comercio en la base de datos para el token {token}</Text>
-      );
+      <Text>No hay un comercio en la base de datos para el token {token}</Text>
+    );
   }
 
   const tempValues = watch();
-  let tempShop = trimObject({...shop, ...tempValues});
+  let tempShop = trimObject({ ...shop, ...tempValues });
 
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
@@ -137,6 +137,12 @@ export default () => {
   const showPreview = width > 1000;
 
   const isError = Object.keys(errors).length > 0;
+
+  const openProductionLink = {
+    paddingBottom: 30,
+    textAlign: "center",
+    textDecoration: "none",
+  };
 
   return (
     <>
@@ -146,7 +152,7 @@ export default () => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Form {...{register, setValue, errors, control}}>
+          <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
               shop={shop}
               control={control}
@@ -161,6 +167,20 @@ export default () => {
         </View>
         {showPreview && (
           <View style={styles.rightContainer}>
+            <a
+              href={`/${shop.slug}`}
+              style={openProductionLink}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Text style={styles.openProductionLink}>
+                Ir a mi Sitio
+                <Image
+                  source={require("assets/images/external-link-alt.png")}
+                  style={styles.openProductionLinkIcon}
+                />
+              </Text>
+            </a>
             <ShopView
               previewProducts={previewProducts}
               shop={tempShop}
@@ -196,6 +216,19 @@ const styles = StyleSheet.create({
     flex: 1,
     overflowY: "scroll",
     padding: 40,
+  },
+  openProductionLink: {
+    color: theme.colors.button1,
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontStyle: "normal",
+    fontWeight: "600",
+  },
+  openProductionLinkIcon: {
+    height: 16,
+    margin: 3,
+    top: 4,
+    width: 18,
   },
   rightContainer: {
     backgroundColor: theme.colors.lightGrey2,
