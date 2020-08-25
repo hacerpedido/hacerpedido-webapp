@@ -97,12 +97,12 @@ function processShopRow(row, shops) {
   let shopExists =
     shops.find((o) => o.typeformtoken === typeformToken) !== undefined;
   if (shopExists) {
-    console.log(`SKIP: ${typeformToken}`);
+    // console.log(`SKIP: ${typeformToken}`);
 
     return;
   }
 
-  console.log(`NUEVO COMERCIO: ${typeformToken}`);
+  // console.log(`NUEVO COMERCIO: ${typeformToken}`);
 
   const ordersphonenumber = row[7].trim() !== "" ? row[8] : row[12];
 
@@ -139,17 +139,17 @@ function processShopRow(row, shops) {
   console.log("add: " + shop.slug);
   console.log(shop);
 
-  // client
-  //   .mutate({
-  //     variables: { input: { shop: shop } },
-  //     mutation: createShop,
-  //   })
-  //   // .then((data) => {
-  //   //   console.log(JSON.stringify(data, null, 2));
-  //   // })
-  //   .catch((error) => {
-  //     console.log("ERROR: " + JSON.stringify(error, null, 2));
-  //   });
+  client
+    .mutate({
+      variables: { input: { shop: shop } },
+      mutation: createShop,
+    })
+    // .then((data) => {
+    //   console.log(JSON.stringify(data, null, 2));
+    // })
+    .catch((error) => {
+      console.log("ERROR: " + JSON.stringify(error, null, 2));
+    });
 
   return shop;
 }
@@ -297,14 +297,10 @@ function processShopRows(slug, rows, shops) {
   });
 }
 
-// import_shops()
-//   .then(() => {
-//     import_products();
-//   })
-//   .catch((error) => {
-//     console.log(JSON.stringify(error, null, 2));
-//   });
-
-import_shops().catch((error) => {
-  console.log(JSON.stringify(error, null, 2));
-});
+import_shops()
+  .then(() => {
+    import_products();
+  })
+  .catch((error) => {
+    console.log(JSON.stringify(error, null, 2));
+  });
