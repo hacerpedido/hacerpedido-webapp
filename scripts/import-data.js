@@ -4,15 +4,16 @@
 import slugify from "slugify";
 import ApolloClient from "apollo-boost";
 import fetch from "node-fetch";
+import "regenerator-runtime/runtime.js";
 
-import { sanitizeCategory } from "../src/utils/categories";
-import * as utils from "../src/utils/utils";
+import { sanitizeCategory } from "./categories";
+import * as utils from "./utils";
 import {
   listAllShopsWithProducts,
   createProduct,
   createShop,
   deleteProductById,
-} from "../shop.js";
+} from "./shop.js";
 
 const { google } = require("googleapis");
 
@@ -91,7 +92,7 @@ function toSlug(name, shops) {
 }
 
 function processShopRow(row, shops) {
-  const typeformToken = row[13];
+  const typeformToken = row[14];
 
   let shopExists =
     shops.find((o) => o.typeformtoken === typeformToken) !== undefined;
@@ -100,6 +101,10 @@ function processShopRow(row, shops) {
 
     return;
   }
+
+  // console.log(`NUEVO COMERCIO: ${typeformToken}`);
+
+  const ordersphonenumber = row[7].trim() !== "" ? row[8] : row[12];
 
   let shop = {
     username: row[0], // ¿Cómo es tu nombre?
@@ -110,12 +115,15 @@ function processShopRow(row, shops) {
     opentimes: row[5], // 5 - ¿Cuáles son tus horarios?
     orderswhatsappnumber: row[6], // 6 - ¿Con qué *WhatsApp* recibís pedidos de tus clientes?
     // const  = row[7]; // 7 - ¿Usás otro teléfono para tomar pedidos?
-    ordersphonenumber: row[8], // 8 - Escribí tu otro teléfono:
+    // 8 - Escribí tu otro teléfono:
     email: row[9], // 9 - ¿Cuál es tu e-mail?
     deliverycost: row[10],
     // 11 - Otro teléfono
-    submittedat: row[12], // 12 - Submitted At
-    typeformtoken: typeformToken, // 13 - Token
+    // 12 - Otro teléfono
+    submittedat: row[13], // 13 - Submitted At
+
+    ordersphonenumber: ordersphonenumber,
+    typeformtoken: typeformToken, // 14 - Token
     visibility: "private",
   };
 
