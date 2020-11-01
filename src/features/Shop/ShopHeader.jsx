@@ -49,7 +49,10 @@ export default ({isPreview = false, shop = {}}) => {
   const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview
 
   const ButtonCall = () => (
-    <TouchableHighlight underlayColor={"none"}>
+    <TouchableHighlight
+      underlayColor="none">
+
+      { /* eslint-disable react-native/no-inline-styles */}
       <a href={generateCallUrl(ordersphonenumber)}
         style={{textDecoration: "none"}}
       >
@@ -58,7 +61,8 @@ export default ({isPreview = false, shop = {}}) => {
           <Text style={styles.buttonText}>Llamar</Text>
         </View>
       </a>
-    </TouchableHighlight>
+      { /* eslint-enable react-native/no-inline-styles */}
+    </TouchableHighlight >
   );
 
   const displayAddress = address?.trim() ?? region;
