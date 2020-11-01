@@ -86,11 +86,13 @@ export default ({onSubmit}) => {
         maxLength={500}
       />
 
+      { /* eslint-disable react-native/no-raw-text */}
       <Text style={styles.notes}>
         Por favor,
         <Text style={textStyles.bold}> confirmá el precio final </Text>
         con el comercio. No somos responsables de modificaciones en el menú.
       </Text>
+      { /* eslint-enable react-native/no-raw-text */}
 
       <TouchableHighlight
         onPress={handleSubmit(onSubmit)}

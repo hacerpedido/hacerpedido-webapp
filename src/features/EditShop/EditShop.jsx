@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Controller } from "react-hook-form";
+import {Controller} from "react-hook-form";
 import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
-import { validatePhoneNumber } from "utils/utils";
+import {validatePhoneNumber} from "utils/utils";
 
 const formatter = buildFormatter(spanishStrings);
 
@@ -38,6 +38,7 @@ export default ({
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <View>
+          { /* eslint-disable react-native/no-raw-text */}
           <Text style={styles.title}>
             Datos de tu Comercio{" "}
             <Text style={styles.updatedAt}>
@@ -48,6 +49,7 @@ export default ({
                 minPeriod={60}
               />
             </Text>
+            { /* eslint-enable react-native/no-raw-text */}
           </Text>
         </View>
         <TouchableOpacity
@@ -130,7 +132,7 @@ export default ({
                         return phoneValidationResult;
                       }
                     }
-                    const { ordersphonenumber } = getValues();
+                    const {ordersphonenumber} = getValues();
                     return (
                       (ordersphonenumber != null && ordersphonenumber !== "") ||
                       (value != null && value !== "") ||
@@ -172,7 +174,7 @@ export default ({
                         return phoneValidationResult;
                       }
                     }
-                    const { orderswhatsappnumber } = getValues();
+                    const {orderswhatsappnumber} = getValues();
                     return (
                       (orderswhatsappnumber != null &&
                         orderswhatsappnumber !== "") ||
