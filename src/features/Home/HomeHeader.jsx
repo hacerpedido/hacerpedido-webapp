@@ -12,12 +12,14 @@ export default () => {
         <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
       </Link>
 
+      { /* eslint-disable react-native/no-raw-text, react-native/no-inline-styles */}
       <a
         href="https://comercios.hacerpedido.com/"
         style={{textDecoration: "none"}}
       >
         <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
       </a>
+      { /* eslint-enable react-native/no-raw-text, react-native/no-inline-styles */}
     </View>
   );
 };

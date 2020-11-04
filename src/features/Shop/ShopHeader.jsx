@@ -56,7 +56,8 @@ export default ({ isPreview = false, shop = {} }) => {
           <Text style={styles.buttonText}>Llamar</Text>
         </View>
       </a>
-    </TouchableHighlight>
+      { /* eslint-enable react-native/no-inline-styles */}
+    </TouchableHighlight >
   );
 
   const displayAddress = address?.trim() ?? region;
