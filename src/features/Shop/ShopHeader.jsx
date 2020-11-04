@@ -7,20 +7,15 @@ import {
   View,
 } from "react-native";
 
-import {useHistory} from "react-router-dom";
-import {generateCallUrl} from "utils/utils";
-import {getBackgroundForCategory, getBackgroundColorForCategory, } from "utils/categoriesHelper";
+import { useHistory } from "react-router-dom";
+import { generateCallUrl } from "utils/utils";
+import { getBackgroundColorForCategory } from "utils/categoriesHelper";
+import { getLogoForShop, getBackgroundForShop } from "utils/shops";
 import colors from "assets/colors";
 import * as Icons from "assets/icons/";
 import DecoratedLabel from "components/DecoratedLabel";
 
-function getBackgroundForShop({background, category}) {
-  if (background) return `url(${background.replace(/^[^.]*/, 'https://comercios')})`;
-
-  return getBackgroundForCategory(category);
-}
-
-export default ({isPreview = false, shop = {}}) => {
+export default ({ isPreview = false, shop = {} }) => {
   const {
     name,
     background,
@@ -31,7 +26,7 @@ export default ({isPreview = false, shop = {}}) => {
     orderswhatsappnumber,
   } = shop;
 
-  const logo = shop?.logo?.replace(/^[^.]*/, 'https://comercios');
+  const logo = getLogoForShop(shop);
 
   const history = useHistory();
 
@@ -46,15 +41,15 @@ export default ({isPreview = false, shop = {}}) => {
     !isPreview && history.push("/");
   };
 
-  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview
+  const showButtonCall =
+    ordersphonenumber && orderswhatsappnumber && !isPreview;
 
   const ButtonCall = () => (
-    <TouchableHighlight
-      underlayColor="none">
-
-      { /* eslint-disable react-native/no-inline-styles */}
-      <a href={generateCallUrl(ordersphonenumber)}
-        style={{textDecoration: "none"}}
+    <TouchableHighlight underlayColor={"none"}>
+      {/* eslint-disable react-native/no-inline-styles */}
+      <a
+        href={generateCallUrl(ordersphonenumber)}
+        style={{ textDecoration: "none" }}
       >
         <View style={styles.buttonCall}>
           <Icons.PhoneCall />
@@ -73,7 +68,7 @@ export default ({isPreview = false, shop = {}}) => {
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
-        {!isPreview &&
+        {!isPreview && (
           <TouchableHighlight
             underlayColor={"none"}
             onPress={onButtonBackPress}
@@ -81,18 +76,18 @@ export default ({isPreview = false, shop = {}}) => {
           >
             <Icons.ArrowLeft color={colors.white} />
           </TouchableHighlight>
-        }
+        )}
 
-        {showButtonCall &&
+        {showButtonCall && (
           <View style={styles.buttonCallContainer}>
             <ButtonCall />
           </View>
-        }
+        )}
       </View>
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image source={{uri: logo}} style={styles.logo} />
+          <Image source={{ uri: logo }} style={styles.logo} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
@@ -126,7 +121,7 @@ export default ({isPreview = false, shop = {}}) => {
           />
         )}
       </View>
-    </View >
+    </View>
   );
 };
 
