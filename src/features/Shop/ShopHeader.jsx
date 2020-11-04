@@ -46,6 +46,7 @@ export default ({ isPreview = false, shop = {} }) => {
 
   const ButtonCall = () => (
     <TouchableHighlight underlayColor={"none"}>
+      {/* eslint-disable react-native/no-inline-styles */}
       <a
         href={generateCallUrl(ordersphonenumber)}
         style={{ textDecoration: "none" }}
