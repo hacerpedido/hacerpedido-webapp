@@ -1,18 +1,19 @@
 import React from "react";
-import {View, Image, StyleSheet, Text} from "react-native";
+import { View, Image, StyleSheet, Text } from "react-native";
+import { getLogoForShop } from "utils/shops";
 
 import DecoratedLabel from "components/DecoratedLabel";
 import colors from "assets/colors";
 
-export default ({shop}) => {
-  const {name, address, opentimes, deliverycost} = shop
-  const logo = shop?.logo?.replace(/^[^.]*/, 'https://comercios')
+export default ({ shop }) => {
+  const { name, address, opentimes, deliverycost } = shop;
+  const logo = getLogoForShop(shop);
 
   return (
     <View style={styles.card}>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
-          <Image source={{uri: logo}} style={styles.logo} />
+          <Image source={{ uri: logo }} style={styles.logo} />
         </View>
         <View style={styles.containerLabels}>
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>
@@ -49,7 +50,7 @@ export default ({shop}) => {
   );
 };
 
-const iconColor = "#C5CEE0"
+const iconColor = "#C5CEE0";
 
 const styles = StyleSheet.create({
   card: {
