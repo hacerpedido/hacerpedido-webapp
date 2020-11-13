@@ -1,28 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 
-import {StyleSheet, Text, View} from "react-native";
-import {Link} from "react-router-dom";
+import { StyleSheet, Text, View } from "react-native";
+import { TouchableHighlight, TouchableOpacity, Modal } from "react-native";
+
+import { Link } from "react-router-dom";
 import * as Icons from "assets/icons/";
 import colors from "assets/colors";
 
-export default () => {
+export default function Header() {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   return (
     <View style={styles.container}>
       <Link to="/">
         <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
       </Link>
 
-      { /* eslint-disable react-native/no-raw-text, react-native/no-inline-styles */}
+      <TouchableOpacity onPress={toggleModal}>
+        <View>
+          <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
+        </View>
+      </TouchableOpacity>
+
+      <Modal animationType="fade" visible={modalVisible}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Por el momento no estamos haciendo nuevas altas.
+              Próximamente habrá novedades :)
+            </Text>
+
+            <TouchableHighlight onPress={toggleModal}>
+              <View>
+                <Text style={styles.addShopButton}>Cerrar</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Modal>
+
+      {/*
       <a
         href="https://comercios.hacerpedido.com/"
-        style={{textDecoration: "none"}}
+        style={{ textDecoration: "none" }}
       >
         <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
       </a>
-      { /* eslint-enable react-native/no-raw-text, react-native/no-inline-styles */}
+      */}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   addShopButton: {
@@ -44,5 +75,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: "500",
+    padding: 32,
+  },
+  modalView: {
+    alignContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.white,
+    display: "flex",
+    flex: 1,
+    flexFlow: "column",
+    justifyContent: "center",
   },
 });
