@@ -11,6 +11,7 @@ module.exports = {
     "react/prop-types": 0,
     "import/order": 1,
     "import/newline-after-import": 1,
+    "import/no-anonymous-default-export": 0,
   },
   settings: {
     "import/ignore": ["react-native"],
