@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {Controller} from "react-hook-form";
+import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 
 import Input from "components/ShopInput";
 import theme from "assets/theme";
-import {validatePhoneNumber} from "utils/utils";
+import { validatePhoneNumber } from "utils/utils";
 
 const formatter = buildFormatter(spanishStrings);
 
@@ -34,40 +34,72 @@ export default ({
     padding: 10,
   };
 
+  // console.log(buttonStyles)
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <View>
-          { /* eslint-disable react-native/no-raw-text */}
-          <Text style={styles.title}>
-            Datos de tu Comercio{" "}
-            <Text style={styles.updatedAt}>
-              Actualizado{" "}
-              <TimeAgo
-                date={shop.updated_at}
-                formatter={formatter}
-                minPeriod={60}
-              />
-            </Text>
-            { /* eslint-enable react-native/no-raw-text */}
+        <View style={styles.titleTextContainer}>
+          <Text style={styles.title}>Datos de tu Comercio</Text>
+          <Text style={styles.updatedAt}>Actualizado</Text>
+          <Text style={styles.updatedAt}>
+            <TimeAgo
+              date={shop.updated_at}
+              formatter={formatter}
+              minPeriod={60}
+            />
           </Text>
         </View>
-        <TouchableOpacity
-          underlayColor={"none"}
-          onPress={handleSubmit}
-          style={buttonStyles}
-          disabled={isSaving}
-        >
-          <>
-            <Text style={styles.buttonText}>Guardar</Text>
-            {isSaving && (
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            underlayColor={"none"}
+            // onPress={handleSubmit}
+            style={styles.buttonBase}
+            disabled={isSaving}
+          >
+            <>
+              <Text style={styles.buttonText}>Background</Text>
+              {/* {isSaving && (
               <ActivityIndicator
                 animating={isSaving}
                 color={theme.colors.white}
               />
-            )}
-          </>
-        </TouchableOpacity>
+            )} */}
+            </>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={"none"}
+            // onPress={handleSubmit}
+            style={styles.buttonBase}
+            disabled={isSaving}
+          >
+            <>
+              <Text style={styles.buttonText}>Logo</Text>
+              {/* {isSaving && (
+              <ActivityIndicator
+                animating={isSaving}
+                color={theme.colors.white}
+              />
+            )} */}
+            </>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={"none"}
+            onPress={handleSubmit}
+            style={buttonStyles}
+            disabled={isSaving}
+          >
+            <>
+              <Text style={styles.buttonText}>Guardar</Text>
+              {isSaving && (
+                <ActivityIndicator
+                  animating={isSaving}
+                  color={theme.colors.white}
+                />
+              )}
+            </>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.formContainer}>
         <View style={styles.formContainer}>
@@ -132,7 +164,7 @@ export default ({
                         return phoneValidationResult;
                       }
                     }
-                    const {ordersphonenumber} = getValues();
+                    const { ordersphonenumber } = getValues();
                     return (
                       (ordersphonenumber != null && ordersphonenumber !== "") ||
                       (value != null && value !== "") ||
@@ -174,7 +206,7 @@ export default ({
                         return phoneValidationResult;
                       }
                     }
-                    const {orderswhatsappnumber} = getValues();
+                    const { orderswhatsappnumber } = getValues();
                     return (
                       (orderswhatsappnumber != null &&
                         orderswhatsappnumber !== "") ||
@@ -209,10 +241,23 @@ export default ({
 };
 
 const styles = StyleSheet.create({
+  buttonBase: {
+    alignItems: "center",
+    backgroundColor: theme.colors.gray4,
+    borderRadius: 5,
+    flexDirection: "row",
+    marginHorizontal: 10,
+    padding: 10,
+  },
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
     paddingHorizontal: 10,
+  },
+  buttonsContainer: {
+    alignItems: "baseline",
+    flexDirection: "row",
+    // padding: 10,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
@@ -247,6 +292,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  titleTextContainer: {
+    alignItems: "baseline",
+    // alignItems: "flex-start",
+    flexDirection: "row",
   },
   updatedAt: {
     ...theme.text.quiet,
