@@ -1,5 +1,8 @@
 // This method looks for GOOGLE_APPLICATION_CREDENTIALS environment variable.
 // export GOOGLE_APPLICATION_CREDENTIALS=../hacerpedido/hacer-pedido-ea59c946b381.json
+//
+// node_modules/\@babel/cli/bin/babel.js --presets '@babel/preset-env,@babel/preset-react'  -d build-scripts/ src/graphql scripts/import-data.js src/utils/utils.js src/aws-exports.js src/utils/categories.js && node build-scripts/import-data.js
+//
 
 import slugify from "slugify";
 import ApolloClient from "apollo-boost";

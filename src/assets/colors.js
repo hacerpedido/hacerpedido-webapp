@@ -20,6 +20,7 @@ const colors = {
   white: "#FFF",
   lighterBrown: "#99938A",
   lightBrown: "#B27D23",
+  modalBackground: "#000000BB",
   brown: "#4D360F",
   gray1: "#ECECEC",
   gray2: "#EDEDED",

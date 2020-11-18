@@ -45,7 +45,7 @@ export default ({
   return (
     <>
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.centeredView}>
+        <View style={styles.modalViewContainer}>
           <UploadImage onCloseModal={onCloseModal} />
         </View>
       </Modal>
@@ -53,8 +53,8 @@ export default ({
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
             <Text style={styles.title}>Datos de tu Comercio</Text>
-            <Text style={styles.updatedAt}>Actualizado</Text>
             <Text style={styles.updatedAt}>
+              <Text>Actualizado </Text>
               <TimeAgo
                 date={shop.updated_at}
                 formatter={formatter}
@@ -75,7 +75,9 @@ export default ({
             </TouchableOpacity>
             <TouchableOpacity
               underlayColor={"none"}
-              // onPress={handleSubmit}
+              onPress={() => {
+                setModalVisible(true);
+              }}
               style={styles.buttonBase}
               disabled={isSaving}
             >
@@ -250,7 +252,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.gray4,
     borderRadius: 5,
     flexDirection: "row",
-    marginHorizontal: 10,
+    marginRight: 10,
     padding: 10,
   },
   buttonText: {
@@ -262,10 +264,6 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
     flexDirection: "row",
     // padding: 10,
-  },
-  centeredView: {
-    backgroundColor: "#000000BB",
-    height: "100vh",
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
@@ -292,22 +290,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
   },
+  modalViewContainer: {
+    backgroundColor: theme.colors.modalBackground,
+    height: "100vh",
+  },
   title: {
     ...theme.text.title,
     marginVertical: 10,
   },
   titleContainer: {
-    alignItems: "flex-end",
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
   },
   titleTextContainer: {
     alignItems: "baseline",
-    // alignItems: "flex-start",
     flexDirection: "row",
   },
   updatedAt: {
     ...theme.text.quiet,
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
 });
