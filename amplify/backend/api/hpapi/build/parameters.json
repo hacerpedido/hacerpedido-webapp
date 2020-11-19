@@ -1,0 +1,8 @@
+{
+    "CreateAPIKey": 1,
+    "AppSyncApiName": "hpapi",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": "false",
+    "S3DeploymentBucket": "amplify-hacerpedido-webapp-dev-122614-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/25b368299d1d1df5bd0eae31ebe79628ad0c376b"
+}
