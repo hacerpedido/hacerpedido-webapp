@@ -10,9 +10,7 @@ import Switch from "../Switch";
 import Input from "../Input";
 import {WhatsappFill as WhatsappFillIcon} from "../../assets/icons";
 
-// const AnimatedView = animated(View)
-
-export default ({onSubmit}) => {
+const Form = ({onSubmit}) => {
   const shop = useSelector((state) => state.shop.shop);
   const {name} = shop;
   const [takeaway, setTakeaway] = useState(false)
@@ -109,6 +107,10 @@ export default ({onSubmit}) => {
     </View >
   );
 };
+
+// const AnimatedView = animated(View)
+
+export default Form;
 
 const textStyles = {
   bold: {

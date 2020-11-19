@@ -5,7 +5,7 @@ import { getLogoForShop } from "../../lib/utils/shops";
 import DecoratedLabel from "../DecoratedLabel";
 import colors from "../../assets/colors";
 
-export default ({ shop }) => {
+const ShopCard = ({ shop }) => {
   const { name, address, opentimes, deliverycost } = shop;
   const logo = getLogoForShop(shop);
 
@@ -49,6 +49,8 @@ export default ({ shop }) => {
     </View>
   );
 };
+
+export default ShopCard;
 
 const iconColor = "#C5CEE0";
 

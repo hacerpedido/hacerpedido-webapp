@@ -5,7 +5,7 @@ import ProductAmountPopup from "./ProductAmountPopup";
 import colors from "../../assets/colors";
 import {sanitizePrice} from "../../lib/utils/utils"
 
-export default ({product, promo = false, isCartEnabled = false}) => {
+const Product = ({product, promo = false, isCartEnabled = false}) => {
   const ref = useRef(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
@@ -59,6 +59,8 @@ export default ({product, promo = false, isCartEnabled = false}) => {
     </div >
   );
 };
+
+export default Product;
 
 const styles = StyleSheet.create({
   amountContainer: {

@@ -2,7 +2,7 @@ import React from "react";
 import {StyleSheet, Text, View} from "react-native";
 import colors from "../../assets/colors";
 
-export default ({product}) => {
+const Product = ({product}) => {
   const {amount, description, name} = product;
 
   return (
@@ -16,6 +16,8 @@ export default ({product}) => {
     </View>
   );
 };
+
+export default Product;
 
 const normalText = {
   fontFamily: "Barlow",

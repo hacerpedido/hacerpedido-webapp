@@ -4,7 +4,7 @@ import {StyleSheet, Text, View} from "react-native";
 import Product from "./Product";
 import colors from "../../assets/colors";
 
-export default ({products, shop}) => {
+const ProductList = ({products, shop}) => {
   const Products = ({categoryProducts}) => {
     return (
       <View>
@@ -25,7 +25,9 @@ export default ({products, shop}) => {
       ))}
     </View>
   )
-}
+};
+
+export default ProductList;
 
 const styles = StyleSheet.create({
   category: {

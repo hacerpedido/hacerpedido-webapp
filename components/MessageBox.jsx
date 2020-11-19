@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 // import * as Icons from "../assets/icons/";
 import theme from "assets/theme";
 
-export default ({ message, onMessagePress }) => {
+const MessageBox = ({ message, onMessagePress }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onMessagePress();
@@ -23,6 +23,8 @@ export default ({ message, onMessagePress }) => {
     </View>
   );
 };
+
+export default MessageBox;
 
 const styles = StyleSheet.create({
   container: {
