@@ -1,7 +1,7 @@
 import React from "react";
 import {View, TextInput, Text, StyleSheet} from "react-native";
 
-import theme from "assets/theme";
+import theme from "../assets/theme";
 
 export default React.forwardRef((props, ref) => {
   const {label, error, numberOfLies, value, ...inputProps} = props;

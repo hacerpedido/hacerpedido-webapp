@@ -52,7 +52,7 @@ export default function Shop() {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       {/*
       FIXME: next
       <Helmet>
@@ -84,10 +84,3 @@ export default function Shop() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    // position: 'absolute',
-    // width: '100%',
-  },
-});
