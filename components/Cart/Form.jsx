@@ -6,8 +6,8 @@ import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
 
 import colors from "../../assets/colors";
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
-import Switch from "../components/Switch";
-import Input from "../components/Input";
+import Switch from "../Switch";
+import Input from "../Input";
 import {WhatsappFill as WhatsappFillIcon} from "../../assets/icons";
 
 // const AnimatedView = animated(View)
