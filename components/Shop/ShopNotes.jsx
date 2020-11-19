@@ -3,7 +3,7 @@ import {StyleSheet, View, Text} from "react-native";
 
 import theme from "../../assets/theme";
 
-export default ({shop}) => {
+const ShopNotes = ({shop}) => {
   if (shop.notes) {
     return (
       <View style={styles.container}>
@@ -15,6 +15,8 @@ export default ({shop}) => {
 
   return null;
 };
+
+export default ShopNotes;
 
 const styles = StyleSheet.create({
   category: {

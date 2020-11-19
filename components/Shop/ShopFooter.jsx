@@ -6,7 +6,7 @@ import { generateCallUrl } from "../../lib/utils/utils";
 import colors from "../../assets/colors";
 import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
 
-export default ({ shop }) => {
+const ShopFooter = ({ shop }) => {
   const { ordersphonenumber, orderswhatsappnumber } = shop;
   const router = useRouter();
   const totalAmount = useSelector((state) => state.shop.totalAmount);
@@ -54,6 +54,8 @@ export default ({ shop }) => {
     </View>
   );
 };
+
+export default ShopFooter;
 
 const styles = StyleSheet.create({
   button: {

@@ -19,53 +19,7 @@ import theme from "../../assets/theme";
 // Increase pixel density for crop preview quality on retina screens.
 const pixelRatio = window.devicePixelRatio || 1;
 
-// We resize the canvas down when saving on retina devices otherwise the image
-// will be double or triple the preview size.
-// function getResizedCanvas(canvas, newWidth, newHeight) {
-//   const tmpCanvas = document.createElement("canvas");
-//   tmpCanvas.width = newWidth;
-//   tmpCanvas.height = newHeight;
-
-//   const ctx = tmpCanvas.getContext("2d");
-//   ctx.drawImage(
-//     canvas,
-//     0,
-//     0,
-//     canvas.width,
-//     canvas.height,
-//     0,
-//     0,
-//     newWidth,
-//     newHeight
-//   );
-
-//   return tmpCanvas;
-// }
-
-// function generateDownload(previewCanvas, crop) {
-//   if (!crop || !previewCanvas) {
-//     return;
-//   }
-
-//   const canvas = getResizedCanvas(previewCanvas, crop.width, crop.height);
-
-//   canvas.toBlob(
-//     (blob) => {
-//       const previewUrl = window.URL.createObjectURL(blob);
-
-//       const anchor = document.createElement("a");
-//       anchor.download = "cropPreview.png";
-//       anchor.href = URL.createObjectURL(blob);
-//       anchor.click();
-
-//       window.URL.revokeObjectURL(previewUrl);
-//     },
-//     "image/png",
-//     1
-//   );
-// }
-
-export default ({ onCloseModal }) => {
+const UploadImage = ({ onCloseModal }) => {
   const [image, setImage] = useState(undefined);
 
   const [upImg, setUpImg] = useState();
@@ -189,6 +143,54 @@ export default ({ onCloseModal }) => {
     </View>
   );
 };
+
+// We resize the canvas down when saving on retina devices otherwise the image
+// will be double or triple the preview size.
+// function getResizedCanvas(canvas, newWidth, newHeight) {
+//   const tmpCanvas = document.createElement("canvas");
+//   tmpCanvas.width = newWidth;
+//   tmpCanvas.height = newHeight;
+
+//   const ctx = tmpCanvas.getContext("2d");
+//   ctx.drawImage(
+//     canvas,
+//     0,
+//     0,
+//     canvas.width,
+//     canvas.height,
+//     0,
+//     0,
+//     newWidth,
+//     newHeight
+//   );
+
+//   return tmpCanvas;
+// }
+
+// function generateDownload(previewCanvas, crop) {
+//   if (!crop || !previewCanvas) {
+//     return;
+//   }
+
+//   const canvas = getResizedCanvas(previewCanvas, crop.width, crop.height);
+
+//   canvas.toBlob(
+//     (blob) => {
+//       const previewUrl = window.URL.createObjectURL(blob);
+
+//       const anchor = document.createElement("a");
+//       anchor.download = "cropPreview.png";
+//       anchor.href = URL.createObjectURL(blob);
+//       anchor.click();
+
+//       window.URL.revokeObjectURL(previewUrl);
+//     },
+//     "image/png",
+//     1
+//   );
+// }
+
+export default UploadImage;
 
 const styles = StyleSheet.create({
   buttonBase: {

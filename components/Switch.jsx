@@ -2,8 +2,7 @@ import React from "react";
 import {StyleSheet, View, Switch, Text} from "react-native";
 import colors from "../assets/colors";
 
-// https://upmostly.com/tutorials/build-a-react-switch-toggle-component
-export default ({toggle, value}) => {
+const SwitchComponent = ({toggle, value}) => {
   return (
     <View style={styles.container}>
       <Text>Delivery</Text>
@@ -22,6 +21,9 @@ export default ({toggle, value}) => {
     </View>
   )
 };
+
+// https://upmostly.com/tutorials/build-a-react-switch-toggle-component
+export default SwitchComponent;
 
 const styles = StyleSheet.create({
   container: {

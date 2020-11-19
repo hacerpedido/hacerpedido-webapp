@@ -30,7 +30,7 @@ function Item({ id, title, selected, onSelect }) {
   )
 }
 
-export default ({ selectedFilter, onSelectFilter }) => {
+const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
   // TODO: mover todo esto a Redux!!
   const [selected, setSelected] = React.useState(String)
 
@@ -59,7 +59,9 @@ export default ({ selectedFilter, onSelectFilter }) => {
       />
     </View>
   )
-}
+};
+
+export default HomeFilterBar;
 
 const styles = StyleSheet.create({
   container: {

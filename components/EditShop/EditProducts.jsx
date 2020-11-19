@@ -12,7 +12,7 @@ import theme from "../../assets/theme";
 import { sanitizePrice } from "../../lib/utils/utils";
 import { useWindowDimensions } from "../components/WindowDimensionsProvider";
 
-export default ({ products, shopId }) => {
+const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
   const { width } = useWindowDimensions();
@@ -139,6 +139,8 @@ export default ({ products, shopId }) => {
     </View>
   );
 };
+
+export default EditProducts;
 
 const styles = StyleSheet.create({
   container: {

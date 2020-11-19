@@ -15,7 +15,7 @@ import colors from "../../assets/colors";
 import * as Icons from "../../assets/icons";
 import DecoratedLabel from "../DecoratedLabel";
 
-export default ({ isPreview = false, shop = {} }) => {
+const ShopHeader = ({ isPreview = false, shop = {} }) => {
   const {
     name,
     background,
@@ -124,6 +124,8 @@ export default ({ isPreview = false, shop = {} }) => {
     </View>
   );
 };
+
+export default ShopHeader;
 
 // TODO: poner el ButtonCall y el ButtonBack en la misma fila
 // usando flex y posicionando con absolute

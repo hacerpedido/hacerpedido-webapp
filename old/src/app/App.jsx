@@ -7,7 +7,7 @@ import ShopPage from "../features/Shop/ShopPage";
 import EditShopPage from "../features/EditShop/EditShopPage";
 import WindowDimensionsProvider from "../components/WindowDimensionsProvider";
 
-export default () => {
+const App = () => {
   return (
     <React.StrictMode>
       <WindowDimensionsProvider>
@@ -23,3 +23,5 @@ export default () => {
     </React.StrictMode>
   );
 };
+
+export default App;
