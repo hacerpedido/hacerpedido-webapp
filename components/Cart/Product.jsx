@@ -1,9 +1,9 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import colors from "../../assets/colors";
 
-const Product = ({product}) => {
-  const {amount, description, name} = product;
+const Product = ({ product }) => {
+  const { amount, description, name } = product;
 
   return (
     <View style={styles.container}>
@@ -22,7 +22,7 @@ export default Product;
 const normalText = {
   fontFamily: "Barlow",
   fontSize: 15,
-}
+};
 
 const textStyles = {
   normalBoldText: {
@@ -56,5 +56,5 @@ const styles = StyleSheet.create({
     color: colors.brown,
     flex: 1,
     ...textStyles.normalSemiBoldText,
-  }
+  },
 });

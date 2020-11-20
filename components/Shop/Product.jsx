@@ -1,20 +1,21 @@
-import React, {useEffect, useState, useRef} from "react";
-import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
 
 import ProductAmountPopup from "./ProductAmountPopup";
 import colors from "../../assets/colors";
-import {sanitizePrice} from "../../lib/utils/utils"
+import { sanitizePrice } from "../../lib/utils/utils";
 
-const Product = ({product, promo = false, isCartEnabled = false}) => {
+const Product = ({ product, promo = false, isCartEnabled = false }) => {
   const ref = useRef(null);
   const [popupVisible, setPopupVisible] = useState(false);
   const containerStyle = promo ? styles.card : styles.product;
-  const {name, amount, description, price} = product;
-  const displayPrice = sanitizePrice(price)
+  const { name, amount, description, price } = product;
+  const displayPrice = sanitizePrice(price);
 
   useEffect(() => {
-    const listener = event => {
-      if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
+    const listener = (event) => {
+      if (ref.current && !ref.current.contains(event.target))
+        setPopupVisible(false);
     };
     document.addEventListener("touchend", listener);
 
@@ -25,25 +26,27 @@ const Product = ({product, promo = false, isCartEnabled = false}) => {
 
   return (
     <div ref={ref}>
-      <TouchableHighlight onPress={() => setPopupVisible(!popupVisible)} underlayColor={"none"}>
+      <TouchableHighlight
+        onPress={() => setPopupVisible(!popupVisible)}
+        underlayColor={"none"}
+      >
         <View style={[styles.container, containerStyle]}>
           <View style={styles.nameDescription}>
             <Text style={styles.name}>
               {name}
 
-              {amount > 0 &&
+              {amount > 0 && (
                 <View style={styles.amountContainer}>
                   <Text style={styles.amountText}>{amount}</Text>
                 </View>
-              }
+              )}
             </Text>
             <Text style={styles.description}>{description}</Text>
           </View>
 
           <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
 
-
-          {isCartEnabled &&
+          {isCartEnabled && (
             <View style={styles.buttonQty}>
               <Text style={styles.buttonQtyText}>+</Text>
 
@@ -51,12 +54,13 @@ const Product = ({product, promo = false, isCartEnabled = false}) => {
                 product={product}
                 amount={amount}
                 visible={popupVisible}
-                handleClose={() => setPopupVisible(false)} />
+                handleClose={() => setPopupVisible(false)}
+              />
             </View>
-          }
+          )}
         </View>
-      </TouchableHighlight >
-    </div >
+      </TouchableHighlight>
+    </div>
   );
 };
 
@@ -95,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     lineHeight: 20,
-    paddingBottom: 2
+    paddingBottom: 2,
   },
   card: {
     borderColor: colors.cardBorder,

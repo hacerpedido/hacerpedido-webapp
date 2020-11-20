@@ -2,16 +2,14 @@ import React from "react";
 import { Text, View } from "react-native";
 import * as Icons from "../assets/icons/";
 
-const DecoratedLabel = (
-  {
-    iconName,
-    text,
-    iconColor,
-    textColor,
-    fontSize,
-    marginBottom,
-  }
-) => {
+const DecoratedLabel = ({
+  iconName,
+  text,
+  iconColor,
+  textColor,
+  fontSize,
+  marginBottom,
+}) => {
   const icons = {
     car: <Icons.Car color={iconColor} width={18} />,
     clock: <Icons.Clock color={iconColor} width={18} />,

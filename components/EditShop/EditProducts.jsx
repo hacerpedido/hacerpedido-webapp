@@ -10,11 +10,12 @@ import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import theme from "../../assets/theme";
 import { sanitizePrice } from "../../lib/utils/utils";
-import { useWindowDimensions } from "../components/WindowDimensionsProvider";
+import { useWindowDimensions } from "../WindowDimensionsProvider";
 
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
+
   const { width } = useWindowDimensions();
 
   let gridData = useMemo(() => productForGrid(products), [products]);

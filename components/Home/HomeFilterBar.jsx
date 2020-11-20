@@ -1,8 +1,14 @@
-import React from 'react'
-import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native'
+import React from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 
-import { categories } from '../../lib/utils/categories'
-import colors from '../../assets/colors'
+import { categories } from "../../lib/utils/categories";
+import colors from "../../assets/colors";
 
 function Item({ id, title, selected, onSelect }) {
   return (
@@ -27,24 +33,24 @@ function Item({ id, title, selected, onSelect }) {
         {title}
       </Text>
     </TouchableHighlight>
-  )
+  );
 }
 
 const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
   // TODO: mover todo esto a Redux!!
-  const [selected, setSelected] = React.useState(String)
+  const [selected, setSelected] = React.useState(String);
 
-  if (selected === '') {
-    setSelected(selectedFilter)
+  if (selected === "") {
+    setSelected(selectedFilter);
   }
 
   const onSelect = React.useCallback(
     (id) => {
-      setSelected(id)
-      onSelectFilter(id)
+      setSelected(id);
+      onSelectFilter(id);
     },
     [onSelectFilter]
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -53,12 +59,19 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
         showsVerticalScrollIndicator={false}
         horizontal={true}
         data={categories}
-        renderItem={({ item }) => <Item id={item} title={item} selected={!!(selected === item)} onSelect={onSelect} />}
+        renderItem={({ item }) => (
+          <Item
+            id={item}
+            title={item}
+            selected={!!(selected === item)}
+            onSelect={onSelect}
+          />
+        )}
         keyExtractor={(item) => item}
         extraData={selected}
       />
     </View>
-  )
+  );
 };
 
 export default HomeFilterBar;
@@ -84,8 +97,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.filterButtonTitle,
-    fontFamily: 'Barlow',
+    fontFamily: "Barlow",
     fontSize: 16,
     fontWeight: 600,
   },
-})
+});

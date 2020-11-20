@@ -4,7 +4,7 @@ import colors from "../assets/colors";
 
 export default function Divider() {
   return <View style={styles.divider} />;
-};
+}
 
 const styles = StyleSheet.create({
   divider: {

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 // import * as Icons from "../assets/icons/";
-import theme from "assets/theme";
+import theme from "../assets/theme";
 
 const MessageBox = ({ message, onMessagePress }) => {
   useEffect(() => {
@@ -16,8 +16,8 @@ const MessageBox = ({ message, onMessagePress }) => {
     <View style={styles.container}>
       <TouchableHighlight onPress={onMessagePress} style={styles.touchable}>
         <>
-        <Text style={styles.text}>{message}</Text>
-        <Text style={styles.textClose}>x</Text>
+          <Text style={styles.text}>{message}</Text>
+          <Text style={styles.textClose}>x</Text>
         </>
       </TouchableHighlight>
     </View>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   text: {
-    alignSelf: 'center',
+    alignSelf: "center",
     color: theme.colors.white,
     flex: 1,
     fontSize: "1.2em",
@@ -53,6 +53,6 @@ const styles = StyleSheet.create({
   touchable: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 });

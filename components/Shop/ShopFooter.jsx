@@ -7,7 +7,7 @@ import colors from "../../assets/colors";
 import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
 
 const ShopFooter = ({ shop }) => {
-  const { ordersphonenumber=1, orderswhatsappnumber=1 } = shop;
+  const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop;
   const router = useRouter();
   const totalAmount = useSelector((state) => state.shop.totalAmount);
   const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 };
