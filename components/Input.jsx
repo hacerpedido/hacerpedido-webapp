@@ -3,7 +3,7 @@ import { View, TextInput, Text, StyleSheet } from "react-native";
 
 import theme from "../assets/theme";
 
-export default React.forwardRef((props, ref) => {
+const Input = React.forwardRef((props, ref) => {
   const { label, error, numberOfLies, value, ...inputProps } = props;
   let borderColor = error ? theme.colors.error : theme.colors.lightGrey2;
 
@@ -24,6 +24,8 @@ export default React.forwardRef((props, ref) => {
     </View>
   );
 });
+
+export default Input;
 
 const styles = StyleSheet.create({
   container: {

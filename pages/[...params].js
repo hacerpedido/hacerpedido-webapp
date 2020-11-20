@@ -36,25 +36,19 @@ export default function EditShopPage() {
   const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
-  const { width } = useWindowDimensions();
+  // const { width } =
+  //   typeof window !== "undefined" ? useWindowDimensions() : 0 ;
   const [reloadCount, setReloadCount] = useState(0);
 
   let { params } = router.query;
 
-  if (!params) {
-    return <Loading />;
-  }
-
-  // Sólo para las páginas de edit por ahora
-  if (params[1] !== "edit") {
-    return <ErrorPage statusCode={404} />;
-  }
-
-  let token = params[0];
+  let token = params[0] || undefined;
 
   useEffect(() => {
     dispatch(loading(true));
     setShop(null);
+
+    console.log("use:" + token);
 
     async function getData() {
       try {
@@ -70,6 +64,31 @@ export default function EditShopPage() {
     }
     getData();
   }, [token, dispatch, client, reloadCount]);
+
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    errors,
+    control,
+    watch,
+    getValues,
+  } = useForm({
+    mode: "onBlur",
+  });
+
+  if (!params) {
+    return <Loading />;
+  }
+
+  // Sólo para las páginas de edit por ahora
+  if (params[1] !== "edit") {
+    return <ErrorPage statusCode={404} />;
+  }
+
+  // let token = params[0];
+
+  console.log(JSON.stringify(token, null, 2));
 
   const onSubmit = (data) => {
     trimObject(data);
@@ -106,29 +125,6 @@ export default function EditShopPage() {
     setShowMessage(!showMessage);
   }
 
-  const {
-    handleSubmit,
-    register,
-    setValue,
-    errors,
-    control,
-    watch,
-    getValues,
-  } = useForm({
-    mode: "onBlur",
-  });
-
-  // TODO: Falta remover el mensaje anterior al salir del estado de error
-  // function onSavePress(data) {
-  //   if (Object.keys(errors).length > 0) {
-  //     setShowMessage(true);
-
-  //     return;
-  //   }
-
-  //   handleSubmit(onSubmit(getValues()));
-  // }
-
   if (token == null) {
     return <Text>Error cargando el comercio.</Text>;
   }
@@ -147,6 +143,8 @@ export default function EditShopPage() {
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
 
+  const width = (typeof window !== "undefined" && window.innerWidth) || 0;
+
   const showPreview = width > 1000;
 
   const isError = Object.keys(errors).length > 0;
@@ -159,9 +157,9 @@ export default function EditShopPage() {
 
   return (
     <>
-      <Helmet>
+      {/* <Helmet>
         <title>{tempShop.name}</title>
-      </Helmet>
+      </Helmet> */}
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
@@ -186,18 +184,14 @@ export default function EditShopPage() {
               rel="noopener noreferrer"
               target="_blank"
             >
-              {/* eslint-disable react-native/no-raw-text */}
               <Text style={styles.openProductionLink}>
                 Ir a mi Sitio
-                {/*
-                FIXME: next
-
+{/* 
                 <Image
                   source={require("../../assets/images/external-link-alt.png")}
                   style={styles.openProductionLinkIcon}
                 /> */}
               </Text>
-              {/* eslint-enable react-native/no-raw-text */}
             </a>
             <ShopView
               previewProducts={previewProducts}

@@ -1,23 +1,20 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
-  // ActivityIndicator,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
-// import { Controller } from "react-hook-form";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { StyledDropZone } from "react-drop-zone";
 import "react-drop-zone/dist/styles.css";
 
-// import Input from "../components/ShopInput";
 import theme from "../../assets/theme";
 
 // Increase pixel density for crop preview quality on retina screens.
-const pixelRatio = window.devicePixelRatio || 1;
+const pixelRatio = ((typeof window !== 'undefined') && window.devicePixelRatio) || 1;
 
 const UploadImage = ({ onCloseModal }) => {
   const [image, setImage] = useState(undefined);

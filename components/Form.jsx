@@ -1,6 +1,12 @@
 import * as React from "react";
 
-export default ({ register, errors, setValue, validation, children }) => {
+export default function Form({
+  register,
+  errors,
+  setValue,
+  validation,
+  children,
+}) {
   const Inputs = React.useRef([]);
 
   return (
@@ -35,4 +41,4 @@ export default ({ register, errors, setValue, validation, children }) => {
       )}
     </>
   );
-};
+}
