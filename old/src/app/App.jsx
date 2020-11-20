@@ -5,22 +5,22 @@ import Cart from "../features/Cart/Cart";
 import Home from "../../../pages/Home";
 import ShopPage from "../features/Shop/ShopPage";
 import EditShopPage from "../features/EditShop/EditShopPage";
-import WindowDimensionsProvider from "../components/WindowDimensionsProvider";
+// import WindowDimensionsProvider from "../components/WindowDimensionsProvider";
 
 const App = () => {
-  return (
-    <React.StrictMode>
-      <WindowDimensionsProvider>
-        <Router>
-          <Switch>
-            <Route exact path="/cart" component={Cart} />
-            <Route path={`/:token/edit`} component={EditShopPage} />
-            <Route path={`/:slug`} component={ShopPage} />
-            <Route exact path="/" component={Home} />
-          </Switch>
-        </Router>
-      </WindowDimensionsProvider>
-    </React.StrictMode>
+  return (<></>
+    // <React.StrictMode>
+    //   <WindowDimensionsProvider>
+    //     <Router>
+    //       <Switch>
+    //         <Route exact path="/cart" component={Cart} />
+    //         <Route path={`/:token/edit`} component={EditShopPage} />
+    //         <Route path={`/:slug`} component={ShopPage} />
+    //         <Route exact path="/" component={Home} />
+    //       </Switch>
+    //     </Router>
+    //   </WindowDimensionsProvider>
+    // </React.StrictMode>
   );
 };
 

@@ -6,7 +6,7 @@ import Divider from "../Divider";
 import colors from "../../assets/colors";
 
 // TODO: Merge with cart/productList.jsx
-export default ({ products, isCartEnabled = false }) => {
+export default function ProductList({ products, isCartEnabled = false }) {
   const listItems = [];
   let lastCategory = "";
   let item = 0;
@@ -45,7 +45,7 @@ export default ({ products, isCartEnabled = false }) => {
   listItems.push(<Divider key={item++} />);
 
   return <>{listItems}</>;
-};
+}
 
 const styles = StyleSheet.create({
   category: {

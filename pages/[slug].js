@@ -1,6 +1,5 @@
 import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-// import { useParams } from "react-router-dom";
 import { StyleSheet, Text, View } from "react-native";
 // import { Helmet } from "react-helmet-async";
 import { useRouter } from "next/router";

@@ -1,22 +1,24 @@
 import React, { useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
-import { HotTable } from "@handsontable/react";
-import "handsontable/dist/handsontable.full.css";
-import Handsontable from "handsontable";
-import "handsontable/languages/es-MX";
+// import { HotTable } from "@handsontable/react";
+// import "handsontable/dist/handsontable.full.css";
+// import Handsontable from "handsontable";
+// import "handsontable/languages/es-MX";
 
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import theme from "../../assets/theme";
 import { sanitizePrice } from "../../lib/utils/utils";
-import { useWindowDimensions } from "../WindowDimensionsProvider";
+// import { useWindowDimensions } from "../WindowDimensionsProvider";
 
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
 
-  const { width } = useWindowDimensions();
+  // const { width } =
+  //   typeof window !== "undefined" ? useWindowDimensions() : 0 ;
+  const width = (typeof window !== "undefined" && window.innerWidth) || 0;
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -111,7 +113,7 @@ const EditProducts = ({ products, shopId }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
-      <HotTable
+      {/* <HotTable
         // height={40 + 23 * (gridData.length + spareRows)}
         ref={grid}
         data={gridData}
@@ -136,7 +138,7 @@ const EditProducts = ({ products, shopId }) => {
               return (width - otherElementsWidth) / 2;
           }
         }}
-      />
+      /> */}
     </View>
   );
 };

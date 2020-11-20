@@ -14,6 +14,8 @@ export default function HomeHeader() {
     setModalVisible(!modalVisible);
   };
 
+  const isSSR = (typeof window === "undefined");
+
   return (
     <View style={styles.container}>
       <Link href="/">
@@ -28,22 +30,24 @@ export default function HomeHeader() {
         </View>
       </TouchableOpacity>
 
-      {/* FIXME: next */}
-      {/* <Modal animationType="fade" visible={modalVisible}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              Por el momento no estamos haciendo nuevas altas. Próximamente habrá novedades :)
-            </Text>
+      {isSSR && (
+        <Modal animationType="fade" visible={modalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                Por el momento no estamos haciendo nuevas altas. Próximamente
+                habrá novedades :)
+              </Text>
 
-            <TouchableHighlight onPress={toggleModal}>
-              <View>
-                <Text style={styles.addShopButton}>Cerrar</Text>
-              </View>
-            </TouchableHighlight>
+              <TouchableHighlight onPress={toggleModal}>
+                <View>
+                  <Text style={styles.addShopButton}>Cerrar</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
           </View>
-        </View>
-      </Modal> */}
+        </Modal>
+      )}
 
       {/*
       <a

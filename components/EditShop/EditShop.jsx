@@ -19,14 +19,14 @@ import { validatePhoneNumber } from "../../lib/utils/utils";
 
 const formatter = buildFormatter(spanishStrings);
 
-export default ({
+export default function EditShop({
   shop,
   control,
   errors,
   handleSubmit,
   getValues,
   isSaving,
-}) => {
+}) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const buttonStyles = {
@@ -244,7 +244,7 @@ export default ({
       </View>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   buttonBase: {
