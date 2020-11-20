@@ -1,8 +1,8 @@
 import React from "react";
-import {StyleSheet, View, Switch, Text} from "react-native";
+import { StyleSheet, View, Switch, Text } from "react-native";
 import colors from "../assets/colors";
 
-const SwitchComponent = ({toggle, value}) => {
+const SwitchComponent = ({ toggle, value }) => {
   return (
     <View style={styles.container}>
       <Text>Delivery</Text>
@@ -19,7 +19,7 @@ const SwitchComponent = ({toggle, value}) => {
 
       <Text>Takeaway</Text>
     </View>
-  )
+  );
 };
 
 // https://upmostly.com/tutorials/build-a-react-switch-toggle-component
@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   switch: {
-    marginHorizontal: 7
-  }
-})
+    marginHorizontal: 7,
+  },
+});

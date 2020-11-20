@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import {
   FlatList,
   StyleSheet,
@@ -53,7 +53,7 @@ export default function App(props) {
   const category = useSelector((state) => state.home.selectedFilter);
   const shops = useSelector((state) => state.home.shops);
   const dispatch = useDispatch();
-  const router = useRouter()
+  const router = useRouter();
   const client = useApolloClient();
 
   let initialScrollIndex = firstVisibleItem ?? 0;

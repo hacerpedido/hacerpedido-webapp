@@ -1,9 +1,9 @@
 import React from "react";
-import {StyleSheet, View, Text} from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import theme from "../../assets/theme";
 
-const ShopNotes = ({shop}) => {
+const ShopNotes = ({ shop }) => {
   if (shop.notes) {
     return (
       <View style={styles.container}>
@@ -31,8 +31,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginBottom: 40
-
+    marginBottom: 40,
   },
   notes: {
     color: theme.colors.lightGrey,

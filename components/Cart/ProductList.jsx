@@ -1,19 +1,19 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import Product from "./Product";
 import colors from "../../assets/colors";
 
-const ProductList = ({products, shop}) => {
-  const Products = ({categoryProducts}) => {
+const ProductList = ({ products, shop }) => {
+  const Products = ({ categoryProducts }) => {
     return (
       <View>
-        {categoryProducts.map(product =>
+        {categoryProducts.map((product) => (
           <Product key={product.id} product={product} shop={shop} />
-        )}
+        ))}
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -24,7 +24,7 @@ const ProductList = ({products, shop}) => {
         </View>
       ))}
     </View>
-  )
+  );
 };
 
 export default ProductList;

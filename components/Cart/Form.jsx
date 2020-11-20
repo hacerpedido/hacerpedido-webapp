@@ -1,24 +1,24 @@
-import React, {useState} from "react";
-import {useSelector} from "react-redux";
-import {Controller, useForm} from "react-hook-form";
-import {TouchableHighlight, StyleSheet, Text, View} from "react-native";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Controller, useForm } from "react-hook-form";
+import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
 // import {useSpring, animated} from "react-spring";
 
 import colors from "../../assets/colors";
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
 import Switch from "../Switch";
 import Input from "../Input";
-import {WhatsappFill as WhatsappFillIcon} from "../../assets/icons";
+import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
 
-const Form = ({onSubmit}) => {
+const Form = ({ onSubmit }) => {
   const shop = useSelector((state) => state.shop.shop);
-  const {name} = shop;
-  const [takeaway, setTakeaway] = useState(false)
+  const { name } = shop;
+  const [takeaway, setTakeaway] = useState(false);
 
-  const {handleSubmit, errors, control} = useForm({mode: "onBlur", });
+  const { handleSubmit, errors, control } = useForm({ mode: "onBlur" });
 
   const toggleTakeAway = () => {
-    const value = !takeaway
+    const value = !takeaway;
     setTakeaway(value);
   };
 
@@ -39,7 +39,7 @@ const Form = ({onSubmit}) => {
         label="Tu Nombre"
         autoCompleteType="name"
         placeholder="¿Cómo te llamás?"
-        defaultValue={''}
+        defaultValue={""}
         rules={{
           required: {
             value: true,
@@ -51,7 +51,7 @@ const Form = ({onSubmit}) => {
       />
 
       {/* <AnimatedView style={animatedProps}> */}
-      {takeaway ||
+      {takeaway || (
         <Controller
           as={Input}
           control={control}
@@ -59,7 +59,7 @@ const Form = ({onSubmit}) => {
           label="Tu Dirección"
           autoCompleteType="street-address"
           placeholder="¿A dónde lo mandamos?"
-          defaultValue={''}
+          defaultValue={""}
           rules={{
             required: {
               value: true,
@@ -69,7 +69,7 @@ const Form = ({onSubmit}) => {
           error={errors.address}
           maxLength={50}
         />
-      }
+      )}
       {/* </AnimatedView> */}
 
       <Controller
@@ -78,33 +78,33 @@ const Form = ({onSubmit}) => {
         name="notes"
         label="Notas"
         placeholder="¿Querés hacer alguna aclaración?"
-        defaultValue={''}
+        defaultValue={""}
         multiline
         numberOfLines={2}
         maxLength={500}
       />
 
-      { /* eslint-disable react-native/no-raw-text */}
+      {/* eslint-disable react-native/no-raw-text */}
       <Text style={styles.notes}>
         Por favor,
         <Text style={textStyles.bold}> confirmá el precio final </Text>
         con el comercio. No somos responsables de modificaciones en el menú.
       </Text>
-      { /* eslint-enable react-native/no-raw-text */}
+      {/* eslint-enable react-native/no-raw-text */}
 
-      <TouchableHighlight
-        onPress={handleSubmit(onSubmit)}
-        underlayColor="none">
+      <TouchableHighlight onPress={handleSubmit(onSubmit)} underlayColor="none">
         <div className="bounza">
           <View style={[styles.buttonWhatsApp, styles.button]}>
             <Text style={styles.textContainer} numberOfLines={1}>
-              <View style={styles.icon}><WhatsappFillIcon color={colors.white} /></View>
+              <View style={styles.icon}>
+                <WhatsappFillIcon color={colors.white} />
+              </View>
               <Text style={styles.buttonText}> Pedir a {name} </Text>
             </Text>
           </View>
         </div>
       </TouchableHighlight>
-    </View >
+    </View>
   );
 };
 
@@ -114,7 +114,7 @@ export default Form;
 
 const textStyles = {
   bold: {
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   smallText: {
     fontFamily: "Barlow",
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     paddingTop: 21,
   },
   icon: {
-    top: 2
+    top: 2,
   },
   notes: {
     ...textStyles.smallText,
