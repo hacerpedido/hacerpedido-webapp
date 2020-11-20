@@ -10,6 +10,7 @@
     "@handsontable/react": "^4.0.0",
     "@reduxjs/toolkit": "^1.4.0",
     "apollo-boost": "^0.4.9",
+    "axios": "^0.21.0",
     "graphql": "^15.4.0",
     "next": "latest",
     "react": "^16.13.1",
