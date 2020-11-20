@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-// import { Redirect } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 
 import Form from "../components/Cart/Form";
@@ -12,12 +12,17 @@ import { generateWhatsappURL } from "../lib/utils/utils";
 
 export default function Cart() {
   const shop = useSelector((state) => state.shop.shop);
+  const router = useRouter();
+
   // TODO: Extract to state or utils.js
   let products = useSelector((state) => state.shop.products);
   products = products.filter((p) => p.amount > 0);
   const productsByCategory = extractSections(products);
 
-  if (!shop) return <Redirect to="/" />;
+  if (!shop) {
+    router.push("/");
+    return null;
+  }
 
   const onSubmit = (data) => {
     const { orderswhatsappnumber } = shop;
@@ -47,7 +52,5 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: colors.white,
-    // position: 'absolute',
-    // width: '100%',
   },
 });

@@ -15,12 +15,13 @@ import Loading from "../components/Loading";
 
 export default function Shop() {
   const router = useRouter();
-
   const dispatch = useDispatch();
   const client = useApolloClient();
-  const { slug } = router.query;
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
+
+  const { slug } = router.query;
+  // console.log(slug);
 
   useLayoutEffect(() => {
     const getData = async () => {
@@ -40,10 +41,12 @@ export default function Shop() {
       }
     };
 
-    getData();
+    if (slug != null) {
+      getData();
+    }
   }, [client, dispatch, shop, slug]);
 
-  if (shop?.slug !== slug) {
+  if (!slug || shop?.slug !== slug) {
     return isLoading ? (
       <Loading />
     ) : (
