@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 
 import { StyleSheet, Text, View } from "react-native";
-import { TouchableHighlight, TouchableOpacity, Modal } from "react-native";
+import { TouchableOpacity } from "react-native";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 import Link from "next/link";
 import * as Icons from "../../assets/icons";
 import colors from "../../assets/colors";
 
 export default function HomeHeader() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [show, setShow] = useState(false);
 
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const isSSR = (typeof window === "undefined");
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   return (
     <View style={styles.container}>
@@ -24,30 +23,26 @@ export default function HomeHeader() {
         </a>
       </Link>
 
-      <TouchableOpacity onPress={toggleModal}>
+      <TouchableOpacity onPress={handleShow}>
         <View>
           <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
         </View>
       </TouchableOpacity>
 
-      {isSSR && (
-        <Modal animationType="fade" visible={modalVisible}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                Por el momento no estamos haciendo nuevas altas. Próximamente
-                habrá novedades :)
-              </Text>
-
-              <TouchableHighlight onPress={toggleModal}>
-                <View>
-                  <Text style={styles.addShopButton}>Cerrar</Text>
-                </View>
-              </TouchableHighlight>
-            </View>
-          </View>
-        </Modal>
-      )}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Ups...</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Por el momento no estamos haciendo nuevas altas. Próximamente habrá
+          novedades :)
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/*
       <a
