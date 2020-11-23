@@ -6,7 +6,8 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { store, persistor } from "../lib/reducers";
 
-import '../styles/globals.css'
+import "../styles/globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const client = new ApolloClient({
   uri: "https://backend-restapi.hacerpedido.com/graphql",
