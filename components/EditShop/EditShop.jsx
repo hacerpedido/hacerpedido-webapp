@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,8 +10,10 @@ import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
-// import UploadImage from "./UploadImage";
+import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
 import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
@@ -27,7 +28,10 @@ export default function EditShop({
   getValues,
   isSaving,
 }) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const buttonStyles = {
     alignItems: "center",
@@ -44,6 +48,10 @@ export default function EditShop({
 
   return (
     <>
+      <Modal show={show} onHide={handleClose}>
+      <UploadImage handleClose={handleClose} />
+      </Modal>
+
       {/* <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalViewContainer}>
           <UploadImage onCloseModal={onCloseModal} />
@@ -65,9 +73,7 @@ export default function EditShop({
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
               underlayColor={"none"}
-              onPress={() => {
-                setModalVisible(true);
-              }}
+              onPress={handleShow}
               style={styles.buttonBase}
               disabled={isSaving}
             >
@@ -75,9 +81,7 @@ export default function EditShop({
             </TouchableOpacity>
             <TouchableOpacity
               underlayColor={"none"}
-              onPress={() => {
-                setModalVisible(true);
-              }}
+              onPress={handleShow}
               style={styles.buttonBase}
               disabled={isSaving}
             >
@@ -289,10 +293,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     flexDirection: "row",
-  },
-  modalViewContainer: {
-    backgroundColor: theme.colors.modalBackground,
-    height: "100vh",
   },
   title: {
     ...theme.text.title,
