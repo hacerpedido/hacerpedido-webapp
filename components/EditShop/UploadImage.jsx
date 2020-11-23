@@ -8,15 +8,18 @@ import {
 } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { StyledDropZone } from "react-drop-zone";
+// import { StyledDropZone } from "react-drop-zone";
 import "react-drop-zone/dist/styles.css";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 
 import theme from "../../assets/theme";
 
 // Increase pixel density for crop preview quality on retina screens.
-const pixelRatio = ((typeof window !== 'undefined') && window.devicePixelRatio) || 1;
+const pixelRatio =
+  (typeof window !== "undefined" && window.devicePixelRatio) || 1;
 
-const UploadImage = ({ onCloseModal }) => {
+const UploadImage = ({ handleClose }) => {
   const [image, setImage] = useState(undefined);
 
   const [upImg, setUpImg] = useState();
@@ -71,34 +74,32 @@ const UploadImage = ({ onCloseModal }) => {
   }, [completedCrop]);
 
   return (
-    <View style={styles.containerView}>
-      <View style={styles.titleView}>
-        <Text style={styles.title}>Sube una imagen</Text>
-        <TouchableHighlight onPress={onCloseModal}>
-          <Text style={styles.textClose}>x</Text>
-        </TouchableHighlight>
-      </View>
-      <View style={styles.uploaderContainer}>
-        {!image && (
-          <StyledDropZone
-            accept="image/*"
-            children={"Haga click o arrastre un archivo aquí"}
-            onDrop={onDropFile}
-            multiple={false}
-          />
-        )}
-        {image && (
-          <View>
-            <View style={styles.preview}>
-              <ReactCrop
-                src={upImg}
-                onImageLoaded={onLoad}
-                circularCrop={true}
-                crop={crop}
-                onChange={(c) => setCrop(c)}
-                onComplete={(c) => setCompletedCrop(c)}
-              />
-              {/* <canvas
+    <>
+      <Modal.Header closeButton>
+        <Modal.Title>Sube una imagen</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <View style={styles.uploaderContainer}>
+          {/* {!image && (
+            <StyledDropZone
+              accept="image/*"
+              children={"Haga click o arrastre un archivo aquí"}
+              onDrop={onDropFile}
+              multiple={false}
+            />
+          )} */}
+          {image && (
+            <View>
+              <View style={styles.preview}>
+                <ReactCrop
+                  src={upImg}
+                  onImageLoaded={onLoad}
+                  circularCrop={true}
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                />
+                {/* <canvas
                 ref={previewCanvasRef}
                 // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
                 style={{
@@ -106,38 +107,106 @@ const UploadImage = ({ onCloseModal }) => {
                   height: Math.round(completedCrop?.height ?? 0),
                 }}
               /> */}
-            </View>
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity
-                underlayColor={"none"}
-                onPress={onCloseModal}
-                style={styles.buttonBase}
-              >
-                <Text style={styles.buttonText}>Descartar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                underlayColor={"none"}
-                onPress={onCloseModal}
-                style={styles.buttonSave}
-                // disabled={isSaving}
-              >
-                <Text style={styles.buttonText}>Aceptar</Text>
-              </TouchableOpacity>
-            </View>
+              </View>
 
-            {/* <button
-            type="button"
-            disabled={!completedCrop?.width || !completedCrop?.height}
-            onClick={() =>
-              generateDownload(previewCanvasRef.current, completedCrop)
-            }
-          >
-            Download cropped image
-          </button> */}
-          </View>
+              {/* <button
+                type="button"
+                disabled={!completedCrop?.width || !completedCrop?.height}
+                onClick={() =>
+                  generateDownload(previewCanvasRef.current, completedCrop)
+                }
+              >
+                Download cropped image
+              </button> */}
+            </View>
+          )}
+        </View>
+      </Modal.Body>
+      <Modal.Footer>
+        {image && (
+          <>
+            <Button variant="secondary" onClick={handleClose}>
+              Descartar
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Aceptar
+            </Button>
+          </>
         )}
-      </View>
-    </View>
+        {!image && (
+            <Button variant="primary" onClick={handleClose}>
+              Cancelar
+            </Button>
+        )}
+      </Modal.Footer>
+    </>
+    // <View style={styles.containerView}>
+    //   <View style={styles.titleView}>
+    //     <Text style={styles.title}>Sube una imagen</Text>
+    //     <TouchableHighlight onPress={onCloseModal}>
+    //       <Text style={styles.textClose}>x</Text>
+    //     </TouchableHighlight>
+    //   </View>
+    //   <View style={styles.uploaderContainer}>
+    //     {!image && (
+    //       <StyledDropZone
+    //         accept="image/*"
+    //         children={"Haga click o arrastre un archivo aquí"}
+    //         onDrop={onDropFile}
+    //         multiple={false}
+    //       />
+    //     )}
+    //     {image && (
+    //       <View>
+    //         <View style={styles.preview}>
+    //           <ReactCrop
+    //             src={upImg}
+    //             onImageLoaded={onLoad}
+    //             circularCrop={true}
+    //             crop={crop}
+    //             onChange={(c) => setCrop(c)}
+    //             onComplete={(c) => setCompletedCrop(c)}
+    //           />
+    //           {/* <canvas
+    //             ref={previewCanvasRef}
+    //             // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
+    //             style={{
+    //               width: Math.round(completedCrop?.width ?? 0),
+    //               height: Math.round(completedCrop?.height ?? 0),
+    //             }}
+    //           /> */}
+    //         </View>
+    //         <View style={styles.buttonsContainer}>
+    //           <TouchableOpacity
+    //             underlayColor={"none"}
+    //             onPress={onCloseModal}
+    //             style={styles.buttonBase}
+    //           >
+    //             <Text style={styles.buttonText}>Descartar</Text>
+    //           </TouchableOpacity>
+    //           <TouchableOpacity
+    //             underlayColor={"none"}
+    //             onPress={onCloseModal}
+    //             style={styles.buttonSave}
+    //             // disabled={isSaving}
+    //           >
+    //             <Text style={styles.buttonText}>Aceptar</Text>
+    //           </TouchableOpacity>
+    //         </View>
+
+    //    <button
+    //   type="button"
+    //   disabled={!completedCrop?.width || !completedCrop?.height}
+    //   onClick={() =>
+    //     generateDownload(previewCanvasRef.current, completedCrop)
+    //   }
+    // >
+    //   Download cropped image
+    // </button>
+    // </View>
+    //     )}
+    //   </View>
+    // </View>
   );
 };
 
@@ -190,36 +259,6 @@ const UploadImage = ({ onCloseModal }) => {
 export default UploadImage;
 
 const styles = StyleSheet.create({
-  buttonBase: {
-    alignItems: "center",
-    backgroundColor: theme.colors.gray4,
-    borderRadius: 5,
-    flexDirection: "row",
-    marginRight: 10,
-    marginVertical: 10,
-    padding: 10,
-  },
-  buttonSave: {
-    alignItems: "center",
-    backgroundColor: theme.colors.button1,
-    borderRadius: 5,
-    flexDirection: "row",
-    marginVertical: 10,
-    padding: 10,
-  },
-  buttonText: {
-    color: theme.colors.white,
-    fontWeight: "bold",
-    paddingHorizontal: 10,
-  },
-  buttonsContainer: {
-    alignItems: "flex-end",
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    padding: 10,
-  },
-
   containerView: {
     backgroundColor: theme.colors.lightBackground,
     borderColor: theme.colors.gray2,
