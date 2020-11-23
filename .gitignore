@@ -9,6 +9,11 @@ aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json
 amplifyxc.config
+build/
+dist/
+node_modules/
+
+
 # dependencies
 /node_modules
 /.pnp
