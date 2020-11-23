@@ -1,10 +1,9 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
-// import { HotTable } from "@handsontable/react";
-// import "handsontable/dist/handsontable.full.css";
-// import Handsontable from "handsontable";
-// import "handsontable/languages/es-MX";
+import dynamic from "next/dynamic";
+
+import "handsontable/dist/handsontable.full.css";
 
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
@@ -12,15 +11,42 @@ import theme from "../../assets/theme";
 import { sanitizePrice } from "../../lib/utils/utils";
 // import { useWindowDimensions } from "../WindowDimensionsProvider";
 
+const HotTable = dynamic(
+  async () => {
+    await import("handsontable");
+    await import("handsontable/languages/es-MX");
+    const { default: HT } = await import("@handsontable/react");
+
+    return ({ forwardedRef, ...props }) => <HT ref={forwardedRef} {...props} />;
+  },
+  {
+    ssr: false,
+  }
+);
+
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
 
-  // const { width } =
-  //   typeof window !== "undefined" ? useWindowDimensions() : 0 ;
+  // const { width } = useWindowDimensions();
   const width = (typeof window !== "undefined" && window.innerWidth) || 0;
 
   let gridData = useMemo(() => productForGrid(products), [products]);
+
+  useEffect(() => {
+    const check = () => {
+      if (grid.current) {
+        grid.current.hotInstance.updateSettings({
+          cells: getCells
+      }
+      );
+
+        return;
+      }
+      setTimeout(check, 200);
+    };
+    check();
+  }, [grid]);
 
   const afterChange = (changes) => {
     if (changes == null || grid.current == null) {
@@ -61,7 +87,7 @@ const EditProducts = ({ products, shopId }) => {
     value,
     cellProperties
   ) {
-    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    // Handsontable.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";
@@ -72,7 +98,7 @@ const EditProducts = ({ products, shopId }) => {
     }
   }
 
-  const getCells = (row, col) => {
+  function getCells(row, col) {
     var cellProperties = {};
     if (grid.current != null) {
       let tempData = grid.current.hotInstance.getDataAtRow(row);
@@ -87,7 +113,7 @@ const EditProducts = ({ products, shopId }) => {
     }
 
     return cellProperties;
-  };
+  }
 
   const beforeChanges = (changes, source) => {
     if (source !== "CopyPaste.paste") {
@@ -113,9 +139,8 @@ const EditProducts = ({ products, shopId }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
-      {/* <HotTable
-        // height={40 + 23 * (gridData.length + spareRows)}
-        ref={grid}
+      <HotTable
+        forwardedRef={grid}
         data={gridData}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
@@ -123,7 +148,6 @@ const EditProducts = ({ products, shopId }) => {
         minSpareRows={spareRows}
         language={"es-MX"}
         preventOverflow={"horizontal"}
-        cells={getCells}
         columns={columns}
         colHeaders={colHeaders}
         contextMenu={["row_above", "row_below", "remove_row"]}
@@ -138,7 +162,7 @@ const EditProducts = ({ products, shopId }) => {
               return (width - otherElementsWidth) / 2;
           }
         }}
-      /> */}
+      />
     </View>
   );
 };
