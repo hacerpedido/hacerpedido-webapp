@@ -11,12 +11,18 @@ import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import dynamic from 'next/dynamic'
 
 import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
 import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
+
+
+// const DynamicComponentWithNoSSR = dynamic(
+//   import('./UploadImage').then((mod) => mod.UploadImage),
+//   { ssr: false }
+// )
 
 const formatter = buildFormatter(spanishStrings);
 

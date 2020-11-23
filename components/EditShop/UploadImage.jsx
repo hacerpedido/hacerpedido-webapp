@@ -12,8 +12,14 @@ import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import dynamic from 'next/dynamic'
 
 import theme from "../../assets/theme";
+
+const DynamicStyledDropZone = dynamic(() =>
+  import('react-drop-zone').then((mod) => mod.StyledDropZone),
+  { ssr: false }
+)
 
 // Increase pixel density for crop preview quality on retina screens.
 const pixelRatio =
@@ -80,14 +86,14 @@ const UploadImage = ({ handleClose }) => {
       </Modal.Header>
       <Modal.Body>
         <View style={styles.uploaderContainer}>
-          {/* {!image && (
-            <StyledDropZone
+          {!image && typeof window !== "undefined" && (
+            <DynamicStyledDropZone
               accept="image/*"
               children={"Haga click o arrastre un archivo aquí"}
               onDrop={onDropFile}
               multiple={false}
             />
-          )} */}
+          )}
           {image && (
             <View>
               <View style={styles.preview}>
@@ -134,79 +140,12 @@ const UploadImage = ({ handleClose }) => {
           </>
         )}
         {!image && (
-            <Button variant="primary" onClick={handleClose}>
-              Cancelar
-            </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Cancelar
+          </Button>
         )}
       </Modal.Footer>
     </>
-    // <View style={styles.containerView}>
-    //   <View style={styles.titleView}>
-    //     <Text style={styles.title}>Sube una imagen</Text>
-    //     <TouchableHighlight onPress={onCloseModal}>
-    //       <Text style={styles.textClose}>x</Text>
-    //     </TouchableHighlight>
-    //   </View>
-    //   <View style={styles.uploaderContainer}>
-    //     {!image && (
-    //       <StyledDropZone
-    //         accept="image/*"
-    //         children={"Haga click o arrastre un archivo aquí"}
-    //         onDrop={onDropFile}
-    //         multiple={false}
-    //       />
-    //     )}
-    //     {image && (
-    //       <View>
-    //         <View style={styles.preview}>
-    //           <ReactCrop
-    //             src={upImg}
-    //             onImageLoaded={onLoad}
-    //             circularCrop={true}
-    //             crop={crop}
-    //             onChange={(c) => setCrop(c)}
-    //             onComplete={(c) => setCompletedCrop(c)}
-    //           />
-    //           {/* <canvas
-    //             ref={previewCanvasRef}
-    //             // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
-    //             style={{
-    //               width: Math.round(completedCrop?.width ?? 0),
-    //               height: Math.round(completedCrop?.height ?? 0),
-    //             }}
-    //           /> */}
-    //         </View>
-    //         <View style={styles.buttonsContainer}>
-    //           <TouchableOpacity
-    //             underlayColor={"none"}
-    //             onPress={onCloseModal}
-    //             style={styles.buttonBase}
-    //           >
-    //             <Text style={styles.buttonText}>Descartar</Text>
-    //           </TouchableOpacity>
-    //           <TouchableOpacity
-    //             underlayColor={"none"}
-    //             onPress={onCloseModal}
-    //             style={styles.buttonSave}
-    //             // disabled={isSaving}
-    //           >
-    //             <Text style={styles.buttonText}>Aceptar</Text>
-    //           </TouchableOpacity>
-    //         </View>
-
-    //    <button
-    //   type="button"
-    //   disabled={!completedCrop?.width || !completedCrop?.height}
-    //   onClick={() =>
-    //     generateDownload(previewCanvasRef.current, completedCrop)
-    //   }
-    // >
-    //   Download cropped image
-    // </button>
-    // </View>
-    //     )}
-    //   </View>
-    // </View>
   );
 };
 
@@ -300,5 +239,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     flex: 1,
+    // minHeight: 400,
+    // minWidth: 600,
   },
 });
