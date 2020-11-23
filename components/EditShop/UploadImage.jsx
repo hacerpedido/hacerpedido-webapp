@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-// import { StyledDropZone } from "react-drop-zone";
 import "react-drop-zone/dist/styles.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
