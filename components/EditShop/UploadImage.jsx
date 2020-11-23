@@ -214,7 +214,6 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     alignItems: "flex-end",
-    // backgroundColor: theme.colors.gray4,
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",

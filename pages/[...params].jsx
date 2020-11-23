@@ -9,13 +9,13 @@ import { useApolloClient } from "@apollo/react-hooks";
 import EditProductsForm from "../components/EditShop/EditProducts";
 import EditShopForm from "../components/EditShop/EditShop";
 import { loading } from "../lib/reducers/appSlice";
-import ShopView from "../components/Shop/Shop";
+import ShopView from "../components/Shop/ShopView";
 import Loading from "../components/Loading";
 import Form from "../components/Form";
 import MessageBox from "../components/MessageBox";
 import theme from "../assets/theme";
 import { trimObject } from "../lib/utils/utils";
-import { useWindowDimensions } from "../components/WindowDimensionsProvider";
+// import { useWindowDimensions } from "../components/WindowDimensionsProvider";
 import {
   getShopWithProductsByToken,
   saveShopWithProducts,
@@ -42,13 +42,16 @@ export default function EditShopPage() {
 
   let { params } = router.query;
 
-  let token = params[0] || undefined;
+  // console.log(params)
+  // console.log(typeof params)
+
+  let token = (typeof params !== "undefined") ? params[0] : undefined;
 
   useEffect(() => {
     dispatch(loading(true));
     setShop(null);
 
-    console.log("use:" + token);
+    console.log("use: " + token);
 
     async function getData() {
       try {
@@ -85,8 +88,6 @@ export default function EditShopPage() {
   if (params[1] !== "edit") {
     return <ErrorPage statusCode={404} />;
   }
-
-  // let token = params[0];
 
   console.log(JSON.stringify(token, null, 2));
 
@@ -168,7 +169,6 @@ export default function EditShopPage() {
               shop={shop}
               control={control}
               errors={errors}
-              // handleSubmit={onSavePress}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
@@ -186,7 +186,7 @@ export default function EditShopPage() {
             >
               <Text style={styles.openProductionLink}>
                 Ir a mi Sitio
-{/* 
+{/*
                 <Image
                   source={require("../../assets/images/external-link-alt.png")}
                   style={styles.openProductionLinkIcon}

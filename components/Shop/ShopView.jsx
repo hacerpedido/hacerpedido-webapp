@@ -8,7 +8,7 @@ import ProductList from "./ProductList";
 import colors from "../../assets/colors";
 import Loading from "../Loading";
 
-export default function Shop({
+export default function ShopView({
   isPreview = false,
   shop,
   previewProducts = [],

@@ -12,7 +12,7 @@ import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 
-import UploadImage from "./UploadImage";
+// import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
 import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
@@ -44,11 +44,11 @@ export default function EditShop({
 
   return (
     <>
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
+      {/* <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalViewContainer}>
           <UploadImage onCloseModal={onCloseModal} />
         </View>
-      </Modal>
+      </Modal> */}
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>

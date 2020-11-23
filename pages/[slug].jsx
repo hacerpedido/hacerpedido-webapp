@@ -1,11 +1,10 @@
 import React, { useLayoutEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
-// import { Helmet } from "react-helmet-async";
 import { useRouter } from "next/router";
 
 import { useApolloClient } from "@apollo/react-hooks";
-import ShopView from "../components/Shop/Shop";
+import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
 import { loading } from "../lib/reducers/appSlice";
 import { setShop } from "../lib/reducers/shopSlice";
@@ -53,6 +52,10 @@ export default function Shop() {
     );
   }
 
+  if (!shop) {
+    return <Text>Sin comercios en la base de datos para {slug}</Text>;
+  }
+
   return (
     <View>
       {/*
@@ -86,3 +89,29 @@ export default function Shop() {
     </View>
   );
 }
+
+// export async function getServerSideProps(context) {
+//   const slug = context.params.slug;
+
+//   try {
+//     const client = useApolloClient();
+//     const shop = await client.query({
+//       query: getShopWithDetails,
+//       variables: { slug },
+//     });
+
+//     console.log({ shop, slug });
+
+//     return {
+//       props: { shop, slug },
+//     };
+//   } catch (error) {
+//     console.log(JSON.stringify(error, null, 2));
+//   }
+
+//   console.log("slug:" + slug);
+
+//   return {
+//     props: { slug },
+//   };
+// }
