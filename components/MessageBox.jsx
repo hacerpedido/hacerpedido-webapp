@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
-// import * as Icons from "../assets/icons/";
 import theme from "../assets/theme";
 
 const MessageBox = ({ message, onMessagePress }) => {

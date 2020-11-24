@@ -18,7 +18,6 @@ export default function Form({ register, errors, setValue, validation, children 
                 onSubmitEditing: () => {
                   Inputs.current[i + 1] ? Inputs.current[i + 1].focus() : Inputs.current[i].blur();
                 },
-                //onBlur: () => trigger(child.props.name),
                 blurOnSubmit: false,
                 fgf: child.props.name,
                 error: errors[child.props.name],
