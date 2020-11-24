@@ -9,7 +9,7 @@ import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import theme from "../../assets/theme";
 import { sanitizePrice } from "../../lib/utils/utils";
-// import { useWindowDimensions } from "../WindowDimensionsProvider";
+import useWidth from "../../lib/hooks/use_width";
 
 const HotTable = dynamic(
   async () => {
@@ -27,9 +27,7 @@ const HotTable = dynamic(
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
-
-  // const { width } = useWindowDimensions();
-  const width = (typeof window !== "undefined" && window.innerWidth) || 0;
+  const width  = useWidth();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 

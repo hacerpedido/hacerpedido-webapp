@@ -5,17 +5,11 @@ import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import Modal from "react-bootstrap/Modal";
-import dynamic from "next/dynamic";
 
 import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
 import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
-
-// const DynamicComponentWithNoSSR = dynamic(
-//   import('./UploadImage').then((mod) => mod.UploadImage),
-//   { ssr: false }
-// )
 
 const formatter = buildFormatter(spanishStrings);
 
@@ -34,21 +28,12 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
     padding: 10,
   };
 
-  function onCloseModal() {
-    setModalVisible(false);
-  }
-
   return (
     <>
       <Modal show={show} onHide={handleClose}>
         <UploadImage handleClose={handleClose} />
       </Modal>
 
-      {/* <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.modalViewContainer}>
-          <UploadImage onCloseModal={onCloseModal} />
-        </View>
-      </Modal> */}
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <View style={styles.titleTextContainer}>
@@ -59,12 +44,27 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity underlayColor={"none"} onPress={handleShow} style={styles.buttonBase} disabled={isSaving}>
-              <Text style={styles.buttonText}>Background</Text>
-            </TouchableOpacity>
-            <TouchableOpacity underlayColor={"none"} onPress={handleShow} style={styles.buttonBase} disabled={isSaving}>
-              <Text style={styles.buttonText}>Logo</Text>
-            </TouchableOpacity>
+            {/* FIXME: Para probar pot ahora */}
+            {shop.slug.startsWith("test") && (
+              <>
+                <TouchableOpacity
+                  underlayColor={"none"}
+                  onPress={handleShow}
+                  style={styles.buttonBase}
+                  disabled={isSaving}
+                >
+                  <Text style={styles.buttonText}>Background</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  underlayColor={"none"}
+                  onPress={handleShow}
+                  style={styles.buttonBase}
+                  disabled={isSaving}
+                >
+                  <Text style={styles.buttonText}>Logo</Text>
+                </TouchableOpacity>
+              </>
+            )}
             <TouchableOpacity underlayColor={"none"} onPress={handleSubmit} style={buttonStyles} disabled={isSaving}>
               <>
                 <Text style={styles.buttonText}>Guardar</Text>
@@ -200,10 +200,6 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 error={errors.notes}
                 maxLength={1000}
               />
-              {/*
-                logo
-                background
-            */}
             </View>
           </View>
         </View>
