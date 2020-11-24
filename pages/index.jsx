@@ -1,13 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { useApolloClient } from "@apollo/react-hooks";
 import Head from "next/head";
 
@@ -15,11 +9,7 @@ import HomeHeader from "../components/Home/HomeHeader";
 import HomeFilterBar from "../components/Home/HomeFilterBar";
 import ShopCard from "../components/Home/ShopCard";
 import { loading } from "../lib/reducers/appSlice";
-import {
-  setCategory,
-  setShops,
-  setFirstVisibleItem,
-} from "../lib/reducers/homeSlice";
+import { setCategory, setShops, setFirstVisibleItem } from "../lib/reducers/homeSlice";
 import { setShop } from "../lib/reducers/shopSlice";
 import { listShopsForHome } from "../lib/graphql/home";
 import colors from "../assets/colors";
@@ -90,9 +80,7 @@ export default function App(props) {
     });
   }, [dispatch, client, category]);
 
-  let filteredShops = shops.filter(
-    (x) => x.visibility === "public" && x.category === category
-  );
+  let filteredShops = shops.filter((x) => x.visibility === "public" && x.category === category);
 
   const ShopList = () => (
     <FlatList
@@ -142,7 +130,7 @@ export default function App(props) {
   return (
     <View style={styles.container}>
       <Head>
-      <title>Hacer Pedido | Pedí a tu comercio favorito por WhatsApp</title>
+        <title>Hacer Pedido | Pedí a tu comercio favorito por WhatsApp</title>
       </Head>
 
       <View style={styles.header}>
@@ -157,11 +145,7 @@ export default function App(props) {
       </View>
 
       <View style={styles.body}>
-        {filteredShops.length === 0 && loading ? (
-          <Loading />
-        ) : (
-          filteredShops.length && <ShopList />
-        )}
+        {filteredShops.length === 0 && loading ? <Loading /> : filteredShops.length && <ShopList />}
       </View>
     </View>
   );

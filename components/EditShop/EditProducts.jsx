@@ -37,9 +37,8 @@ const EditProducts = ({ products, shopId }) => {
     const check = () => {
       if (grid.current) {
         grid.current.hotInstance.updateSettings({
-          cells: getCells
-      }
-      );
+          cells: getCells,
+        });
 
         return;
       }
@@ -78,15 +77,7 @@ const EditProducts = ({ products, shopId }) => {
     },
   ];
 
-  function categoryRenderer(
-    instance,
-    td,
-    row,
-    col,
-    prop,
-    value,
-    cellProperties
-  ) {
+  function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
     // Handsontable.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {

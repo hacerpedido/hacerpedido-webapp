@@ -19,30 +19,15 @@ const ShopCard = ({ shop }) => {
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>
 
           {address && (
-            <DecoratedLabel
-              iconName="pin"
-              text={address}
-              iconColor={iconColor}
-              textColor={colors.lightGrey}
-            />
+            <DecoratedLabel iconName="pin" text={address} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
 
           {opentimes && (
-            <DecoratedLabel
-              iconName="clock"
-              text={opentimes}
-              iconColor={iconColor}
-              textColor={colors.lightGrey}
-            />
+            <DecoratedLabel iconName="clock" text={opentimes} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
 
           {deliverycost && (
-            <DecoratedLabel
-              iconName="car"
-              text={deliverycost}
-              iconColor={iconColor}
-              textColor={colors.lightGrey}
-            />
+            <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
         </View>
       </View>

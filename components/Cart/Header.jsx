@@ -13,11 +13,7 @@ export default function CartHeader() {
   return (
     <View style={styles.container}>
       <View style={styles.containerNavigator}>
-        <TouchableHighlight
-          onPress={() => router.push(`/${slug}`)}
-          underlayColor="none"
-          style={styles.buttonBack}
-        >
+        <TouchableHighlight onPress={() => router.push(`/${slug}`)} underlayColor="none" style={styles.buttonBack}>
           <ArrowLeftIcon />
         </TouchableHighlight>
       </View>

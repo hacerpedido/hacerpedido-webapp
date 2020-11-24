@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 import { categories } from "../../lib/utils/categories";
 import colors from "../../assets/colors";
@@ -59,14 +53,7 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
         showsVerticalScrollIndicator={false}
         horizontal={true}
         data={categories}
-        renderItem={({ item }) => (
-          <Item
-            id={item}
-            title={item}
-            selected={!!(selected === item)}
-            onSelect={onSelect}
-          />
-        )}
+        renderItem={({ item }) => <Item id={item} title={item} selected={!!(selected === item)} onSelect={onSelect} />}
         keyExtractor={(item) => item}
         extraData={selected}
       />

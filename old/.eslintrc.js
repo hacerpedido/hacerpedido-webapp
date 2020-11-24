@@ -1,10 +1,5 @@
 module.exports = {
-  extends: [
-    "react-app",
-    "plugin:react-native/all",
-    "prettier",
-    "prettier/react",
-  ],
+  extends: ["react-app", "plugin:react-native/all", "prettier", "prettier/react"],
   plugins: ["react-native", "prettier"],
   rules: {
     "react/display-name": 0,

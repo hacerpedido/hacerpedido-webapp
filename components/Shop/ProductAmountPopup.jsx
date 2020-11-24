@@ -7,7 +7,7 @@ import colors from "../../assets/colors";
 
 const AnimatedView = animated(View);
 
-export default ({ product, amount, visible, handleClose }) => {
+const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
   const [popUpAmount, setPopUpAmount] = useState(amount);
   const dispatch = useDispatch();
 
@@ -34,10 +34,7 @@ export default ({ product, amount, visible, handleClose }) => {
       item && (
         <AnimatedView style={props} key={key}>
           <View style={styles.container}>
-            <TouchableHighlight
-              underlayColor={"none"}
-              onPress={() => updateAmount(popUpAmount - 1)}
-            >
+            <TouchableHighlight underlayColor={"none"} onPress={() => updateAmount(popUpAmount - 1)}>
               <View style={styles.buttonQty}>
                 <Text style={styles.buttonQtyText}>-</Text>
               </View>
@@ -45,23 +42,15 @@ export default ({ product, amount, visible, handleClose }) => {
 
             <Text style={styles.amountText}>{popUpAmount}</Text>
 
-            <TouchableHighlight
-              underlayColor={"none"}
-              onPress={() => updateAmount(popUpAmount + 1)}
-            >
+            <TouchableHighlight underlayColor={"none"} onPress={() => updateAmount(popUpAmount + 1)}>
               <View style={[styles.buttonQty, styles.buttonPlus]}>
-                <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>
-                  +
-                </Text>
+                <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
               </View>
             </TouchableHighlight>
 
             <View style={styles.lineBreak} />
 
-            <TouchableHighlight
-              onPress={() => updateAmount(popUpAmount, true)}
-              underlayColor={"none"}
-            >
+            <TouchableHighlight onPress={() => updateAmount(popUpAmount, true)} underlayColor={"none"}>
               <View style={styles.buttonSubmit}>
                 <Text style={styles.buttonSubmitText}>Agregar</Text>
               </View>
@@ -79,6 +68,8 @@ export default ({ product, amount, visible, handleClose }) => {
       )
   );
 };
+
+export default ProductAmountPopup;
 
 const shadowColor = "rgba(0, 0, 0, 0.2)";
 

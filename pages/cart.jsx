@@ -26,11 +26,7 @@ export default function Cart() {
 
   const onSubmit = (data) => {
     const { orderswhatsappnumber } = shop;
-    const url = generateWhatsappURL(
-      orderswhatsappnumber,
-      data,
-      productsByCategory
-    );
+    const url = generateWhatsappURL(orderswhatsappnumber, data, productsByCategory);
     window.location.href = url;
   };
 

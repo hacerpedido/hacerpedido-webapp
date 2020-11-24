@@ -1,28 +1,20 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
 import theme from "../../assets/theme";
 
-const DynamicStyledDropZone = dynamic(() =>
-  import('react-drop-zone').then((mod) => mod.StyledDropZone),
-  { ssr: false }
-)
+const DynamicStyledDropZone = dynamic(() => import("react-drop-zone").then((mod) => mod.StyledDropZone), {
+  ssr: false,
+});
 
 // Increase pixel density for crop preview quality on retina screens.
-const pixelRatio =
-  (typeof window !== "undefined" && window.devicePixelRatio) || 1;
+const pixelRatio = (typeof window !== "undefined" && window.devicePixelRatio) || 1;
 
 const UploadImage = ({ handleClose }) => {
   const [image, setImage] = useState(undefined);

@@ -32,11 +32,7 @@ const ShopFooter = ({ shop }) => {
 
   const ButtonCall = () => (
     // TODO: Extract component, to be reused in header
-    <TouchableHighlight
-      onPress={() => onCall(ordersphonenumber)}
-      underlayColor={"none"}
-      style={styles.buttonContainer}
-    >
+    <TouchableHighlight onPress={() => onCall(ordersphonenumber)} underlayColor={"none"} style={styles.buttonContainer}>
       <View style={[styles.buttonCall, styles.button]}>
         <Text style={styles.textContainer} numberOfLines={1}>
           <View style={styles.icon}>
@@ -48,11 +44,7 @@ const ShopFooter = ({ shop }) => {
     </TouchableHighlight>
   );
 
-  return (
-    <View style={styles.container}>
-      {orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}
-    </View>
-  );
+  return <View style={styles.container}>{orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}</View>;
 };
 
 export default ShopFooter;
