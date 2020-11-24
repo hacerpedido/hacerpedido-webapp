@@ -45,7 +45,7 @@ export default function EditShopPage() {
   // console.log(params)
   // console.log(typeof params)
 
-  let token = (typeof params !== "undefined") ? params[0] : undefined;
+  let token = typeof params !== "undefined" ? params[0] : undefined;
 
   useEffect(() => {
     dispatch(loading(true));
@@ -186,11 +186,10 @@ export default function EditShopPage() {
             >
               <Text style={styles.openProductionLink}>
                 Ir a mi Sitio
-{/*
                 <Image
-                  source={require("../../assets/images/external-link-alt.png")}
+                  source={"/images/external-link-alt.png"}
                   style={styles.openProductionLinkIcon}
-                /> */}
+                />
               </Text>
             </a>
             <ShopView
