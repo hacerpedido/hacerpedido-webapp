@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
+import Head from "next/head";
 import { useForm } from "react-hook-form";
 import { useApolloClient } from "@apollo/react-hooks";
 
@@ -158,9 +159,9 @@ export default function EditShopPage() {
 
   return (
     <>
-      {/* <Helmet>
-        <title>{tempShop.name}</title>
-      </Helmet> */}
+      <Head>
+        <title>{tempShop.name} | Hacer Pedido</title>
+      </Head>
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>

@@ -17,7 +17,6 @@ function MyApp({ Component, pageProps }) {
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
-        {/* <Helmet titleTemplate="%s | Hacer Pedido" defaultTitle="Hacer Pedido" /> */}
         <PersistGate loading={null} persistor={persistor}>
           <Head>
             <meta

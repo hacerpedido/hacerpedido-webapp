@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useApolloClient } from "@apollo/react-hooks";
+import Head from "next/head";
 
 import HomeHeader from "../components/Home/HomeHeader";
 import HomeFilterBar from "../components/Home/HomeFilterBar";
@@ -140,9 +141,9 @@ export default function App(props) {
 
   return (
     <View style={styles.container}>
-      {/* <Helmet>
-        <title>{title}</title>
-      </Helmet> */}
+      <Head>
+        <title>Hacer Pedido</title>
+      </Head>
 
       <View style={styles.header}>
         <HomeHeader />
