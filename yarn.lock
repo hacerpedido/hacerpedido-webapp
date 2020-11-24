@@ -3575,6 +3575,11 @@ react-drop-zone@^4.2.3:
   resolved "https://registry.yarnpkg.com/react-drop-zone/-/react-drop-zone-4.2.3.tgz#31dadd14b9e89d7e8794ac3ed34a480953f6e7c9"
   integrity sha512-XMa62l1KV1puFjuMnU4KHOy6t5P916d4xPsefGdqfy8CEHhHwscDz1SCgypsZgQV/pKWavYoKiKayiQkb4dQ0A==
 
+react-gtm-module@^2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/react-gtm-module/-/react-gtm-module-2.0.11.tgz#14484dac8257acd93614e347c32da9c5ac524206"
+  integrity sha512-8gyj4TTxeP7eEyc2QKawEuQoAZdjKvMY4pgWfycGmqGByhs17fR+zEBs0JUDq4US/l+vbTl+6zvUIx27iDo/Vw==
+
 react-hook-form@^6.11.3:
   version "6.11.3"
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.11.3.tgz#7de409d4e100452ac0d3255780b3af3d3027d87a"

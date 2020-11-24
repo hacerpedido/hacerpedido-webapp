@@ -142,7 +142,7 @@ export default function App(props) {
   return (
     <View style={styles.container}>
       <Head>
-        <title>Hacer Pedido</title>
+      <title>Hacer Pedido | Pedí a tu comercio favorito por WhatsApp</title>
       </Head>
 
       <View style={styles.header}>
