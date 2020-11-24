@@ -1,15 +1,16 @@
 import React, { useLayoutEffect } from "react";
+import Head from "next/head";
+import { Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "next/router";
-
 import { useApolloClient } from "@apollo/react-hooks";
+
+import Loading from "../components/Loading";
 import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
 import { loading } from "../lib/reducers/appSlice";
 import { setShop } from "../lib/reducers/shopSlice";
 import { getShopWithDetails } from "../lib/graphql/shop";
-import Loading from "../components/Loading";
 
 export default function Shop() {
   const router = useRouter();
@@ -19,7 +20,6 @@ export default function Shop() {
   const shop = useSelector((state) => state.shop.shop);
 
   const { slug } = router.query;
-  // console.log(slug);
 
   useLayoutEffect(() => {
     const getData = async () => {
@@ -58,14 +58,9 @@ export default function Shop() {
 
   return (
     <View>
-      {/*
-      FIXME: next
-      <Helmet>
-        <title>{shop.name}</title>
-        <meta
-          property="og:image"
-          content="https://comercios.hacerpedido.com/wp-content/uploads/2020/03/cropped-Favicon.png"
-        />
+      <Head>
+        <title>{shop.name} | Hacer Pedido</title>
+        <meta property="og:image" content="/logo512.png" />
         <meta property="og:description" content={shop.name} />
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
@@ -81,7 +76,7 @@ export default function Shop() {
           property="twitter:url"
           content={"https://hacerpedido.com/" + shop.slug}
         />
-      </Helmet> */}
+      </Head>
 
       <ShopView shop={shop} />
 
