@@ -13,6 +13,8 @@ export default function ProductList({ products, isCartEnabled = false }) {
 
   products.forEach((product) => {
     const { category } = product;
+
+    // TODO: mejorar esto, deberíamos tener un dato, en vez de usar el nombre "Promociones"
     const isPromo = category === "Promociones";
 
     if (lastCategory !== category) {
@@ -30,8 +32,6 @@ export default function ProductList({ products, isCartEnabled = false }) {
       lastCategory = category;
     }
 
-    // TODO: mejorar esto, deberíamos tener un dato, en vez de usar
-    // el nombre "Promociones"
     listItems.push(<Product key={item++} product={product} promo={isPromo} isCartEnabled={isCartEnabled} />);
   });
 
