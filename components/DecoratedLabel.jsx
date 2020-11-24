@@ -9,6 +9,11 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
     pin: <Icons.Pin color={iconColor} width={18} />,
   };
 
+  var displayText = text;
+  if (displayText.trim() === "") {
+    displayText = null;
+  }
+
   const styles = {
     text: {
       color: textColor,
@@ -29,10 +34,10 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
 
   return (
     <View style={styles.container}>
-      {text && (
+      {displayText && (
         <>
           <View>{icons[iconName]}</View>
-          <Text style={styles.text}>{text}</Text>
+          <Text style={styles.text}>{displayText}</Text>
         </>
       )}
     </View>

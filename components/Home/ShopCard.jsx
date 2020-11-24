@@ -17,18 +17,18 @@ const ShopCard = ({ shop }) => {
         </View>
         <View style={styles.containerLabels}>
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>
-
           {address && (
             <DecoratedLabel iconName="pin" text={address} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
-
           {opentimes && (
             <DecoratedLabel iconName="clock" text={opentimes} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
-
-          {deliverycost && (
-            <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
-          )}
+          {/* El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
+          <Text>
+            {deliverycost && (
+              <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
+            )}
+          </Text>
         </View>
       </View>
     </View>
