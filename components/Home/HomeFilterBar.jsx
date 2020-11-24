@@ -31,7 +31,6 @@ function Item({ id, title, selected, onSelect }) {
 }
 
 const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
-  // TODO: mover todo esto a Redux!!
   const [selected, setSelected] = React.useState(String);
 
   if (selected === "") {

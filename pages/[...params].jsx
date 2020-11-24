@@ -121,8 +121,6 @@ export default function EditShopPage() {
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
 
-  // const width = (typeof window !== "undefined" && window.innerWidth) || 0;
-
   const showPreview = width > 1000;
 
   const isError = Object.keys(errors).length > 0;

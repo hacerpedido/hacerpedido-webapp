@@ -230,7 +230,5 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     flex: 1,
-    // minHeight: 400,
-    // minWidth: 600,
   },
 });

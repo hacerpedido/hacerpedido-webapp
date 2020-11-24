@@ -44,7 +44,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
-            {/* FIXME: Para probar pot ahora */}
+            {/* FIXME: Para probar por ahora */}
             {shop.slug.startsWith("test") && (
               <>
                 <TouchableOpacity
