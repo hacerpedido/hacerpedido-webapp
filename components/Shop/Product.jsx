@@ -14,8 +14,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
 
   useEffect(() => {
     const listener = (event) => {
-      if (ref.current && !ref.current.contains(event.target))
-        setPopupVisible(false);
+      if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
     };
     document.addEventListener("touchend", listener);
 
@@ -26,10 +25,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
 
   return (
     <div ref={ref}>
-      <TouchableHighlight
-        onPress={() => setPopupVisible(!popupVisible)}
-        underlayColor={"none"}
-      >
+      <TouchableHighlight onPress={() => setPopupVisible(!popupVisible)} underlayColor={"none"}>
         <View style={[styles.container, containerStyle]}>
           <View style={styles.nameDescription}>
             <Text style={styles.name}>

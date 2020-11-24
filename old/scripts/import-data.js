@@ -11,12 +11,7 @@ import "regenerator-runtime/runtime.js";
 
 import { sanitizeCategory } from "./categories";
 import * as utils from "./utils";
-import {
-  listAllShopsWithProducts,
-  createProduct,
-  createShop,
-  deleteProductById,
-} from "./shop.js";
+import { listAllShopsWithProducts, createProduct, createShop, deleteProductById } from "./shop.js";
 
 const { google } = require("googleapis");
 
@@ -97,8 +92,7 @@ function toSlug(name, shops) {
 function processShopRow(row, shops) {
   const typeformToken = row[14];
 
-  let shopExists =
-    shops.find((o) => o.typeformtoken === typeformToken) !== undefined;
+  let shopExists = shops.find((o) => o.typeformtoken === typeformToken) !== undefined;
   if (shopExists) {
     // console.log(`SKIP: ${typeformToken}`);
 
@@ -133,9 +127,7 @@ function processShopRow(row, shops) {
   shop.slug = toSlug(shop.name, shops);
   shop.category = sanitizeCategory(shop.category);
   shop.address = utils.sanitizeAddress(shop.address);
-  shop.orderswhatsappnumber = utils.sanitizeWhatsAppNumber(
-    shop.orderswhatsappnumber
-  );
+  shop.orderswhatsappnumber = utils.sanitizeWhatsAppNumber(shop.orderswhatsappnumber);
 
   shop = utils.removeEmptyStringElements(shop);
 

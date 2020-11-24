@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from "react-native";
+import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 import { useRouter } from "next/router";
 import { generateCallUrl } from "../../lib/utils/utils";
@@ -16,15 +10,7 @@ import * as Icons from "../../assets/icons";
 import DecoratedLabel from "../DecoratedLabel";
 
 const ShopHeader = ({ isPreview = false, shop = {} }) => {
-  const {
-    name,
-    background,
-    category,
-    address,
-    region,
-    ordersphonenumber,
-    orderswhatsappnumber,
-  } = shop;
+  const { name, background, category, address, region, ordersphonenumber, orderswhatsappnumber } = shop;
 
   const logo = getLogoForShop(shop);
 
@@ -41,16 +27,12 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
     !isPreview && router.push("/");
   };
 
-  const showButtonCall =
-    ordersphonenumber && orderswhatsappnumber && !isPreview;
+  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview;
 
   const ButtonCall = () => (
     <TouchableHighlight underlayColor={"none"}>
       {/* eslint-disable react-native/no-inline-styles */}
-      <a
-        href={generateCallUrl(ordersphonenumber)}
-        style={{ textDecoration: "none" }}
-      >
+      <a href={generateCallUrl(ordersphonenumber)} style={{ textDecoration: "none" }}>
         <View style={styles.buttonCall}>
           <Icons.PhoneCall />
           <Text style={styles.buttonText}>Llamar</Text>
@@ -62,18 +44,13 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
 
   const displayAddress = address?.trim() ?? region;
   const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
-  const deliverycost =
-    shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
+  const deliverycost = shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
 
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
         {!isPreview && (
-          <TouchableHighlight
-            underlayColor={"none"}
-            onPress={onButtonBackPress}
-            style={styles.buttonBack}
-          >
+          <TouchableHighlight underlayColor={"none"} onPress={onButtonBackPress} style={styles.buttonBack}>
             <Icons.ArrowLeft color={colors.white} />
           </TouchableHighlight>
         )}

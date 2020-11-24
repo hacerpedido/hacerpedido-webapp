@@ -22,11 +22,7 @@ const WindowDimensionsProvider = ({ children }) => {
   //   };
   // }
   // }, []);
-  return (
-    <WindowDimensionsCtx.Provider value={dimensions}>
-      {children}
-    </WindowDimensionsCtx.Provider>
-  );
+  return <WindowDimensionsCtx.Provider value={dimensions}>{children}</WindowDimensionsCtx.Provider>;
 };
 
 export default WindowDimensionsProvider;

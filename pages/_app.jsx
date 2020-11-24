@@ -26,10 +26,7 @@ function MyApp({ Component, pageProps }) {
         <PersistGate loading={null} persistor={persistor}>
           <Head>
             <meta charset="utf-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1"
-            />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
             <meta
               name="description"
               content="Pedí a tu comercio favorito por WhatsApp. Empezá a recibir pedidos de tus clientes hoy mismo, gratis."
@@ -39,10 +36,7 @@ function MyApp({ Component, pageProps }) {
 
             {/* <!-- OG: 2.7.6 --> */}
             <meta property="og:image" content="og_image.jpg" />
-            <meta
-              property="og:description"
-              content="Pedí a tu comercio favorito por WhatsApp"
-            />
+            <meta property="og:description" content="Pedí a tu comercio favorito por WhatsApp" />
             <meta property="og:type" content="article" />
             <meta property="og:site_name" content="Hacer Pedido" />
             <meta property="og:title" content="HacerPedido" />

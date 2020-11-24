@@ -33,10 +33,7 @@ export default function HomeHeader() {
         <Modal.Header closeButton>
           <Modal.Title>Ups...</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Por el momento no estamos haciendo nuevas altas. Próximamente habrá
-          novedades :)
-        </Modal.Body>
+        <Modal.Body>Por el momento no estamos haciendo nuevas altas. Próximamente habrá novedades :)</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close

@@ -45,11 +45,7 @@ export default function Shop() {
   }, [client, dispatch, shop, slug]);
 
   if (!slug || shop?.slug !== slug) {
-    return isLoading ? (
-      <Loading />
-    ) : (
-      <Text>Sin comercios en la base de datos para {slug}</Text>
-    );
+    return isLoading ? <Loading /> : <Text>Sin comercios en la base de datos para {slug}.</Text>;
   }
 
   if (!shop) {
@@ -65,17 +61,11 @@ export default function Shop() {
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
         <meta property="og:title" content={shop.name} />
-        <meta
-          property="og:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
+        <meta property="og:url" content={"https://hacerpedido.com/" + shop.slug} />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content={shop.name} />
         <meta property="twitter:description" content={shop.name} />
-        <meta
-          property="twitter:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
+        <meta property="twitter:url" content={"https://hacerpedido.com/" + shop.slug} />
       </Head>
 
       <ShopView shop={shop} />

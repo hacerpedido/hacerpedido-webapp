@@ -1,23 +1,16 @@
 import React, { useState } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import Modal from "react-bootstrap/Modal";
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
 import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
 import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
-
 
 // const DynamicComponentWithNoSSR = dynamic(
 //   import('./UploadImage').then((mod) => mod.UploadImage),
@@ -26,14 +19,7 @@ import { validatePhoneNumber } from "../../lib/utils/utils";
 
 const formatter = buildFormatter(spanishStrings);
 
-export default function EditShop({
-  shop,
-  control,
-  errors,
-  handleSubmit,
-  getValues,
-  isSaving,
-}) {
+export default function EditShop({ shop, control, errors, handleSubmit, getValues, isSaving }) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -55,7 +41,7 @@ export default function EditShop({
   return (
     <>
       <Modal show={show} onHide={handleClose}>
-      <UploadImage handleClose={handleClose} />
+        <UploadImage handleClose={handleClose} />
       </Modal>
 
       {/* <Modal animationType="slide" transparent={true} visible={modalVisible}>
@@ -69,44 +55,20 @@ export default function EditShop({
             <Text style={styles.title}>Datos de tu Comercio</Text>
             <Text style={styles.updatedAt}>
               <Text>Actualizado </Text>
-              <TimeAgo
-                date={shop.updated_at}
-                formatter={formatter}
-                minPeriod={60}
-              />
+              <TimeAgo date={shop.updated_at} formatter={formatter} minPeriod={60} />
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={handleShow}
-              style={styles.buttonBase}
-              disabled={isSaving}
-            >
+            <TouchableOpacity underlayColor={"none"} onPress={handleShow} style={styles.buttonBase} disabled={isSaving}>
               <Text style={styles.buttonText}>Background</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={handleShow}
-              style={styles.buttonBase}
-              disabled={isSaving}
-            >
+            <TouchableOpacity underlayColor={"none"} onPress={handleShow} style={styles.buttonBase} disabled={isSaving}>
               <Text style={styles.buttonText}>Logo</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={handleSubmit}
-              style={buttonStyles}
-              disabled={isSaving}
-            >
+            <TouchableOpacity underlayColor={"none"} onPress={handleSubmit} style={buttonStyles} disabled={isSaving}>
               <>
                 <Text style={styles.buttonText}>Guardar</Text>
-                {isSaving && (
-                  <ActivityIndicator
-                    animating={isSaving}
-                    color={theme.colors.white}
-                  />
-                )}
+                {isSaving && <ActivityIndicator animating={isSaving} color={theme.colors.white} />}
               </>
             </TouchableOpacity>
           </View>
@@ -169,17 +131,14 @@ export default function EditShop({
                   validate: {
                     matchesAtLeastAPhone: (value) => {
                       if (value != null && value !== "") {
-                        const phoneValidationResult = validatePhoneNumber(
-                          value
-                        );
+                        const phoneValidationResult = validatePhoneNumber(value);
                         if (typeof phoneValidationResult === "string") {
                           return phoneValidationResult;
                         }
                       }
                       const { ordersphonenumber } = getValues();
                       return (
-                        (ordersphonenumber != null &&
-                          ordersphonenumber !== "") ||
+                        (ordersphonenumber != null && ordersphonenumber !== "") ||
                         (value != null && value !== "") ||
                         "Al menos un número de teléfono debe ser ingresado."
                       );
@@ -214,17 +173,14 @@ export default function EditShop({
                   validate: {
                     matchesAtLeastAPhone: (value) => {
                       if (value != null && value !== "") {
-                        const phoneValidationResult = validatePhoneNumber(
-                          value
-                        );
+                        const phoneValidationResult = validatePhoneNumber(value);
                         if (typeof phoneValidationResult === "string") {
                           return phoneValidationResult;
                         }
                       }
                       const { orderswhatsappnumber } = getValues();
                       return (
-                        (orderswhatsappnumber != null &&
-                          orderswhatsappnumber !== "") ||
+                        (orderswhatsappnumber != null && orderswhatsappnumber !== "") ||
                         (value != null && value !== "") ||
                         "Al menos un número de teléfono debe ser ingresado."
                       );

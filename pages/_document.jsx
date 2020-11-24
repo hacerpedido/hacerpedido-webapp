@@ -17,10 +17,7 @@ export default class MyDocument extends Document {
     AppRegistry.registerComponent(config.name, () => Main);
     const { getStyleElement } = AppRegistry.getApplication(config.name);
     const page = await renderPage();
-    const styles = [
-      <style dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />,
-      getStyleElement(),
-    ];
+    const styles = [<style dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />, getStyleElement()];
     return { ...page, styles: Children.toArray(styles) };
   }
 

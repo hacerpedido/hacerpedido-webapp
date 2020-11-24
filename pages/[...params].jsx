@@ -17,10 +17,7 @@ import MessageBox from "../components/MessageBox";
 import theme from "../assets/theme";
 import { trimObject } from "../lib/utils/utils";
 // import { useWindowDimensions } from "../components/WindowDimensionsProvider";
-import {
-  getShopWithProductsByToken,
-  saveShopWithProducts,
-} from "../lib/api/shops";
+import { getShopWithProductsByToken, saveShopWithProducts } from "../lib/api/shops";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -59,9 +56,7 @@ export default function EditShopPage() {
         const shopData = await getShopWithProductsByToken(token);
         setShop(shopData.data[0]);
       } catch (error) {
-        alert(
-          `Error al leer los datos. (${error} Error: ${error.response.data.message})`
-        );
+        alert(`Error al leer los datos. (${error} Error: ${error.response.data.message})`);
       } finally {
         dispatch(loading(false));
       }
@@ -69,15 +64,7 @@ export default function EditShopPage() {
     getData();
   }, [token, dispatch, client, reloadCount]);
 
-  const {
-    handleSubmit,
-    register,
-    setValue,
-    errors,
-    control,
-    watch,
-    getValues,
-  } = useForm({
+  const { handleSubmit, register, setValue, errors, control, watch, getValues } = useForm({
     mode: "onBlur",
   });
 
@@ -132,11 +119,7 @@ export default function EditShopPage() {
   }
 
   if (shop == null) {
-    return isLoading ? (
-      <Loading />
-    ) : (
-      <Text>No hay un comercio en la base de datos para el token {token}</Text>
-    );
+    return isLoading ? <Loading /> : <Text>No hay un comercio en la base de datos para el token {token}</Text>;
   }
 
   const tempValues = watch();
@@ -179,25 +162,13 @@ export default function EditShopPage() {
         </View>
         {showPreview && (
           <View style={styles.rightContainer}>
-            <a
-              href={`/${shop.slug}`}
-              style={openProductionLink}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a href={`/${shop.slug}`} style={openProductionLink} rel="noopener noreferrer" target="_blank">
               <Text style={styles.openProductionLink}>
                 Ir a mi Sitio
-                <Image
-                  source={"/images/external-link-alt.png"}
-                  style={styles.openProductionLinkIcon}
-                />
+                <Image source={"/images/external-link-alt.png"} style={styles.openProductionLinkIcon} />
               </Text>
             </a>
-            <ShopView
-              previewProducts={previewProducts}
-              shop={tempShop}
-              isPreview={true}
-            />
+            <ShopView previewProducts={previewProducts} shop={tempShop} isPreview={true} />
           </View>
         )}
       </View>
@@ -205,9 +176,7 @@ export default function EditShopPage() {
       {showMessage && (
         <MessageBox
           message={
-            isError
-              ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
-              : message
+            isError ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente." : message
           }
           isError={isError}
           onMessagePress={onMessagePress}

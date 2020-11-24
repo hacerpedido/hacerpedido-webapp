@@ -32,14 +32,7 @@ export default function ProductList({ products, isCartEnabled = false }) {
 
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar
     // el nombre "Promociones"
-    listItems.push(
-      <Product
-        key={item++}
-        product={product}
-        promo={isPromo}
-        isCartEnabled={isCartEnabled}
-      />
-    );
+    listItems.push(<Product key={item++} product={product} promo={isPromo} isCartEnabled={isCartEnabled} />);
   });
 
   listItems.push(<Divider key={item++} />);
