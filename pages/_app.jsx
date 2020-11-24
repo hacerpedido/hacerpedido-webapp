@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import ApolloClient from "apollo-boost";
 import Head from "next/head";
 import TagManager from "react-gtm-module";
 import { ApolloProvider } from "@apollo/react-hooks";
@@ -7,21 +6,19 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { store, persistor } from "../lib/reducers";
+import { HPGraphqlClient } from "../lib/api/index";
 
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const client = new ApolloClient({
-  uri: "https://backend-restapi.hacerpedido.com/graphql",
-});
-
 function MyApp({ Component, pageProps }) {
+
   useEffect(() => {
     TagManager.initialize({ gtmId: "GTM-PKPPSFX" });
   }, []);
 
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider client={HPGraphqlClient}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Head>
