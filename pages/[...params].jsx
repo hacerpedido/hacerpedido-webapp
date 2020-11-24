@@ -16,7 +16,7 @@ import Form from "../components/Form";
 import MessageBox from "../components/MessageBox";
 import theme from "../assets/theme";
 import { trimObject } from "../lib/utils/utils";
-// import { useWindowDimensions } from "../components/WindowDimensionsProvider";
+import useWidth from "../lib/hooks/use_width";
 import { getShopWithProductsByToken, saveShopWithProducts } from "../lib/api/shops";
 
 // Para probar:
@@ -34,22 +34,17 @@ export default function EditShopPage() {
   const [isSaving, setSaving] = useState(false);
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
   const client = useApolloClient();
-  // const { width } =
-  //   typeof window !== "undefined" ? useWindowDimensions() : 0 ;
+  const width = useWidth();
+
   const [reloadCount, setReloadCount] = useState(0);
 
   let { params } = router.query;
-
-  // console.log(params)
-  // console.log(typeof params)
 
   let token = typeof params !== "undefined" ? params[0] : undefined;
 
   useEffect(() => {
     dispatch(loading(true));
     setShop(null);
-
-    console.log("use: " + token);
 
     async function getData() {
       try {
@@ -76,8 +71,6 @@ export default function EditShopPage() {
   if (params[1] !== "edit") {
     return <ErrorPage statusCode={404} />;
   }
-
-  console.log(JSON.stringify(token, null, 2));
 
   const onSubmit = (data) => {
     trimObject(data);
@@ -128,7 +121,7 @@ export default function EditShopPage() {
   let products = shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
 
-  const width = (typeof window !== "undefined" && window.innerWidth) || 0;
+  // const width = (typeof window !== "undefined" && window.innerWidth) || 0;
 
   const showPreview = width > 1000;
 
