@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import ApolloClient from "apollo-boost";
 import Head from "next/head";
 import TagManager from "react-gtm-module";
