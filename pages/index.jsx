@@ -48,8 +48,6 @@ export default function App(props) {
 
   let initialScrollIndex = firstVisibleItem ?? 0;
 
-  let title = "Pedí a tu comercio favorito por WhatsApp";
-
   const onSelect = React.useCallback(
     (shop) => {
       let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
@@ -128,7 +126,7 @@ export default function App(props) {
   );
 
   return (
-    <View style={styles.container}>
+    <View>
       <Head>
         <title>Hacer Pedido | Pedí a tu comercio favorito por WhatsApp</title>
       </Head>
@@ -151,26 +149,6 @@ export default function App(props) {
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     alignItems: 'center',
-//     flexGrow: 1,
-//     justifyContent: 'center',
-//   },
-//   link: {
-//     color: 'blue',
-//   },
-//   textContainer: {
-//     alignItems: 'center',
-//     marginTop: 16,
-//   },
-//   text: {
-//     alignItems: 'center',
-//     fontSize: 24,
-//     marginBottom: 24,
-//   },
-// })
-
 const styles = StyleSheet.create({
   body: {
     backgroundColor: colors.homeBackground,
@@ -179,10 +157,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 10,
     paddingRight: 10,
-  },
-  container: {
-    // position: 'absolute',
-    // width: '100%',
   },
   count: {
     color: colors.lightGrey,

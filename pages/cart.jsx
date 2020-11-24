@@ -14,7 +14,6 @@ export default function Cart() {
   const shop = useSelector((state) => state.shop.shop);
   const router = useRouter();
 
-  // TODO: Extract to state or utils.js
   let products = useSelector((state) => state.shop.products);
   products = products.filter((p) => p.amount > 0);
   const productsByCategory = extractSections(products);

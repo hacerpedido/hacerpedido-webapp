@@ -75,27 +75,30 @@ export default function Shop() {
   );
 }
 
+//
+//  Implementación inicial de SSR para esta página. El problema es que depende de setShop para el carrito
+//
 // export async function getServerSideProps(context) {
 //   const slug = context.params.slug;
-
+//
 //   try {
 //     const client = useApolloClient();
 //     const shop = await client.query({
 //       query: getShopWithDetails,
 //       variables: { slug },
 //     });
-
+//
 //     console.log({ shop, slug });
-
+//
 //     return {
 //       props: { shop, slug },
 //     };
 //   } catch (error) {
 //     console.log(JSON.stringify(error, null, 2));
 //   }
-
+//
 //   console.log("slug:" + slug);
-
+//
 //   return {
 //     props: { slug },
 //   };

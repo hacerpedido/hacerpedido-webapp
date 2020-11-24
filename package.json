@@ -1,9 +1,12 @@
 {
-  "name": "with-react-native-web",
+  "name": "hacerpedido-webapp",
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "import-data": "npx babel --presets '@babel/preset-env,@babel/preset-react'  -d build-scripts/ src/graphql scripts/import-data.js src/utils/utils.js src/aws-exports.js src/utils/categories.js && node build-scripts/import-data.js",
+    "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/",
+    "prettier": "npx prettier --write \"**/*.js?\" "
   },
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
