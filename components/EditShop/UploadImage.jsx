@@ -6,6 +6,7 @@ import "react-drop-zone/dist/styles.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import dynamic from "next/dynamic";
+import axios from "axios";
 
 import theme from "../../assets/theme";
 
@@ -16,13 +17,14 @@ const DynamicStyledDropZone = dynamic(() => import("react-drop-zone").then((mod)
 // Increase pixel density for crop preview quality on retina screens.
 const pixelRatio = (typeof window !== "undefined" && window.devicePixelRatio) || 1;
 
-const UploadImage = ({ handleClose }) => {
-  const [image, setImage] = useState(undefined);
+const UploadImage = ({ shopID, imageType, handleClose }) => {
+  const circularCrop = imageType === "logo";
+  const aspect = imageType === "logo" ? 1 : 1.2014;
 
+  const [image, setImage] = useState(undefined);
   const [upImg, setUpImg] = useState();
   const imgRef = useRef(null);
-  const previewCanvasRef = useRef(null);
-  const [crop, setCrop] = useState({ unit: "%", width: 100, aspect: 1 });
+  const [crop, setCrop] = useState({ unit: "%", width: 100, aspect: aspect });
   const [completedCrop, setCompletedCrop] = useState(null);
 
   const onDropFile = (e) => {
@@ -34,23 +36,19 @@ const UploadImage = ({ handleClose }) => {
     }
   };
 
-  const onLoad = useCallback((img) => {
-    imgRef.current = img;
-  }, []);
-
-  useEffect(() => {
-    if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
+  const onUpload = (crop) => {
+    if (!crop) {
       return;
     }
 
-    const image = imgRef.current;
-    const canvas = previewCanvasRef.current;
-    const crop = completedCrop;
+    let data = new FormData();
 
+    const image = imgRef.current;
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    const ctx = canvas.getContext("2d");
 
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     canvas.width = crop.width * pixelRatio;
     canvas.height = crop.height * pixelRatio;
 
@@ -68,7 +66,31 @@ const UploadImage = ({ handleClose }) => {
       crop.width,
       crop.height
     );
-  }, [completedCrop]);
+
+    canvas.toBlob(
+      (blob) => {
+        data.append("image", blob);
+        data.append("shop_id", shopID);
+        data.append("image_type", imageType);
+
+        axios
+          .post(`${window.location.origin}/api/image-upload`, data, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            console.log(res);
+          });
+      },
+      "image/png",
+      1
+    );
+  };
+
+  const onLoad = useCallback((img) => {
+    imgRef.current = img;
+  }, []);
 
   return (
     <>
@@ -91,30 +113,12 @@ const UploadImage = ({ handleClose }) => {
                 <ReactCrop
                   src={upImg}
                   onImageLoaded={onLoad}
-                  circularCrop={true}
+                  circularCrop={circularCrop}
                   crop={crop}
                   onChange={(c) => setCrop(c)}
                   onComplete={(c) => setCompletedCrop(c)}
                 />
-                {/* <canvas
-                ref={previewCanvasRef}
-                // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
-                style={{
-                  width: Math.round(completedCrop?.width ?? 0),
-                  height: Math.round(completedCrop?.height ?? 0),
-                }}
-              /> */}
               </View>
-
-              {/* <button
-                type="button"
-                disabled={!completedCrop?.width || !completedCrop?.height}
-                onClick={() =>
-                  generateDownload(previewCanvasRef.current, completedCrop)
-                }
-              >
-                Download cropped image
-              </button> */}
             </View>
           )}
         </View>
@@ -125,7 +129,7 @@ const UploadImage = ({ handleClose }) => {
             <Button variant="secondary" onClick={handleClose}>
               Descartar
             </Button>
-            <Button variant="primary" onClick={handleClose}>
+            <Button variant="primary" onClick={() => onUpload(completedCrop)}>
               Aceptar
             </Button>
           </>
@@ -139,52 +143,6 @@ const UploadImage = ({ handleClose }) => {
     </>
   );
 };
-
-// We resize the canvas down when saving on retina devices otherwise the image
-// will be double or triple the preview size.
-// function getResizedCanvas(canvas, newWidth, newHeight) {
-//   const tmpCanvas = document.createElement("canvas");
-//   tmpCanvas.width = newWidth;
-//   tmpCanvas.height = newHeight;
-
-//   const ctx = tmpCanvas.getContext("2d");
-//   ctx.drawImage(
-//     canvas,
-//     0,
-//     0,
-//     canvas.width,
-//     canvas.height,
-//     0,
-//     0,
-//     newWidth,
-//     newHeight
-//   );
-
-//   return tmpCanvas;
-// }
-
-// function generateDownload(previewCanvas, crop) {
-//   if (!crop || !previewCanvas) {
-//     return;
-//   }
-
-//   const canvas = getResizedCanvas(previewCanvas, crop.width, crop.height);
-
-//   canvas.toBlob(
-//     (blob) => {
-//       const previewUrl = window.URL.createObjectURL(blob);
-
-//       const anchor = document.createElement("a");
-//       anchor.download = "cropPreview.png";
-//       anchor.href = URL.createObjectURL(blob);
-//       anchor.click();
-
-//       window.URL.revokeObjectURL(previewUrl);
-//     },
-//     "image/png",
-//     1
-//   );
-// }
 
 export default UploadImage;
 
