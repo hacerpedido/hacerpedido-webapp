@@ -51,27 +51,22 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
-            {/* FIXME: Para probar por ahora */}
-            {shop.slug.startsWith("test") && (
-              <>
-                <TouchableOpacity
-                  underlayColor={"none"}
-                  onPress={() => handleShow("background")}
-                  style={styles.buttonBase}
-                  disabled={isSaving}
-                >
-                  <Text style={styles.buttonText}>Background</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  underlayColor={"none"}
-                  onPress={() => handleShow("logo")}
-                  style={styles.buttonBase}
-                  disabled={isSaving}
-                >
-                  <Text style={styles.buttonText}>Logo</Text>
-                </TouchableOpacity>
-              </>
-            )}
+            <TouchableOpacity
+              underlayColor={"none"}
+              onPress={() => handleShow("background")}
+              style={styles.buttonBase}
+              disabled={isSaving}
+            >
+              <Text style={styles.buttonText}>Background</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              underlayColor={"none"}
+              onPress={() => handleShow("logo")}
+              style={styles.buttonBase}
+              disabled={isSaving}
+            >
+              <Text style={styles.buttonText}>Logo</Text>
+            </TouchableOpacity>
             <TouchableOpacity underlayColor={"none"} onPress={handleSubmit} style={buttonStyles} disabled={isSaving}>
               <>
                 <Text style={styles.buttonText}>Guardar</Text>
