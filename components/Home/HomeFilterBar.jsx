@@ -9,23 +9,9 @@ function Item({ id, title, selected, onSelect }) {
     <TouchableHighlight
       underlayColor={colors.lightBackground}
       onPress={() => onSelect(id)}
-      style={[
-        styles.item,
-        {
-          backgroundColor: selected ? colors.orangeHP : colors.white,
-        },
-      ]}
+      style={[styles.item, { backgroundColor: selected ? colors.orangeHP : colors.white }]}
     >
-      <Text
-        style={[
-          styles.title,
-          {
-            color: selected ? colors.white : colors.orangeHP,
-          },
-        ]}
-      >
-        {title}
-      </Text>
+      <Text style={[styles.title, { color: selected ? colors.white : colors.orangeHP }]}>{title}</Text>
     </TouchableHighlight>
   );
 }

@@ -14,10 +14,11 @@ import { validatePhoneNumber } from "../../lib/utils/utils";
 const formatter = buildFormatter(spanishStrings);
 
 export default function EditShop({ shop, control, errors, handleSubmit, getValues, isSaving }) {
-  const [show, setShow] = useState(false);
+  // const [show, setShow] = useState(false);
+  const [imageType, setImageType] = useState(undefined);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => setImageType(undefined);
+  const handleShow = (type) => setImageType(type);
 
   const buttonStyles = {
     alignItems: "center",
@@ -28,10 +29,12 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
     padding: 10,
   };
 
+  const show = typeof imageType !== "undefined";
+
   return (
     <>
       <Modal show={show} onHide={handleClose}>
-        <UploadImage handleClose={handleClose} />
+        <UploadImage shopID={shop.id} imageType={imageType} handleClose={handleClose} />
       </Modal>
 
       <View style={styles.container}>
@@ -49,7 +52,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
               <>
                 <TouchableOpacity
                   underlayColor={"none"}
-                  onPress={handleShow}
+                  onPress={() => handleShow("background")}
                   style={styles.buttonBase}
                   disabled={isSaving}
                 >
@@ -57,7 +60,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 </TouchableOpacity>
                 <TouchableOpacity
                   underlayColor={"none"}
-                  onPress={handleShow}
+                  onPress={() => handleShow("logo")}
                   style={styles.buttonBase}
                   disabled={isSaving}
                 >
