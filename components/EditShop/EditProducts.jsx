@@ -6,9 +6,9 @@ import dynamic from "next/dynamic";
 import "handsontable/dist/handsontable.full.css";
 
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
+import { sanitizePrice } from "../../lib/utils/utils";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import theme from "../../assets/theme";
-import { sanitizePrice } from "../../lib/utils/utils";
 import useWidth from "../../lib/hooks/use_width";
 
 const HotTable = dynamic(
@@ -27,7 +27,7 @@ const HotTable = dynamic(
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
-  const width  = useWidth();
+  const resizedWidth = useWidth();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -141,13 +141,15 @@ const EditProducts = ({ products, shopId }) => {
         colHeaders={colHeaders}
         contextMenu={["row_above", "row_below", "remove_row"]}
         colWidths={(index) => {
+          const width = typeof window !== "undefined" ? window.innerWidth : 1001;
+
           switch (index) {
             case 0:
               return 50;
             case 3:
               return 90;
             default:
-              const otherElementsWidth = width >= 1000 ? 644 : 244;
+              const otherElementsWidth = width > 1000 ? 644 : 244;
               return (width - otherElementsWidth) / 2;
           }
         }}
