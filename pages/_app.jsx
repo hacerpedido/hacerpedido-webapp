@@ -31,6 +31,8 @@ function MyApp({ Component, pageProps }) {
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/logo192.png" />
 
+            <script src="https://cdn.jsdelivr.net/npm/handsontable@8.2.0/dist/handsontable.full.min.js"></script>
+
             {/* <!-- OG: 2.7.6 --> */}
             <meta property="og:image" content="og_image.jpg" />
             <meta property="og:description" content="Pedí a tu comercio favorito por WhatsApp" />

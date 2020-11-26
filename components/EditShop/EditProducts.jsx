@@ -13,7 +13,7 @@ import useWidth from "../../lib/hooks/use_width";
 
 const HotTable = dynamic(
   async () => {
-    await import("handsontable");
+    // await import("handsontable");
     await import("handsontable/languages/es-MX");
     const { default: HT } = await import("@handsontable/react");
 
@@ -40,7 +40,7 @@ const EditProducts = ({ products, shopId }) => {
 
         return;
       }
-      setTimeout(check, 200);
+      setTimeout(check, 50);
     };
     check();
   }, [grid]);
@@ -76,7 +76,7 @@ const EditProducts = ({ products, shopId }) => {
   ];
 
   function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
-    // Handsontable?.renderers.TextRenderer.apply(this, arguments);
+    Handsontable?.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";
