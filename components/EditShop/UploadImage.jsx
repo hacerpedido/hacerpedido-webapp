@@ -36,6 +36,23 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
     }
   };
 
+  const onDelete = () => {
+    let data = new FormData();
+
+    data.append("shop_id", shopID);
+    data.append("image_type", imageType);
+
+    axios
+      .post(`${window.location.origin}/api/image-delete`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
   const onUpload = (crop) => {
     if (!crop) {
       return;
@@ -124,6 +141,9 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         </View>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="primary" onClick={() => onDelete()}>
+          Borrar imagen actual
+        </Button>
         {image && (
           <>
             <Button variant="secondary" onClick={handleClose}>

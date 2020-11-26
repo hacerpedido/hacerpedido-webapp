@@ -76,7 +76,7 @@ const EditProducts = ({ products, shopId }) => {
   ];
 
   function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
-    // Handsontable.renderers.TextRenderer.apply(this, arguments);
+    // Handsontable?.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";
