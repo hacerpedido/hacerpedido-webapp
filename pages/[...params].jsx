@@ -105,10 +105,15 @@ export default function EditShopPage() {
 
       setShowMessage(true);
       setSaving(false);
-      setReloadCount(reloadCount + 1);
+      refresh();
     }
     saveData();
   };
+
+  function refresh() {
+    setShopState({ shop: null, loading: true });
+    setReloadCount(reloadCount + 1);
+  }
 
   function onMessagePress() {
     setShowMessage(!showMessage);
@@ -155,6 +160,7 @@ export default function EditShopPage() {
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
+              refresh={refresh}
             />
             <EditProductsForm products={products} shopId={shopState.shop.id} />
           </Form>

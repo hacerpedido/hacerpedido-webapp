@@ -11,13 +11,7 @@ export default async function handler(req, res) {
 
   const pg = require("knex")({
     client: "pg",
-    // connection: process.env.PG_CONNECTION_STRING,
-    connection: {
-      host: process.env.PG_HOST,
-      user: process.env.PG_USER,
-      password: process.env.PG_PASS,
-      database: process.env.PG_DB,
-    },
+    connection: process.env.PG_CONNECTION_STRING,
   });
 
   const data = await new Promise(function (resolve, reject) {
@@ -80,12 +74,12 @@ export default async function handler(req, res) {
   const random = utils.randomString(10);
   const key = `${shopID}-${imageType}-${random}.${extension}`;
 
-  s3utils.uploadFile(path, key, mime);
+  await s3utils.uploadFile(path, key, mime);
 
   await pg("shops").where("id", "=", shopID).update(imageType, key);
 
   if (oldKey) {
-    s3utils.deleteFile(oldKey);
+    await s3utils.deleteFile(oldKey);
   }
 
   res.status(200).json({ image: key });
