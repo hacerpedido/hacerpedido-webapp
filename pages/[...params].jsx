@@ -9,7 +9,6 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 import EditProductsForm from "../components/EditShop/EditProducts";
 import EditShopForm from "../components/EditShop/EditShop";
-import { loading } from "../lib/reducers/appSlice";
 import ShopView from "../components/Shop/ShopView";
 import Loading from "../components/Loading";
 import Form from "../components/Form";
@@ -27,33 +26,41 @@ import { getShopWithProductsByToken, saveShopWithProducts } from "../lib/api/sho
 export default function EditShopPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.app.loading);
-  const [shop, setShop] = useState(null);
+  const client = useApolloClient();
+  const resizedWidth = useWidth();
+
+  const [shopState, setShopState] = useState({ shop: null, loading: true });
+
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isSaving, setSaving] = useState(false);
-  const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
-  const client = useApolloClient();
-  const width = useWidth();
-
   const [reloadCount, setReloadCount] = useState(0);
+
+  const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
 
   let { params } = router.query;
 
   let token = typeof params !== "undefined" ? params[0] : undefined;
 
+  // let a = { params, token, shop: shopState.shop, resizedWidth, loading: shopState.loading };
+  // console.log("PASS: ", a);
+
   useEffect(() => {
-    dispatch(loading(true));
-    setShop(null);
+    if (!token) {
+      return;
+    }
+
+    if (shopState.shop !== null || !shopState.loading) {
+      setShopState({ shop: null, loading: true });
+    }
 
     async function getData() {
       try {
         const shopData = await getShopWithProductsByToken(token);
-        setShop(shopData.data[0]);
+        setShopState({ shop: shopData.data[0], loading: false });
       } catch (error) {
         alert(`Error al leer los datos. (${error} Error: ${error.response.data.message})`);
-      } finally {
-        dispatch(loading(false));
+        setShopState({ shop: null, loading: false });
       }
     }
     getData();
@@ -63,7 +70,7 @@ export default function EditShopPage() {
     mode: "onBlur",
   });
 
-  if (!params) {
+  if (!params || shopState.loading) {
     return <Loading />;
   }
 
@@ -79,9 +86,9 @@ export default function EditShopPage() {
       setSaving(true);
       let dataToSave = {
         ...data,
-        id: shop.id,
-        slug: shop.slug,
-        region: shop.region,
+        id: shopState.shop.id,
+        slug: shopState.shop.slug,
+        region: shopState.shop.region,
       };
 
       const result = await saveShopWithProducts(dataToSave, tempProducts);
@@ -89,11 +96,11 @@ export default function EditShopPage() {
       setMessage(result.message);
 
       if (result.error == null) {
-        let editedShop = { ...shop, ...dataToSave };
+        let editedShop = { ...shopState.shop, ...dataToSave };
         if (tempProducts != null) {
           editedShop.products = tempProducts;
         }
-        setShop(editedShop);
+        setShopState({ shop: editedShop, loading: false });
       }
 
       setShowMessage(true);
@@ -111,16 +118,17 @@ export default function EditShopPage() {
     return <Text>Error cargando el comercio.</Text>;
   }
 
-  if (shop == null) {
-    return isLoading ? <Loading /> : <Text>No hay un comercio en la base de datos para el token {token}</Text>;
+  if (shopState.shop == null) {
+    return <Text>No hay un comercio en la base de datos para el token {token}</Text>;
   }
 
   const tempValues = watch();
-  let tempShop = trimObject({ ...shop, ...tempValues });
+  let tempShop = trimObject({ ...shopState.shop, ...tempValues });
 
-  let products = shop?.products ?? [];
+  let products = shopState.shop?.products ?? [];
   let previewProducts = tempProducts ?? products;
 
+  const width = typeof window !== "undefined" ? window.innerWidth : 1000;
   const showPreview = width > 1000;
 
   const isError = Object.keys(errors).length > 0;
@@ -141,19 +149,19 @@ export default function EditShopPage() {
         <View style={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
-              shop={shop}
+              shop={shopState.shop}
               control={control}
               errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
             />
-            <EditProductsForm products={products} shopId={shop.id} />
+            <EditProductsForm products={products} shopId={shopState.shop.id} />
           </Form>
         </View>
         {showPreview && (
           <View style={styles.rightContainer}>
-            <a href={`/${shop.slug}`} style={openProductionLink} rel="noopener noreferrer" target="_blank">
+            <a href={`/${shopState.shop.slug}`} style={openProductionLink} rel="noopener noreferrer" target="_blank">
               <Text style={styles.openProductionLink}>
                 Ir a mi Sitio
                 <Image source={"/images/external-link-alt.png"} style={styles.openProductionLinkIcon} />
