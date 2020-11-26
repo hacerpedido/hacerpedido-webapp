@@ -13,11 +13,15 @@ import { validatePhoneNumber } from "../../lib/utils/utils";
 
 const formatter = buildFormatter(spanishStrings);
 
-export default function EditShop({ shop, control, errors, handleSubmit, getValues, isSaving }) {
-  // const [show, setShow] = useState(false);
+export default function EditShop({ shop, control, errors, handleSubmit, getValues, isSaving, refresh }) {
   const [imageType, setImageType] = useState(undefined);
 
-  const handleClose = () => setImageType(undefined);
+  const handleClose = (options = {}) => {
+    setImageType(undefined);
+    if (options.forceRefresh) {
+      refresh();
+    }
+  };
   const handleShow = (type) => setImageType(type);
 
   const buttonStyles = {

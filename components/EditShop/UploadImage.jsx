@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import React, { useState, useCallback, useRef } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
@@ -22,6 +22,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
   const aspect = imageType === "logo" ? 1 : 1.2014;
 
   const [image, setImage] = useState(undefined);
+  const [isWaiting, setWaiting] = useState(false);
   const [upImg, setUpImg] = useState();
   const imgRef = useRef(null);
   const [crop, setCrop] = useState({ unit: "%", width: 100, aspect: aspect });
@@ -42,6 +43,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
     data.append("shop_id", shopID);
     data.append("image_type", imageType);
 
+    setWaiting(true);
     axios
       .post(`${window.location.origin}/api/image-delete`, data, {
         headers: {
@@ -49,7 +51,9 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         },
       })
       .then((res) => {
-        console.log(res);
+        setWaiting(false);
+        // console.log(res);
+        handleClose({ forceRefresh: true });
       });
   };
 
@@ -57,6 +61,8 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
     if (!crop) {
       return;
     }
+
+    setWaiting(true);
 
     let data = new FormData();
 
@@ -97,7 +103,9 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
             },
           })
           .then((res) => {
-            console.log(res);
+            setWaiting(false);
+            // console.log(res);
+            handleClose({ forceRefresh: true });
           });
       },
       "image/png",
@@ -141,23 +149,33 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         </View>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={() => onDelete()}>
-          Borrar imagen actual
-        </Button>
-        {image && (
+        {isWaiting && (
           <>
-            <Button variant="secondary" onClick={handleClose}>
-              Descartar
-            </Button>
-            <Button variant="primary" onClick={() => onUpload(completedCrop)}>
-              Aceptar
-            </Button>
+            <Text>Por favor, espere... </Text>
+            <ActivityIndicator animating={isWaiting} size="large" color={theme.colors.orangeHP} />
           </>
         )}
-        {!image && (
-          <Button variant="primary" onClick={handleClose}>
-            Cancelar
-          </Button>
+        {!isWaiting && (
+          <>
+            <Button variant="primary" onClick={() => onDelete()}>
+              Borrar imagen actual
+            </Button>
+            {image && (
+              <>
+                <Button variant="secondary" onClick={handleClose}>
+                  Descartar
+                </Button>
+                <Button variant="primary" onClick={() => onUpload(completedCrop)}>
+                  Aceptar
+                </Button>
+              </>
+            )}
+            {!image && (
+              <Button variant="primary" onClick={handleClose}>
+                Cancelar
+              </Button>
+            )}
+          </>
         )}
       </Modal.Footer>
     </>
