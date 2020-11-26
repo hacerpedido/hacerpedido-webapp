@@ -34,7 +34,8 @@
     "react-spring": "^8.0.27",
     "react-timeago": "^5.2.0",
     "redux-persist": "^6.0.0",
-    "slugify": "^1.4.6"
+    "slugify": "^1.4.6",
+    "validator": "^13.1.17"
   },
   "devDependencies": {
     "babel-plugin-react-native-web": "^0.13.14"
