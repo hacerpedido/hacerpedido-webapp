@@ -9,7 +9,7 @@ aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json
 amplifyxc.config
-build/
+  build/
 dist/
 node_modules/
 
