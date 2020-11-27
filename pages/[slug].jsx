@@ -3,19 +3,17 @@ import Head from "next/head";
 import { Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { useApolloClient } from "@apollo/react-hooks";
+import axios from "axios";
 
 import Loading from "../components/Loading";
 import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
 import { loading } from "../lib/reducers/appSlice";
 import { setShop } from "../lib/reducers/shopSlice";
-import { getShopWithDetails } from "../lib/graphql/shop";
 
 export default function Shop() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const client = useApolloClient();
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
 
@@ -26,12 +24,9 @@ export default function Shop() {
       dispatch(loading(true));
 
       try {
-        const shopData = await client.query({
-          query: getShopWithDetails,
-          variables: { slug },
-        });
+        const shopData = await axios.get(`${window.location.origin}/api/shop/${slug}`);
 
-        dispatch(setShop(shopData.data.shopBySlug));
+        dispatch(setShop(shopData.data));
       } catch (error) {
         console.log(JSON.stringify(error, null, 2));
       } finally {
@@ -42,7 +37,7 @@ export default function Shop() {
     if (slug != null) {
       getData();
     }
-  }, [client, dispatch, shop, slug]);
+  }, [dispatch, shop, slug]);
 
   if (!slug || shop?.slug !== slug) {
     return isLoading ? <Loading /> : <Text>Sin comercios en la base de datos para {slug}.</Text>;

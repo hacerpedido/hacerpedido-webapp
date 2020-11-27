@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { useApolloClient } from "@apollo/react-hooks";
+import axios from "axios";
 import Head from "next/head";
 
 import HomeHeader from "../components/Home/HomeHeader";
@@ -11,7 +11,6 @@ import ShopCard from "../components/Home/ShopCard";
 import { loading } from "../lib/reducers/appSlice";
 import { setCategory, setShops, setFirstVisibleItem } from "../lib/reducers/homeSlice";
 import { setShop } from "../lib/reducers/shopSlice";
-import { listShopsForHome } from "../lib/graphql/home";
 import colors from "../assets/colors";
 import Loading from "../components/Loading";
 
@@ -44,7 +43,6 @@ export default function App(props) {
   const shops = useSelector((state) => state.home.shops);
   const dispatch = useDispatch();
   const router = useRouter();
-  const client = useApolloClient();
 
   let initialScrollIndex = firstVisibleItem ?? 0;
 
@@ -64,19 +62,17 @@ export default function App(props) {
     dispatch(loading(true));
 
     async function getData() {
-      const shopData = await client.query({
-        query: listShopsForHome,
-        variables: { category },
-      });
-      let shops = shopData.data.allShops.nodes;
-      dispatch(setShops(shops));
+      const shopData = await axios.get(`${window.location.origin}/api/shop/home`, { params: { category } });
+
+      // console.log(JSON.stringify(shopData, null, 2));
+
+      dispatch(setShops(shopData.data));
       dispatch(loading(false));
     }
     getData().catch((error) => {
-      console.log(error);
       console.log(JSON.stringify(error, null, 2));
     });
-  }, [dispatch, client, category]);
+  }, [dispatch, category]);
 
   let filteredShops = shops.filter((x) => x.visibility === "public" && x.category === category);
 

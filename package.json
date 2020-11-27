@@ -20,6 +20,7 @@
     "graphql": "^15.4.0",
     "handsontable": "^8.2.0",
     "knex": "^0.21.12",
+    "nested-knex": "^0.1.2",
     "next": "latest",
     "pg": "^8.5.1",
     "react": "^16.13.1",
@@ -38,7 +39,14 @@
     "validator": "^13.1.17"
   },
   "devDependencies": {
-    "babel-plugin-react-native-web": "^0.13.14"
+    "babel-plugin-react-native-web": "^0.13.14",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-react-native": "^3.10.0",
+    "prettier": "^2.1.2"
   },
   "license": "MIT"
 }
