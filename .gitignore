@@ -11,11 +11,10 @@ amplifyconfiguration.json
 amplifyxc.config
 build/
 dist/
-node_modules/
-
 
 # dependencies
-/node_modules
+node_modules
+jspm_packages
 /.pnp
 .pnp.js
 
@@ -48,3 +47,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# Serverless directories
+# .serverless
+.serverless_nextjs
