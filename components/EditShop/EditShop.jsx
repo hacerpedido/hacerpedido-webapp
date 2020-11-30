@@ -29,6 +29,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
     backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
     borderRadius: 5,
     flexDirection: "row",
+    marginLeft: 15,
     marginVertical: 10,
     padding: 10,
   };
@@ -51,21 +52,11 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={() => handleShow("background")}
-              style={styles.buttonBase}
-              disabled={isSaving}
-            >
-              <Text style={styles.buttonText}>Background</Text>
+            <TouchableOpacity underlayColor={"none"} onPress={() => handleShow("logo")} disabled={isSaving}>
+              <Text style={styles.uploadImageButton}>Editar logo</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={() => handleShow("logo")}
-              style={styles.buttonBase}
-              disabled={isSaving}
-            >
-              <Text style={styles.buttonText}>Logo</Text>
+            <TouchableOpacity underlayColor={"none"} onPress={() => handleShow("background")} disabled={isSaving}>
+              <Text style={styles.uploadImageButton}>Editar portada</Text>
             </TouchableOpacity>
             <TouchableOpacity underlayColor={"none"} onPress={handleSubmit} style={buttonStyles} disabled={isSaving}>
               <>
@@ -211,14 +202,6 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
 }
 
 const styles = StyleSheet.create({
-  buttonBase: {
-    alignItems: "center",
-    backgroundColor: theme.colors.gray4,
-    borderRadius: 5,
-    flexDirection: "row",
-    marginRight: 10,
-    padding: 10,
-  },
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
@@ -227,7 +210,6 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     alignItems: "baseline",
     flexDirection: "row",
-    // padding: 10,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
@@ -270,5 +252,14 @@ const styles = StyleSheet.create({
   updatedAt: {
     ...theme.text.quiet,
     marginHorizontal: 10,
+  },
+  uploadImageButton: {
+    borderRadius: 5,
+    color: theme.colors.button1,
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontStyle: "normal",
+    fontWeight: "600",
+    marginHorizontal: 15,
   },
 });
