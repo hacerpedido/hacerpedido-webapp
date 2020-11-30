@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
-// import {useSpring, animated} from "react-spring";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { useSelector } from "react-redux";
 
-import colors from "../../assets/colors";
+import colors from "assets/colors";
+import { WhatsappFill as WhatsappFillIcon } from "assets/icons";
+import Input from "components/Input";
+import Switch from "components/Switch";
+
+// TODO: save user preferences
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
-import Switch from "../Switch";
-import Input from "../Input";
-import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
 
 const Form = ({ onSubmit }) => {
   const shop = useSelector((state) => state.shop.shop);
@@ -22,6 +23,7 @@ const Form = ({ onSubmit }) => {
     setTakeaway(value);
   };
 
+  // TODO: enable animations
   // const animatedProps = useSpring({
   //   opacity: !takeaway ? 1 : 0,
   //   maxHeight: !takeaway ? 100 : 0,

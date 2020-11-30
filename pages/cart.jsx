@@ -1,12 +1,11 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
 import { useRouter } from "next/router";
+import { StyleSheet, View } from "react-native-web";
 import { useSelector } from "react-redux";
 
-import Form from "../components/Cart/Form";
-import ProductList from "../components/Cart/ProductList";
-import Header from "../components/Cart/Header";
 import colors from "../assets/colors";
+import Form from "../components/Cart/Form";
+import Header from "../components/Cart/Header";
+import ProductList from "../components/Cart/ProductList";
 import { extractSections } from "../lib/utils/products";
 import { generateWhatsappURL } from "../lib/utils/utils";
 

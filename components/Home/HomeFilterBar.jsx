@@ -1,8 +1,8 @@
 import React from "react";
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
-import { categories } from "../../lib/utils/categories";
 import colors from "../../assets/colors";
+import { categories } from "../../lib/utils/categories";
 
 function Item({ id, title, selected, onSelect }) {
   return (
