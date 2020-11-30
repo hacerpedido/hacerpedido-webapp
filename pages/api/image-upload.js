@@ -79,7 +79,7 @@ export default async function handler(req, res) {
   await pg("shops").where("id", "=", shopID).update(imageType, key);
 
   if (oldKey) {
-    await s3utils.deleteFile(oldKey);
+    s3utils.deleteFile(oldKey);
   }
 
   res.status(200).json({ image: key });
