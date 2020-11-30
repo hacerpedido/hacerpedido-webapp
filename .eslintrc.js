@@ -1,43 +1,24 @@
 module.exports = {
-  plugins: ["prettier"],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    ecmaFeatures: {
-      jsx: true,
-    },
+  extends: ["react-app", "plugin:react-native/all", "prettier", "prettier/react"],
+  plugins: ["react-native", "prettier"],
+  rules: {
+    "react/display-name": 0,
+    "react/prop-types": 0,
+    "import/order": 1,
+    "import/newline-after-import": 1,
+    "import/no-anonymous-default-export": 0,
+    "react-native/no-inline-styles": "warn",
+    "react-native/no-color-literals": "warn",
+    "react-native/no-unused-styles": "warn",
+    "react-native/sort-styles": "warn",
   },
   settings: {
-    react: {
-      version: "detect", // Automatically detect the react version
-    },
+    "import/ignore": ["react-native"],
     "import/resolver": {
       node: {
-        paths: ["./"],
+        paths: ["src"],
         extensions: [".js", ".jsx"],
       },
     },
-  },
-  extends: [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-native/all",
-    "plugin:react-hooks/recommended",
-    "plugin:import/errors",
-    "prettier",
-  ],
-  rules: {
-    "import/newline-after-import": "error",
-    "import/no-anonymous-default-export": 0,
-    "import/no-unresolved": [2, { ignore: ["react-native"] }],
-    "import/order": ["error", { "newlines-between": "always" }],
-    "prettier/prettier": "error",
-    "react-native/no-color-literals": "warn",
-    "react-native/no-inline-styles": "warn",
-    "react-native/no-unused-styles": "warn",
-    "react-native/sort-styles": "warn",
-    "react/display-name": 0,
-    "react/prop-types": 0,
-    "react/react-in-jsx-scope": "off",
   },
 };

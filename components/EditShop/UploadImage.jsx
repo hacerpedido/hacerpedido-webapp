@@ -104,7 +104,6 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           })
           .then((res) => {
             setWaiting(false);
-            // console.log(res);
             handleClose({ forceRefresh: true });
           });
       },
@@ -116,6 +115,8 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
   const onLoad = useCallback((img) => {
     imgRef.current = img;
   }, []);
+
+  const footerStyles = image ? {} : { justifyContent: "right" };
 
   return (
     <>
@@ -148,7 +149,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           )}
         </View>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer style={footerStyles}>
         {isWaiting && (
           <>
             <Text>Por favor, espere... </Text>
@@ -157,22 +158,14 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         )}
         {!isWaiting && (
           <>
-            <Button variant="primary" onClick={() => onDelete()}>
-              Borrar imagen actual
-            </Button>
             {image && (
-              <>
-                <Button variant="secondary" onClick={handleClose}>
-                  Descartar
-                </Button>
-                <Button variant="primary" onClick={() => onUpload(completedCrop)}>
-                  Aceptar
-                </Button>
-              </>
+              <Button variant="primary" onClick={() => onUpload(completedCrop)}>
+                Aceptar
+              </Button>
             )}
             {!image && (
-              <Button variant="primary" onClick={handleClose}>
-                Cancelar
+              <Button variant="primary" onClick={() => onDelete()}>
+                Borrar imagen actual
               </Button>
             )}
           </>
