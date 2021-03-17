@@ -16,7 +16,7 @@
     "@reduxjs/toolkit": "^1.4.0",
     "apollo-boost": "^0.4.9",
     "aws-sdk": "^2.799.0",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "formidable": "^1.2.2",
     "graphql": "^15.4.0",
