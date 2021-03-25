@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import { useForm } from "react-hook-form";
-import { useApolloClient } from "@apollo/react-hooks";
+// import { useApolloClient } from "@apollo/react-hooks";
+import axios from "axios";
 
 import EditProductsForm from "../components/EditShop/EditProducts";
 import EditShopForm from "../components/EditShop/EditShop";
@@ -16,7 +17,7 @@ import MessageBox from "../components/MessageBox";
 import theme from "../assets/theme";
 import { trimObject } from "../lib/utils/utils";
 import useWidth from "../lib/hooks/use_width";
-import { getShopWithProductsByToken, saveShopWithProducts } from "../lib/api/shops";
+import { saveShopWithProducts } from "../lib/api/shops";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -26,7 +27,7 @@ import { getShopWithProductsByToken, saveShopWithProducts } from "../lib/api/sho
 export default function EditShopPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const client = useApolloClient();
+  // const client = useApolloClient();
   const resizedWidth = useWidth();
 
   const [shopState, setShopState] = useState({ shop: null, loading: true });
@@ -56,15 +57,16 @@ export default function EditShopPage() {
 
     async function getData() {
       try {
-        const shopData = await getShopWithProductsByToken(token);
-        setShopState({ shop: shopData.data[0], loading: false });
+        const shopData = await axios.get(`${window.location.origin}/api/shop/by-token`, { params: { token } });
+
+        setShopState({ shop: shopData.data, loading: false });
       } catch (error) {
         alert(`Error al leer los datos. (${error} Error: ${error.response.data.message})`);
         setShopState({ shop: null, loading: false });
       }
     }
     getData();
-  }, [token, dispatch, client, reloadCount]);
+  }, [token, dispatch, reloadCount]);
 
   const { handleSubmit, register, setValue, errors, control, watch, getValues } = useForm({
     mode: "onBlur",
