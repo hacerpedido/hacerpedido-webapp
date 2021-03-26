@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import { useForm } from "react-hook-form";
-// import { useApolloClient } from "@apollo/react-hooks";
 import axios from "axios";
 
 import EditProductsForm from "../components/EditShop/EditProducts";
@@ -27,11 +26,9 @@ import { saveShopWithProducts } from "../lib/api/shops";
 export default function EditShopPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  // const client = useApolloClient();
   const resizedWidth = useWidth();
 
   const [shopState, setShopState] = useState({ shop: null, loading: true });
-
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isSaving, setSaving] = useState(false);
@@ -93,8 +90,7 @@ export default function EditShopPage() {
         region: shopState.shop.region,
       };
 
-      const result = await saveShopWithProducts(dataToSave, tempProducts);
-
+      const result = await saveShopWithProducts(token, dataToSave, tempProducts);
       setMessage(result.message);
 
       if (result.error == null) {

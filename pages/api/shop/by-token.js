@@ -6,6 +6,68 @@ const pg = require("knex")({
 });
 
 export default async function handle(req, res) {
+
+  if (req.method === 'POST') {
+    // console.log("POST:", req.body)
+
+    const {
+      id,
+      address,
+      deliverycost,
+      name,
+      notes,
+      opentimes,
+      ordersphonenumber,
+      orderswhatsappnumber,
+      token, products } = req.body;
+
+    if (!token || token === "") {
+      res.status(400).json({ error: "Wrong parameters (1)." });
+      return;
+    }
+
+    pg("shops")
+      .update({
+        address,
+        deliverycost,
+        name,
+        notes,
+        opentimes,
+        ordersphonenumber,
+        orderswhatsappnumber
+      })
+      .where("typeformtoken", "=", token)
+      .then(rows => {
+        // console.log("update shop")
+
+        if (!rows) {
+          return res.status(404).json({ success: false });
+        }
+      })
+      .catch(e => console.error(e));
+
+    if (!products || products.lenght == 0) {
+      return res.json({
+        success: true,
+        message: "Tus cambios fueron guardados.",
+      });
+    }
+
+    await pg("products")
+      .where("shopid", "=", id)
+      .delete()
+      // .then(a => console.log("deleted products:", a))
+
+    await pg('products')
+      .insert(products)
+      // .then(a => console.log("updated products:", a))
+
+    return res.json({
+      success: true,
+      message: "Tus cambios fueron guardados..",
+    });
+  }
+
   const { token } = req.query;
 
   if (!token || token === "") {
