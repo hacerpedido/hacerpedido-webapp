@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import TagManager from "react-gtm-module";
-import { ApolloProvider } from "@apollo/react-hooks";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { store, persistor } from "../lib/reducers";
-import { HPGraphqlClient } from "../lib/api/index";
 
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,7 +16,6 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   return (
-    <ApolloProvider client={HPGraphqlClient}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Head>
@@ -49,7 +46,6 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
         </PersistGate>
       </Provider>
-    </ApolloProvider>
   );
 }
 
