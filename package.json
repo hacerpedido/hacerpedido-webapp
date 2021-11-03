@@ -36,7 +36,7 @@
     "react-timeago": "^5.2.0",
     "redux-persist": "^6.0.0",
     "slugify": "^1.4.6",
-    "validator": "^13.1.17"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.6",
