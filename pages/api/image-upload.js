@@ -1,7 +1,9 @@
 const formidable = require("formidable");
+
+const validator = require("validator");
+
 const s3utils = require("../../lib/utils/aws-s3");
 const utils = require("../../lib/utils/utils");
-const validator = require("validator");
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

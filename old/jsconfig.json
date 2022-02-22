@@ -2,5 +2,14 @@
   "compilerOptions": {
     "baseUrl": "src"
   },
-  "include": ["src", "../lib/api", "../lib/graphql", "../lib/utils", "../assets", "../lib/reducers", "../pages/Home.jsx", "../components/HomeFilterBar.jsx"]
+  "include": [
+    "src",
+    "../lib/api",
+    "../lib/graphql",
+    "../lib/utils",
+    "../assets",
+    "../lib/reducers",
+    "../pages/Home.jsx",
+    "../components/HomeFilterBar.jsx"
+  ]
 }

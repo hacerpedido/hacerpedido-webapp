@@ -1,9 +1,9 @@
-import React from "react";
+import { forwardRef } from "react";
 import { View, TextInput, Text, StyleSheet } from "react-native";
 
 import theme from "../assets/theme";
 
-const ShopInput = React.forwardRef((props, ref) => {
+const ShopInput = forwardRef((props, ref) => {
   const { label, error, numberOfLines, value, ...inputProps } = props;
 
   let borderColor = error ? theme.colors.error : theme.colors.lightGrey2;

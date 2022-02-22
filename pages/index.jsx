@@ -1,18 +1,18 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/router";
-import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import axios from "axios";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useCallback, useEffect } from "react";
+import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 
-import HomeHeader from "../components/Home/HomeHeader";
+import colors from "../assets/colors";
 import HomeFilterBar from "../components/Home/HomeFilterBar";
+import HomeHeader from "../components/Home/HomeHeader";
 import ShopCard from "../components/Home/ShopCard";
+import Loading from "../components/Loading";
 import { loading } from "../lib/reducers/appSlice";
 import { setCategory, setShops, setFirstVisibleItem } from "../lib/reducers/homeSlice";
 import { setShop } from "../lib/reducers/shopSlice";
-import colors from "../assets/colors";
-import Loading from "../components/Loading";
 
 let touchStartingPoint = 0;
 let touchCurrentPoint = 0;
@@ -31,13 +31,13 @@ const renderHeader = (count) => {
   );
 };
 
-const onViewableItemsChanged = ({ viewableItems, changed }) => {
+const onViewableItemsChanged = ({ viewableItems }) => {
   if (viewableItems !== undefined && viewableItems.length > 0) {
     firstVisibleItemIndex = viewableItems[0].index;
   }
 };
 
-export default function App(props) {
+export default function App() {
   const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem);
   const category = useSelector((state) => state.home.selectedFilter);
   const shops = useSelector((state) => state.home.shops);
@@ -46,7 +46,7 @@ export default function App(props) {
 
   let initialScrollIndex = firstVisibleItem ?? 0;
 
-  const onSelect = React.useCallback(
+  const onSelect = useCallback(
     (shop) => {
       let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
       if (distance <= 10) {
@@ -112,7 +112,7 @@ export default function App(props) {
       )}
       keyExtractor={(shop) => shop.id}
       initialScrollIndex={initialScrollIndex ?? 0}
-      getItemLayout={(data, index) => ({
+      getItemLayout={(_data, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index + 110,
         index,

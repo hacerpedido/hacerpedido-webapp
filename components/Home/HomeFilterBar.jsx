@@ -1,8 +1,8 @@
-import React from "react";
+import { useCallback, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
-import { categories } from "../../lib/utils/categories";
 import colors from "../../assets/colors";
+import { categories } from "../../lib/utils/categories";
 
 function Item({ id, title, selected, onSelect }) {
   return (
@@ -17,13 +17,13 @@ function Item({ id, title, selected, onSelect }) {
 }
 
 const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
-  const [selected, setSelected] = React.useState(String);
+  const [selected, setSelected] = useState(String);
 
   if (selected === "") {
     setSelected(selectedFilter);
   }
 
-  const onSelect = React.useCallback(
+  const onSelect = useCallback(
     (id) => {
       setSelected(id);
       onSelectFilter(id);

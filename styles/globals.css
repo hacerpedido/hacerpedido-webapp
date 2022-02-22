@@ -8,8 +8,19 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "RobotoSlab", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    RobotoSlab,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fafcff;
@@ -33,24 +44,31 @@ a {
   0% {
     transform: translate(0, 0);
   }
+
   2.54237% {
     transform: translate(10px, 0);
   }
+
   5.08475% {
     transform: translate(0, 0);
   }
+
   7.62712% {
     transform: translate(5px, 0);
   }
+
   10.16949% {
     transform: translate(0, 0);
   }
+
   12.71186% {
     transform: translate(5px, 0);
   }
+
   15.25424% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(0, 0);
   }

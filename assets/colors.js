@@ -1,6 +1,3 @@
-// TODO: A ver con el Chango si usamos semantic
-// color names or los nombramos directamente
-
 const colors = {
   black: "#000",
   button1: "#37B26E",

@@ -1,13 +1,13 @@
-import * as React from "react";
+import { createElement, useRef } from "react";
 
 export default function Form({ register, errors, setValue, validation, children }) {
-  const Inputs = React.useRef([]);
+  const Inputs = useRef([]);
 
   return (
     <>
       {(Array.isArray(children) ? [...children] : [children]).map((child, i) => {
         return child.props.name
-          ? React.createElement(child.type, {
+          ? createElement(child.type, {
               ...{
                 ...child.props,
                 ref: (e) => {

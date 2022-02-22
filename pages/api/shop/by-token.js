@@ -6,8 +6,7 @@ const pg = require("knex")({
 });
 
 export default async function handle(req, res) {
-
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     // console.log("POST:", req.body)
 
     const {
@@ -19,7 +18,9 @@ export default async function handle(req, res) {
       opentimes,
       ordersphonenumber,
       orderswhatsappnumber,
-      token, products } = req.body;
+      token,
+      products,
+    } = req.body;
 
     if (!token || token === "") {
       res.status(400).json({ error: "Wrong parameters (1)." });
@@ -34,17 +35,17 @@ export default async function handle(req, res) {
         notes,
         opentimes,
         ordersphonenumber,
-        orderswhatsappnumber
+        orderswhatsappnumber,
       })
       .where("typeformtoken", "=", token)
-      .then(rows => {
+      .then((rows) => {
         // console.log("update shop")
 
         if (!rows) {
           return res.status(404).json({ success: false });
         }
       })
-      .catch(e => console.error(e));
+      .catch((e) => console.error(e));
 
     if (!products || products.lenght == 0) {
       return res.json({
@@ -53,14 +54,11 @@ export default async function handle(req, res) {
       });
     }
 
-    await pg("products")
-      .where("shopid", "=", id)
-      .delete()
-      // .then(a => console.log("deleted products:", a))
+    await pg("products").where("shopid", "=", id).delete();
+    // .then(a => console.log("deleted products:", a))
 
-    await pg('products')
-      .insert(products)
-      // .then(a => console.log("updated products:", a))
+    await pg("products").insert(products);
+    // .then(a => console.log("updated products:", a))
 
     return res.json({
       success: true,

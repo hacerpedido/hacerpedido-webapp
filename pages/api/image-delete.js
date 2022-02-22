@@ -1,6 +1,7 @@
 const formidable = require("formidable");
+const validator = require("validator");
+
 const s3utils = require("../../lib/utils/aws-s3");
-const validator = require('validator');
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
 
   const selectData = await pg.select({ oldKey: imageType }).from("shops").where("id", "=", shopID);
 
-  if (!selectData || (!Array.isArray(selectData) || selectData.length === 0)) {
+  if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
     res.status(400).json({ error: "Wrong parameters (5)." });
 
     return;
