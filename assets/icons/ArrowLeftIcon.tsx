@@ -1,4 +1,6 @@
-function ArrowLeftIcon(props: any) {
+import { SVGProps } from 'react'
+
+function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={11} height={21} {...props}>
       <path
@@ -10,4 +12,4 @@ function ArrowLeftIcon(props: any) {
   );
 }
 
-export default ArrowLeftIcon;
+export { ArrowLeftIcon };

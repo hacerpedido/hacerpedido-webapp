@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import Head from "next/head";
 import { Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";

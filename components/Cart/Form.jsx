@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { TouchableHighlight, StyleSheet, Text, View } from "react-native";

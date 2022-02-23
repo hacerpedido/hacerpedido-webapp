@@ -1,4 +1,6 @@
-function CarIcon(props: any) {
+import { SVGProps } from 'react'
+
+function CarIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={14} height={14} {...props}>
       <path
@@ -10,4 +12,4 @@ function CarIcon(props: any) {
   );
 }
 
-export default CarIcon;
+export { CarIcon };

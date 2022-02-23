@@ -1,9 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  name: null,
-  address: null,
-  notes: null,
+type SliceState = {
+  name: string
+  address: string
+  notes: string
+}
+
+const initialState: SliceState = {
+  name: '',
+  address: '',
+  notes: '',
 };
 
 const appSlice = createSlice({

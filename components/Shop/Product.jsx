@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
 
 import ProductAmountPopup from "./ProductAmountPopup";

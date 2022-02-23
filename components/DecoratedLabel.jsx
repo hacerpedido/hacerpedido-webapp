@@ -2,26 +2,30 @@ import { Text, View } from "react-native";
 import { CarIcon, ClockIcon, PinIcon } from "../assets/icons/";
 
 // TODO: Este componente tiene una responsabilidad difusa, mucha
-// configuración externa. Repensar.
 
-const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, marginBottom }) => {
+// interface IDecoratedLabelProps {
+//   iconName: string;
+//   text: string
+//   iconColor: string
+//   textColor: string
+//   fontSize: number
+//   marginBottom: number
+// }
+
+// const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize = 12, marginBottom = 0 }: IDecoratedLabelProps) => {
+const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize = 12, marginBottom = 0 }) => {
   const icons = {
     car: <CarIcon color={iconColor} width={18} />,
     clock: <ClockIcon color={iconColor} width={18} />,
     pin: <PinIcon color={iconColor} width={18} />,
   };
 
-  var displayText = text;
-  if (displayText.trim() === "") {
-    displayText = null;
-  }
-
   const styles = {
     text: {
       color: textColor,
       fontFamily: "Roboto Slab",
       fontWeight: "400",
-      fontSize: fontSize ?? 12,
+      fontSize: fontSize,
       lineHeight: 14,
       padding: 3,
     },
@@ -29,17 +33,17 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
       flexDirection: "row",
       alignItems: "center",
       textAlignVertical: "center",
-      marginBottom: marginBottom ?? 0,
+      marginBottom: marginBottom,
       maxWidth: "92%",
     },
   };
 
   return (
     <View style={styles.container}>
-      {displayText && (
+      {text && (
         <>
           <View>{icons[iconName]}</View>
-          <Text style={styles.text}>{displayText}</Text>
+          <Text style={styles.text}>{text}</Text>
         </>
       )}
     </View>

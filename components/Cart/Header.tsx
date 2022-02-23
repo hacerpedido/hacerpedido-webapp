@@ -1,12 +1,14 @@
 import { useRouter } from "next/router";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { useSelector } from "react-redux";
+import { StyleSheet, Text, TouchableHighlight, View, TextStyle, ViewStyle } from "react-native";
 
 import colors from "../../assets/colors";
-import { ArrowLeft as ArrowLeftIcon } from "../../assets/icons";
+import { ArrowLeftIcon } from "../../assets/icons";
+import { useAppSelector } from "../../lib/hooks";
 
 export default function CartHeader() {
-  const { slug } = useSelector((state) => state.shop.shop);
+  const cart = useAppSelector((state) => state.shop);
+  const slug = cart.shop.slug;
+
   const router = useRouter();
 
   return (
@@ -36,7 +38,15 @@ const textStyles = {
   },
 };
 
-const styles = StyleSheet.create({
+interface Styles {
+  buttonBack: ViewStyle;
+  container: ViewStyle;
+  containerNavigator: ViewStyle;
+  title: TextStyle;
+  titleContainer: ViewStyle;
+}
+
+const styles = StyleSheet.create<Styles>({
   buttonBack: {
     left: 0,
     padding: 24,
@@ -50,7 +60,6 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   title: {
-    ...textStyles.xlargeText,
     color: colors.brown,
   },
   titleContainer: {
@@ -61,5 +70,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingBottom: 23,
     paddingTop: 21,
+    ...textStyles.xlargeText,
   },
 });

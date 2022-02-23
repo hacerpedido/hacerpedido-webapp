@@ -18,7 +18,7 @@ export async function saveShopWithProducts(token: string, shopPatch: any, newPro
 
   try {
     await axios.post(`${window.location.origin}/api/shop/by-token`, params);
-  } catch (error: any | AxiosError) {
+  } catch (error: unknown | AxiosError) {
     return {
       message: `Error al grabar los datos del comercio. (${error} Error: ${error?.response?.data?.message})`,
       error: 1,

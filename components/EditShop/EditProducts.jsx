@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { StyleSheet, Text, View } from "react-native";
 import dynamic from "next/dynamic";

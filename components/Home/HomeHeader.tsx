@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { TouchableOpacity } from "react-native";
-import React, { useState } from "react";
 import Link from "next/link";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ViewStyle, TextStyle } from "react-native";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+
 import { HpLogoIcon } from "../../assets/icons";
 import colors from "../../assets/colors";
 
@@ -51,7 +52,14 @@ export default function HomeHeader() {
   );
 }
 
-const styles = StyleSheet.create({
+interface Styles {
+  addShopButton: ViewStyle;
+  container: ViewStyle;
+  modalText: TextStyle;
+  modalView: ViewStyle;
+}
+
+const styles = StyleSheet.create<Styles>({
   addShopButton: {
     backgroundColor: colors.lightGreen,
     borderColor: colors.button1,
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     display: "flex",
     flex: 1,
-    flexFlow: "column",
+    flexDirection: "column",
     justifyContent: "center",
   },
 });

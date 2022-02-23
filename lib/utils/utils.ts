@@ -1,4 +1,4 @@
-import { IProduct } from "../../types";
+import { IProduct, ICartProduct } from "../../types";
 
 export function toTitleCase(str: string) {
   if (typeof str !== "string") return "";
@@ -107,7 +107,7 @@ export function trimObject(obj: any) {
   return obj;
 }
 
-function categoryProducts(products: any[]) {
+function categoryProducts(products: ICartProduct[]) {
   return products.map(({ amount, name }) => `✅ ${amount} x ${name}`).join("\n");
 }
 
@@ -119,6 +119,7 @@ function generateSimpleWhatsappMessage() {
   return "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
 }
 
+// TODO: : whatsapp api not accepting emoji
 function generateWhatsappMessage(formData: any, products: IProduct[]) {
   const { name, address, notes } = formData;
 
@@ -130,11 +131,11 @@ function generateWhatsappMessage(formData: any, products: IProduct[]) {
   return [intro, addressStr, notesStr, order].join("");
 }
 
-export function generateWhatsappURL(number: string, userData: any, items: any[]) {
+export function generateWhatsappURL(number: string, userData: any, cartProducts: ICartProduct[]) {
   const sanitizedNumber = sanitizeWhatsAppNumber(number);
 
   const message =
-    typeof userData !== "undefined" ? generateWhatsappMessage(userData, items) : generateSimpleWhatsappMessage();
+    typeof userData !== "undefined" ? generateWhatsappMessage(userData, cartProducts) : generateSimpleWhatsappMessage();
 
   const encodedMessage = encodeURIComponent(message);
 

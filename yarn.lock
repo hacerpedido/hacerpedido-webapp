@@ -463,9 +463,9 @@
   integrity sha512-HocbP95R4bx5GQ2UZ6hwTgJgW25JxKEAlNFxWbVDZVcF8lsnCYnvIoWfqNAH3kz89WLs/2J4B3JnmJzRhM5Gqg==
 
 "@humanwhocodes/config-array@^0.9.2":
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.9.3.tgz#f2564c744b387775b436418491f15fce6601f63e"
-  integrity sha512-3xSMlXHh03hCcCmFc0rbKp3Ivt2PFEJnQUJDDMTJQ2wkECZWdq4GePs2ctc5H8zV+cHPaq8k2vU8mrQjA6iHdQ==
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.9.5.tgz#2cbaf9a89460da24b5ca6531b8bbfc23e1df50c7"
+  integrity sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==
   dependencies:
     "@humanwhocodes/object-schema" "^1.2.1"
     debug "^4.1.1"
@@ -967,12 +967,20 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@*", "@types/jest@^27.4.0":
+"@types/jest@*":
   version "27.4.0"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.4.0.tgz#037ab8b872067cae842a320841693080f9cb84ed"
   integrity sha512-gHl8XuC1RZ8H2j5sHv/JqsaxXkDDM9iDOgu0Wp8sjs4u/snb2PVehyWXJPr+ORA0RPpgw231mnutWI1+0hgjIQ==
   dependencies:
     jest-diff "^27.0.0"
+    pretty-format "^27.0.0"
+
+"@types/jest@^27.4.1":
+  version "27.4.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-27.4.1.tgz#185cbe2926eaaf9662d340cc02e548ce9e11ab6d"
+  integrity sha512-23iPJADSmicDVrWk+HT58LMJtzLAnB2AgIzplQuq/bSrGaxCrlvRFjGbXmamnnk/mAmCdLStiGqggu28ocUyiw==
+  dependencies:
+    jest-matcher-utils "^27.0.0"
     pretty-format "^27.0.0"
 
 "@types/json-schema@^7.0.9":
@@ -1029,6 +1037,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-native@^0.66.16":
+  version "0.66.16"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.16.tgz#fa654d7a611f8c74122b5706958224ebadc82044"
+  integrity sha512-TsMV/4gW9WTu/6Iuyrm8+UaClIcgJ+1FqVUqDgMvp/Ys+cF+q1GFid3ZPYHYmVZTfOoowY+e3Vd8zFufVL7HLQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-redux@^7.1.20":
   version "7.1.22"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.22.tgz#0eab76a37ef477cc4b53665aeaf29cb60631b72a"
@@ -1039,6 +1054,13 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
+"@types/react-test-renderer@^17.0.1":
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-17.0.1.tgz#3120f7d1c157fba9df0118dae20cb0297ee0e06b"
+  integrity sha512-3Fi2O6Zzq/f3QR9dRnlnHso9bMl7weKCviFmfF6B4LS1Uat6Hkm15k0ZAQuDz+UBq6B3+g+NM6IT2nr5QgPzCw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-transition-group@^4.4.1":
   version "4.4.4"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.4.tgz#acd4cceaa2be6b757db61ed7b432e103242d163e"
@@ -1046,7 +1068,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@>=16.14.8", "@types/react@>=16.9.11":
+"@types/react@*", "@types/react@>=16.14.8", "@types/react@>=16.9.11", "@types/react@^17.0.39":
   version "17.0.39"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.39.tgz#d0f4cde092502a6db00a1cded6e6bf2abb7633ce"
   integrity sha512-UVavlfAxDd/AgAacMa60Azl7ygyQNRwC/DsHZmKgNvPmRR5p70AJ5Q9EAmL2NWOJmeV+vVUI4IAP7GZrN8h8Ug==
@@ -1154,7 +1176,7 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/utils@5.12.1":
+"@typescript-eslint/utils@5.12.1", "@typescript-eslint/utils@^5.10.0":
   version "5.12.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.12.1.tgz#447c24a05d9c33f9c6c64cb48f251f2371eef920"
   integrity sha512-Qq9FIuU0EVEsi8fS6pG+uurbhNTtoYr4fq8tKjBupsK5Bgbk2I32UGm0Sh+WOyjOPgo/5URbxxSNV6HYsxV4MQ==
@@ -2302,6 +2324,13 @@ eslint-plugin-import@^2.17.2, eslint-plugin-import@^2.25.2:
     object.values "^1.1.5"
     resolve "^1.20.0"
     tsconfig-paths "^3.12.0"
+
+eslint-plugin-jest@^26.1.1:
+  version "26.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-26.1.1.tgz#7176dd745ef8bca3070263f62cdf112f2dfc9aa1"
+  integrity sha512-HRKOuPi5ADhza4ZBK5ufyNXy28bXXkib87w+pQqdvBhSTsamndh6sIAKPAUl8y0/n9jSWBdTPslrwtKWqkp8dA==
+  dependencies:
+    "@typescript-eslint/utils" "^5.10.0"
 
 eslint-plugin-jsx-a11y@^6.5.1:
   version "6.5.1"
@@ -3764,7 +3793,7 @@ jest-leak-detector@^27.5.1:
     jest-get-type "^27.5.1"
     pretty-format "^27.5.1"
 
-jest-matcher-utils@^27.5.1:
+jest-matcher-utils@^27.0.0, jest-matcher-utils@^27.5.1:
   version "27.5.1"
   resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-27.5.1.tgz#9c0cdbda8245bc22d2331729d1091308b40cf8ab"
   integrity sha512-z2uTx/T6LBaCoNWNFWwChLBKYxTMcGBRjAt+2SbP929/Fflb9aa5LGma654Rz8z9HLxsrUaYzxE9T/EFIL/PAw==

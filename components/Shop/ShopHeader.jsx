@@ -1,4 +1,3 @@
-import React from "react";
 import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 
 import { useRouter } from "next/router";

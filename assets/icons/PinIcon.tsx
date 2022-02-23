@@ -1,4 +1,6 @@
-function PinIcon(props: any) {
+import { SVGProps } from 'react'
+
+function PinIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={14} height={14} {...props}>
       <path
@@ -10,4 +12,4 @@ function PinIcon(props: any) {
   );
 }
 
-export default PinIcon;
+export { PinIcon };

@@ -1,4 +1,6 @@
-function PhoneCallIcon(props: any) {
+import { SVGProps } from 'react'
+
+function PhoneCallIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={10} height={16} {...props}>
       <path
@@ -10,4 +12,4 @@ function PhoneCallIcon(props: any) {
   );
 }
 
-export default PhoneCallIcon;
+export { PhoneCallIcon };

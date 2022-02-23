@@ -1,8 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ICartProduct } from "../../types";
+import { IProduct, ICartProduct, IShop } from "../../types";
 
-const initialState = {
+type SliceState = {
+  shop: IShop | null
+  products: IProduct[]
+  totalAmount: number
+}
+
+const initialState: SliceState = {
   shop: null,
   products: [],
   totalAmount: 0,
@@ -12,7 +18,8 @@ const shopSlice = createSlice({
   name: "shop",
   initialState,
   reducers: {
-    setShop(state: any, { payload }) {
+    setShop: (state: any, action: PayloadAction<any>) => {
+      const payload = action.payload
       const shopHasChanged = state.shop?.slug !== payload.slug;
 
       if (shopHasChanged || !state.products?.length) {
@@ -23,7 +30,7 @@ const shopSlice = createSlice({
         state.totalAmount = initialState.totalAmount;
       }
     },
-    setAmount(state: any, { payload }) {
+    setAmount: (state: any, { payload }) => {
       const { product, amount } = payload;
       const index = state.products.findIndex((p: ICartProduct) => p.id === product.id);
 

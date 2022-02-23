@@ -1,14 +1,15 @@
 import isEmpty from "validator/lib/isEmpty";
 
+import { IShop } from "../../types"
 import { getBackgroundForCategory } from "./categories";
 
-export function getLogoForShop({ logo }: { logo: string }) {
+export function getLogoForShop({ logo }: IShop) {
   if (!isEmpty(logo, { ignore_whitespace: true })) {
     const filename = logo.substring(logo.lastIndexOf("/") + 1);
     return `https://hacerpedido2-images.s3.amazonaws.com/${filename}`;
   }
 
-  return null;
+  return "";
 }
 
 export function getBackgroundForShop({ background, category }: { background: string; category: string }) {

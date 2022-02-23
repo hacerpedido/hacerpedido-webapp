@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet, View, Switch, Text } from "react-native";
 import colors from "../assets/colors";
 

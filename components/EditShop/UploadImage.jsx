@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";

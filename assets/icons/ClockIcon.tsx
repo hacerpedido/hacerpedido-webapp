@@ -1,4 +1,6 @@
-function ClockIcon(props: any) {
+import { SVGProps } from 'react'
+
+function ClockIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={14} height={14} {...props}>
       <path
@@ -10,4 +12,4 @@ function ClockIcon(props: any) {
   );
 }
 
-export default ClockIcon;
+export { ClockIcon };

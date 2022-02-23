@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import Head from "next/head";
+import { useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -7,10 +8,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "../lib/reducers";
 
 import "../styles/globals.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 function MyApp({ Component, pageProps }) {
-
   useEffect(() => {
     TagManager.initialize({ gtmId: "GTM-PKPPSFX" });
   }, []);

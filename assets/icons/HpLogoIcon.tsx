@@ -1,4 +1,6 @@
-function HpLogoIcon(props: any) {
+import { SVGProps } from 'react'
+
+function HpLogoIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={177} height={19} fill="none" {...props}>
       <path
@@ -13,4 +15,4 @@ function HpLogoIcon(props: any) {
   );
 }
 
-export default HpLogoIcon;
+export { HpLogoIcon };

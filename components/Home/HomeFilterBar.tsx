@@ -1,14 +1,20 @@
 import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { FlatList, StyleSheet, Text, TouchableHighlight, View, ListRenderItemInfo } from "react-native";
 
 import colors from "../../assets/colors";
 import { categories } from "../../lib/utils/categories";
 
-function Item({ id, title, selected, onSelect }) {
+interface ICategoryProps {
+  title: string;
+  selected: boolean;
+  onSelect: (id: string) => void;
+}
+
+function Category({ title, selected, onSelect }: ICategoryProps) {
   return (
     <TouchableHighlight
       underlayColor={colors.lightBackground}
-      onPress={() => onSelect(id)}
+      onPress={() => onSelect(title)}
       style={[styles.item, { backgroundColor: selected ? colors.orangeHP : colors.white }]}
     >
       <Text style={[styles.title, { color: selected ? colors.white : colors.orangeHP }]}>{title}</Text>
@@ -16,12 +22,15 @@ function Item({ id, title, selected, onSelect }) {
   );
 }
 
-const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
-  const [selected, setSelected] = useState(String);
+interface IHomeFilterBarProps {
+  selectedFilter: string;
+  onSelectFilter: (id: number) => void;
+}
 
-  if (selected === "") {
-    setSelected(selectedFilter);
-  }
+const HomeFilterBar = ({ selectedFilter, onSelectFilter }: IHomeFilterBarProps) => {
+  const [selected, setSelected] = useState("");
+
+  if (!selected) setSelected(selectedFilter);
 
   const onSelect = useCallback(
     (id) => {
@@ -38,8 +47,8 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
         showsVerticalScrollIndicator={false}
         horizontal={true}
         data={categories}
-        renderItem={({ item }) => <Item id={item} title={item} selected={!!(selected === item)} onSelect={onSelect} />}
-        keyExtractor={(item) => item}
+        renderItem={({ item }: ListRenderItemInfo<String>) => <Category title={item} selected={!!(selected === item)} onSelect={onSelect} />}
+        keyExtractor={(item: string) => item}
         extraData={selected}
       />
     </View>
@@ -71,6 +80,6 @@ const styles = StyleSheet.create({
     color: colors.filterButtonTitle,
     fontFamily: "Barlow",
     fontSize: 16,
-    fontWeight: 600,
+    fontWeight: "600",
   },
 });

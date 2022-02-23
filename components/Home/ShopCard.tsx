@@ -1,19 +1,22 @@
-import React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
-import { getLogoForShop } from "../../lib/utils/shops";
 
-import DecoratedLabel from "../DecoratedLabel";
 import colors from "../../assets/colors";
+import { getLogoForShop } from "../../lib/utils/shops";
+import { IShop } from "../../types";
+import DecoratedLabel from "../DecoratedLabel";
 
-const ShopCard = ({ shop }) => {
+interface IShopCardProps {
+  shop: IShop;
+}
+
+const ShopCard = ({ shop }: IShopCardProps) => {
   const { name, address, opentimes, deliverycost } = shop;
-  const logo = getLogoForShop(shop);
 
   return (
     <View style={styles.card}>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
-          <Image source={{ uri: logo }} style={styles.logo} />
+          <Image source={{ uri: getLogoForShop(shop) }} style={styles.logo} />
         </View>
         <View style={styles.containerLabels}>
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>
@@ -23,7 +26,8 @@ const ShopCard = ({ shop }) => {
           {opentimes && (
             <DecoratedLabel iconName="clock" text={opentimes} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
-          {/* El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
+
+          {/* TODO: El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
           <Text>
             {deliverycost && (
               <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />

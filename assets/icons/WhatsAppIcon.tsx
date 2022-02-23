@@ -1,4 +1,6 @@
-function WhatsAppIcon(props: any) {
+import { SVGProps } from 'react'
+
+function WhatsAppIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width={16} height={16} {...props}>
       <path
@@ -11,4 +13,4 @@ function WhatsAppIcon(props: any) {
   );
 }
 
-export default WhatsAppIcon;
+export { WhatsAppIcon };

@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";

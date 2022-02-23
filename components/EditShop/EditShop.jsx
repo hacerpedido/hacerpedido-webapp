@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
 import { animated, config, useTransition } from "react-spring";
