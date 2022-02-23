@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-
-import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import Link from "next/link";
+import { StyleSheet, Text, View } from "react-native";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-
-import Link from "next/link";
-import * as Icons from "../../assets/icons";
+import { HpLogoIcon } from "../../assets/icons";
 import colors from "../../assets/colors";
 
 export default function HomeHeader() {
@@ -19,7 +17,7 @@ export default function HomeHeader() {
     <View style={styles.container}>
       <Link href="/">
         <a>
-          <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
+          <HpLogoIcon width={177} height={19} color={colors.white} />
         </a>
       </Link>
 

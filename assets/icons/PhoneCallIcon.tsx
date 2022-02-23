@@ -1,4 +1,4 @@
-function SvgPhoneCall(props: any) {
+function PhoneCallIcon(props: any) {
   return (
     <svg width={10} height={16} {...props}>
       <path
@@ -10,4 +10,4 @@ function SvgPhoneCall(props: any) {
   );
 }
 
-export default SvgPhoneCall;
+export default PhoneCallIcon;

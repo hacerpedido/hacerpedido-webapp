@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { IShop } from "../../types";
+
 const initialState = {
   shops: [],
   selectedFilter: "Comida",
@@ -19,7 +21,12 @@ const homeSlice = createSlice({
     },
     setShops(state, action) {
       const newShops = action.payload;
-      state.shops = newShops.concat(state.shops.filter((bo) => newShops.every((ao) => ao.id !== bo.id)));
+      state.shops = newShops.concat(
+        // TODO: should use shop type
+        state.shops.filter((bo: IShop) => {
+          newShops.every((ao: IShop) => ao.id !== bo.id);
+        })
+      );
     },
   },
 });

@@ -1,4 +1,4 @@
-function SvgClock(props: any) {
+function ClockIcon(props: any) {
   return (
     <svg width={14} height={14} {...props}>
       <path
@@ -10,4 +10,4 @@ function SvgClock(props: any) {
   );
 }
 
-export default SvgClock;
+export default ClockIcon;

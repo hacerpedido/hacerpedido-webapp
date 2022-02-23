@@ -1,15 +1,14 @@
-import React from "react";
 import { Text, View } from "react-native";
-import * as Icons from "../assets/icons/";
+import { CarIcon, ClockIcon, PinIcon } from "../assets/icons/";
 
 // TODO: Este componente tiene una responsabilidad difusa, mucha
 // configuración externa. Repensar.
 
 const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, marginBottom }) => {
   const icons = {
-    car: <Icons.Car color={iconColor} width={18} />,
-    clock: <Icons.Clock color={iconColor} width={18} />,
-    pin: <Icons.Pin color={iconColor} width={18} />,
+    car: <CarIcon color={iconColor} width={18} />,
+    clock: <ClockIcon color={iconColor} width={18} />,
+    pin: <PinIcon color={iconColor} width={18} />,
   };
 
   var displayText = text;

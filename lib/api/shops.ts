@@ -1,6 +1,8 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-export async function saveShopWithProducts(token, shopPatch, newProducts) {
+import { IProduct } from "../../types";
+
+export async function saveShopWithProducts(token: string, shopPatch: any, newProducts: IProduct[]) {
   const params = {
     id: shopPatch.id,
     address: shopPatch.address,
@@ -14,11 +16,9 @@ export async function saveShopWithProducts(token, shopPatch, newProducts) {
     products: newProducts,
   };
 
-  // console.log("saveShopWithProducts 2:", params);
-
   try {
     await axios.post(`${window.location.origin}/api/shop/by-token`, params);
-  } catch (error) {
+  } catch (error: any | AxiosError) {
     return {
       message: `Error al grabar los datos del comercio. (${error} Error: ${error?.response?.data?.message})`,
       error: 1,

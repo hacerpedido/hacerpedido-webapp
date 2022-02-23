@@ -2,8 +2,17 @@ const formidable = require("formidable");
 
 const validator = require("validator");
 
-const s3utils = require("../../lib/utils/aws-s3");
-const utils = require("../../lib/utils/utils");
+const s3utils = require("./aws-s3");
+
+function randomString(length, characters = "abcdefghijklmnopqrstuvwxyz0123456789") {
+  let result = "";
+  var characters = characters;
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -72,7 +81,7 @@ export default async function handler(req, res) {
   const { oldKey } = selectData[0];
 
   const extension = mime === "image/png" ? "png" : "jpg";
-  const random = utils.randomString(10);
+  const random = randomString(10);
   const key = `${shopID}-${imageType}-${random}.${extension}`;
 
   await s3utils.uploadFile(path, key, mime);

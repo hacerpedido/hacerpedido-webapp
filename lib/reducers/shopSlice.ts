@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { ICartProduct } from "../../types";
+
 const initialState = {
   shop: null,
   products: [],
@@ -10,24 +12,24 @@ const shopSlice = createSlice({
   name: "shop",
   initialState,
   reducers: {
-    setShop(state, { payload }) {
+    setShop(state: any, { payload }) {
       const shopHasChanged = state.shop?.slug !== payload.slug;
 
       if (shopHasChanged || !state.products?.length) {
         const products = payload.products || [];
 
         state.shop = payload;
-        state.products = products.map((obj) => ({ ...obj, amount: 0 }));
+        state.products = products.map((obj: ICartProduct) => ({ ...obj, amount: 0 }));
         state.totalAmount = initialState.totalAmount;
       }
     },
-    setAmount(state, { payload }) {
+    setAmount(state: any, { payload }) {
       const { product, amount } = payload;
-      const index = state.products.findIndex((p) => p.id === product.id);
+      const index = state.products.findIndex((p: ICartProduct) => p.id === product.id);
 
       if (amount >= 0) state.products[index].amount = amount;
 
-      state.totalAmount = state.products.reduce((prev, p) => prev + p.amount, 0);
+      state.totalAmount = state.products.reduce((prev: number, p: ICartProduct) => prev + p.amount, 0);
     },
   },
 });

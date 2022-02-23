@@ -1,4 +1,4 @@
-function SvgLogoHacerpedido(props: any) {
+function HpLogoIcon(props: any) {
   return (
     <svg width={177} height={19} fill="none" {...props}>
       <path
@@ -13,4 +13,4 @@ function SvgLogoHacerpedido(props: any) {
   );
 }
 
-export default SvgLogoHacerpedido;
+export default HpLogoIcon;

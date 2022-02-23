@@ -8,7 +8,7 @@ import colors from "../../assets/colors";
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
 import Switch from "../Switch";
 import Input from "../Input";
-import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
+import { WhatsAppIcon } from "../../assets/icons";
 
 const Form = ({ onSubmit }) => {
   const shop = useSelector((state) => state.shop.shop);
@@ -97,7 +97,7 @@ const Form = ({ onSubmit }) => {
           <View style={[styles.buttonWhatsApp, styles.button]}>
             <Text style={styles.textContainer} numberOfLines={1}>
               <View style={styles.icon}>
-                <WhatsappFillIcon color={colors.white} />
+                <WhatsAppIcon color={colors.white} />
               </View>
               <Text style={styles.buttonText}> Pedir a {name} </Text>
             </Text>

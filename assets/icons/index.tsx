@@ -1,9 +1,0 @@
-export { default as ArrowLeft } from "./ArrowLeft";
-export { default as Car } from "./Car";
-export { default as ChevronDown } from "./ChevronDown";
-export { default as Clock } from "./Clock";
-export { default as Logo } from "./Logo";
-export { default as LogoHacerpedido } from "./LogoHacerpedido";
-export { default as PhoneCall } from "./PhoneCall";
-export { default as Pin } from "./Pin";
-export { default as WhatsappFill } from "./WhatsappFill";

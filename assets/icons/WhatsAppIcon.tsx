@@ -1,4 +1,4 @@
-function SvgWhatsappFill(props: any) {
+function WhatsAppIcon(props: any) {
   return (
     <svg width={16} height={16} {...props}>
       <path
@@ -11,4 +11,4 @@ function SvgWhatsappFill(props: any) {
   );
 }
 
-export default SvgWhatsappFill;
+export default WhatsAppIcon;

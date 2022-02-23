@@ -3,10 +3,10 @@ import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native"
 
 import { useRouter } from "next/router";
 import { generateCallUrl } from "../../lib/utils/utils";
-import { getBackgroundColorForCategory } from "../../lib/utils/categoriesHelper";
+import { getBackgroundColorForCategory } from "../../lib/utils/categories";
 import { getLogoForShop, getBackgroundForShop } from "../../lib/utils/shops";
 import colors from "../../assets/colors";
-import * as Icons from "../../assets/icons";
+import { PhoneCallIcon, ArrowLeftIcon } from "../../assets/icons";
 import DecoratedLabel from "../DecoratedLabel";
 
 const ShopHeader = ({ isPreview = false, shop = {} }) => {
@@ -34,7 +34,7 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
       {/* eslint-disable react-native/no-inline-styles */}
       <a href={generateCallUrl(ordersphonenumber)} style={{ textDecoration: "none" }}>
         <View style={styles.buttonCall}>
-          <Icons.PhoneCall />
+          <PhoneCallIcon />
           <Text style={styles.buttonText}>Llamar</Text>
         </View>
       </a>
@@ -51,7 +51,7 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
       <View style={styles.containerNavigator}>
         {!isPreview && (
           <TouchableHighlight underlayColor={"none"} onPress={onButtonBackPress} style={styles.buttonBack}>
-            <Icons.ArrowLeft color={colors.white} />
+            <ArrowLeftIcon color={colors.white} />
           </TouchableHighlight>
         )}
 

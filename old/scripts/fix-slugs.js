@@ -29,5 +29,5 @@
 // });
 
 console.log(
-    "\n\n\n\n\nNadie debería ejecutar este sucio y viejo código. Pero ante la duda, preguntar a Sebastián.\n\n\n\n\n"
+  "\n\n\n\n\nNadie debería ejecutar este sucio y viejo código. Pero ante la duda, preguntar a Sebastián.\n\n\n\n\n"
 );

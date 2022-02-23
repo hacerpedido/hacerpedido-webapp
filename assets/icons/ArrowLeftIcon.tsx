@@ -1,4 +1,4 @@
-function SvgArrowLeft(props: any) {
+function ArrowLeftIcon(props: any) {
   return (
     <svg width={11} height={21} {...props}>
       <path
@@ -10,4 +10,4 @@ function SvgArrowLeft(props: any) {
   );
 }
 
-export default SvgArrowLeft;
+export default ArrowLeftIcon;

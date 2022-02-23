@@ -5,7 +5,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "lint": "eslint .",
+    "lint": "eslint --ignore-path .gitignore .",
     "import-data": "npx babel --presets '@babel/preset-env,@babel/preset-react'  -d build-scripts/ src/graphql scripts/import-data.js src/utils/utils.js src/aws-exports.js src/utils/categories.js && node build-scripts/import-data.js",
     "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/",
     "prettier": "npx prettier --write \"**/*.js?\" "
@@ -13,6 +13,7 @@
   "dependencies": {
     "@handsontable/react": "^11.1.0",
     "@reduxjs/toolkit": "^1.4.0",
+    "@types/validator": "^13.7.1",
     "aws-sdk": "^2.799.0",
     "axios": "^0.26.0",
     "bootstrap": "^5.1.3",

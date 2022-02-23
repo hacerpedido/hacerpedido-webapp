@@ -1,42 +1,42 @@
-import * as utils from "./utils";
+import { IProduct } from "../../types";
+
+import { toTitleCase, sanitizePrice, sanitizeProductName } from "./utils";
 
 // TODO: Promociones should go first
-export function extractSections(products = []) {
+
+export function extractSections(products: IProduct[] = []) {
   const sections = [];
+  let categoryProducts: IProduct[] = [];
   let lastCategory = "";
-  let items = [];
 
   products.forEach((product) => {
-    if (lastCategory !== product.category) {
+    if (lastCategory != product.category) {
       // ignore the first case
-      if (lastCategory !== "") {
-        sections.push({ name: lastCategory, products: items });
+      if (lastCategory) {
+        const section = { name: lastCategory, products: categoryProducts };
+        sections.push(section);
       }
 
       lastCategory = product.category;
-      items = [];
+      categoryProducts = [];
     }
 
-    items.push(product);
+    categoryProducts.push(product);
   });
 
-  if (lastCategory !== "") {
-    sections.push({
-      name: lastCategory,
-      products: items,
-    });
+  if (lastCategory) {
+    const section = { name: lastCategory, products: categoryProducts };
+    sections.push(section);
   }
-
-  //   console.log(JSON.stringify(sections, null, 2));
 
   return sections;
 }
 
-export function productForGrid(products) {
+export function productForGrid(products: IProduct[]) {
   if (!Array.isArray(products) || products.length === 0) {
     return [];
   }
-  const result = [];
+  const result: any[] = [];
   let category = "";
 
   products.forEach((product) => {
@@ -49,17 +49,15 @@ export function productForGrid(products) {
     result.push([false, product.name, product.description, product.price]);
   });
 
-  // console.log(JSON.stringify(result, null, 2));
-
   return result;
 }
 
-export function productsFromGrid(shopID, rows) {
+export function productsFromGrid(shopID: number, rows: any[]) {
   if (!Array.isArray(rows) || rows.length === 0) {
     return [];
   }
 
-  const result = [];
+  const result: any[] = [];
   let section = "";
   let itemNumber = 0;
 
@@ -74,7 +72,7 @@ export function productsFromGrid(shopID, rows) {
     }
 
     if (isCategory) {
-      section = utils.toTitleCase(name);
+      section = toTitleCase(name);
 
       return;
     }
@@ -82,21 +80,16 @@ export function productsFromGrid(shopID, rows) {
     itemNumber++;
 
     const product = {
-      name: utils.sanitizeProductName(name),
-      price: price ? utils.sanitizePrice(price).toString() : "",
       category: section,
-      shopid: shopID,
+      description: description,
       itemnumber: itemNumber,
+      name: sanitizeProductName(name),
+      price: price ? sanitizePrice(price).toString() : "",
+      shopid: shopID,
     };
-
-    if (description != null && description !== "") {
-      product.description = description;
-    }
 
     result.push(product);
   });
-
-  // console.log(JSON.stringify(result, null, 2));
 
   return result;
 }

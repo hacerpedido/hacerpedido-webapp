@@ -1,4 +1,4 @@
-function SvgPin(props: any) {
+function PinIcon(props: any) {
   return (
     <svg width={14} height={14} {...props}>
       <path
@@ -10,4 +10,4 @@ function SvgPin(props: any) {
   );
 }
 
-export default SvgPin;
+export default PinIcon;

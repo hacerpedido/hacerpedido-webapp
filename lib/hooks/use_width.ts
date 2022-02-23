@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const useWidth = () => {
-  const [width, setWidth] = useState(null); // default width, detect on server.
+  const [width, setWidth] = useState<number | undefined>(1); // default width, detect on server.
 
   const handleResize = () => setWidth(window.innerWidth);
 
