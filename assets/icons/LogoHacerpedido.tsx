@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgLogoHacerpedido(props) {
+function SvgLogoHacerpedido(props: any) {
   return (
     <svg width={177} height={19} fill="none" {...props}>
       <path

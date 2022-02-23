@@ -20,12 +20,12 @@ const backgroundColors = {
   // "Fruta y Verdura": "#C1BE3D",
 };
 
-export function getBackgroundColorForCategory(category) {
+export function getBackgroundColorForCategory(category: string) {
   return backgroundColors[category];
 }
 
 // TODO: Refactor, extraer valores, meter en un modelo
-export function getBackgroundForCategory(category) {
+export function getBackgroundForCategory(category: string) {
   let background = "";
 
   switch (category) {

@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgPin(props) {
+function SvgPin(props: any) {
   return (
     <svg width={14} height={14} {...props}>
       <path

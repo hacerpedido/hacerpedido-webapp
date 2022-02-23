@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgPhoneCall(props) {
+function SvgPhoneCall(props: any) {
   return (
     <svg width={10} height={16} {...props}>
       <path

@@ -1,7 +1,6 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import { useRouter } from "next/router";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { useSelector } from "react-redux";
 
 import colors from "../../assets/colors";
 import { ArrowLeft as ArrowLeftIcon } from "../../assets/icons";

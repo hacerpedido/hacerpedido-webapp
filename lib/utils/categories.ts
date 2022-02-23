@@ -10,7 +10,7 @@ export const categories = [
   "Otros", // Otro
 ];
 
-export function sanitizeCategory(oldCategory) {
+export function sanitizeCategory(oldCategory: string) {
   if (categories.includes(oldCategory)) {
     return oldCategory;
   }

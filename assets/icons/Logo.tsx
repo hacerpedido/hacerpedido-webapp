@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgLogo(props) {
+function SvgLogo(props: any) {
   return (
     <svg width={54} height={24} {...props}>
       <defs>

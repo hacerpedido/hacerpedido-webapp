@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgWhatsappFill(props) {
+function SvgWhatsappFill(props: any) {
   return (
     <svg width={16} height={16} {...props}>
       <path

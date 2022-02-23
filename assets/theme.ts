@@ -19,7 +19,9 @@ const textStyles = {
   },
 };
 
-export default {
+const theme = {
   text: { ...textStyles },
   colors: { ...colors },
 };
+
+export default theme;

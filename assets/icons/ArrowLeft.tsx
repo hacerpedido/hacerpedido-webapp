@@ -1,6 +1,4 @@
-import * as React from "react";
-
-function SvgArrowLeft(props) {
+function SvgArrowLeft(props: any) {
   return (
     <svg width={11} height={21} {...props}>
       <path

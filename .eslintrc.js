@@ -3,22 +3,24 @@ module.exports = {
     es2021: true,
     "shared-node-browser": true,
   },
-  extends: ["eslint:recommended", "next/core-web-vitals", "prettier"],
-  plugins: ["import", "prettier"],
+  extends: ["plugin:@typescript-eslint/recommended", "eslint:recommended", "next/core-web-vitals", "prettier"],
+  plugins: ["@typescript-eslint", "import", "prettier"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     sourceType: "module",
   },
   rules: {
-    "prettier/prettier": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": "error",
     "import/no-extraneous-dependencies": 0,
-    "import/order":
-      [
-        "error",
-        {
-          alphabetize: { caseInsensitive: true, order: "asc" },
-          "newlines-between": "always-and-inside-groups",
-          warnOnUnassignedImports: true,
-        },
-      ]
+    "import/order": [
+      "error",
+      {
+        alphabetize: { caseInsensitive: true, order: "asc" },
+        "newlines-between": "always-and-inside-groups",
+        warnOnUnassignedImports: true,
+      },
+    ],
+    "prettier/prettier": "error",
   },
 };
