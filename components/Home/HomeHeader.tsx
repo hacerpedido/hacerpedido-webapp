@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { TouchableOpacity } from "react-native";
-import Link from "next/link";
-import { StyleSheet, Text, View, ViewStyle, TextStyle } from "react-native";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import Link from "next/link"
+import { useState } from "react"
+import Button from "react-bootstrap/Button"
+import Modal from "react-bootstrap/Modal"
+import { TouchableOpacity } from "react-native"
+import { StyleSheet, Text, View, ViewStyle, TextStyle } from "react-native"
 
-import { HpLogoIcon } from "../../assets/icons";
-import colors from "../../assets/colors";
+import colors from "../../assets/colors"
+import { HpLogoIcon } from "../../assets/icons"
 
 export default function HomeHeader() {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
 
   return (
     <View style={styles.container}>
@@ -32,7 +32,10 @@ export default function HomeHeader() {
         <Modal.Header closeButton>
           <Modal.Title>Ups...</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Por el momento no estamos haciendo nuevas altas. Próximamente habrá novedades :)</Modal.Body>
+        <Modal.Body>
+          Por el momento no estamos haciendo nuevas altas. Próximamente habrá
+          novedades :)
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
@@ -49,14 +52,14 @@ export default function HomeHeader() {
       </a>
       */}
     </View>
-  );
+  )
 }
 
-interface Styles {
-  addShopButton: ViewStyle;
-  container: ViewStyle;
-  modalText: TextStyle;
-  modalView: ViewStyle;
+type Styles = {
+  addShopButton: ViewStyle
+  container: ViewStyle
+  modalText: TextStyle
+  modalView: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -94,4 +97,4 @@ const styles = StyleSheet.create<Styles>({
     flexDirection: "column",
     justifyContent: "center",
   },
-});
+})

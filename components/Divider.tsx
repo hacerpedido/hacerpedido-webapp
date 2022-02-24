@@ -1,11 +1,16 @@
-import { StyleSheet, View } from "react-native";
-import colors from "../assets/colors";
+import { StyleSheet, View, ViewStyle } from "react-native"
+
+import colors from "../assets/colors"
 
 export default function Divider() {
-  return <View style={styles.divider} />;
+  return <View style={styles.divider} />
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  divider: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   divider: {
     backgroundColor: colors.lightBackground,
     borderBottomWidth: 1,
@@ -16,4 +21,4 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
   },
-});
+})

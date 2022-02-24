@@ -1,6 +1,6 @@
-import colors from "./colors";
+import colors from "./colors"
 
-const titleFont = { fontFamily: "Barlow", fontWeight: "600" };
+const titleFont = { fontFamily: "Barlow", fontWeight: "600" }
 
 const textStyles = {
   title: {
@@ -17,11 +17,11 @@ const textStyles = {
     fontStyle: "normal",
     fontWeight: "400",
   },
-};
+}
 
 const theme = {
   text: { ...textStyles },
   colors: { ...colors },
-};
+}
 
-export default theme;
+export default theme

@@ -1,17 +1,17 @@
-import * as n from "nested-knex";
+import * as n from "nested-knex"
 
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
-});
+})
 
 export default async function handle(req, res) {
-  const { slug } = req.query;
+  const { slug } = req.query
 
   if (!slug || slug === "") {
-    res.status(400).json({ error: "Wrong parameters (1)." });
+    res.status(400).json({ error: "Wrong parameters (1)." })
 
-    return;
+    return
   }
 
   const data = await n
@@ -48,8 +48,8 @@ export default async function handle(req, res) {
         .where("slug", "=", slug)
         .leftJoin("products", "shops.id", "products.shopid")
         .orderBy("products.itemnumber")
-    );
+    )
 
-  res.status(200).json(data);
-  res.end();
+  res.status(200).json(data)
+  res.end()
 }

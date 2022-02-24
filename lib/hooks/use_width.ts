@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
 const useWidth = () => {
-  const [width, setWidth] = useState<number | undefined>(1); // default width, detect on server.
+  const [width, setWidth] = useState<number | undefined>(1) // default width, detect on server.
 
-  const handleResize = () => setWidth(window.innerWidth);
+  const handleResize = () => setWidth(window.innerWidth)
 
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [handleResize]);
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [handleResize])
 
-  return width;
-};
+  return width
+}
 
-export default useWidth;
+export default useWidth

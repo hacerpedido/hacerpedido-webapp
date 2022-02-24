@@ -1,22 +1,28 @@
-import { useEffect } from "react";
+import { useEffect } from "react"
 import {
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
   TextStyle,
-  ViewStyle
-} from "react-native";
+  ViewStyle,
+} from "react-native"
 
-import theme from "../assets/theme";
+import theme from "../assets/theme"
 
-const MessageBox = ({ message, onMessagePress }: { message: string, onMessagePress: () => void }) => {
+const MessageBox = ({
+  message,
+  onMessagePress,
+}: {
+  message: string
+  onMessagePress: () => void
+}) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onMessagePress();
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [onMessagePress]);
+      onMessagePress()
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [onMessagePress])
 
   return (
     <View style={styles.container}>
@@ -27,16 +33,16 @@ const MessageBox = ({ message, onMessagePress }: { message: string, onMessagePre
         </>
       </TouchableHighlight>
     </View>
-  );
-};
+  )
+}
 
-export default MessageBox;
+export default MessageBox
 
-interface Styles {
-  container: ViewStyle;
-  touchable: ViewStyle;
-  text: TextStyle;
-  textClose: TextStyle;
+type Styles = {
+  container: ViewStyle
+  touchable: ViewStyle
+  text: TextStyle
+  textClose: TextStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -68,4 +74,4 @@ const styles = StyleSheet.create<Styles>({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-});
+})

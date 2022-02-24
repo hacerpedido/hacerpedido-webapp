@@ -1,16 +1,16 @@
-import { View, Image, StyleSheet, Text } from "react-native";
+import { View, Image, StyleSheet, Text } from "react-native"
 
-import colors from "../../assets/colors";
-import { getLogoForShop } from "../../lib/utils/shops";
-import { IShop } from "../../types";
-import DecoratedLabel from "../DecoratedLabel";
+import colors from "../../assets/colors"
+import { getLogoForShop } from "../../lib/utils/shops"
+import { Shop } from "../../types"
+import DecoratedLabel from "../DecoratedLabel"
 
-interface IShopCardProps {
-  shop: IShop;
+type Props = {
+  shop: Shop
 }
 
-const ShopCard = ({ shop }: IShopCardProps) => {
-  const { name, address, opentimes, deliverycost } = shop;
+const ShopCard = ({ shop }: Props) => {
+  const { name, address, opentimes, deliverycost } = shop
 
   return (
     <View style={styles.card}>
@@ -21,27 +21,42 @@ const ShopCard = ({ shop }: IShopCardProps) => {
         <View style={styles.containerLabels}>
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>
           {address && (
-            <DecoratedLabel iconName="pin" text={address} iconColor={iconColor} textColor={colors.lightGrey} />
+            <DecoratedLabel
+              iconName="pin"
+              text={address}
+              iconColor={iconColor}
+              textColor={colors.lightGrey}
+            />
           )}
           {opentimes && (
-            <DecoratedLabel iconName="clock" text={opentimes} iconColor={iconColor} textColor={colors.lightGrey} />
+            <DecoratedLabel
+              iconName="clock"
+              text={opentimes}
+              iconColor={iconColor}
+              textColor={colors.lightGrey}
+            />
           )}
 
           {/* TODO: El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
           <Text>
             {deliverycost && (
-              <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
+              <DecoratedLabel
+                iconName="car"
+                text={deliverycost}
+                iconColor={iconColor}
+                textColor={colors.lightGrey}
+              />
             )}
           </Text>
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default ShopCard;
+export default ShopCard
 
-const iconColor = "#C5CEE0";
+const iconColor = "#C5CEE0"
 
 const styles = StyleSheet.create({
   card: {
@@ -82,4 +97,4 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textTransform: "capitalize",
   },
-});
+})

@@ -1,44 +1,63 @@
-import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableHighlight, View, ListRenderItemInfo } from "react-native";
+import { useCallback, useState } from "react"
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  ListRenderItemInfo,
+  TextStyle,
+  ViewStyle,
+} from "react-native"
 
-import colors from "../../assets/colors";
-import { categories } from "../../lib/utils/categories";
+import colors from "../../assets/colors"
+import { categories } from "../../lib/utils/categories"
 
-interface ICategoryProps {
-  title: string;
-  selected: boolean;
-  onSelect: (id: string) => void;
+type CategoryProps = {
+  title: string
+  selected: boolean
+  onSelect: (id: string) => void
 }
 
-function Category({ title, selected, onSelect }: ICategoryProps) {
+function Category({ title, selected, onSelect }: CategoryProps) {
   return (
     <TouchableHighlight
       underlayColor={colors.lightBackground}
       onPress={() => onSelect(title)}
-      style={[styles.item, { backgroundColor: selected ? colors.orangeHP : colors.white }]}
+      style={[
+        styles.item,
+        { backgroundColor: selected ? colors.orangeHP : colors.white },
+      ]}
     >
-      <Text style={[styles.title, { color: selected ? colors.white : colors.orangeHP }]}>{title}</Text>
+      <Text
+        style={[
+          styles.title,
+          { color: selected ? colors.white : colors.orangeHP },
+        ]}
+      >
+        {title}
+      </Text>
     </TouchableHighlight>
-  );
+  )
 }
 
-interface IHomeFilterBarProps {
-  selectedFilter: string;
-  onSelectFilter: (id: number) => void;
+type Props = {
+  selectedFilter: string
+  onSelectFilter: (id: number) => void
 }
 
-const HomeFilterBar = ({ selectedFilter, onSelectFilter }: IHomeFilterBarProps) => {
-  const [selected, setSelected] = useState("");
+const HomeFilterBar = ({ selectedFilter, onSelectFilter }: Props) => {
+  const [selected, setSelected] = useState("")
 
-  if (!selected) setSelected(selectedFilter);
+  if (!selected) setSelected(selectedFilter)
 
   const onSelect = useCallback(
     (id) => {
-      setSelected(id);
-      onSelectFilter(id);
+      setSelected(id)
+      onSelectFilter(id)
     },
     [onSelectFilter]
-  );
+  )
 
   return (
     <View style={styles.container}>
@@ -47,17 +66,27 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }: IHomeFilterBarProps) 
         showsVerticalScrollIndicator={false}
         horizontal={true}
         data={categories}
-        renderItem={({ item }: ListRenderItemInfo<String>) => <Category title={item} selected={!!(selected === item)} onSelect={onSelect} />}
+        renderItem={({ item }: ListRenderItemInfo<string>) => (
+          <Category
+            title={item}
+            selected={!!(selected === item)}
+            onSelect={onSelect}
+          />
+        )}
         keyExtractor={(item: string) => item}
         extraData={selected}
       />
     </View>
-  );
-};
+  )
+}
 
-export default HomeFilterBar;
+type Styles = {
+  container: ViewStyle
+  item: ViewStyle
+  title: TextStyle
+}
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.white,
     borderBottomWidth: 1,
@@ -82,4 +111,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-});
+})
+
+export default HomeFilterBar

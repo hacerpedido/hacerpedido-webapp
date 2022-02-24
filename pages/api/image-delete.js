@@ -1,64 +1,70 @@
-const formidable = require("formidable");
-const validator = require("validator");
+const formidable = require("formidable")
+const validator = require("validator")
 
-const s3utils = require("./aws-s3");
+const s3utils = require("./aws-s3")
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.status(400).end();
+    res.status(400).end()
   }
 
   const pg = require("knex")({
     client: "pg",
     connection: process.env.PG_CONNECTION_STRING,
-  });
+  })
 
   const data = await new Promise(function (resolve, reject) {
-    const form = new formidable.IncomingForm({ keepExtensions: true, multiples: false });
+    const form = new formidable.IncomingForm({
+      keepExtensions: true,
+      multiples: false,
+    })
 
     form.parse(req, function (err, fields, files) {
       if (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message })
 
-        return;
+        return
       }
 
-      resolve({ fields, files });
-    });
-  });
+      resolve({ fields, files })
+    })
+  })
 
-  const { image_type: imageType, shop_id: shopID } = data.fields;
+  const { image_type: imageType, shop_id: shopID } = data.fields
 
-  const acceptedImageTypes = ["logo", "background"];
+  const acceptedImageTypes = ["logo", "background"]
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
-    res.status(400).json({ error: "Wrong parameters (1)." });
+    res.status(400).json({ error: "Wrong parameters (1)." })
 
-    return;
+    return
   }
 
   if (!shopID || shopID === "" || !validator.isUUID(shopID)) {
-    res.status(400).json({ error: "Wrong parameters (2)." });
+    res.status(400).json({ error: "Wrong parameters (2)." })
 
-    return;
+    return
   }
 
-  const selectData = await pg.select({ oldKey: imageType }).from("shops").where("id", "=", shopID);
+  const selectData = await pg
+    .select({ oldKey: imageType })
+    .from("shops")
+    .where("id", "=", shopID)
 
   if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
-    res.status(400).json({ error: "Wrong parameters (5)." });
+    res.status(400).json({ error: "Wrong parameters (5)." })
 
-    return;
+    return
   }
 
-  const { oldKey } = selectData[0];
+  const { oldKey } = selectData[0]
 
-  await pg("shops").where("id", "=", shopID).update(imageType, null);
+  await pg("shops").where("id", "=", shopID).update(imageType, null)
 
   if (oldKey) {
-    await s3utils.deleteFile(oldKey);
+    await s3utils.deleteFile(oldKey)
   }
 
-  res.status(200).json({ deleted: oldKey });
+  res.status(200).json({ deleted: oldKey })
 
   //   {
   //     "data": {
@@ -74,4 +80,4 @@ export const config = {
   api: {
     bodyParser: false,
   },
-};
+}

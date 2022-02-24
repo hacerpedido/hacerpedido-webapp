@@ -1,4 +1,4 @@
-import { SVGProps } from 'react'
+import { SVGProps } from "react"
 
 function HpLogoIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -12,7 +12,7 @@ function HpLogoIcon(props: SVGProps<SVGSVGElement>) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
-export { HpLogoIcon };
+export { HpLogoIcon }

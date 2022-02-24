@@ -1,98 +1,107 @@
-const formidable = require("formidable");
+const formidable = require("formidable")
 
-const validator = require("validator");
+const validator = require("validator")
 
-const s3utils = require("./aws-s3");
+const s3utils = require("./aws-s3")
 
-function randomString(length, characters = "abcdefghijklmnopqrstuvwxyz0123456789") {
-  let result = "";
-  var characters = characters;
-  const charactersLength = characters.length;
+function randomString(
+  length,
+  characters = "abcdefghijklmnopqrstuvwxyz0123456789"
+) {
+  let result = ""
+  var characters = characters
+  const charactersLength = characters.length
   for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
   }
-  return result;
+  return result
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.status(400).end();
+    res.status(400).end()
   }
 
   const pg = require("knex")({
     client: "pg",
     connection: process.env.PG_CONNECTION_STRING,
-  });
+  })
 
   const data = await new Promise(function (resolve, reject) {
-    const form = new formidable.IncomingForm({ keepExtensions: true, multiples: false });
+    const form = new formidable.IncomingForm({
+      keepExtensions: true,
+      multiples: false,
+    })
 
     form.parse(req, function (err, fields, files) {
       if (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: err.message })
 
-        return;
+        return
       }
 
-      resolve({ fields, files });
-    });
-  });
+      resolve({ fields, files })
+    })
+  })
 
-  const { image_type: imageType, shop_id: shopID } = data.fields;
+  const { image_type: imageType, shop_id: shopID } = data.fields
 
-  const acceptedImageTypes = ["logo", "background"];
+  const acceptedImageTypes = ["logo", "background"]
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
-    res.status(400).json({ error: "Wrong parameters (1)." });
+    res.status(400).json({ error: "Wrong parameters (1)." })
 
-    return;
+    return
   }
 
   if (!shopID || shopID === "" || !validator.isUUID(shopID)) {
-    res.status(400).json({ error: "Wrong parameters (2)." });
+    res.status(400).json({ error: "Wrong parameters (2)." })
 
-    return;
+    return
   }
 
-  const { image } = data.files;
+  const { image } = data.files
 
   if (!image || image?.size === 0) {
-    res.status(400).json({ error: "Wrong parameters (3)." });
+    res.status(400).json({ error: "Wrong parameters (3)." })
 
-    return;
+    return
   }
 
-  const { type: mime, path } = image;
+  const { type: mime, path } = image
 
-  const acceptedMimeTypes = ["image/png", "image/jpeg"];
+  const acceptedMimeTypes = ["image/png", "image/jpeg"]
   if (!mime || !acceptedMimeTypes.includes(mime)) {
-    res.status(400).json({ error: "Wrong parameters (4)." });
+    res.status(400).json({ error: "Wrong parameters (4)." })
 
-    return;
+    return
   }
 
-  const selectData = await pg.select({ oldKey: imageType }).from("shops").where("id", "=", shopID);
+  const selectData = await pg
+    .select({ oldKey: imageType })
+    .from("shops")
+    .where("id", "=", shopID)
 
   if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
-    res.status(400).json({ error: "Wrong parameters (5)." });
+    res.status(400).json({ error: "Wrong parameters (5)." })
 
-    return;
+    return
   }
 
-  const { oldKey } = selectData[0];
+  const { oldKey } = selectData[0]
 
-  const extension = mime === "image/png" ? "png" : "jpg";
-  const random = randomString(10);
-  const key = `${shopID}-${imageType}-${random}.${extension}`;
+  const extension = mime === "image/png" ? "png" : "jpg"
+  const random = randomString(10)
+  const key = `${shopID}-${imageType}-${random}.${extension}`
 
-  await s3utils.uploadFile(path, key, mime);
+  await s3utils.uploadFile(path, key, mime)
 
-  await pg("shops").where("id", "=", shopID).update(imageType, key);
+  await pg("shops").where("id", "=", shopID).update(imageType, key)
 
   if (oldKey) {
-    s3utils.deleteFile(oldKey);
+    s3utils.deleteFile(oldKey)
   }
 
-  res.status(200).json({ image: key });
+  res.status(200).json({ image: key })
 
   //   {
   //     "data": {
@@ -117,4 +126,4 @@ export const config = {
   api: {
     bodyParser: false,
   },
-};
+}

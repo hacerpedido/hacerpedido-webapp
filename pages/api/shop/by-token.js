@@ -1,9 +1,9 @@
-import * as n from "nested-knex";
+import * as n from "nested-knex"
 
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
-});
+})
 
 export default async function handle(req, res) {
   if (req.method === "POST") {
@@ -20,11 +20,11 @@ export default async function handle(req, res) {
       orderswhatsappnumber,
       token,
       products,
-    } = req.body;
+    } = req.body
 
     if (!token || token === "") {
-      res.status(400).json({ error: "Wrong parameters (1)." });
-      return;
+      res.status(400).json({ error: "Wrong parameters (1)." })
+      return
     }
 
     pg("shops")
@@ -42,36 +42,36 @@ export default async function handle(req, res) {
         // console.log("update shop")
 
         if (!rows) {
-          return res.status(404).json({ success: false });
+          return res.status(404).json({ success: false })
         }
       })
-      .catch((e) => console.error(e));
+      .catch((e) => console.error(e))
 
     if (!products || products.lenght == 0) {
       return res.json({
         success: true,
         message: "Tus cambios fueron guardados.",
-      });
+      })
     }
 
-    await pg("products").where("shopid", "=", id).delete();
+    await pg("products").where("shopid", "=", id).delete()
     // .then(a => console.log("deleted products:", a))
 
-    await pg("products").insert(products);
+    await pg("products").insert(products)
     // .then(a => console.log("updated products:", a))
 
     return res.json({
       success: true,
       message: "Tus cambios fueron guardados..",
-    });
+    })
   }
 
-  const { token } = req.query;
+  const { token } = req.query
 
   if (!token || token === "") {
-    res.status(400).json({ error: "Wrong parameters (1)." });
+    res.status(400).json({ error: "Wrong parameters (1)." })
 
-    return;
+    return
   }
 
   const data = await n
@@ -108,8 +108,8 @@ export default async function handle(req, res) {
         .where("typeformtoken", "=", token)
         .leftJoin("products", "shops.id", "products.shopid")
         .orderBy("products.itemnumber")
-    );
+    )
 
-  res.status(200).json(data);
-  res.end();
+  res.status(200).json(data)
+  res.end()
 }

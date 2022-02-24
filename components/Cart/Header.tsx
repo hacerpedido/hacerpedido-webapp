@@ -1,20 +1,31 @@
-import { useRouter } from "next/router";
-import { StyleSheet, Text, TouchableHighlight, View, TextStyle, ViewStyle } from "react-native";
+import { useRouter } from "next/router"
+import {
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  TextStyle,
+  ViewStyle,
+} from "react-native"
 
-import colors from "../../assets/colors";
-import { ArrowLeftIcon } from "../../assets/icons";
-import { useAppSelector } from "../../lib/hooks";
+import colors from "../../assets/colors"
+import { ArrowLeftIcon } from "../../assets/icons"
+import { useAppSelector } from "../../lib/hooks"
 
 export default function CartHeader() {
-  const cart = useAppSelector((state) => state.shop);
-  const slug = cart.shop.slug;
+  const cart = useAppSelector((state) => state.shop)
+  const slug = cart.shop.slug
 
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <View style={styles.container}>
       <View style={styles.containerNavigator}>
-        <TouchableHighlight onPress={() => router.push(`/${slug}`)} underlayColor="none" style={styles.buttonBack}>
+        <TouchableHighlight
+          onPress={() => router.push(`/${slug}`)}
+          underlayColor="none"
+          style={styles.buttonBack}
+        >
           <ArrowLeftIcon />
         </TouchableHighlight>
       </View>
@@ -23,11 +34,11 @@ export default function CartHeader() {
         <Text style={styles.title}>Revisar mi Pedido</Text>
       </View>
     </View>
-  );
+  )
 }
 
-const barlow = { fontFamily: "Barlow" };
-const xlargeText = 19;
+const barlow = { fontFamily: "Barlow" }
+const xlargeText = 19
 
 const textStyles = {
   xlargeText: {
@@ -36,14 +47,14 @@ const textStyles = {
     fontWeight: "600",
     lineHeight: 23,
   },
-};
+}
 
-interface Styles {
-  buttonBack: ViewStyle;
-  container: ViewStyle;
-  containerNavigator: ViewStyle;
-  title: TextStyle;
-  titleContainer: ViewStyle;
+type Styles = {
+  buttonBack: ViewStyle
+  container: ViewStyle
+  containerNavigator: ViewStyle
+  title: TextStyle
+  titleContainer: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -72,4 +83,4 @@ const styles = StyleSheet.create<Styles>({
     paddingTop: 21,
     ...textStyles.xlargeText,
   },
-});
+})

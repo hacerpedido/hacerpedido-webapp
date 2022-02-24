@@ -26,6 +26,6 @@ const colors = {
   danger: "#DD5D50",
   green: "#2F995E",
   lightGreen: "#3ECB7D",
-};
+}
 
-export default colors;
+export default colors

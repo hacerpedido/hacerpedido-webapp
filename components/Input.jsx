@@ -1,11 +1,14 @@
-import { forwardRef } from "react";
-import { View, TextInput, Text, StyleSheet } from "react-native";
+import { forwardRef } from "react"
+import { View, TextInput, Text, StyleSheet } from "react-native"
 
-import theme from "../assets/theme";
+import theme from "../assets/theme"
 
+// NOTE: https://react-hook-form.com/ts/
+
+// eslint-disable-next-line react/display-name
 const Input = forwardRef((props, ref) => {
-  const { label, error, numberOfLies, value, ...inputProps } = props;
-  let borderColor = error ? theme.colors.error : theme.colors.lightGrey2;
+  const { label, error, value, ...inputProps } = props
+  const borderColor = error ? theme.colors.error : theme.colors.lightGrey2
 
   return (
     <View style={styles.container}>
@@ -22,10 +25,10 @@ const Input = forwardRef((props, ref) => {
 
       {error && <Text style={styles.textError}>{error.message}</Text>}
     </View>
-  );
-});
+  )
+})
 
-export default Input;
+export default Input
 
 const styles = StyleSheet.create({
   container: {
@@ -53,4 +56,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     fontSize: 15,
   },
-});
+})

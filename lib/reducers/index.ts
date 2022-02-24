@@ -1,22 +1,35 @@
 // TODO: getDefaultMiddleware is deprecated
-import { combineReducers, configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  getDefaultMiddleware,
+} from "@reduxjs/toolkit"
 
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist"
 
-import storage from "redux-persist/lib/storage";
+import storage from "redux-persist/lib/storage"
 
-import appReducer from "./appSlice";
-import cartReducer from "./cartSlice";
-import homeReducer from "./homeSlice";
-import shopEditReducer from "./shopEditSlice";
-import shopReducer from "./shopSlice";
+import appReducer from "./appSlice"
+import cartReducer from "./cartSlice"
+import homeReducer from "./homeSlice"
+import shopEditReducer from "./shopEditSlice"
+import shopReducer from "./shopSlice"
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
   blacklist: ["app", "shopEdit", "shop"],
-};
+}
 
 const rootReducer = combineReducers({
   app: appReducer,
@@ -24,9 +37,9 @@ const rootReducer = combineReducers({
   home: homeReducer,
   shop: shopReducer,
   shopEdit: shopEditReducer,
-});
+})
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
@@ -35,9 +48,9 @@ export const store = configureStore({
       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
     },
   }),
-});
+})
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store)
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
