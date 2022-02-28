@@ -1,7 +1,8 @@
-import { Children } from "react";
-import Document, { Html, Head, Main, NextScript } from "next/document";
-import { AppRegistry } from "react-native";
-import config from "../app.json";
+import Document, { Html, Head, Main, NextScript } from "next/document"
+import { Children } from "react"
+import { AppRegistry } from "react-native"
+
+import config from "../app.json"
 
 // Force Next-generated DOM elements to fill their parent's height
 const normalizeNextElements = `
@@ -10,15 +11,18 @@ const normalizeNextElements = `
     flex-direction: column;
     height: 100%;
   }
-`;
+`
 
 export default class MyDocument extends Document {
   static async getInitialProps({ renderPage }) {
-    AppRegistry.registerComponent(config.name, () => Main);
-    const { getStyleElement } = AppRegistry.getApplication(config.name);
-    const page = await renderPage();
-    const styles = [<style dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />, getStyleElement()];
-    return { ...page, styles: Children.toArray(styles) };
+    AppRegistry.registerComponent(config.name, () => Main)
+    const { getStyleElement } = AppRegistry.getApplication(config.name)
+    const page = await renderPage()
+    const styles = [
+      <style dangerouslySetInnerHTML={{ __html: normalizeNextElements }} />,
+      getStyleElement(),
+    ]
+    return { ...page, styles: Children.toArray(styles) }
   }
 
   render() {
@@ -30,6 +34,6 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }

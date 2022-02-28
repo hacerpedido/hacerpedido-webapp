@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
 import { CarIcon, ClockIcon, PinIcon } from "../assets/icons/"

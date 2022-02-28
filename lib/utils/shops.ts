@@ -1,6 +1,6 @@
 import isEmpty from "validator/lib/isEmpty"
 
-import { Shop } from "../../types"
+import type { Shop } from "../../types"
 
 import { getBackgroundForCategory } from "./categories"
 

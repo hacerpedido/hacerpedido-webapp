@@ -1,13 +1,14 @@
-import { forwardRef } from "react";
-import { View, TextInput, Text, StyleSheet } from "react-native";
+import { forwardRef } from "react"
+import { View, TextInput, Text, StyleSheet } from "react-native"
 
-import theme from "../assets/theme";
+import theme from "../assets/theme"
 
+// eslint-disable-next-line react/display-name
 const ShopInput = forwardRef((props, ref) => {
-  const { label, error, numberOfLines, value, ...inputProps } = props;
+  const { label, error, numberOfLines, value, ...inputProps } = props
 
-  let borderColor = error ? theme.colors.error : theme.colors.lightGrey2;
-  let height = numberOfLines ? numberOfLines * 31 : 40;
+  let borderColor = error ? theme.colors.error : theme.colors.lightGrey2
+  let height = numberOfLines ? numberOfLines * 31 : 40
 
   return (
     <View style={styles.container}>
@@ -21,10 +22,10 @@ const ShopInput = forwardRef((props, ref) => {
       />
       {error && <Text style={styles.textError}>{error.message}</Text>}
     </View>
-  );
-});
+  )
+})
 
-export default ShopInput;
+export default ShopInput
 
 const styles = StyleSheet.create({
   container: {
@@ -47,4 +48,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     fontSize: "0.75em",
   },
-});
+})

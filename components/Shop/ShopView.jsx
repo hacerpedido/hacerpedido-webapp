@@ -1,17 +1,25 @@
-import { useSelector } from "react-redux";
-import { StyleSheet, ScrollView, View } from "react-native";
+import { StyleSheet, ScrollView, View } from "react-native"
+import { useSelector } from "react-redux"
 
-import ShopHeader from "./ShopHeader";
-import ShopNotes from "./ShopNotes";
-import ProductList from "./ProductList";
 import colors from "../../assets/colors";
-import Loading from "../Loading";
 
-export default function ShopView({ isPreview = false, shop, previewProducts = [] }) {
+import Loading from "../Loading"
+
+import ProductList from "./ProductList"
+import ShopHeader from "./ShopHeader"
+import ShopNotes from "./ShopNotes"
+
+export default function ShopView({
+  isPreview = false,
+  shop,
+  previewProducts = [],
+}) {
   // TODO: se esta renderizando 2 veces todo el componente. Deberia renderizar solo el prodlist?
-  const isLoading = useSelector((state) => state.app.loading);
-  const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;
-  const products = isPreview ? previewProducts : useSelector((state) => state.shop.products);
+  const isLoading = useSelector((state) => state.app.loading)
+  const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber
+  const products = isPreview
+    ? previewProducts
+    : useSelector((state) => state.shop.products)
 
   return (
     <ScrollView>
@@ -24,7 +32,10 @@ export default function ShopView({ isPreview = false, shop, previewProducts = []
           <>
             {products.length && (
               <>
-                <ProductList products={products} isCartEnabled={isCartEnabled} />
+                <ProductList
+                  products={products}
+                  isCartEnabled={isCartEnabled}
+                />
                 <ShopNotes shop={shop} />
               </>
             )}
@@ -32,7 +43,7 @@ export default function ShopView({ isPreview = false, shop, previewProducts = []
         )}
       </View>
     </ScrollView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -40,4 +51,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     marginBottom: 130,
   },
-});
+})

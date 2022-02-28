@@ -1,25 +1,30 @@
 {
   "compilerOptions": {
     "lib": [
-      "es2017",
-      "dom",
-      "dom.iterable",
-      "esnext"
+      "es2021",
+      "DOM",
+      "DOM.Iterable"
     ],
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "moduleResolution": "node",
+    "importsNotUsedAsValues": "error",
     "noEmit": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "module": "es2020",
+    "target": "es2020",
     "strict": true,
-    "target": "esnext",
-    "module": "esnext"
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "preserve"
   },
   "include": [
     "next-env.d.ts",
@@ -29,5 +34,13 @@
   "exclude": [
     "node_modules",
     "jest.config.js"
+  ],
+  "references": [
+    {
+      "path": "./types"
+    },
+    {
+      "path": "./assets"
+    }
   ]
 }

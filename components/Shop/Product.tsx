@@ -1,31 +1,50 @@
-import { useEffect, useState, useRef } from "react";
-import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState, useRef } from "react"
+import {
+  TouchableHighlight,
+  StyleSheet,
+  Text,
+  View,
+  TextStyle,
+  ViewStyle,
+} from "react-native"
 
-import ProductAmountPopup from "./ProductAmountPopup";
-import colors from "../../assets/colors";
-import { sanitizePrice } from "../../lib/utils/utils";
+import { colors } from "../../assets/colors"
+import { sanitizePrice } from "../../lib/utils/utils"
+import type { CartProduct } from "../../types"
 
-const Product = ({ product, promo = false, isCartEnabled = false }) => {
-  const ref = useRef(null);
-  const [popupVisible, setPopupVisible] = useState(false);
-  const containerStyle = promo ? styles.card : styles.product;
-  const { name, amount, description, price } = product;
-  const displayPrice = sanitizePrice(price);
+import ProductAmountPopup from "./ProductAmountPopup"
+
+type Props = {
+  product: CartProduct
+  promo?: boolean
+  isCartEnabled?: boolean
+}
+
+const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
+  const ref = useRef(null)
+  const [popupVisible, setPopupVisible] = useState(false)
+  const containerStyle = promo ? styles.card : styles.product
+  const { name, amount, description, price = "" } = product
+  const displayPrice = sanitizePrice(price)
 
   useEffect(() => {
-    const listener = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
-    };
-    document.addEventListener("touchend", listener);
+    const listener = (event: TouchEvent) => {
+      if (ref.current && !ref.current.contains(event.target))
+        setPopupVisible(false)
+    }
+    document.addEventListener("touchend", listener)
 
     return () => {
-      document.removeEventListener("touchend", listener);
-    };
-  }, [ref, setPopupVisible]);
+      document.removeEventListener("touchend", listener)
+    }
+  }, [ref, setPopupVisible])
 
   return (
     <div ref={ref}>
-      <TouchableHighlight onPress={() => setPopupVisible(!popupVisible)} underlayColor={"none"}>
+      <TouchableHighlight
+        onPress={() => setPopupVisible(!popupVisible)}
+        underlayColor={"none"}
+      >
         <View style={[styles.container, containerStyle]}>
           <View style={styles.nameDescription}>
             <Text style={styles.name}>
@@ -57,12 +76,26 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
         </View>
       </TouchableHighlight>
     </div>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product
 
-const styles = StyleSheet.create({
+type Styles = {
+  amountContainer: ViewStyle
+  amountText: TextStyle
+  buttonQty: ViewStyle
+  buttonQtyText: TextStyle
+  card: ViewStyle
+  container: ViewStyle
+  description: TextStyle
+  name: TextStyle
+  nameDescription: TextStyle
+  price: TextStyle
+  product: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   amountContainer: {
     alignItems: "center",
     backgroundColor: colors.orangeHP,
@@ -151,4 +184,4 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingRight: 10,
   },
-});
+})

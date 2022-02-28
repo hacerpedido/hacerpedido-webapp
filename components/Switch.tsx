@@ -1,18 +1,29 @@
-import { StyleSheet, View, Switch, Text } from "react-native"
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  Switch as RNSwitch,
+  Text,
+} from "react-native"
 
-import colors from "../assets/colors"
+import { colors } from "../assets/colors"
 
-const SwitchComponent = ({ toggle, value }) => {
+type Props = {
+  onToggle: () => void
+  value: boolean
+}
+
+const Switch = ({ onToggle, value }: Props) => {
   return (
     <View style={styles.container}>
       <Text>Delivery</Text>
 
-      <Switch
+      <RNSwitch
         trackColor={colors.lightGray}
         thumbColor={colors.lightGray}
         activeTrackColor={colors.lightGreen}
         activeThumbColor={colors.lightGreen}
-        onValueChange={toggle}
+        onValueChange={onToggle}
         style={styles.switch}
         value={value}
       />
@@ -23,9 +34,14 @@ const SwitchComponent = ({ toggle, value }) => {
 }
 
 // https://upmostly.com/tutorials/build-a-react-switch-toggle-component
-export default SwitchComponent
+export default Switch
 
-const styles = StyleSheet.create({
+type Styles = {
+  container: ViewStyle
+  switch: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   container: {
     flex: 1,
     flexDirection: "row",

@@ -1,20 +1,6 @@
 // TODO: Rearmar todo esto en un modelo
 // BUG: Las categorías del Typeform son diferentes,
-type BackgroundColors = {
-  [key: string]: string
-}
-
-const backgroundColors: BackgroundColors = {
-  Comida: "#3CC077",
-  Cervecerías: "#BFBE3B",
-  "Helados y Postres": "#D83E3D",
-  Panadería: "#D4A9C0",
-  Saludable: "#EFA43D",
-  "Almacén / Kiosko": "#3C6AC0",
-  Cafetería: "#C0733D",
-  Bebidas: "#A83434",
-  Otros: "#3CA9C0",
-}
+import { backgroundColors } from "../../assets/colors"
 
 export function getBackgroundColorForCategory(category: string) {
   return backgroundColors[category]

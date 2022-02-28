@@ -1,18 +1,18 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import Head from "next/head";
-import { useEffect } from "react";
-import TagManager from "react-gtm-module";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
+import "bootstrap/dist/css/bootstrap.min.css"
+import Head from "next/head"
+import { useEffect } from "react"
+import TagManager from "react-gtm-module"
+import { Provider } from "react-redux"
+import { PersistGate } from "redux-persist/integration/react"
 
-import { store, persistor } from "../lib/reducers";
+import { store, persistor } from "../lib/reducers"
 
-import "../styles/globals.css";
+import "../styles/globals.css"
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    TagManager.initialize({ gtmId: "GTM-PKPPSFX" });
-  }, []);
+    TagManager.initialize({ gtmId: "GTM-PKPPSFX" })
+  }, [])
 
   return (
     <Provider store={store}>
@@ -31,7 +31,10 @@ function MyApp({ Component, pageProps }) {
 
           {/* <!-- OG: 2.7.6 --> */}
           <meta property="og:image" content="og_image.jpg" />
-          <meta property="og:description" content="Pedí a tu comercio favorito por WhatsApp" />
+          <meta
+            property="og:description"
+            content="Pedí a tu comercio favorito por WhatsApp"
+          />
           <meta property="og:type" content="article" />
           <meta property="og:site_name" content="Hacer Pedido" />
           <meta property="og:title" content="HacerPedido" />
@@ -45,7 +48,7 @@ function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </PersistGate>
     </Provider>
-  );
+  )
 }
 
-export default MyApp;
+export default MyApp

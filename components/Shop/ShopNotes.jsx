@@ -1,6 +1,6 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native"
 
-import theme from "../../assets/theme";
+import theme from "../../assets/theme"
 
 const ShopNotes = ({ shop }) => {
   if (shop.notes) {
@@ -9,13 +9,13 @@ const ShopNotes = ({ shop }) => {
         <Text style={styles.category}>Notas</Text>
         <Text style={styles.notes}>{shop.notes}</Text>
       </View>
-    );
+    )
   }
 
-  return null;
-};
+  return null
+}
 
-export default ShopNotes;
+export default ShopNotes
 
 const styles = StyleSheet.create({
   category: {
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
     marginRight: 16,
     marginTop: 8,
   },
-});
+})

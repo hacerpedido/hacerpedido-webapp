@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from "react-native"
 
-import colors from "../../assets/colors"
+import { colors } from "../../assets/colors"
 import { ArrowLeftIcon } from "../../assets/icons"
 import { useAppSelector } from "../../lib/hooks"
 

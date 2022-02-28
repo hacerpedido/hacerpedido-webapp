@@ -1,4 +1,4 @@
-import { Product, CartProduct } from "../../types"
+import type { Product, CartProduct } from "../../types"
 
 export function toTitleCase(str: string) {
   if (typeof str !== "string") return ""

@@ -1,11 +1,12 @@
 export type Product = {
-  id?: number
+  id?: string
   name: string
   category: string
   description?: string
-  price?: number
-  // shopid: shopID,
-  // itemnumber: itemNumber,
+  price?: string
+  shopid?: string
+  itemNumber?: number
+  category: string
 }
 
 export type CartProduct = Product & {
@@ -13,11 +14,27 @@ export type CartProduct = Product & {
 }
 
 export type Shop = {
-  id: number
-  slug: string
+  id?: string
+  address?: string
+  // background text,
+  // category text,
+  // delivery text,
+  deliverycost?: string
+  // email text,
+  logo?: string
   name: string
-  address: string
-  logo: string
-  opentimes: string
-  deliverycost: string
+  // notes text,
+  opentimes?: string
+  // ordersByPhoneOrWhatsApp text,
+  // ordersPhoneNumber text,
+  // ordersWhatsAppNumber text,
+  // phoneNumber text,
+  region: string
+  slug: string
+  // submittedAt text,
+  // takeaway text,
+  // typeformToken text,
+  // userName text,
+  // visibility text,
+  // whatsAppNumber text,
 }

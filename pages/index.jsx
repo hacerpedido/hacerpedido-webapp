@@ -1,80 +1,95 @@
-import axios from "axios";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { useCallback, useEffect } from "react";
-import { FlatList, StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
+import axios from "axios"
+import Head from "next/head"
+import { useRouter } from "next/router"
+import { useCallback, useEffect } from "react"
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native"
+import { useSelector, useDispatch } from "react-redux"
 
 import colors from "../assets/colors";
-import HomeFilterBar from "../components/Home/HomeFilterBar";
-import HomeHeader from "../components/Home/HomeHeader";
-import ShopCard from "../components/Home/ShopCard";
-import Loading from "../components/Loading";
-import { loading } from "../lib/reducers/appSlice";
-import { setCategory, setShops, setFirstVisibleItem } from "../lib/reducers/homeSlice";
-import { setShop } from "../lib/reducers/shopSlice";
+import HomeFilterBar from "../components/Home/HomeFilterBar"
+import HomeHeader from "../components/Home/HomeHeader"
+import ShopCard from "../components/Home/ShopCard"
+import Loading from "../components/Loading"
+import { loading } from "../lib/reducers/appSlice"
+import {
+  setCategory,
+  setShops,
+  setFirstVisibleItem,
+} from "../lib/reducers/homeSlice"
+import { setShop } from "../lib/reducers/shopSlice"
 
-let touchStartingPoint = 0;
-let touchCurrentPoint = 0;
+let touchStartingPoint = 0
+let touchCurrentPoint = 0
 
-let firstVisibleItemIndex = 0;
-let ITEM_HEIGHT = 130;
+let firstVisibleItemIndex = 0
+let ITEM_HEIGHT = 130
 
 const renderHeader = (count) => {
-  let shopText = count > 0 || count === 0 ? "comercios" : "comercio";
-  let countText = count === 0 ? "No hay" : count;
+  let shopText = count > 0 || count === 0 ? "comercios" : "comercio"
+  let countText = count === 0 ? "No hay" : count
 
   return (
     <Text style={styles.count}>
       {countText} {shopText} locales
     </Text>
-  );
-};
+  )
+}
 
 const onViewableItemsChanged = ({ viewableItems }) => {
   if (viewableItems !== undefined && viewableItems.length > 0) {
-    firstVisibleItemIndex = viewableItems[0].index;
+    firstVisibleItemIndex = viewableItems[0].index
   }
-};
+}
 
 export default function App() {
-  const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem);
-  const category = useSelector((state) => state.home.selectedFilter);
-  const shops = useSelector((state) => state.home.shops);
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem)
+  const category = useSelector((state) => state.home.selectedFilter)
+  const shops = useSelector((state) => state.home.shops)
+  const dispatch = useDispatch()
+  const router = useRouter()
 
-  let initialScrollIndex = firstVisibleItem ?? 0;
+  let initialScrollIndex = firstVisibleItem ?? 0
 
   const onSelect = useCallback(
     (shop) => {
-      let distance = Math.abs(touchStartingPoint - touchCurrentPoint);
+      let distance = Math.abs(touchStartingPoint - touchCurrentPoint)
       if (distance <= 10) {
-        dispatch(setFirstVisibleItem(firstVisibleItemIndex));
-        dispatch(setShop(shop));
-        router.push(`/${shop.slug}`);
+        dispatch(setFirstVisibleItem(firstVisibleItemIndex))
+        dispatch(setShop(shop))
+        router.push(`/${shop.slug}`)
       }
     },
     [router, dispatch]
-  );
+  )
 
   useEffect(() => {
-    dispatch(loading(true));
+    dispatch(loading(true))
 
     async function getData() {
-      const shopData = await axios.get(`${window.location.origin}/api/shop/home`, { params: { category } });
+      const shopData = await axios.get(
+        `${window.location.origin}/api/shop/home`,
+        { params: { category } }
+      )
 
       // console.log(JSON.stringify(shopData, null, 2));
 
-      dispatch(setShops(shopData.data));
-      dispatch(loading(false));
+      dispatch(setShops(shopData.data))
+      dispatch(loading(false))
     }
     getData().catch((error) => {
-      console.log(JSON.stringify(error, null, 2));
-    });
-  }, [dispatch, category]);
+      console.log(JSON.stringify(error, null, 2))
+    })
+  }, [dispatch, category])
 
-  let filteredShops = shops.filter((x) => x.visibility === "public" && x.category === category);
+  let filteredShops = shops.filter(
+    (x) => x.visibility === "public" && x.category === category
+  )
 
   const ShopList = () => (
     <FlatList
@@ -96,13 +111,13 @@ export default function App() {
           underlayColor={colors.lightBackground}
           onTouchStart={(evt) => {
             if (evt.touches.length > 0) {
-              touchStartingPoint = evt.touches[0].clientY;
-              touchCurrentPoint = touchStartingPoint;
+              touchStartingPoint = evt.touches[0].clientY
+              touchCurrentPoint = touchStartingPoint
             }
           }}
           onTouchMove={(evt) => {
             if (evt.touches.length > 0) {
-              touchCurrentPoint = evt.touches[0].clientY;
+              touchCurrentPoint = evt.touches[0].clientY
             }
           }}
           onPress={() => onSelect(item)}
@@ -119,7 +134,7 @@ export default function App() {
       })}
       scrollEventThrottle={160}
     />
-  );
+  )
 
   return (
     <View>
@@ -132,17 +147,21 @@ export default function App() {
         <HomeFilterBar
           selectedFilter={category}
           onSelectFilter={(selected) => {
-            firstVisibleItemIndex = 0;
-            dispatch(setCategory(selected));
+            firstVisibleItemIndex = 0
+            dispatch(setCategory(selected))
           }}
         />
       </View>
 
       <View style={styles.body}>
-        {filteredShops.length === 0 && loading ? <Loading /> : filteredShops.length && <ShopList />}
+        {filteredShops.length === 0 && loading ? (
+          <Loading />
+        ) : (
+          filteredShops.length && <ShopList />
+        )}
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -175,4 +194,4 @@ const styles = StyleSheet.create({
   list: {
     height: "100vh",
   },
-});
+})

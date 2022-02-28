@@ -1,4 +1,24 @@
-const colors = {
+type BackgroundColors = {
+  [key: string]: string
+}
+
+export const backgroundColors: BackgroundColors = {
+  Comida: "#3CC077",
+  Cervecerías: "#BFBE3B",
+  "Helados y Postres": "#D83E3D",
+  Panadería: "#D4A9C0",
+  Saludable: "#EFA43D",
+  "Almacén / Kiosko": "#3C6AC0",
+  Cafetería: "#C0733D",
+  Bebidas: "#A83434",
+  Otros: "#3CA9C0",
+}
+
+type Colors = {
+  [key: string]: string
+}
+
+export const colors: Colors = {
   black: "#000",
   button1: "#37B26E",
   cardBorder: "#E8E8E8",

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import colors from "../../assets/colors";
 
 const Product = ({ product }) => {
-  const { amount, description, name } = product;
+  const { amount, description, name } = product
 
   return (
     <View style={styles.container}>
@@ -13,15 +13,15 @@ const Product = ({ product }) => {
         <Text style={styles.description}>{description}</Text>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product
 
 const normalText = {
   fontFamily: "Barlow",
   fontSize: 15,
-};
+}
 
 const textStyles = {
   normalBoldText: {
@@ -32,7 +32,7 @@ const textStyles = {
     ...normalText,
     fontWeight: 500,
   },
-};
+}
 
 const styles = StyleSheet.create({
   amount: {
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
     flex: 1,
     ...textStyles.normalSemiBoldText,
   },
-});
+})

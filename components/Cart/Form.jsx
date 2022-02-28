@@ -1,26 +1,26 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Controller, useForm } from "react-hook-form";
-import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
+import { useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { TouchableHighlight, StyleSheet, Text, View } from "react-native"
+import { useSelector } from "react-redux"
 // import {useSpring, animated} from "react-spring";
 
-import colors from "../../assets/colors";
+import { colors } from "../../assets/colors";
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
-import Switch from "../Switch";
-import Input from "../Input";
-import { WhatsAppIcon } from "../../assets/icons";
+import { WhatsAppIcon } from "../../assets/icons"
+import Input from "../Input"
+import Switch from "../Switch"
 
 const Form = ({ onSubmit }) => {
-  const shop = useSelector((state) => state.shop.shop);
-  const { name } = shop;
-  const [takeaway, setTakeaway] = useState(false);
+  const shop = useSelector((state) => state.shop.shop)
+  const { name } = shop
+  const [takeaway, setTakeaway] = useState(false)
 
-  const { handleSubmit, errors, control } = useForm({ mode: "onBlur" });
+  const { handleSubmit, errors, control } = useForm({ mode: "onBlur" })
 
   const toggleTakeAway = () => {
-    const value = !takeaway;
-    setTakeaway(value);
-  };
+    const value = !takeaway
+    setTakeaway(value)
+  }
 
   // const animatedProps = useSpring({
   //   opacity: !takeaway ? 1 : 0,
@@ -105,12 +105,12 @@ const Form = ({ onSubmit }) => {
         </div>
       </TouchableHighlight>
     </View>
-  );
-};
+  )
+}
 
 // const AnimatedView = animated(View)
 
-export default Form;
+export default Form
 
 const textStyles = {
   bold: {
@@ -125,7 +125,7 @@ const textStyles = {
     fontSize: 16,
     fontWeight: "600",
   },
-};
+}
 
 const styles = StyleSheet.create({
   button: {
@@ -164,4 +164,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-});
+})

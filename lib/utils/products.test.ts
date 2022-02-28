@@ -13,7 +13,7 @@ describe("extraSections", () => {
     const result = extractSections([{ category: "a", name: "A" }])
 
     expect(result).toHaveLength(1)
-    expect(result[0].products).toHaveLength(1)
+    expect(result[0]?.products).toHaveLength(1)
   })
 
   test("handle one section", () => {
@@ -21,8 +21,9 @@ describe("extraSections", () => {
       { category: "a", name: "A" },
       { category: "a", name: "B" },
     ])
+
     expect(result).toHaveLength(1)
-    expect(result[0].products).toHaveLength(2)
+    expect(result[0]?.products).toHaveLength(2)
   })
 
   test("return multiple sections", () => {
@@ -38,11 +39,11 @@ describe("extraSections", () => {
     const result = extractSections(products)
 
     expect(result).toHaveLength(3)
-    expect(result[0].name).toBe("a")
-    expect(result[1].name).toBe("b")
-    expect(result[2].name).toBe("c")
-    expect(result[0].products).toHaveLength(2)
-    expect(result[1].products).toHaveLength(3)
-    expect(result[2].products).toHaveLength(1)
+    expect(result[0]?.name).toBe("a")
+    expect(result[1]?.name).toBe("b")
+    expect(result[2]?.name).toBe("c")
+    expect(result[0]?.products).toHaveLength(2)
+    expect(result[1]?.products).toHaveLength(3)
+    expect(result[2]?.products).toHaveLength(1)
   })
 })

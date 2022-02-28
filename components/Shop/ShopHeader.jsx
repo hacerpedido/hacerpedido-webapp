@@ -1,37 +1,48 @@
-import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { useRouter } from "next/router"
+import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native"
 
-import { useRouter } from "next/router";
-import { generateCallUrl } from "../../lib/utils/utils";
-import { getBackgroundColorForCategory } from "../../lib/utils/categories";
-import { getLogoForShop, getBackgroundForShop } from "../../lib/utils/shops";
-import colors from "../../assets/colors";
-import { PhoneCallIcon, ArrowLeftIcon } from "../../assets/icons";
-import DecoratedLabel from "../DecoratedLabel";
+import colors from "../../assets/colors"
+import { PhoneCallIcon, ArrowLeftIcon } from "../../assets/icons"
+import { getBackgroundColorForCategory } from "../../lib/utils/categories"
+import { getLogoForShop, getBackgroundForShop } from "../../lib/utils/shops"
+import { generateCallUrl } from "../../lib/utils/utils"
+import DecoratedLabel from "../DecoratedLabel"
 
 const ShopHeader = ({ isPreview = false, shop = {} }) => {
-  const { name, background, category, address, region, ordersphonenumber, orderswhatsappnumber } = shop;
+  const {
+    name,
+    background,
+    category,
+    address,
+    region,
+    ordersphonenumber,
+    orderswhatsappnumber,
+  } = shop
 
-  const logo = getLogoForShop(shop);
+  const logo = getLogoForShop(shop)
 
-  const router = useRouter();
+  const router = useRouter()
 
   const containerStyles = {
     ...styles.container,
     backgroundImage: getBackgroundForShop(shop),
     backgroundSize: background ? "100% auto" : "auto",
     backgroundColor: getBackgroundColorForCategory(category),
-  };
+  }
 
   const onButtonBackPress = () => {
-    !isPreview && router.push("/");
-  };
+    !isPreview && router.push("/")
+  }
 
-  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview;
+  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview
 
   const ButtonCall = () => (
     <TouchableHighlight underlayColor={"none"}>
       {/* eslint-disable react-native/no-inline-styles */}
-      <a href={generateCallUrl(ordersphonenumber)} style={{ textDecoration: "none" }}>
+      <a
+        href={generateCallUrl(ordersphonenumber)}
+        style={{ textDecoration: "none" }}
+      >
         <View style={styles.buttonCall}>
           <PhoneCallIcon />
           <Text style={styles.buttonText}>Llamar</Text>
@@ -39,17 +50,22 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
       </a>
       {/* eslint-enable react-native/no-inline-styles */}
     </TouchableHighlight>
-  );
+  )
 
-  const displayAddress = address?.trim() ?? region;
-  const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
-  const deliverycost = shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
+  const displayAddress = address?.trim() ?? region
+  const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null
+  const deliverycost =
+    shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null
 
   return (
     <View style={containerStyles}>
       <View style={styles.containerNavigator}>
         {!isPreview && (
-          <TouchableHighlight underlayColor={"none"} onPress={onButtonBackPress} style={styles.buttonBack}>
+          <TouchableHighlight
+            underlayColor={"none"}
+            onPress={onButtonBackPress}
+            style={styles.buttonBack}
+          >
             <ArrowLeftIcon color={colors.white} />
           </TouchableHighlight>
         )}
@@ -98,10 +114,10 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
         )}
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default ShopHeader;
+export default ShopHeader
 
 // TODO: poner el ButtonCall y el ButtonBack en la misma fila
 // usando flex y posicionando con absolute
@@ -175,4 +191,4 @@ const styles = StyleSheet.create({
     padding: 6,
     textTransform: "capitalize",
   },
-});
+})

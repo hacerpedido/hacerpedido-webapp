@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native"
 
 import Product from "./Product";
 import colors from "../../assets/colors";
@@ -11,8 +11,8 @@ const ProductList = ({ products, shop }) => {
           <Product key={product.id} product={product} shop={shop} />
         ))}
       </View>
-    );
-  };
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -23,10 +23,10 @@ const ProductList = ({ products, shop }) => {
         </View>
       ))}
     </View>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList
 
 const styles = StyleSheet.create({
   category: {
@@ -39,4 +39,4 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 13,
   },
-});
+})

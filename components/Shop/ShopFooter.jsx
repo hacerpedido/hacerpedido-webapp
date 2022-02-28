@@ -6,10 +6,10 @@ import colors from "../../assets/colors";
 import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
 
 const ShopFooter = ({ shop }) => {
-  const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop;
-  const router = useRouter();
-  const totalAmount = useSelector((state) => state.shop.totalAmount);
-  const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 };
+  const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop
+  const router = useRouter()
+  const totalAmount = useSelector((state) => state.shop.totalAmount)
+  const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 }
 
   const ButtonWhatsapp = () => (
     <TouchableHighlight
@@ -25,13 +25,17 @@ const ShopFooter = ({ shop }) => {
         </View>
       </View>
     </TouchableHighlight>
-  );
+  )
 
-  const onCall = (number) => (window.location.href = generateCallUrl(number));
+  const onCall = (number) => (window.location.href = generateCallUrl(number))
 
   const ButtonCall = () => (
     // TODO: Extract component, to be reused in header
-    <TouchableHighlight onPress={() => onCall(ordersphonenumber)} underlayColor={"none"} style={styles.buttonContainer}>
+    <TouchableHighlight
+      onPress={() => onCall(ordersphonenumber)}
+      underlayColor={"none"}
+      style={styles.buttonContainer}
+    >
       <View style={[styles.buttonCall, styles.button]}>
         <Text style={styles.textContainer} numberOfLines={1}>
           <View style={styles.icon}>
@@ -41,12 +45,16 @@ const ShopFooter = ({ shop }) => {
         </Text>
       </View>
     </TouchableHighlight>
-  );
+  )
 
-  return <View style={styles.container}>{orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}</View>;
-};
+  return (
+    <View style={styles.container}>
+      {orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}
+    </View>
+  )
+}
 
-export default ShopFooter;
+export default ShopFooter
 
 const styles = StyleSheet.create({
   button: {
@@ -107,4 +115,4 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     marginBottom: 1,
   },
-});
+})
