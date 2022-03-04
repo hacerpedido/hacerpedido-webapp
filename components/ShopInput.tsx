@@ -1,0 +1,50 @@
+import { forwardRef } from "react"
+import { View, TextInput, Text, StyleSheet } from "react-native"
+
+import theme from "@/common/theme"
+
+const ShopInput = forwardRef((props, ref) => {
+  const { label, error, numberOfLines, value, ...inputProps } = props
+
+  const borderColor = error ? theme.colors.error : theme.colors.lightGrey2
+  const height = numberOfLines ? numberOfLines * 31 : 40
+
+  return (
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <TextInput
+        autoCapitalize="none"
+        ref={ref}
+        style={[styles.input, { borderColor: borderColor, height: height }]}
+        value={value || ""}
+        {...inputProps}
+      />
+      {error && <Text style={styles.textError}>{error.message}</Text>}
+    </View>
+  )
+})
+
+export default ShopInput
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: "0.25em",
+  },
+  input: {
+    borderRadius: 3,
+    borderStyle: "solid",
+    borderWidth: 1,
+    fontSize: "1em",
+    paddingLeft: "0.5em",
+    paddingVertical: "0.25em",
+  },
+  label: {
+    color: theme.colors.lightGrey,
+    fontSize: "0.75em",
+    paddingVertical: "0.25em",
+  },
+  textError: {
+    color: theme.colors.error,
+    fontSize: "0.75em",
+  },
+})

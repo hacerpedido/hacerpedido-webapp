@@ -1,4 +1,5 @@
 import { useRouter } from "next/router"
+
 import {
   Image,
   StyleSheet,
@@ -9,13 +10,15 @@ import {
   TextStyle,
 } from "react-native"
 
-import colors from "../../assets/colors"
-import { PhoneCallIcon, ArrowLeftIcon } from "../../assets/icons"
-import { getBackgroundColorForCategory } from "../../lib/utils/categories"
-import { getLogoForShop, getBackgroundForShop } from "../../lib/utils/shops"
-import { generateCallUrl } from "../../lib/utils/utils"
-import type { Shop } from "../../types"
-import DecoratedLabel from "../DecoratedLabel"
+import { colors } from "@/common/colors"
+import { getBackgroundColorForCategory } from "@/common/utils/categories"
+import { getLogoForShop, getBackgroundForShop } from "@/common/utils/shops"
+import { generateCallUrl } from "@/common/utils/utils"
+
+import { PhoneCallIcon, ArrowLeftIcon } from "@/components/icons"
+import DecoratedLabel from "components/DecoratedLabel"
+
+import type { Shop } from "types"
 
 type Props = {
   isPreview?: boolean

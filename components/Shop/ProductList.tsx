@@ -1,14 +1,14 @@
 import type { ReactNode } from "react"
 import { StyleSheet, Text, ViewStyle } from "react-native"
 
-import { colors } from "../../assets/colors"
-import type { CartProduct } from "../../types"
-import Divider from "../Divider"
+import { colors } from "@/common/colors"
 
-import Product from "./Product"
+import Divider from "components/Divider"
+import Product from "components/Shop/Product"
+import type { Product as ProductType } from "types"
 
 type Props = {
-  products: CartProduct[]
+  products: ProductType[]
   isCartEnabled?: boolean
 }
 
@@ -21,7 +21,7 @@ export default function ProductList({
   let lastCategory = ""
   let item = 0
 
-  products.forEach((product: CartProduct) => {
+  products.forEach((product: ProductType) => {
     const { category } = product
 
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar el nombre "Promociones"

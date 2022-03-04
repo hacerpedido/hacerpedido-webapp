@@ -10,20 +10,23 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import { useSelector, useDispatch } from "react-redux"
 
-import colors from "assets/colors"
-import HomeFilterBar from "components/Home/HomeFilterBar"
-import HomeHeader from "components/Home/HomeHeader"
-import ShopCard from "components/Home/ShopCard"
-import Loading from "components/Loading"
-import { loading } from "lib/reducers/appSlice"
+import { colors } from "@/common/colors"
+import {
+  useAppSelector as useSelector,
+  useAppDispatch as useDispatch,
+} from "@/common/hooks"
+import { loading } from "@/common/reducers/appSlice"
 import {
   setCategory,
   setShops,
   setFirstVisibleItem,
-} from "lib/reducers/homeSlice"
-import { setShop } from "lib/reducers/shopSlice"
+} from "@/common/reducers/homeSlice"
+import { setShop } from "@/common/reducers/shopSlice"
+import HomeFilterBar from "@/components/Home/HomeFilterBar"
+import HomeHeader from "@/components/Home/HomeHeader"
+import ShopCard from "@/components/Home/ShopCard"
+import Loading from "@/components/Loading"
 import type { Shop } from "types"
 
 let firstVisibleItemIndex = 0
@@ -40,16 +43,16 @@ const renderHeader = (count: number) => {
 }
 
 const onViewableItemsChanged = ({
-  viewableItems,
+  viewableItems = [],
 }: {
   viewableItems: Shop[]
 }) => {
-  if (viewableItems !== undefined && viewableItems.length > 0) {
+  if (viewableItems.length > 0) {
     firstVisibleItemIndex = viewableItems[0].index
   }
 }
 
-export default function App() {
+export default function Home() {
   const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem)
   const category = useSelector((state) => state.home.selectedFilter)
   const shops = useSelector((state) => state.home.shops)
@@ -71,7 +74,7 @@ export default function App() {
         router.push(`/${shop.slug}`)
       }
     },
-    [router, dispatch]
+    [router, dispatch, touchCurrentPoint, touchStartingPoint]
   )
 
   useEffect(() => {

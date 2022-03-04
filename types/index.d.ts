@@ -6,39 +6,42 @@ export type Product = {
   price?: string
   shopid?: string
   itemNumber?: number
-}
-
-export type CartProduct = Product & {
-  amount: number
-}
-
-export type Shop = {
-  id?: string
-  address?: string
-  background: string
-  category: string
-  // delivery text,
-  deliverycost?: string
-  // email text,
-  logo?: string
-  name: string
-  notes: string
-  opentimes?: string
-  // ordersByPhoneOrWhatsApp text,
-  ordersphonenumber: string
-  orderswhatsappnumber: string
-  // phoneNumber text,
-  region: string
-  slug: string
-  // submittedAt text,
-  // takeaway text,
-  // typeformToken text,
-  // userName text,
-  visibility: string
-  // whatsAppNumber text,
+  amount?: number // NOTE: only cart products include amounts
 }
 
 export type CategoryWithProducts = {
   name: string
   products: Product[]
+}
+
+export type Shop = {
+  address?: string
+  background: string
+  category: string
+  deliverycost?: string
+  id?: string
+  logo?: string
+  name: string
+  notes: string
+  opentimes?: string
+  ordersphonenumber: string
+  orderswhatsappnumber: string
+  region: string
+  slug: string
+  visibility: string
+  // delivery text
+  // email text
+  // ordersByPhoneOrWhatsApp text
+  // phoneNumber text
+  // submittedAt text
+  // takeaway text
+  // typeformToken text
+  // userName text
+  // whatsAppNumber text
+}
+
+export type CartFormValues = {
+  name: string
+  address: string
+  notes: string
 }

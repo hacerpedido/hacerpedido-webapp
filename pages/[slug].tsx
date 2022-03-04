@@ -3,13 +3,16 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import { useLayoutEffect } from "react"
 import { Text, View } from "react-native"
-import { useSelector, useDispatch } from "react-redux"
 
-import Loading from "components/Loading"
-import ShopFooter from "components/Shop/ShopFooter"
-import ShopView from "components/Shop/ShopView"
-import { loading } from "lib/reducers/appSlice"
-import { setShop } from "lib/reducers/shopSlice"
+import {
+  useAppDispatch as useDispatch,
+  useAppSelector as useSelector,
+} from "@/common/hooks"
+import { loading } from "@/common/reducers/appSlice"
+import { setShop } from "@/common/reducers/shopSlice"
+import Loading from "@/components/Loading"
+import ShopFooter from "@/components/Shop/ShopFooter"
+import ShopView from "@/components/Shop/ShopView"
 
 export default function Shop() {
   const router = useRouter()

@@ -1,4 +1,4 @@
-import { categories } from "../../../lib/utils/categories"
+import { categories } from "@/common/utils/categories"
 
 const pg = require("knex")({
   client: "pg",

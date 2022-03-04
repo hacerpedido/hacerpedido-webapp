@@ -7,12 +7,12 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
-import { useDispatch } from "react-redux"
 import { animated, config, useTransition } from "react-spring"
 
-import { colors } from "../../assets/colors"
-import { setAmount } from "../../lib/reducers/shopSlice"
-import type { Product } from "../../types"
+import { colors } from "@/common/colors"
+import { useAppDispatch as useDispatch } from "@/common/hooks"
+import { setAmount } from "@/common/reducers/shopSlice"
+import type { Product } from "types"
 
 const AnimatedView = animated(View)
 
@@ -33,7 +33,7 @@ const ProductAmountPopup = ({
   const dispatch = useDispatch()
 
   // TODO: https://react-spring.io/hooks/use-transition
-  const transitions = useTransition(visible, null, {
+  const transitions = useTransition(visible, {
     from: { opacity: 0, transform: "scale(0, 0)" },
     enter: { opacity: 1, transform: "scale(1, 1)" },
     leave: { opacity: 0, transform: "scale(0, 0)" },
@@ -51,61 +51,54 @@ const ProductAmountPopup = ({
     }
   }
 
-  return (
-    <>
-      {transitions.map(
-        ({ item, key, props }) =>
-          item && (
-            <AnimatedView style={props} key={key}>
-              <View style={styles.container}>
-                <TouchableHighlight
-                  underlayColor={"none"}
-                  onPress={() => updateAmount(popUpAmount - 1)}
-                >
-                  <View style={styles.buttonQty}>
-                    <Text style={styles.buttonQtyText}>-</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <Text style={styles.amountText}>{popUpAmount}</Text>
-
-                <TouchableHighlight
-                  underlayColor={"none"}
-                  onPress={() => updateAmount(popUpAmount + 1)}
-                >
-                  <View style={[styles.buttonQty, styles.buttonPlus]}>
-                    <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>
-                      +
-                    </Text>
-                  </View>
-                </TouchableHighlight>
-
-                <View style={styles.lineBreak} />
-
-                <TouchableHighlight
-                  onPress={() => updateAmount(popUpAmount, true)}
-                  underlayColor={"none"}
-                >
-                  <View style={styles.buttonSubmit}>
-                    <Text style={styles.buttonSubmitText}>Agregar</Text>
-                  </View>
-                </TouchableHighlight>
-
-                <View style={styles.lineBreak} />
-
-                <TouchableHighlight
-                  onPress={handleClose}
-                  underlayColor={"none"}
-                >
-                  <View style={styles.closeButton}>
-                    <Text style={styles.closeButtonIcon}>+</Text>
-                  </View>
-                </TouchableHighlight>
+  return transitions(
+    (transitionStyle, item) =>
+      item && (
+        <AnimatedView style={transitionStyle}>
+          <View style={styles.container}>
+            <TouchableHighlight
+              underlayColor={"none"}
+              onPress={() => updateAmount(popUpAmount - 1)}
+            >
+              <View style={styles.buttonQty}>
+                <Text style={styles.buttonQtyText}>-</Text>
               </View>
-            </AnimatedView>
-          )
-      )}
-    </>
+            </TouchableHighlight>
+
+            <Text style={styles.amountText}>{popUpAmount}</Text>
+
+            <TouchableHighlight
+              underlayColor={"none"}
+              onPress={() => updateAmount(popUpAmount + 1)}
+            >
+              <View style={[styles.buttonQty, styles.buttonPlus]}>
+                <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>
+                  +
+                </Text>
+              </View>
+            </TouchableHighlight>
+
+            <View style={styles.lineBreak} />
+
+            <TouchableHighlight
+              onPress={() => updateAmount(popUpAmount, true)}
+              underlayColor={"none"}
+            >
+              <View style={styles.buttonSubmit}>
+                <Text style={styles.buttonSubmitText}>Agregar</Text>
+              </View>
+            </TouchableHighlight>
+
+            <View style={styles.lineBreak} />
+
+            <TouchableHighlight onPress={handleClose} underlayColor={"none"}>
+              <View style={styles.closeButton}>
+                <Text style={styles.closeButtonIcon}>+</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </AnimatedView>
+      )
   )
 }
 

@@ -8,14 +8,15 @@ import {
   ViewStyle,
 } from "react-native"
 
-import { colors } from "../../assets/colors"
-import { sanitizePrice } from "../../lib/utils/utils"
-import type { CartProduct } from "../../types"
-
 import ProductAmountPopup from "./ProductAmountPopup"
 
+import { colors } from "@/common/colors"
+import { sanitizePrice } from "@/common/utils/utils"
+
+import type { Product as ProductType } from "types"
+
 type Props = {
-  product: CartProduct
+  product: ProductType
   promo?: boolean
   isCartEnabled?: boolean
 }
@@ -24,7 +25,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
   const ref = useRef(null)
   const [popupVisible, setPopupVisible] = useState(false)
   const containerStyle = promo ? styles.card : styles.product
-  const { name, amount, description, price = "" } = product
+  const { name, amount = 0, description, price = "" } = product
   const displayPrice = sanitizePrice(price)
 
   useEffect(() => {
@@ -151,7 +152,7 @@ const styles = StyleSheet.create<Styles>({
     flex: 1,
     flexWrap: "wrap",
     color: colors.lightGrey,
-    fotiFamily: "Roboto Slab",
+    fontFamily: "Roboto Slab",
     fontSize: 13,
     lineHeight: 17,
   },

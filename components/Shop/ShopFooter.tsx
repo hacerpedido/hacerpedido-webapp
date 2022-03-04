@@ -1,5 +1,6 @@
 // TODO: missing some styles, verify that I havent erase any
 import { useRouter } from "next/router"
+
 import {
   StyleSheet,
   TouchableHighlight,
@@ -8,13 +9,13 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
-import { useSelector } from "react-redux"
 
-import colors from "../../assets/colors"
-import { PhoneCallIcon } from "../../assets/icons"
-import type { RootState } from "../../lib/reducers"
-import { generateCallUrl } from "../../lib/utils/utils"
-import type { Shop } from "../../types"
+import { colors } from "@/common/colors"
+import { useAppSelector as useSelector } from "@/common/hooks"
+import type { RootState } from "@/common/reducers"
+import { generateCallUrl } from "@/common/utils/utils"
+import { PhoneCallIcon } from "@/components/icons"
+import type { Shop } from "types"
 
 type Props = {
   shop: Shop

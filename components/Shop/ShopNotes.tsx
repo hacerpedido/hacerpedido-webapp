@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, TextStyle, ViewStyle } from "react-native"
 
-import theme from "../../assets/theme"
-import type { Shop } from "../../types"
+import theme from "@/common/theme"
+import type { Shop } from "types"
 
 const ShopNotes = ({ shop }: { shop: Shop }) => {
   if (shop.notes) {

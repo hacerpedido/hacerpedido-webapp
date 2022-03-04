@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
-import colors from "../../assets/colors"
-import type { CartProduct } from "../../types"
+import { colors } from "@/common/colors"
+import type { Product as ProductType } from "types"
 
-const Product = ({ product }: { product: CartProduct }) => {
+const Product = ({ product }: { product: ProductType }) => {
   const { amount, description, name } = product
 
   return (

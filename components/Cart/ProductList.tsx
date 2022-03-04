@@ -1,33 +1,22 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
-import colors from "../../assets/colors"
-
-import type { CartProduct, CategoryWithProducts } from "../../types"
-
-import Product from "./Product"
+import { colors } from "@/common/colors"
+import Product from "@/components/Cart/Product"
+import type { Product as ProductType, CategoryWithProducts } from "types"
 
 type Props = {
-  productsByCategory: CategoryWithProducts[]
+  categoriesWithCartProducts: CategoryWithProducts[]
 }
-// NOTE: productsByCategory type is {name: string, products: ProductType[]}
 
-const ProductList = ({ productsByCategory }: Props) => {
-  const Products = ({ products }: { products: CartProduct[] }) => {
-    return (
-      <View>
-        {products.map((product: CartProduct) => (
-          <Product key={product.id} product={product} />
-        ))}
-      </View>
-    )
-  }
-
+const ProductList = ({ categoriesWithCartProducts }: Props) => {
   return (
     <View style={styles.container}>
-      {productsByCategory.map((category, index) => (
+      {categoriesWithCartProducts.map((category, index) => (
         <View key={index}>
           <Text style={styles.category}>{category.name}</Text>
-          <Products products={category.products} />
+          {category.products.map((product: ProductType) => (
+            <Product key={product.id} product={product} />
+          ))}
         </View>
       ))}
     </View>

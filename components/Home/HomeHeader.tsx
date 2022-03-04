@@ -2,11 +2,17 @@ import Link from "next/link"
 import { useState } from "react"
 import Button from "react-bootstrap/Button"
 import Modal from "react-bootstrap/Modal"
-import { TouchableOpacity } from "react-native"
-import { StyleSheet, Text, View, ViewStyle, TextStyle } from "react-native"
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  TextStyle,
+} from "react-native"
 
-import colors from "../../assets/colors"
-import { HpLogoIcon } from "../../assets/icons"
+import { colors } from "@/common/colors"
+import { HpLogoIcon } from "@/components/icons"
 
 export default function HomeHeader() {
   const [show, setShow] = useState(false)

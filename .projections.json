@@ -1,0 +1,29 @@
+{
+  "common/*.ts": {
+    "alternate": [
+      "tests/common/{dirname}/{basename}.test.ts"
+    ],
+    "type": "utility"
+  },
+  "components/*.tsx": {
+    "alternate": [
+      "tests/components/{dirname}/{basename}.test.tsx"
+    ],
+    "type": "utility"
+  },
+  "pages/*.tsx": {
+    "alternate": [
+      "tests/pages/{dirname}/{basename}.test.ts"
+    ],
+    "type": "utility"
+  },
+  "tests/common/*.test.ts": {
+    "alternate": "common/{dirname}/{basename}.ts"
+  },
+  "tests/components/*.test.tsx": {
+    "alternate": "components/{dirname}/{basename}.tsx"
+  },
+  "tests/pages/*.test.ts": {
+    "alternate": "pages/{dirname}/{basename}.tsx"
+  }
+}

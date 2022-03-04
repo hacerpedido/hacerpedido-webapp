@@ -6,7 +6,7 @@ import {
   Text,
 } from "react-native"
 
-import { colors } from "../assets/colors"
+import { colors } from "@/common/colors"
 
 type Props = {
   onToggle: () => void

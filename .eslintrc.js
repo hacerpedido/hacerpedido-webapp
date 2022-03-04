@@ -1,24 +1,29 @@
 module.exports = {
-  env: {
-    es2021: true,
-    "shared-node-browser": true,
-    "jest/globals": true,
-  },
+  // globals: {
+  //   JSX: true,
+  // },
+  // env: {
+  // es2021: true,
+  // "shared-node-browser": true,
+  // "jest/globals": true,
+  // },
   extends: [
+    "next",
     "plugin:@typescript-eslint/recommended",
-    "eslint:recommended",
-    "next/core-web-vitals",
-    "prettier",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:jest/all",
+    "plugin:prettier/recommended",
   ],
-  plugins: ["@typescript-eslint", "import", "prettier", "jest"],
+  plugins: ["@typescript-eslint", "import", "prettier", "jest", "cypress"],
   parser: "@typescript-eslint/parser",
-  parserOptions: {
-    sourceType: "module",
-  },
+  // parserOptions: {
+  //   sourceType: "module",
+  // },
   rules: {
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/no-unused-vars": "error",
-    "import/no-extraneous-dependencies": 0,
+    // "import/no-extraneous-dependencies": 0,
     "import/order": [
       "error",
       {
@@ -28,5 +33,6 @@ module.exports = {
       },
     ],
     "prettier/prettier": "error",
+    "jest/prefer-expect-assertions": 0,
   },
 }

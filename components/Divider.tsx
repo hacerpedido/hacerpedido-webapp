@@ -1,6 +1,6 @@
 import { StyleSheet, View, ViewStyle } from "react-native"
 
-import colors from "../assets/colors"
+import { colors } from "@/common/colors"
 
 export default function Divider() {
   return <View style={styles.divider} />

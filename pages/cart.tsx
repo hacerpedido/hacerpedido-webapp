@@ -1,34 +1,35 @@
 import { useRouter } from "next/router"
+import type { SubmitHandler } from "react-hook-form"
 import { StyleSheet, View, ViewStyle } from "react-native"
-import { useSelector } from "react-redux"
 
-import { colors } from "../assets/colors"
-import Form from "../components/Cart/Form"
-import Header from "../components/Cart/Header"
-import ProductList from "../components/Cart/ProductList"
-import { extractSections } from "../lib/utils/products"
-import { generateWhatsappURL } from "../lib/utils/utils"
-import type { CartProduct } from "../types"
+import { colors } from "@/common/colors"
+import { useAppSelector as useSelector } from "@/common/hooks"
+import { extractSections } from "@/common/utils/products"
+import { generateWhatsappURL } from "@/common/utils/utils"
+import Form from "@/components/Cart/Form"
+import Header from "@/components/Cart/Header"
+import ProductList from "@/components/Cart/ProductList"
+import type { Product, CartFormValues } from "types"
 
 export default function Cart() {
   const router = useRouter()
 
   const shop = useSelector((state) => state.shop.shop)
-  let products = useSelector((state) => state.shop.products)
-  products = products.filter((p: CartProduct) => p.amount > 0)
-  const productsByCategory = extractSections(products)
+  const products = useSelector((state) => state.shop.products)
+  const cartProducts = products.filter((p: Product) => p.amount > 0)
+  const categoriesWithCartProducts = extractSections(cartProducts)
 
   if (!shop) {
     router.push("/")
     return null
   }
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<CartFormValues> = (data) => {
     const { orderswhatsappnumber } = shop
     const url = generateWhatsappURL(
       orderswhatsappnumber,
       data,
-      productsByCategory
+      categoriesWithCartProducts
     )
     window.location.href = url
   }
@@ -38,7 +39,7 @@ export default function Cart() {
       <Header />
 
       <View style={styles.bodyContainer}>
-        <ProductList productsByCategory={productsByCategory} />
+        <ProductList categoriesWithCartProducts={categoriesWithCartProducts} />
         <Form onSubmit={onSubmit} />
       </View>
     </View>

@@ -1,9 +1,11 @@
 import { View, Image, StyleSheet, Text } from "react-native"
 
-import colors from "../../assets/colors"
-import { getLogoForShop } from "../../lib/utils/shops"
-import { Shop } from "../../types"
 import DecoratedLabel from "../DecoratedLabel"
+
+import { colors } from "@/common/colors"
+import { getLogoForShop } from "@/common/utils/shops"
+
+import type { Shop } from "types"
 
 type Props = {
   shop: Shop
@@ -16,7 +18,11 @@ const ShopCard = ({ shop }: Props) => {
     <View style={styles.card}>
       <View style={styles.container}>
         <View style={styles.containerLogo}>
-          <Image source={{ uri: getLogoForShop(shop) }} style={styles.logo} />
+          <Image
+            source={{ uri: getLogoForShop(shop) }}
+            alt={shop.name}
+            style={styles.logo}
+          />
         </View>
         <View style={styles.containerLabels}>
           <Text style={styles.shopName}>{name.toLowerCase()}</Text>

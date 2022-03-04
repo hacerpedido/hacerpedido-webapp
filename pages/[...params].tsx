@@ -5,17 +5,22 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Image, StyleSheet, Text, View } from "react-native"
-import { useSelector, useDispatch } from "react-redux"
 
-import theme from "assets/theme"
+import { saveShopWithProducts } from "@/common/api/shops"
+
+import {
+  useAppDispatch as useDispatch,
+  useAppSelector as useSelector,
+} from "@/common/hooks"
+
+import theme from "@/common/theme"
+import { trimObject } from "@/common/utils/utils"
 import EditProductsForm from "components/EditShop/EditProducts"
 import EditShopForm from "components/EditShop/EditShop"
 import Form from "components/Form"
 import Loading from "components/Loading"
 import MessageBox from "components/MessageBox"
 import ShopView from "components/Shop/ShopView"
-import { saveShopWithProducts } from "lib/api/shops"
-import { trimObject } from "lib/utils/utils"
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -46,7 +51,7 @@ export default function EditShopPage() {
       return
     }
 
-    if (shopState.shop !== null || !shopState.loading) {
+    if (!shopState?.loading) {
       setShopState({ shop: null, loading: true })
     }
 
@@ -66,16 +71,16 @@ export default function EditShopPage() {
       }
     }
     getData()
-  }, [token, dispatch, reloadCount])
+  }, [token, dispatch, reloadCount, shopState.loading, shopState.shop])
 
   const {
     handleSubmit,
     register,
     setValue,
-    errors,
     control,
     watch,
     getValues,
+    formState: { errors },
   } = useForm({
     mode: "onBlur",
   })
@@ -189,6 +194,7 @@ export default function EditShopPage() {
                 <Image
                   source={"/images/external-link-alt.png"}
                   style={styles.openProductionLinkIcon}
+                  alt="Ir a mi sitio"
                 />
               </Text>
             </a>
