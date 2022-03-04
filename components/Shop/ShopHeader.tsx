@@ -1,14 +1,27 @@
 import { useRouter } from "next/router"
-import { Image, StyleSheet, Text, TouchableHighlight, View } from "react-native"
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+  ViewStyle,
+  TextStyle,
+} from "react-native"
 
 import colors from "../../assets/colors"
 import { PhoneCallIcon, ArrowLeftIcon } from "../../assets/icons"
 import { getBackgroundColorForCategory } from "../../lib/utils/categories"
 import { getLogoForShop, getBackgroundForShop } from "../../lib/utils/shops"
 import { generateCallUrl } from "../../lib/utils/utils"
+import type { Shop } from "../../types"
 import DecoratedLabel from "../DecoratedLabel"
 
-const ShopHeader = ({ isPreview = false, shop = {} }) => {
+type Props = {
+  isPreview?: boolean
+  shop: Shop
+}
+const ShopHeader = ({ isPreview = false, shop }: Props) => {
   const {
     name,
     background,
@@ -20,25 +33,19 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
   } = shop
 
   const logo = getLogoForShop(shop)
-
   const router = useRouter()
-
   const containerStyles = {
-    ...styles.container,
     backgroundImage: getBackgroundForShop(shop),
     backgroundSize: background ? "100% auto" : "auto",
     backgroundColor: getBackgroundColorForCategory(category),
   }
-
   const onButtonBackPress = () => {
     !isPreview && router.push("/")
   }
-
   const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview
 
   const ButtonCall = () => (
     <TouchableHighlight underlayColor={"none"}>
-      {/* eslint-disable react-native/no-inline-styles */}
       <a
         href={generateCallUrl(ordersphonenumber)}
         style={{ textDecoration: "none" }}
@@ -48,7 +55,6 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
           <Text style={styles.buttonText}>Llamar</Text>
         </View>
       </a>
-      {/* eslint-enable react-native/no-inline-styles */}
     </TouchableHighlight>
   )
 
@@ -79,7 +85,7 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image source={{ uri: logo }} style={styles.logo} />
+          <Image source={{ uri: logo }} style={styles.logo} alt={name} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
@@ -119,9 +125,20 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
 
 export default ShopHeader
 
-// TODO: poner el ButtonCall y el ButtonBack en la misma fila
-// usando flex y posicionando con absolute
-const styles = StyleSheet.create({
+type Styles = {
+  buttonBack: ViewStyle
+  buttonCall: ViewStyle
+  buttonCallContainer: ViewStyle
+  buttonText: TextStyle
+  containerNavigator: ViewStyle
+  containerData: ViewStyle
+  containerLogo: ViewStyle
+  logo: ViewStyle
+  shopName: TextStyle
+}
+
+// TODO: poner el ButtonCall y el ButtonBack en la misma fila usando flex y posicionando con absolute
+const styles = StyleSheet.create<Styles>({
   buttonBack: {
     color: colors.white,
     padding: 24,
@@ -154,7 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 9,
   },
-  container: {},
   containerData: {
     alignItems: "center",
     flexDirection: "column",

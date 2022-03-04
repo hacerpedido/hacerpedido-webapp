@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import colors from "../../assets/colors";
+import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
-const Product = ({ product }) => {
+import colors from "../../assets/colors"
+import type { CartProduct } from "../../types"
+
+const Product = ({ product }: { product: CartProduct }) => {
   const { amount, description, name } = product
 
   return (
@@ -9,7 +11,7 @@ const Product = ({ product }) => {
       <Text style={styles.amount}>{amount}</Text>
 
       <View style={styles.nameDescription}>
-        <Text style={styles.text}>{name}</Text>
+        <Text>{name}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
     </View>
@@ -34,7 +36,14 @@ const textStyles = {
   },
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  amount: TextStyle
+  container: ViewStyle
+  description: TextStyle
+  nameDescription: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   amount: {
     ...textStyles.normalBoldText,
     color: colors.brown,
@@ -48,7 +57,7 @@ const styles = StyleSheet.create({
   description: {
     color: colors.lightGrey,
     fontSize: 13,
-    fotiFamily: "Roboto Slab",
+    fontFamily: "Roboto Slab",
     lineHeight: 17,
   },
   nameDescription: {

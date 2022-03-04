@@ -8,31 +8,29 @@ import {
   Text,
   TouchableHighlight,
   View,
+  ViewStyle,
 } from "react-native"
 import { useSelector, useDispatch } from "react-redux"
 
-import colors from "../assets/colors";
-import HomeFilterBar from "../components/Home/HomeFilterBar"
-import HomeHeader from "../components/Home/HomeHeader"
-import ShopCard from "../components/Home/ShopCard"
-import Loading from "../components/Loading"
-import { loading } from "../lib/reducers/appSlice"
+import colors from "assets/colors"
+import HomeFilterBar from "components/Home/HomeFilterBar"
+import HomeHeader from "components/Home/HomeHeader"
+import ShopCard from "components/Home/ShopCard"
+import Loading from "components/Loading"
+import { loading } from "lib/reducers/appSlice"
 import {
   setCategory,
   setShops,
   setFirstVisibleItem,
-} from "../lib/reducers/homeSlice"
-import { setShop } from "../lib/reducers/shopSlice"
-
-let touchStartingPoint = 0
-let touchCurrentPoint = 0
+} from "lib/reducers/homeSlice"
+import { setShop } from "lib/reducers/shopSlice"
+import type { Shop } from "types"
 
 let firstVisibleItemIndex = 0
-let ITEM_HEIGHT = 130
 
-const renderHeader = (count) => {
-  let shopText = count > 0 || count === 0 ? "comercios" : "comercio"
-  let countText = count === 0 ? "No hay" : count
+const renderHeader = (count: number) => {
+  const shopText = count > 0 || count === 0 ? "comercios" : "comercio"
+  const countText = count === 0 ? "No hay" : count
 
   return (
     <Text style={styles.count}>
@@ -41,7 +39,11 @@ const renderHeader = (count) => {
   )
 }
 
-const onViewableItemsChanged = ({ viewableItems }) => {
+const onViewableItemsChanged = ({
+  viewableItems,
+}: {
+  viewableItems: Shop[]
+}) => {
   if (viewableItems !== undefined && viewableItems.length > 0) {
     firstVisibleItemIndex = viewableItems[0].index
   }
@@ -54,11 +56,15 @@ export default function App() {
   const dispatch = useDispatch()
   const router = useRouter()
 
-  let initialScrollIndex = firstVisibleItem ?? 0
+  const initialScrollIndex = firstVisibleItem ?? 0
+
+  let touchStartingPoint = 0
+  let touchCurrentPoint = 0
+  const ITEM_HEIGHT = 130
 
   const onSelect = useCallback(
     (shop) => {
-      let distance = Math.abs(touchStartingPoint - touchCurrentPoint)
+      const distance = Math.abs(touchStartingPoint - touchCurrentPoint)
       if (distance <= 10) {
         dispatch(setFirstVisibleItem(firstVisibleItemIndex))
         dispatch(setShop(shop))
@@ -87,8 +93,8 @@ export default function App() {
     })
   }, [dispatch, category])
 
-  let filteredShops = shops.filter(
-    (x) => x.visibility === "public" && x.category === category
+  const filteredShops = shops.filter(
+    (x: Shop) => x.visibility === "public" && x.category === category
   )
 
   const ShopList = () => (
@@ -164,7 +170,15 @@ export default function App() {
   )
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  body: ViewStyle
+  count: ViewStyle
+  header: ViewStyle
+  lastView: ViewStyle
+  list: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   body: {
     backgroundColor: colors.homeBackground,
     flex: 1,

@@ -7,16 +7,15 @@ import { useForm } from "react-hook-form"
 import { Image, StyleSheet, Text, View } from "react-native"
 import { useSelector, useDispatch } from "react-redux"
 
-import theme from "../assets/theme"
-import EditProductsForm from "../components/EditShop/EditProducts"
-import EditShopForm from "../components/EditShop/EditShop"
-import Form from "../components/Form"
-import Loading from "../components/Loading"
-import MessageBox from "../components/MessageBox"
-import ShopView from "../components/Shop/ShopView"
-import { saveShopWithProducts } from "../lib/api/shops"
-import useWidth from "../lib/hooks/use_width"
-import { trimObject } from "../lib/utils/utils"
+import theme from "assets/theme"
+import EditProductsForm from "components/EditShop/EditProducts"
+import EditShopForm from "components/EditShop/EditShop"
+import Form from "components/Form"
+import Loading from "components/Loading"
+import MessageBox from "components/MessageBox"
+import ShopView from "components/Shop/ShopView"
+import { saveShopWithProducts } from "lib/api/shops"
+import { trimObject } from "lib/utils/utils"
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -26,7 +25,6 @@ import { trimObject } from "../lib/utils/utils"
 export default function EditShopPage() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const resizedWidth = useWidth()
 
   const [shopState, setShopState] = useState({ shop: null, loading: true })
   const [showMessage, setShowMessage] = useState(false)
@@ -36,9 +34,9 @@ export default function EditShopPage() {
 
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts)
 
-  let { params } = router.query
+  const { params } = router.query
 
-  let token = typeof params !== "undefined" ? params[0] : undefined
+  const token = typeof params !== "undefined" ? params[0] : undefined
 
   // let a = { params, token, shop: shopState.shop, resizedWidth, loading: shopState.loading };
   // console.log("PASS: ", a);
@@ -96,7 +94,7 @@ export default function EditShopPage() {
 
     async function saveData() {
       setSaving(true)
-      let dataToSave = {
+      const dataToSave = {
         ...data,
         id: shopState.shop.id,
         slug: shopState.shop.slug,
@@ -107,7 +105,7 @@ export default function EditShopPage() {
       setMessage(result.message)
 
       if (result.error == null) {
-        let editedShop = { ...shopState.shop, ...dataToSave }
+        const editedShop = { ...shopState.shop, ...dataToSave }
         if (tempProducts != null) {
           editedShop.products = tempProducts
         }
@@ -141,10 +139,10 @@ export default function EditShopPage() {
   }
 
   const tempValues = watch()
-  let tempShop = trimObject({ ...shopState.shop, ...tempValues })
+  const tempShop = trimObject({ ...shopState.shop, ...tempValues })
 
-  let products = shopState.shop?.products ?? []
-  let previewProducts = tempProducts ?? products
+  const products = shopState.shop?.products ?? []
+  const previewProducts = tempProducts ?? products
 
   const width = typeof window !== "undefined" ? window.innerWidth : 1000
   const showPreview = width > 1000

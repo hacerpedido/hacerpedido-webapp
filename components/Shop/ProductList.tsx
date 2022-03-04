@@ -1,17 +1,27 @@
-import { StyleSheet, Text } from "react-native"
+import type { ReactNode } from "react"
+import { StyleSheet, Text, ViewStyle } from "react-native"
 
 import { colors } from "../../assets/colors"
+import type { CartProduct } from "../../types"
 import Divider from "../Divider"
 
 import Product from "./Product"
 
+type Props = {
+  products: CartProduct[]
+  isCartEnabled?: boolean
+}
+
 // TODO: Merge with cart/productList.jsx
-export default function ProductList({ products, isCartEnabled = false }) {
-  const listItems = []
+export default function ProductList({
+  products,
+  isCartEnabled = false,
+}: Props) {
+  const listItems: ReactNode[] = []
   let lastCategory = ""
   let item = 0
 
-  products.forEach((product) => {
+  products.forEach((product: CartProduct) => {
     const { category } = product
 
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar el nombre "Promociones"
@@ -24,8 +34,7 @@ export default function ProductList({ products, isCartEnabled = false }) {
 
       listItems.push(
         <Text key={item++} style={styles.category}>
-          {" "}
-          {category}{" "}
+          {category}
         </Text>
       )
 
@@ -47,7 +56,11 @@ export default function ProductList({ products, isCartEnabled = false }) {
   return <>{listItems}</>
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  category: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   category: {
     color: colors.brown,
     fontFamily: "Barlow",

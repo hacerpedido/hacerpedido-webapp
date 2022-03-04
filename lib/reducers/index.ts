@@ -1,9 +1,6 @@
-// TODO: getDefaultMiddleware is deprecated
-import {
-  combineReducers,
-  configureStore,
-  getDefaultMiddleware,
-} from "@reduxjs/toolkit"
+// TODO: fix `window` issue
+import AsyncStorage from "@react-native-community/async-storage"
+import { combineReducers, configureStore } from "@reduxjs/toolkit"
 
 import {
   persistStore,
@@ -16,8 +13,6 @@ import {
   REGISTER,
 } from "redux-persist"
 
-import storage from "redux-persist/lib/storage"
-
 import appReducer from "./appSlice"
 import cartReducer from "./cartSlice"
 import homeReducer from "./homeSlice"
@@ -27,7 +22,7 @@ import shopReducer from "./shopSlice"
 const persistConfig = {
   key: "root",
   version: 1,
-  storage,
+  storage: AsyncStorage,
   blacklist: ["app", "shopEdit", "shop"],
 }
 
@@ -43,11 +38,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 })
 
 export const persistor = persistStore(store)

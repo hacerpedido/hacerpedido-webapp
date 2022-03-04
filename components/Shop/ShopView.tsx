@@ -1,22 +1,29 @@
-import { StyleSheet, ScrollView, View } from "react-native"
+import { StyleSheet, ScrollView, View, ViewStyle } from "react-native"
 import { useSelector } from "react-redux"
 
-import colors from "../../assets/colors";
+import colors from "../../assets/colors"
 
+import type { Shop, Product } from "../../types"
 import Loading from "../Loading"
 
 import ProductList from "./ProductList"
 import ShopHeader from "./ShopHeader"
 import ShopNotes from "./ShopNotes"
 
+type Props = {
+  isPreview?: boolean
+  shop: Shop
+  previewProducts?: Product[]
+}
+
 export default function ShopView({
   isPreview = false,
   shop,
   previewProducts = [],
-}) {
+}: Props) {
   // TODO: se esta renderizando 2 veces todo el componente. Deberia renderizar solo el prodlist?
   const isLoading = useSelector((state) => state.app.loading)
-  const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber
+  const isCartEnabled = !isPreview && shop?.orderswhatsappnumber.length > 0
   const products = isPreview
     ? previewProducts
     : useSelector((state) => state.shop.products)
@@ -46,7 +53,11 @@ export default function ShopView({
   )
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  container: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.white,
     marginBottom: 130,

@@ -1,14 +1,29 @@
-import { useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
-import { generateCallUrl } from "../../lib/utils/utils";
-import colors from "../../assets/colors";
-import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
+// TODO: missing some styles, verify that I havent erase any
+import { useRouter } from "next/router"
+import {
+  StyleSheet,
+  TouchableHighlight,
+  View,
+  Text,
+  ViewStyle,
+  TextStyle,
+} from "react-native"
+import { useSelector } from "react-redux"
 
-const ShopFooter = ({ shop }) => {
-  const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop
+import colors from "../../assets/colors"
+import { PhoneCallIcon } from "../../assets/icons"
+import type { RootState } from "../../lib/reducers"
+import { generateCallUrl } from "../../lib/utils/utils"
+import type { Shop } from "../../types"
+
+type Props = {
+  shop: Shop
+}
+
+const ShopFooter = ({ shop }: Props) => {
+  const { ordersphonenumber = "", orderswhatsappnumber = "" } = shop
   const router = useRouter()
-  const totalAmount = useSelector((state) => state.shop.totalAmount)
+  const totalAmount = useSelector((state: RootState) => state.shop.totalAmount)
   const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 }
 
   const ButtonWhatsapp = () => (
@@ -27,7 +42,8 @@ const ShopFooter = ({ shop }) => {
     </TouchableHighlight>
   )
 
-  const onCall = (number) => (window.location.href = generateCallUrl(number))
+  const onCall = (phoneNumber: string) =>
+    (window.location.href = generateCallUrl(phoneNumber))
 
   const ButtonCall = () => (
     // TODO: Extract component, to be reused in header
@@ -37,11 +53,9 @@ const ShopFooter = ({ shop }) => {
       style={styles.buttonContainer}
     >
       <View style={[styles.buttonCall, styles.button]}>
-        <Text style={styles.textContainer} numberOfLines={1}>
-          <View style={styles.icon}>
-            <PhoneCallIcon color={colors.white} />
-          </View>
-          <Text style={styles.buttonText}>Llamar</Text>
+        <Text numberOfLines={1}>
+          <PhoneCallIcon color={colors.white} />
+          <Text>Llamar</Text>
         </Text>
       </View>
     </TouchableHighlight>
@@ -56,7 +70,18 @@ const ShopFooter = ({ shop }) => {
 
 export default ShopFooter
 
-const styles = StyleSheet.create({
+type Styles = {
+  button: ViewStyle
+  buttonCall: ViewStyle
+  buttonContainer: ViewStyle
+  buttonText: TextStyle
+  buttonWhatsApp: ViewStyle
+  container: ViewStyle
+  totalAmountContainer: ViewStyle
+  totalAmountText: TextStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   button: {
     alignItems: "center",
     borderRadius: 4,
@@ -112,7 +137,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: "Barlow",
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: "600",
     marginBottom: 1,
   },
 })

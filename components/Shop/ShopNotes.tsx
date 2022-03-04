@@ -1,8 +1,9 @@
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, TextStyle, ViewStyle } from "react-native"
 
 import theme from "../../assets/theme"
+import type { Shop } from "../../types"
 
-const ShopNotes = ({ shop }) => {
+const ShopNotes = ({ shop }: { shop: Shop }) => {
   if (shop.notes) {
     return (
       <View style={styles.container}>
@@ -17,7 +18,13 @@ const ShopNotes = ({ shop }) => {
 
 export default ShopNotes
 
-const styles = StyleSheet.create({
+type Styles = {
+  category: TextStyle
+  container: ViewStyle
+  notes: TextStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   category: {
     color: theme.colors.brown,
     fontFamily: "Barlow",

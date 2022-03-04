@@ -1,6 +1,6 @@
-const fs = require("fs")
+import fs from "fs"
 
-const AWS = require("aws-sdk")
+import AWS from "aws-sdk"
 
 export async function uploadFile(fileName, key, mime) {
   const fileContent = fs.readFileSync(fileName)

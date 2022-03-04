@@ -4,7 +4,7 @@ import { TouchableHighlight, StyleSheet, Text, View } from "react-native"
 import { useSelector } from "react-redux"
 // import {useSpring, animated} from "react-spring";
 
-import { colors } from "../../assets/colors";
+import { colors } from "../../assets/colors"
 // import {setName, setAddress, setNotes} from "reducers/cartSlice";
 import { WhatsAppIcon } from "../../assets/icons"
 import Input from "../Input"

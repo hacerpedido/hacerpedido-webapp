@@ -1,8 +1,7 @@
+import { s3utils } from "./aws-s3"
+
 const formidable = require("formidable")
-
 const validator = require("validator")
-
-const s3utils = require("./aws-s3")
 
 function randomString(
   length,

@@ -1,20 +1,21 @@
 import { useRouter } from "next/router"
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View, ViewStyle } from "react-native"
 import { useSelector } from "react-redux"
 
-import colors from "../assets/colors";
+import { colors } from "../assets/colors"
 import Form from "../components/Cart/Form"
 import Header from "../components/Cart/Header"
 import ProductList from "../components/Cart/ProductList"
 import { extractSections } from "../lib/utils/products"
 import { generateWhatsappURL } from "../lib/utils/utils"
+import type { CartProduct } from "../types"
 
 export default function Cart() {
-  const shop = useSelector((state) => state.shop.shop)
   const router = useRouter()
 
+  const shop = useSelector((state) => state.shop.shop)
   let products = useSelector((state) => state.shop.products)
-  products = products.filter((p) => p.amount > 0)
+  products = products.filter((p: CartProduct) => p.amount > 0)
   const productsByCategory = extractSections(products)
 
   if (!shop) {
@@ -34,17 +35,22 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
-      <Header style={styles.header} />
+      <Header />
 
       <View style={styles.bodyContainer}>
-        <ProductList products={productsByCategory} />
-        <Form style={styles.footer} onSubmit={onSubmit} />
+        <ProductList productsByCategory={productsByCategory} />
+        <Form onSubmit={onSubmit} />
       </View>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  bodyContainer: ViewStyle
+  container: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   bodyContainer: {
     marginHorizontal: 24,
   },

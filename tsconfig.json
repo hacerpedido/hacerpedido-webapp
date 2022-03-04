@@ -24,7 +24,8 @@
     ],
     "allowJs": true,
     "esModuleInterop": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "baseUrl": "."
   },
   "include": [
     "next-env.d.ts",
@@ -34,13 +35,5 @@
   "exclude": [
     "node_modules",
     "jest.config.js"
-  ],
-  "references": [
-    {
-      "path": "./types"
-    },
-    {
-      "path": "./assets"
-    }
   ]
 }
