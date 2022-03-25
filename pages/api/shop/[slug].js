@@ -1,11 +1,12 @@
 import * as n from "nested-knex";
+import { withSentry } from '@sentry/nextjs';
 
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
 });
 
-export default async function handle(req, res) {
+const handler = async (req, res) => {
   const { slug } = req.query;
 
   if (!slug || slug === "") {
@@ -53,3 +54,5 @@ export default async function handle(req, res) {
   res.status(200).json(data);
   res.end();
 }
+
+export default withSentry(handler);

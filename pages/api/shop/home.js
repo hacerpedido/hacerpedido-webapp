@@ -1,11 +1,12 @@
 import { categories } from "../../../lib/utils/categories";
+import { withSentry } from '@sentry/nextjs';
 
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
 });
 
-export default async function handle(req, res) {
+const handler = async (req, res) => {
   const { category } = req.query;
 
   if (!category || category === "" || !categories.includes(category)) {
@@ -39,3 +40,5 @@ export default async function handle(req, res) {
   res.status(200).json(shops);
   res.end();
 }
+
+export default withSentry(handler);
