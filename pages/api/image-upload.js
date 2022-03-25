@@ -1,9 +1,10 @@
+import { withSentry } from '@sentry/nextjs';
 const formidable = require("formidable");
 const s3utils = require("../../lib/utils/aws-s3");
 const utils = require("../../lib/utils/utils");
 const validator = require("validator");
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   if (req.method !== "POST") {
     res.status(400).end();
   }
@@ -107,3 +108,5 @@ export const config = {
     bodyParser: false,
   },
 };
+
+export default withSentry(handler);

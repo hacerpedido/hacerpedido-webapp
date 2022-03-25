@@ -1,3 +1,4 @@
+import { withSentry } from '@sentry/nextjs';
 import * as n from "nested-knex";
 
 const pg = require("knex")({
@@ -5,7 +6,7 @@ const pg = require("knex")({
   connection: process.env.PG_CONNECTION_STRING,
 });
 
-export default async function handle(req, res) {
+const handler = async(req, res) => {
 
   if (req.method === 'POST') {
     // console.log("POST:", req.body)
@@ -115,3 +116,5 @@ export default async function handle(req, res) {
   res.status(200).json(data);
   res.end();
 }
+
+export default withSentry(handler);

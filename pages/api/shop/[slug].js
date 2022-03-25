@@ -5,7 +5,7 @@ const pg = require("knex")({
   connection: process.env.PG_CONNECTION_STRING,
 });
 
-export default async function handle(req, res) {
+const handler = (req, res) => {
   const { slug } = req.query;
 
   if (!slug || slug === "") {
@@ -53,3 +53,5 @@ export default async function handle(req, res) {
   res.status(200).json(data);
   res.end();
 }
+
+export default withSentry(handler);
