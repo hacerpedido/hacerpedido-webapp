@@ -26,7 +26,7 @@ import { saveShopWithProducts } from "../lib/api/shops";
 export default function EditShopPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const resizedWidth = useWidth();
+  // const resizedWidth = useWidth();
 
   const [shopState, setShopState] = useState({ shop: null, loading: true });
   const [showMessage, setShowMessage] = useState(false);
