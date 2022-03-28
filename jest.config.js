@@ -10,9 +10,10 @@ const customJestConfig = {
   transformIgnorePatterns: ["/next[/\\\\]dist/", "/\\.next/"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleNameMapper: {
+    "^@/common/(.*)$": "<rootDir>/common/$1",
     "^@/components/(.*)$": "<rootDir>/components/$1",
     "^@/pages/(.*)$": "<rootDir>/pages/$1",
-    "^@/common/(.*)$": "<rootDir>/common/$1",
+    "^@/store/(.*)$": "<rootDir>/store/$1",
   },
 }
 

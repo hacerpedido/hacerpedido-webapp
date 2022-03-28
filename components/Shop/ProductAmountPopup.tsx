@@ -11,7 +11,7 @@ import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/common/colors"
 import { useAppDispatch as useDispatch } from "@/common/hooks"
-import { setAmount } from "@/common/reducers/shopSlice"
+import { setAmount } from "@/store/shopSlice"
 import type { Product } from "types"
 
 const AnimatedView = animated(View)

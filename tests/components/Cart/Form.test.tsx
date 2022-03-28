@@ -1,8 +1,8 @@
 import { render } from "@testing-library/react"
 import { Provider } from "react-redux"
 
-import { store } from "@/common/reducers"
 import Form from "@/components/Cart/Form"
+import { store } from "@/store/configureStore"
 
 describe("cart/Form", () => {
   it("renders correctly", () => {

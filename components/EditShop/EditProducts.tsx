@@ -6,11 +6,10 @@ import { StyleSheet, Text, View } from "react-native"
 
 import { useAppDispatch as useDispatch } from "@/common/hooks"
 
-import useWidth from "@/common/hooks/use_width"
-import { setTempProducts } from "@/common/reducers/shopEditSlice"
 import theme from "@/common/theme"
 import { productForGrid, productsFromGrid } from "@/common/utils/products"
 import { sanitizePrice } from "@/common/utils/utils"
+import { setTempProducts } from "@/store/shopEditSlice"
 
 const HotTable = dynamic(
   async () => {
@@ -28,7 +27,6 @@ const HotTable = dynamic(
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch()
   const grid = useRef(null)
-  const resizedWidth = useWidth()
 
   const gridData = useMemo(() => productForGrid(products), [products])
 
@@ -44,7 +42,7 @@ const EditProducts = ({ products, shopId }) => {
       setTimeout(check, 50)
     }
     check()
-  }, [grid])
+  }, [grid, getCells])
 
   const afterChange = (changes) => {
     if (changes == null || grid.current == null) {
@@ -149,7 +147,7 @@ const EditProducts = ({ products, shopId }) => {
         columns={columns}
         colHeaders={colHeaders}
         contextMenu={["row_above", "row_below", "remove_row"]}
-        colWidths={(index) => {
+        colWidths={(index: number) => {
           const width = typeof window !== "undefined" ? window.innerWidth : 1001
 
           switch (index) {

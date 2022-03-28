@@ -16,7 +16,7 @@ import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
-// import {setName, setAddress, setNotes} from "reducers/cartSlice";
+// import {setName, setAddress, setNotes} from "store/cartSlice";
 
 const Form = ({ onSubmit }) => {
   const shop = useSelector((state) => state.shop.shop)
@@ -41,7 +41,7 @@ const Form = ({ onSubmit }) => {
 
   return (
     <View style={styles.container}>
-      <Switch toggle={toggleTakeAway} value={takeaway} />
+      <Switch onToggle={toggleTakeAway} value={takeaway} />
 
       <Controller
         render={({ field }) => <Input {...field} />}

@@ -1,4 +1,5 @@
-import "bootstrap/dist/css/bootstrap.min.css"
+
+import React, { FC } from 'react'
 import type { AppProps } from "next/app"
 import Head from "next/head"
 import { useEffect } from "react"
@@ -6,10 +7,11 @@ import TagManager from "react-gtm-module"
 import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 
-import { store, persistor } from "@/common/reducers"
+import { store, persistor } from "@/store/configureStore"
+import "bootstrap/dist/css/bootstrap.min.css"
 import "@/styles/globals.css"
 
-function MyApp({ Component, pageProps }: AppProps) {
+const CustomApp: FC<AppProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     TagManager.initialize({ gtmId: "GTM-PKPPSFX" })
   }, [])
@@ -51,4 +53,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   )
 }
 
-export default MyApp
+export default CustomApp

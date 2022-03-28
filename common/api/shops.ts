@@ -1,33 +1,38 @@
 import axios, { AxiosError } from "axios"
 
-import type { Product } from "../../types"
+import type { Product, Shop } from "types"
 
 export async function saveShopWithProducts(
   token: string,
-  shopPatch: any,
+  shop: Shop,
   newProducts: Product[]
 ) {
   const params = {
-    id: shopPatch.id,
-    address: shopPatch.address,
-    deliverycost: shopPatch.deliverycost,
-    name: shopPatch.name,
-    notes: shopPatch.notes,
-    opentimes: shopPatch.opentimes,
-    ordersphonenumber: shopPatch.ordersphonenumber,
-    orderswhatsappnumber: shopPatch.orderswhatsappnumber,
+    id: shop.id,
+    address: shop.address,
+    deliverycost: shop.deliverycost,
+    name: shop.name,
+    notes: shop.notes,
+    opentimes: shop.opentimes,
+    ordersphonenumber: shop.ordersphonenumber,
+    orderswhatsappnumber: shop.orderswhatsappnumber,
     token,
     products: newProducts,
   }
 
   try {
     await axios.post(`${window.location.origin}/api/shop/by-token`, params)
-  } catch (error: unknown | AxiosError) {
-    return {
-      message: `Error al grabar los datos del comercio. (${error} Error: ${error?.response?.data?.message})`,
-      error: 1,
+  } catch (err) {
+    const errors = err as Error | AxiosError
+    if (!axios.isAxiosError(errors)) {
+      console.log(errors)
     }
   }
+
+  //   return {
+  //     message: `Error al grabar los datos del comercio. (${errors} Error: ${errors?.response?.data?.message})`,
+  //     error: 1,
+  //   }
 
   return {
     message: "Tus cambios fueron guardados.",

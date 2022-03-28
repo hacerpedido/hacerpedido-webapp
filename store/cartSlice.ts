@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 type SliceState = {
   name: string
@@ -16,13 +16,13 @@ const appSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    setName(state, { payload }) {
+    setName(state, { payload }: PayloadAction<string>) {
       state.name = payload
     },
-    setAddress(state, { payload }) {
+    setAddress(state, { payload }: PayloadAction<string>) {
       state.address = payload
     },
-    setNotes(state, { payload }) {
+    setNotes(state, { payload }: PayloadAction<string>) {
       state.notes = payload
     },
   },

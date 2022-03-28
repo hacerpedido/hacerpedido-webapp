@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-import type { Product, CategoryWithProducts, Shop } from "types"
+import type { Product, Shop, ShopWithProducts } from "types"
+
+// TODO: remove
+type ProductAndAmount = {
+  product: Product
+  amount: number
+}
 
 type SliceState = {
   shop: Shop | null
@@ -18,31 +24,31 @@ const shopSlice = createSlice({
   name: "shop",
   initialState,
   reducers: {
-    setShop: (state: any, action: PayloadAction<any>) => {
-      const payload = action.payload
+    setShop: (state, { payload }: PayloadAction<ShopWithProducts>) => {
+      state.shop = payload
       const shopHasChanged = state.shop?.slug !== payload.slug
 
-      if (shopHasChanged || !state.products?.length) {
+      if (shopHasChanged || !state.products.length) {
         const products = payload.products || []
 
-        state.shop = payload
-        state.products = products.map((obj: CategoryWithProducts) => ({
-          ...obj,
+        state.products = products.map((product: Product) => ({
+          ...product,
           amount: 0,
         }))
+
         state.totalAmount = initialState.totalAmount
       }
     },
-    setAmount: (state: any, { payload }) => {
+    setAmount: (state, { payload }: PayloadAction<ProductAndAmount>) => {
       const { product, amount } = payload
       const index = state.products.findIndex(
-        (p: CategoryWithProducts) => p.id === product.id
+        (p: Product) => p.id === product.id
       )
 
       if (amount >= 0) state.products[index].amount = amount
 
       state.totalAmount = state.products.reduce(
-        (prev: number, p: CategoryWithProducts) => prev + p.amount,
+        (prev: number, p: Product) => prev + p.amount,
         0
       )
     },

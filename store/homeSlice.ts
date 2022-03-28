@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import type { Shop } from "types"
 
@@ -18,17 +18,17 @@ const homeSlice = createSlice({
   name: "home",
   initialState,
   reducers: {
-    setFirstVisibleItem(state, { payload }) {
+    setFirstVisibleItem(state, { payload }: PayloadAction<number>) {
       state.firstVisibleItem = payload
     },
-    setCategory(state, { payload }) {
+    setCategory(state, { payload }: PayloadAction<string>) {
       state.firstVisibleItem = 0
       state.selectedFilter = payload
     },
-    setShops(state, action) {
-      const newShops = action.payload
+    setShops(state, { payload }: PayloadAction<Shop[]>) {
+      const newShops = payload
+
       state.shops = newShops.concat(
-        // TODO: should use shop type
         state.shops.filter((bo: Shop) => {
           newShops.every((ao: Shop) => ao.id !== bo.id)
         })

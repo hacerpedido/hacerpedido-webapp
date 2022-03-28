@@ -1,12 +1,4 @@
 module.exports = {
-  // globals: {
-  //   JSX: true,
-  // },
-  // env: {
-  // es2021: true,
-  // "shared-node-browser": true,
-  // "jest/globals": true,
-  // },
   extends: [
     "next",
     "plugin:@typescript-eslint/recommended",

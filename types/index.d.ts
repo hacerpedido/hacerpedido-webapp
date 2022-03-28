@@ -1,3 +1,14 @@
+export type CartFormValues = {
+  name: string
+  address: string
+  notes: string
+}
+
+export type CategoryWithProducts = {
+  name: string
+  products: Product[]
+}
+
 export type Product = {
   id?: string
   name: string
@@ -7,11 +18,6 @@ export type Product = {
   shopid?: string
   itemNumber?: number
   amount?: number // NOTE: only cart products include amounts
-}
-
-export type CategoryWithProducts = {
-  name: string
-  products: Product[]
 }
 
 export type Shop = {
@@ -40,8 +46,6 @@ export type Shop = {
   // whatsAppNumber text
 }
 
-export type CartFormValues = {
-  name: string
-  address: string
-  notes: string
+export type ShopWithProducts = Shop & {
+  products: Product[]
 }

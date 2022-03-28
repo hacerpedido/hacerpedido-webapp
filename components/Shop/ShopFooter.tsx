@@ -12,7 +12,7 @@ import {
 
 import { colors } from "@/common/colors"
 import { useAppSelector as useSelector } from "@/common/hooks"
-import type { RootState } from "@/common/reducers"
+import type { RootState } from "@/store/configureStore"
 import { generateCallUrl } from "@/common/utils/utils"
 import { PhoneCallIcon } from "@/components/icons"
 import type { Shop } from "types"

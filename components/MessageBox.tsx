@@ -10,13 +10,12 @@ import {
 
 import theme from "@/common/theme"
 
-const MessageBox = ({
-  message,
-  onMessagePress,
-}: {
+interface Props {
   message: string
   onMessagePress: () => void
-}) => {
+}
+
+const MessageBox = ({ message, onMessagePress }: Props) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onMessagePress()

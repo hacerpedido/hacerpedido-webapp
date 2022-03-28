@@ -16,13 +16,13 @@ import {
   useAppSelector as useSelector,
   useAppDispatch as useDispatch,
 } from "@/common/hooks"
-import { loading } from "@/common/reducers/appSlice"
+import { loading } from "@/store/appSlice"
 import {
   setCategory,
   setShops,
   setFirstVisibleItem,
-} from "@/common/reducers/homeSlice"
-import { setShop } from "@/common/reducers/shopSlice"
+} from "@/store/homeSlice"
+import { setShop } from "@/store/shopSlice"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
 import ShopCard from "@/components/Home/ShopCard"

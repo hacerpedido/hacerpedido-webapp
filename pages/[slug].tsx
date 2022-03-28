@@ -8,8 +8,8 @@ import {
   useAppDispatch as useDispatch,
   useAppSelector as useSelector,
 } from "@/common/hooks"
-import { loading } from "@/common/reducers/appSlice"
-import { setShop } from "@/common/reducers/shopSlice"
+import { loading } from "@/store/appSlice"
+import { setShop } from "@/store/shopSlice"
 import Loading from "@/components/Loading"
 import ShopFooter from "@/components/Shop/ShopFooter"
 import ShopView from "@/components/Shop/ShopView"
@@ -42,7 +42,7 @@ export default function Shop() {
     if (slug != null) {
       getData()
     }
-  }, [dispatch, shop, slug])
+  }, [dispatch, slug])
 
   if (!slug || shop?.slug !== slug) {
     return isLoading ? (
