@@ -21,7 +21,6 @@ import type { CartFormValues } from "types"
 
 const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   const shop = useSelector((state) => state.shop.shop)
-  const { name } = shop
   const [takeaway, setTakeaway] = useState(false)
 
   const {
@@ -119,7 +118,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
               <View style={styles.icon}>
                 <WhatsAppIcon color={colors.white} />
               </View>
-              <Text style={styles.buttonText}> Pedir a {name} </Text>
+              <Text style={styles.buttonText}> Pedir a {shop?.name} </Text>
             </Text>
           </View>
         </div>

@@ -10,7 +10,6 @@ export default async function handle(req, res) {
 
   if (!slug || slug === "") {
     res.status(400).json({ error: "Wrong parameters (1)." })
-
     return
   }
 

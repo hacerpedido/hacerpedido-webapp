@@ -12,7 +12,7 @@ const initialState: SliceState = {
   notes: "",
 }
 
-const appSlice = createSlice({
+const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
@@ -28,6 +28,6 @@ const appSlice = createSlice({
   },
 })
 
-export const { setName, setAddress, setNotes } = appSlice.actions
+export const { setName, setAddress, setNotes } = cartSlice.actions
 
-export default appSlice.reducer
+export default cartSlice.reducer

@@ -131,7 +131,7 @@ function generateSimpleWhatsappMessage() {
   return "¡Hola! Quiero hacer un pedido via HacerPedido 💪"
 }
 
-// TODO: : whatsapp api not accepting emoji
+// TODO: : whatsapp api not accepting emoji, at least on desktop
 function generateWhatsappMessage(
   formData: CartFormValues,
   categoryWithCartProducts: CategoryWithProducts[]

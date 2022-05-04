@@ -12,20 +12,17 @@ import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
 import ShopList from "@/components/Home/ShopList"
 import Loading from "@/components/Loading"
-import { loading } from "@/store/appSlice"
 import { setCategory, setShops } from "@/store/homeSlice"
 import type { Shop } from "types"
 
 export default function Home() {
-  const [firstVisibleItemIndex, setFirstVisibleItemIndex] = useState(0)
-  const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem)
   const category = useSelector((state) => state.home.selectedFilter)
   const shops = useSelector((state) => state.home.shops)
-  const isLoading = useSelector((state) => state.app.loading)
+  const [isLoading, setIsLoading] = useState(true)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(loading(true))
+    setIsLoading(true)
     ;(async () => {
       try {
         const { data } = await axios.get(
@@ -33,11 +30,10 @@ export default function Home() {
           { params: { category } }
         )
         dispatch(setShops(data))
-        dispatch(loading(false))
       } catch (error) {
         console.log(JSON.stringify(error, null, 2))
       }
-      dispatch(loading(false))
+      setIsLoading(false)
     })()
   }, [dispatch, category])
 
@@ -46,7 +42,6 @@ export default function Home() {
   )
 
   const handleSelectFilter = (selected: string) => {
-    setFirstVisibleItemIndex(0)
     dispatch(setCategory(selected))
   }
 
@@ -65,15 +60,7 @@ export default function Home() {
       </View>
 
       <View style={styles.body}>
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <ShopList
-            firstVisibleItem={firstVisibleItem}
-            firstVisibleItemIndex={firstVisibleItemIndex}
-            shops={filteredShops}
-          />
-        )}
+        {isLoading ? <Loading /> : <ShopList shops={filteredShops} />}
       </View>
     </View>
   )

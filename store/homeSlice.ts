@@ -7,24 +7,18 @@ import type { Shop } from "types"
 type SliceState = {
   shops: Shop[]
   selectedFilter: string
-  firstVisibleItem: number
 }
 
 const initialState: SliceState = {
   shops: [],
   selectedFilter: categories[0],
-  firstVisibleItem: 0,
 }
 
 const homeSlice = createSlice({
   name: "home",
   initialState,
   reducers: {
-    setFirstVisibleItem(state, { payload }: PayloadAction<number>) {
-      state.firstVisibleItem = payload
-    },
     setCategory(state, { payload }: PayloadAction<string>) {
-      state.firstVisibleItem = 0
       state.selectedFilter = payload
     },
     setShops(state, { payload }: PayloadAction<Shop[]>) {
@@ -39,6 +33,6 @@ const homeSlice = createSlice({
   },
 })
 
-export const { setCategory, setFirstVisibleItem, setShops } = homeSlice.actions
+export const { setCategory, setShops } = homeSlice.actions
 
 export default homeSlice.reducer

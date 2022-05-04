@@ -67,12 +67,11 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }: Props) => {
   return (
     <View style={styles.container}>
       <FlatList
-        alwaysBounceHorizontal={true}
-        showsVerticalScrollIndicator={false}
-        horizontal={true}
         data={categories}
         renderItem={handleRenderItem}
         keyExtractor={(item: string) => item}
+        showsVerticalScrollIndicator={false}
+        horizontal={true}
         extraData={selected}
       />
     </View>

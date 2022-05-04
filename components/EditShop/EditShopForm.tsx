@@ -93,6 +93,7 @@ export default function EditShop({
             >
               <Text style={styles.buttonUploadImage}>Editar portada</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               underlayColor={"none"}
               onPress={handleSubmit}
@@ -111,6 +112,7 @@ export default function EditShop({
             </TouchableOpacity>
           </View>
         </View>
+
         <View style={styles.formContainer}>
           <View style={styles.formContainer}>
             <View style={styles.formColumnLeft}>

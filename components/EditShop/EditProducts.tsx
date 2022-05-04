@@ -5,29 +5,21 @@ import { useEffect, useMemo, useRef, useCallback } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { useAppDispatch as useDispatch } from "@/common/hooks"
-
 import theme from "@/common/theme"
 import { productForGrid, productsFromGrid } from "@/common/utils/products"
 import { sanitizePrice } from "@/common/utils/utils"
-import { setTempProducts } from "@/store/shopEditSlice"
 
-const HotTable = dynamic(
-  async () => {
-    // await import("handsontable")
-    await import("handsontable/languages/es-MX")
-    const { default: HT } = await import("@handsontable/react")
+import type { Product } from "types"
 
-    return ({ forwardedRef, ...props }) => <HT ref={forwardedRef} {...props} />
-  },
-  {
-    ssr: false,
-  }
-)
+type Props = {
+  products: Product[]
+  shopId: number
+  setTempProducts: () => null
+}
 
-const EditProducts = ({ products, shopId }) => {
+const EditProducts = ({ products, shopId, setTempProducts }: Props) => {
   const dispatch = useDispatch()
   const grid = useRef(null)
-
   const gridData = useMemo(() => productForGrid(products), [products])
 
   useEffect(() => {
@@ -44,17 +36,23 @@ const EditProducts = ({ products, shopId }) => {
     check()
   }, [grid, getCells])
 
-  const afterChange = (changes) => {
-    if (changes == null || grid.current == null) {
-      return
+  const getCells = useCallback((row, col) => {
+    const cellProperties = {}
+    if (grid.current != null) {
+      const tempData = grid.current.hotInstance.getDataAtRow(row)
+
+      if (tempData[0] && col > 0) {
+        cellProperties.renderer = categoryRenderer
+
+        if (col === 2 || col === 3) {
+          cellProperties.readOnly = true
+        }
+      }
     }
+    return cellProperties
+  }, [])
 
-    const tempData = grid.current.hotInstance.getData()
-    const tempProducts = productsFromGrid(shopId, tempData)
-
-    dispatch(setTempProducts({ shopId, tempProducts }))
-  }
-
+  const spareRows = 10
   const colHeaders = ["Título", "Nombre", "Descripción", "Precio"]
 
   const columns = [
@@ -73,6 +71,17 @@ const EditProducts = ({ products, shopId }) => {
       className: "htRight",
     },
   ]
+
+  const afterChange = (changes) => {
+    if (changes == null || grid.current == null) {
+      return
+    }
+
+    const tempData = grid.current.hotInstance.getData()
+    const tempProducts = productsFromGrid(shopId, tempData)
+
+    dispatch(setTempProducts({ shopId, tempProducts }))
+  }
 
   function categoryRenderer(
     instance,
@@ -95,22 +104,6 @@ const EditProducts = ({ products, shopId }) => {
     }
   }
 
-  const getCells = useCallback((row, col) => {
-    const cellProperties = {}
-    if (grid.current != null) {
-      const tempData = grid.current.hotInstance.getDataAtRow(row)
-
-      if (tempData[0] && col > 0) {
-        cellProperties.renderer = categoryRenderer
-
-        if (col === 2 || col === 3) {
-          cellProperties.readOnly = true
-        }
-      }
-    }
-    return cellProperties
-  }, [])
-
   const beforeChanges = (changes, source) => {
     if (source !== "CopyPaste.paste") {
       return
@@ -130,8 +123,6 @@ const EditProducts = ({ products, shopId }) => {
     }
   }
 
-  const spareRows = 10
-
   const colWidths = (index: number) => {
     const width = typeof window !== "undefined" ? window.innerWidth : 1001
 
@@ -146,9 +137,25 @@ const EditProducts = ({ products, shopId }) => {
     }
   }
 
+  const HotTable = dynamic(
+    async () => {
+      // await import("handsontable")
+      await import("handsontable/languages/es-MX")
+      const { default: HT } = await import("@handsontable/react")
+
+      return ({ forwardedRef, ...props }) => (
+        <HT ref={forwardedRef} {...props} />
+      )
+    },
+    {
+      ssr: false,
+    }
+  )
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
+
       <HotTable
         data={gridData}
         colHeaders={colHeaders}

@@ -1,7 +1,7 @@
 import axios from "axios"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useLayoutEffect } from "react"
+import { useLayoutEffect, useState } from "react"
 import { Text, View } from "react-native"
 
 import {
@@ -11,37 +11,35 @@ import {
 import Loading from "@/components/Loading"
 import ShopFooter from "@/components/Shop/ShopFooter"
 import ShopView from "@/components/Shop/ShopView"
-import { loading } from "@/store/appSlice"
 import { setShop } from "@/store/shopSlice"
 
 export default function Shop() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const isLoading = useSelector((state) => state.app.loading)
+  const [isLoading, setIsLoading] = useState(true)
   const shop = useSelector((state) => state.shop.shop)
 
   const { slug } = router.query
 
   useLayoutEffect(() => {
-    const getData = async () => {
-      dispatch(loading(true))
+    if (!slug) {
+      return
+    }
+
+    ;(async () => {
+      setIsLoading(true)
 
       try {
-        const shopData = await axios.get(
+        const { data } = await axios.get(
           `${window.location.origin}/api/shop/${slug}`
         )
-
-        dispatch(setShop(shopData.data))
+        dispatch(setShop(data))
       } catch (error) {
         console.log(JSON.stringify(error, null, 2))
       } finally {
-        dispatch(loading(false))
+        setIsLoading(false)
       }
-    }
-
-    if (slug != null) {
-      getData()
-    }
+    })()
   }, [dispatch, slug])
 
   if (!slug || shop?.slug !== slug) {
@@ -78,7 +76,7 @@ export default function Shop() {
         />
       </Head>
 
-      <ShopView shop={shop} />
+      <ShopView shop={shop} products={shop?.products} isLoading={isLoading} />
 
       <ShopFooter shop={shop} />
     </View>

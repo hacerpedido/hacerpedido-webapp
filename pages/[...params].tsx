@@ -2,68 +2,56 @@ import axios from "axios"
 import ErrorPage from "next/error"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useLayoutEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Image, StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, ViewStyle } from "react-native"
 
 import { saveShopWithProducts } from "@/common/api/shops"
-
-import {
-  useAppDispatch as useDispatch,
-  useAppSelector as useSelector,
-} from "@/common/hooks"
-
+import { useAppSelector as useSelector } from "@/common/hooks"
 import theme from "@/common/theme"
 import { trimObject } from "@/common/utils/utils"
-import EditProductsForm from "components/EditShop/EditProducts"
-import EditShopForm from "components/EditShop/EditShop"
+import EditProducts from "components/EditShop/EditProducts"
+import EditShopForm from "components/EditShop/EditShopForm"
+import Preview from "components/EditShop/Preview"
 import Form from "components/Form"
 import Loading from "components/Loading"
 import MessageBox from "components/MessageBox"
-import ShopView from "components/Shop/ShopView"
 
-// Para probar:
-// http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
-// http://localhost:3000/test6grt3kg7w8x0w250yunjc6gru6f6/edit
-// https://hacerpedido.com/test6grt3kg7w8x0w250yunjc6gru6f6/edit
+import type { Shop } from "types"
 
 export default function EditShopPage() {
-  const router = useRouter()
-
-  const [shopState, setShopState] = useState({ shop: null, loading: true })
+  const [shop, setShop] = useState({ products: [] })
+  const [isLoading, setIsLoading] = useState(true)
   const [showMessage, setShowMessage] = useState(false)
   const [message, setMessage] = useState("")
   const [isSaving, setSaving] = useState(false)
 
-  const tempProducts = useSelector((state) => state.shopEdit.tempProducts)
-
+  const [tempProducts, setTempProducts] = useState([])
+  const router = useRouter()
   const { params } = router.query
-
   const token = typeof params !== "undefined" ? params[0] : undefined
+  const width = typeof window !== "undefined" ? window.innerWidth : 1000
+  const showPreview = width > 1000
 
-  // let a = { params, token, shop: shopState.shop, resizedWidth, loading: shopState.loading };
-  // console.log("PASS: ", a);
+  const previewProducts = () => tempProducts ?? shop.products
 
-  useEffect(() => {
-    if (!token) {
-      return
-    }
+  useLayoutEffect(() => {
+    if (!token) return
 
-    setShopState({ shop: null, loading: true })
+    setIsLoading(true)
     ;(async () => {
       try {
         const { data } = await axios.get(
           `${window.location.origin}/api/shop/by-token`,
           { params: { token } }
         )
-
-        setShopState({ shop: data, loading: false })
+        setShop(data)
       } catch (error) {
         alert(
           `Error al leer los datos. (${error} Error: ${error.response.data.message})`
         )
-        setShopState({ shop: null, loading: false })
       }
+      setIsLoading(false)
     })()
   }, [token])
 
@@ -79,41 +67,34 @@ export default function EditShopPage() {
     mode: "onBlur",
   })
 
-  if (!params || shopState.loading) {
-    return <Loading />
-  }
-
-  // Sólo para las páginas de edit por ahora
-  if (params[1] !== "edit") {
-    return <ErrorPage statusCode={404} />
-  }
-
-  const onSubmit = (data) => {
+  const isError = Object.keys(errors).length > 0
+  const onSubmit = (data: Shop) => {
     trimObject(data)
 
     async function saveData() {
       setSaving(true)
       const dataToSave = {
         ...data,
-        id: shopState.shop?.id,
-        slug: shopState.shop?.slug,
-        region: shopState.shop?.region,
+        id: shop.id,
+        slug: shop.slug,
+        region: shop.region,
       }
 
       const result = await saveShopWithProducts(token, dataToSave, tempProducts)
       setMessage(result.message)
 
       if (result.error == null) {
-        const editedShop = { ...shopState.shop, ...dataToSave }
+        const editedShop = { ...shop, ...dataToSave }
         if (tempProducts != null) {
           editedShop.products = tempProducts
         }
-        setShopState({ shop: editedShop, loading: false })
+        setIsLoading({ shop: editedShop, loading: false })
       }
 
       setShowMessage(true)
       setSaving(false)
-      setShopState({ shop: null, loading: true })
+      // setShop(null)
+      setIsLoading(true)
     }
     saveData()
   }
@@ -122,77 +103,37 @@ export default function EditShopPage() {
     setShowMessage(!showMessage)
   }
 
-  if (token == null) {
-    return <Text>Error cargando el comercio.</Text>
-  }
-
-  if (shopState.shop == null) {
-    return (
-      <Text>No hay un comercio en la base de datos para el token {token}</Text>
-    )
-  }
-
   const tempValues = watch()
-  const tempShop = trimObject({ ...shopState.shop, ...tempValues })
+  const tempShop = trimObject({ ...shop, ...tempValues })
 
-  const products = shopState.shop?.products ?? []
-  const previewProducts = tempProducts ?? products
-
-  const width = typeof window !== "undefined" ? window.innerWidth : 1000
-  const showPreview = width > 1000
-
-  const isError = Object.keys(errors).length > 0
-
-  const openProductionLink = {
-    paddingBottom: 30,
-    textAlign: "center",
-    textDecoration: "none",
-  }
-
-  return (
+  const EditView = () => (
     <>
-      <Head>
-        <title>{tempShop.name} | Hacer Pedido</title>
-      </Head>
-
       <View style={styles.container}>
         <View style={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
-              shop={shopState.shop}
+              shop={shop}
               control={control}
               errors={errors}
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
             />
-            <EditProductsForm products={products} shopId={shopState.shop.id} />
+            <EditProducts
+              products={shop.products}
+              shopId={shop.id}
+              setTempProducts={setTempProducts}
+            />
           </Form>
         </View>
 
         {showPreview && (
-          <View style={styles.rightContainer}>
-            <a
-              href={`/${shopState.shop.slug}`}
-              style={openProductionLink}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Text style={styles.openProductionLink}>
-                Ir a mi Sitio
-                <Image
-                  source={"/images/external-link-alt.png"}
-                  style={styles.openProductionLinkIcon}
-                  alt="Ir a mi sitio"
-                />
-              </Text>
-            </a>
-            <ShopView
-              previewProducts={previewProducts}
-              shop={tempShop}
-              isPreview={true}
-            />
-          </View>
+          <Preview
+            products={previewProducts}
+            shop={shop}
+            isLoading={isLoading}
+            tempShop={tempShop}
+          />
         )}
       </View>
 
@@ -209,9 +150,33 @@ export default function EditShopPage() {
       )}
     </>
   )
+
+  return (
+    <>
+      <Head>
+        <title>{tempShop.name} | Hacer Pedido</title>
+      </Head>
+
+      {!params || (isLoading && <Loading />)}
+      {/* // Sólo para las páginas de edit por ahora */}
+      {params && params[1] !== "edit" && <ErrorPage statusCode={404} />}
+      {token == null && <Text>Error cargando el comercio.</Text>}
+      {shop == null && (
+        <Text>
+          `No hay un comercio en la base de datos para el token ${token}`
+        </Text>
+      )}
+      <EditView />
+    </>
+  )
 }
 
-const styles = StyleSheet.create({
+type Styles = {
+  container: ViewStyle
+  leftContainer: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: theme.colors.lightGrey2,
     flexDirection: "row",
@@ -222,23 +187,5 @@ const styles = StyleSheet.create({
     flex: 1,
     overflowY: "scroll",
     padding: 40,
-  },
-  openProductionLink: {
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "600",
-  },
-  openProductionLinkIcon: {
-    height: 16,
-    margin: 3,
-    top: 4,
-    width: 18,
-  },
-  rightContainer: {
-    backgroundColor: theme.colors.lightGrey2,
-    padding: 30,
-    width: 400,
   },
 })

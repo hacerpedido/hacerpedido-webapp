@@ -29,9 +29,9 @@ export default function HomeHeader() {
       </Link>
 
       <TouchableOpacity onPress={handleShow}>
-        <View>
+        {/* <View>
           <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-        </View>
+        </View> */}
       </TouchableOpacity>
 
       <Modal show={show} onHide={handleClose}>

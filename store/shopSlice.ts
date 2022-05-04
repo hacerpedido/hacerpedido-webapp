@@ -47,8 +47,9 @@ const shopSlice = createSlice({
 
       if (amount >= 0) state.products[index].amount = amount
 
+      // INFO: p.amount can be null
       state.totalAmount = state.products.reduce(
-        (prev: number, p: Product) => prev + p.amount,
+        (prev: number, p: Product) => prev + (p.amount || 0),
         0
       )
     },
