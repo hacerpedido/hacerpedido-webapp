@@ -34,7 +34,7 @@ export default function EditShop({
 }) {
   const [imageType, setImageType] = useState(undefined)
 
-  const handleClose = (options = {}) => {
+  const handleClose = (options = { forceRefresh: false }) => {
     setImageType(undefined)
     if (options.forceRefresh) {
       refresh()
@@ -70,11 +70,12 @@ export default function EditShop({
             <Text style={styles.title}>Datos de tu Comercio</Text>
             <Text style={styles.updatedAt}>
               <Text>Actualizado </Text>
-              <TimeAgo
-                date={shop.updated_at}
-                formatter={formatter}
-                minPeriod={60}
-              />
+              {/* TODO: uncomment */}
+              {/* <TimeAgo */}
+              {/*   date={shop.updated_at} */}
+              {/*   formatter={formatter} */}
+              {/*   minPeriod={60} */}
+              {/* /> */}
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
@@ -83,14 +84,14 @@ export default function EditShop({
               onPress={() => handleShow("logo")}
               disabled={isSaving}
             >
-              <Text style={styles.uploadImageButton}>Editar logo</Text>
+              <Text style={styles.buttonUploadImage}>Editar logo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               underlayColor={"none"}
               onPress={() => handleShow("background")}
               disabled={isSaving}
             >
-              <Text style={styles.uploadImageButton}>Editar portada</Text>
+              <Text style={styles.buttonUploadImage}>Editar portada</Text>
             </TouchableOpacity>
             <TouchableOpacity
               underlayColor={"none"}
@@ -114,56 +115,85 @@ export default function EditShop({
           <View style={styles.formContainer}>
             <View style={styles.formColumnLeft}>
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="Nombre del Comercio:"
+                    // defaultValue={shop.name}
+                    error={errors.name}
+                    maxLength={50}
+                  />
+                )}
                 control={control}
                 name="name"
-                label="Nombre del Comercio:"
-                defaultValue={shop.name}
                 rules={{
                   required: {
                     value: true,
                     message: "El nombre del comercio es requerido.",
                   },
                 }}
-                error={errors.name}
-                maxLength={50}
               />
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="Dirección:"
+                    // defaultValue={shop.address}
+                    error={errors.address}
+                    maxLength={50}
+                  />
+                )}
                 control={control}
                 name="address"
-                label="Dirección:"
-                defaultValue={shop.address}
-                error={errors.address}
-                maxLength={50}
               />
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="Horario:"
+                    // defaultValue={shop.opentimes}
+                    error={errors.opentimes}
+                    maxLength={50}
+                  />
+                )}
                 control={control}
                 name="opentimes"
-                label="Horario:"
-                defaultValue={shop.opentimes}
-                error={errors.opentimes}
-                maxLength={50}
               />
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="Costo del Delivery:"
+                    // defaultValue={shop.deliverycost}
+                    error={errors.deliverycost}
+                    maxLength={50}
+                  />
+                )}
                 control={control}
                 name="deliverycost"
-                label="Costo del Delivery:"
-                defaultValue={shop.deliverycost}
-                error={errors.deliverycost}
-                maxLength={50}
               />
             </View>
+
             <View style={styles.formColumnRight}>
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="WhatsApp del comercio:"
+                    // defaultValue={shop.orderswhatsappnumber}
+                    error={errors.orderswhatsappnumber}
+                    maxLength={20}
+                    placeholder={"Escribilo así: +5492234470974"}
+                    pattern={"\\+?[0-9]*"}
+                    keyboardType={"phone-pad"}
+                    onChange={([e]) => {
+                      const value = e.target.value ?? ""
+                      return value.replace(/[^0-9+]/g, "")
+                    }}
+                  />
+                )}
                 control={control}
                 name="orderswhatsappnumber"
-                label="WhatsApp del comercio:"
-                defaultValue={shop.orderswhatsappnumber}
-                error={errors.orderswhatsappnumber}
                 rules={{
                   validate: {
                     matchesAtLeastAPhone: (value) => {
@@ -183,30 +213,26 @@ export default function EditShop({
                     },
                   },
                 }}
-                maxLength={20}
-                placeholder={"Escribilo así: +5492234470974"}
-                pattern={"\\+?[0-9]*"}
-                keyboardType={"phone-pad"}
-                onChange={([e]) => {
-                  const value = e.target.value ?? ""
-                  return value.replace(/[^0-9+]/g, "")
-                }}
               />
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    label="Teléfono Fijo:"
+                    // defaultValue={shop.ordersphonenumber}
+                    error={errors.ordersphonenumber}
+                    maxLength={20}
+                    placeholder={"Escribilo así: +5492234470974"}
+                    pattern={"\\+?[0-9]*"}
+                    keyboardType={"phone-pad"}
+                    onChange={([e]) => {
+                      const value = e.target.value ?? ""
+                      return value.replace(/[^0-9+]/g, "")
+                    }}
+                  />
+                )}
                 control={control}
                 name="ordersphonenumber"
-                label="Teléfono Fijo:"
-                defaultValue={shop.ordersphonenumber}
-                error={errors.ordersphonenumber}
-                maxLength={20}
-                placeholder={"Escribilo así: +5492234470974"}
-                pattern={"\\+?[0-9]*"}
-                keyboardType={"phone-pad"}
-                onChange={([e]) => {
-                  const value = e.target.value ?? ""
-                  return value.replace(/[^0-9+]/g, "")
-                }}
                 rules={{
                   validate: {
                     matchesAtLeastAPhone: (value) => {
@@ -228,16 +254,20 @@ export default function EditShop({
                 }}
               />
               <Controller
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="¿Querés hacer alguna aclaración?"
+                    multiline
+                    numberOfLines={3.5}
+                    label="Notas:"
+                    // defaultValue={shop.notes}
+                    error={errors.notes}
+                    maxLength={1000}
+                  />
+                )}
                 control={control}
-                placeholder={"¿Querés hacer alguna aclaración?"}
                 name="notes"
-                multiline
-                numberOfLines={3.5}
-                label="Notas:"
-                defaultValue={shop.notes}
-                error={errors.notes}
-                maxLength={1000}
               />
             </View>
           </View>
@@ -250,6 +280,7 @@ export default function EditShop({
 type Styles = {
   buttonText: TextStyle
   buttonsContainer: ViewStyle
+  buttonUploadImage: TextStyle
   container: ViewStyle
   formColumnLeft: ViewStyle
   formColumnRight: ViewStyle
@@ -258,7 +289,6 @@ type Styles = {
   titleContainer: ViewStyle
   titleTextContainer: ViewStyle
   updatedAt: TextStyle
-  updatedImageButton: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -270,6 +300,15 @@ const styles = StyleSheet.create<Styles>({
   buttonsContainer: {
     alignItems: "baseline",
     flexDirection: "row",
+  },
+  buttonUploadImage: {
+    borderRadius: 5,
+    color: theme.colors.button1,
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontStyle: "normal",
+    fontWeight: "600",
+    marginHorizontal: 15,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
@@ -312,14 +351,5 @@ const styles = StyleSheet.create<Styles>({
   updatedAt: {
     ...theme.text.quiet,
     marginHorizontal: 10,
-  },
-  uploadImageButton: {
-    borderRadius: 5,
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "600",
-    marginHorizontal: 15,
   },
 })

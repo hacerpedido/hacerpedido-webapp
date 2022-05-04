@@ -8,11 +8,11 @@ import {
   useAppDispatch as useDispatch,
   useAppSelector as useSelector,
 } from "@/common/hooks"
-import { loading } from "@/store/appSlice"
-import { setShop } from "@/store/shopSlice"
 import Loading from "@/components/Loading"
 import ShopFooter from "@/components/Shop/ShopFooter"
 import ShopView from "@/components/Shop/ShopView"
+import { loading } from "@/store/appSlice"
+import { setShop } from "@/store/shopSlice"
 
 export default function Shop() {
   const router = useRouter()

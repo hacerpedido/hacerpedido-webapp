@@ -1,4 +1,5 @@
 import { useState } from "react"
+import type { SubmitHandler } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
 import {
   TouchableHighlight,
@@ -18,7 +19,7 @@ import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
 // import {setName, setAddress, setNotes} from "store/cartSlice";
 
-const Form = ({ onSubmit }) => {
+const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   const shop = useSelector((state) => state.shop.shop)
   const { name } = shop
   const [takeaway, setTakeaway] = useState(false)
@@ -44,56 +45,65 @@ const Form = ({ onSubmit }) => {
       <Switch onToggle={toggleTakeAway} value={takeaway} />
 
       <Controller
-        render={({ field }) => <Input {...field} />}
+        render={({ field }) => (
+          <Input
+            {...field}
+            autofocus
+            label="Tu Nombre"
+            placeholder="¿Cómo te llamás?"
+            autoCompleteType="name"
+            error={errors.name}
+            maxLength={50}
+          />
+        )}
         control={control}
-        autofocus
         name="name"
-        label="Tu Nombre"
-        autoCompleteType="name"
-        placeholder="¿Cómo te llamás?"
-        defaultValue={""}
         rules={{
           required: {
             value: true,
             message: "Necesitamos tu nombre",
           },
         }}
-        error={errors.name}
-        maxLength={50}
       />
 
       {/* <AnimatedView style={animatedProps}> */}
       {takeaway || (
         <Controller
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Tu Dirección"
+              autoCompleteType="street-address"
+              placeholder="¿A dónde lo mandamos?"
+              error={errors.address}
+              maxLength={50}
+            />
+          )}
           control={control}
           name="address"
-          label="Tu Dirección"
-          autoCompleteType="street-address"
-          placeholder="¿A dónde lo mandamos?"
-          defaultValue={""}
           rules={{
             required: {
               value: true,
               message: "Necesitamos tu dirección",
             },
           }}
-          error={errors.address}
-          maxLength={50}
         />
       )}
       {/* </AnimatedView> */}
 
       <Controller
-        render={({ field }) => <Input {...field} />}
-        control={control}
+        render={({ field }) => (
+          <Input
+            {...field}
+            label="Notas"
+            placeholder="¿Querés hacer alguna aclaración?"
+            multiline
+            numberOfLines={2}
+            maxLength={500}
+          />
+        )}
         name="notes"
-        label="Notas"
-        placeholder="¿Querés hacer alguna aclaración?"
-        defaultValue={""}
-        multiline
-        numberOfLines={2}
-        maxLength={500}
+        control={control}
       />
 
       <Text style={styles.notes}>

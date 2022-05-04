@@ -14,15 +14,14 @@ export function getLogoForShop({ logo = "" }: Shop) {
 }
 
 export function getBackgroundForShop({
-  background = "",
+  background,
   category,
 }: {
   background: string
   category: string
 }) {
   // TODO why is default background not working?
-  // if (!isEmpty(background || "", { ignore_whitespace: true })) {
-  if (!isEmpty(background, { ignore_whitespace: true })) {
+  if (!isEmpty(background || "", { ignore_whitespace: true })) {
     const filename = background.substring(background.lastIndexOf("/") + 1)
     return `url(https://hacerpedido2-images.s3.amazonaws.com/${filename})`
   }

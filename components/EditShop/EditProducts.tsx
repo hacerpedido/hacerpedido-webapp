@@ -1,7 +1,7 @@
 import "handsontable/dist/handsontable.full.css"
 
 import dynamic from "next/dynamic"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useCallback } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { useAppDispatch as useDispatch } from "@/common/hooks"
@@ -13,7 +13,7 @@ import { setTempProducts } from "@/store/shopEditSlice"
 
 const HotTable = dynamic(
   async () => {
-    // await import("handsontable");
+    // await import("handsontable")
     await import("handsontable/languages/es-MX")
     const { default: HT } = await import("@handsontable/react")
 
@@ -83,7 +83,8 @@ const EditProducts = ({ products, shopId }) => {
     value,
     cellProperties
   ) {
-    Handsontable?.renderers.TextRenderer.apply(this, arguments)
+    // TODO: Add this
+    // Handsontable.renderers.TextRenderer.apply(this, arguments)
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE"
@@ -94,7 +95,7 @@ const EditProducts = ({ products, shopId }) => {
     }
   }
 
-  function getCells(row, col) {
+  const getCells = useCallback((row, col) => {
     const cellProperties = {}
     if (grid.current != null) {
       const tempData = grid.current.hotInstance.getDataAtRow(row)
@@ -107,9 +108,8 @@ const EditProducts = ({ products, shopId }) => {
         }
       }
     }
-
     return cellProperties
-  }
+  }, [])
 
   const beforeChanges = (changes, source) => {
     if (source !== "CopyPaste.paste") {
@@ -132,12 +132,27 @@ const EditProducts = ({ products, shopId }) => {
 
   const spareRows = 10
 
+  const colWidths = (index: number) => {
+    const width = typeof window !== "undefined" ? window.innerWidth : 1001
+
+    switch (index) {
+      case 0:
+        return 50
+      case 3:
+        return 90
+      default:
+        const otherElementsWidth = width > 1000 ? 644 : 244
+        return (width - otherElementsWidth) / 2
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
       <HotTable
-        forwardedRef={grid}
         data={gridData}
+        colHeaders={colHeaders}
+        forwardedRef={grid}
         licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
         beforeChange={beforeChanges}
@@ -145,21 +160,8 @@ const EditProducts = ({ products, shopId }) => {
         language={"es-MX"}
         preventOverflow={"horizontal"}
         columns={columns}
-        colHeaders={colHeaders}
         contextMenu={["row_above", "row_below", "remove_row"]}
-        colWidths={(index: number) => {
-          const width = typeof window !== "undefined" ? window.innerWidth : 1001
-
-          switch (index) {
-            case 0:
-              return 50
-            case 3:
-              return 90
-            default:
-              const otherElementsWidth = width > 1000 ? 644 : 244
-              return (width - otherElementsWidth) / 2
-          }
-        }}
+        colWidths={colWidths}
       />
     </View>
   )

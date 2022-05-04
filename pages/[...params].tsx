@@ -29,13 +29,11 @@ import ShopView from "components/Shop/ShopView"
 
 export default function EditShopPage() {
   const router = useRouter()
-  const dispatch = useDispatch()
 
   const [shopState, setShopState] = useState({ shop: null, loading: true })
   const [showMessage, setShowMessage] = useState(false)
   const [message, setMessage] = useState("")
   const [isSaving, setSaving] = useState(false)
-  const [reloadCount, setReloadCount] = useState(0)
 
   const tempProducts = useSelector((state) => state.shopEdit.tempProducts)
 
@@ -51,27 +49,23 @@ export default function EditShopPage() {
       return
     }
 
-    if (!shopState?.loading) {
-      setShopState({ shop: null, loading: true })
-    }
-
-    async function getData() {
+    setShopState({ shop: null, loading: true })
+    ;(async () => {
       try {
-        const shopData = await axios.get(
+        const { data } = await axios.get(
           `${window.location.origin}/api/shop/by-token`,
           { params: { token } }
         )
 
-        setShopState({ shop: shopData.data, loading: false })
+        setShopState({ shop: data, loading: false })
       } catch (error) {
         alert(
           `Error al leer los datos. (${error} Error: ${error.response.data.message})`
         )
         setShopState({ shop: null, loading: false })
       }
-    }
-    getData()
-  }, [token, dispatch, reloadCount, shopState.loading, shopState.shop])
+    })()
+  }, [token])
 
   const {
     handleSubmit,
@@ -101,9 +95,9 @@ export default function EditShopPage() {
       setSaving(true)
       const dataToSave = {
         ...data,
-        id: shopState.shop.id,
-        slug: shopState.shop.slug,
-        region: shopState.shop.region,
+        id: shopState.shop?.id,
+        slug: shopState.shop?.slug,
+        region: shopState.shop?.region,
       }
 
       const result = await saveShopWithProducts(token, dataToSave, tempProducts)
@@ -119,14 +113,9 @@ export default function EditShopPage() {
 
       setShowMessage(true)
       setSaving(false)
-      refresh()
+      setShopState({ shop: null, loading: true })
     }
     saveData()
-  }
-
-  function refresh() {
-    setShopState({ shop: null, loading: true })
-    setReloadCount(reloadCount + 1)
   }
 
   function onMessagePress() {
@@ -176,11 +165,11 @@ export default function EditShopPage() {
               handleSubmit={handleSubmit(onSubmit)}
               getValues={getValues}
               isSaving={isSaving}
-              refresh={refresh}
             />
             <EditProductsForm products={products} shopId={shopState.shop.id} />
           </Form>
         </View>
+
         {showPreview && (
           <View style={styles.rightContainer}>
             <a
