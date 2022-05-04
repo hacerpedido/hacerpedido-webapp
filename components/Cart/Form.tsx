@@ -17,7 +17,6 @@ import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
-// import {setName, setAddress, setNotes} from "store/cartSlice";
 
 const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   const shop = useSelector((state) => state.shop.shop)

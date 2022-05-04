@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import ErrorPage from "next/error"
 import Head from "next/head"
 import { useRouter } from "next/router"
@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form"
 import { StyleSheet, Text, View, ViewStyle } from "react-native"
 
 import { saveShopWithProducts } from "@/common/api/shops"
-import { useAppSelector as useSelector } from "@/common/hooks"
 import theme from "@/common/theme"
 import { trimObject } from "@/common/utils/utils"
 import EditProducts from "components/EditShop/EditProducts"
@@ -46,10 +45,11 @@ export default function EditShopPage() {
           { params: { token } }
         )
         setShop(data)
-      } catch (error) {
-        alert(
-          `Error al leer los datos. (${error} Error: ${error.response.data.message})`
-        )
+      } catch (error: any | AxiosError) {
+        if (!axios.isAxiosError(error)) {
+          const message = error.response.data.message
+          alert(`Error al leer los datos. (${error} Error: ${message})`)
+        }
       }
       setIsLoading(false)
     })()

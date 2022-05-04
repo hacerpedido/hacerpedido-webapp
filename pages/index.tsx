@@ -8,16 +8,16 @@ import {
   useAppSelector as useSelector,
   useAppDispatch as useDispatch,
 } from "@/common/hooks"
+import { categories } from "@/common/utils/categories"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
 import ShopList from "@/components/Home/ShopList"
 import Loading from "@/components/Loading"
-import { setCategory, setShops } from "@/store/homeSlice"
 import type { Shop } from "types"
 
 export default function Home() {
-  const category = useSelector((state) => state.home.selectedFilter)
-  const shops = useSelector((state) => state.home.shops)
+  const [shops, setShops] = useState([])
+  const [category, setCategory] = useState(categories[0])
   const [isLoading, setIsLoading] = useState(true)
   const dispatch = useDispatch()
 
@@ -42,7 +42,7 @@ export default function Home() {
   )
 
   const handleSelectFilter = (selected: string) => {
-    dispatch(setCategory(selected))
+    setCategory(selected)
   }
 
   return (
