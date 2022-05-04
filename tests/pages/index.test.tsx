@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
+import { store } from "lib/store"
 import { Provider } from "react-redux"
 
-import { store } from "lib/store"
 import Home from "pages/index"
 
 describe("home", () => {

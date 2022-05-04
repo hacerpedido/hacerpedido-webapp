@@ -25,7 +25,7 @@ export type Shop = {
   background: string
   category: string
   deliverycost?: string
-  id?: string
+  id: string
   logo?: string
   name: string
   notes: string

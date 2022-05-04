@@ -1,149 +1,53 @@
 import axios from "axios"
 import Head from "next/head"
-import { useRouter } from "next/router"
-import { useCallback, useEffect } from "react"
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-  ViewStyle,
-} from "react-native"
+import { useEffect, useState } from "react"
+import { StyleSheet, View, ViewStyle } from "react-native"
 
 import { colors } from "@/common/colors"
 import {
   useAppSelector as useSelector,
   useAppDispatch as useDispatch,
 } from "@/common/hooks"
-import { loading } from "@/store/appSlice"
-import {
-  setCategory,
-  setShops,
-  setFirstVisibleItem,
-} from "@/store/homeSlice"
-import { setShop } from "@/store/shopSlice"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
-import ShopCard from "@/components/Home/ShopCard"
+import ShopList from "@/components/Home/ShopList"
 import Loading from "@/components/Loading"
+import { loading } from "@/store/appSlice"
+import { setCategory, setShops } from "@/store/homeSlice"
 import type { Shop } from "types"
 
-let firstVisibleItemIndex = 0
-
-const renderHeader = (count: number) => {
-  const shopText = count > 0 || count === 0 ? "comercios" : "comercio"
-  const countText = count === 0 ? "No hay" : count
-
-  return (
-    <Text style={styles.count}>
-      {countText} {shopText} locales
-    </Text>
-  )
-}
-
-const onViewableItemsChanged = ({
-  viewableItems = [],
-}: {
-  viewableItems: Shop[]
-}) => {
-  if (viewableItems.length > 0) {
-    firstVisibleItemIndex = viewableItems[0].index
-  }
-}
-
 export default function Home() {
+  const [firstVisibleItemIndex, setFirstVisibleItemIndex] = useState(0)
   const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem)
   const category = useSelector((state) => state.home.selectedFilter)
   const shops = useSelector((state) => state.home.shops)
+  const isLoading = useSelector((state) => state.app.loading)
   const dispatch = useDispatch()
-  const router = useRouter()
-
-  const initialScrollIndex = firstVisibleItem ?? 0
-
-  let touchStartingPoint = 0
-  let touchCurrentPoint = 0
-  const ITEM_HEIGHT = 130
-
-  const onSelect = useCallback(
-    (shop) => {
-      const distance = Math.abs(touchStartingPoint - touchCurrentPoint)
-      if (distance <= 10) {
-        dispatch(setFirstVisibleItem(firstVisibleItemIndex))
-        dispatch(setShop(shop))
-        router.push(`/${shop.slug}`)
-      }
-    },
-    [router, dispatch, touchCurrentPoint, touchStartingPoint]
-  )
 
   useEffect(() => {
     dispatch(loading(true))
-
-    async function getData() {
-      const shopData = await axios.get(
-        `${window.location.origin}/api/shop/home`,
-        { params: { category } }
-      )
-
-      // console.log(JSON.stringify(shopData, null, 2));
-
-      dispatch(setShops(shopData.data))
-      dispatch(loading(false))
-    }
-    getData().catch((error) => {
-      console.log(JSON.stringify(error, null, 2))
-    })
+    ;(async () => {
+      try {
+        const { data } = await axios.get(
+          `${window.location.origin}/api/shop/home`,
+          { params: { category } }
+        )
+        dispatch(setShops(data))
+        dispatch(loading(false))
+      } catch (error) {
+        console.log(JSON.stringify(error, null, 2))
+      }
+    })()
   }, [dispatch, category])
 
   const filteredShops = shops.filter(
-    (x: Shop) => x.visibility === "public" && x.category === category
+    (shop: Shop) => shop.visibility === "public" && shop.category === category
   )
 
-  const ShopList = () => (
-    <FlatList
-      onViewableItemsChanged={onViewableItemsChanged}
-      viewabilityConfig={{
-        itemVisiblePercentThreshold: 50,
-      }}
-      style={styles.list}
-      showsVerticalScrollIndicator={false}
-      ListHeaderComponent={renderHeader(filteredShops.length)}
-      ListFooterComponent={
-        // TODO: Remover. Para que al hacer scroll se vea la última celda
-        <View style={styles.lastView} />
-      }
-      data={filteredShops}
-      renderItem={({ item }) => (
-        <TouchableHighlight
-          delayPressIn={5000}
-          underlayColor={colors.lightBackground}
-          onTouchStart={(evt) => {
-            if (evt.touches.length > 0) {
-              touchStartingPoint = evt.touches[0].clientY
-              touchCurrentPoint = touchStartingPoint
-            }
-          }}
-          onTouchMove={(evt) => {
-            if (evt.touches.length > 0) {
-              touchCurrentPoint = evt.touches[0].clientY
-            }
-          }}
-          onPress={() => onSelect(item)}
-        >
-          <ShopCard shop={item} />
-        </TouchableHighlight>
-      )}
-      keyExtractor={(shop) => shop.id}
-      initialScrollIndex={initialScrollIndex ?? 0}
-      getItemLayout={(_data, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index + 110,
-        index,
-      })}
-      scrollEventThrottle={160}
-    />
-  )
+  const handleSelectFilter = (selected: string) => {
+    setFirstVisibleItemIndex(0)
+    dispatch(setCategory(selected))
+  }
 
   return (
     <View>
@@ -155,18 +59,19 @@ export default function Home() {
         <HomeHeader />
         <HomeFilterBar
           selectedFilter={category}
-          onSelectFilter={(selected) => {
-            firstVisibleItemIndex = 0
-            dispatch(setCategory(selected))
-          }}
+          onSelectFilter={handleSelectFilter}
         />
       </View>
 
       <View style={styles.body}>
-        {filteredShops.length === 0 && loading ? (
+        {isLoading ? (
           <Loading />
         ) : (
-          filteredShops.length && <ShopList />
+          <ShopList
+            firstVisibleItem={firstVisibleItem}
+            firstVisibleItemIndex={firstVisibleItemIndex}
+            shops={filteredShops}
+          />
         )}
       </View>
     </View>
@@ -175,10 +80,7 @@ export default function Home() {
 
 type Styles = {
   body: ViewStyle
-  count: ViewStyle
   header: ViewStyle
-  lastView: ViewStyle
-  list: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -190,25 +92,11 @@ const styles = StyleSheet.create<Styles>({
     paddingLeft: 10,
     paddingRight: 10,
   },
-  count: {
-    color: colors.lightGrey,
-    fontFamily: "Barlow",
-    fontSize: 14,
-    fontWeight: 400,
-    marginVertical: 15,
-  },
   header: {
     left: 0,
-    position: "fixed",
+    position: "absolute",
     top: 0,
     width: "100%",
     zIndex: 2,
-  },
-  lastView: {
-    backgroundColor: colors.none,
-    height: 250,
-  },
-  list: {
-    height: "100vh",
   },
 })

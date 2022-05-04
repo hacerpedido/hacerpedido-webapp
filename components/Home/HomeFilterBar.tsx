@@ -15,48 +15,53 @@ import { categories } from "@/common/utils/categories"
 
 type CategoryProps = {
   title: string
-  selected: boolean
+  isSelected: boolean
   onSelect: (id: string) => void
 }
 
-function Category({ title, selected, onSelect }: CategoryProps) {
+function Category({ title, isSelected, onSelect }: CategoryProps) {
+  const wrapperStyle = [
+    styles.item,
+    { backgroundColor: isSelected ? colors.orangeHP : colors.white },
+  ]
+  const textStyle = [
+    styles.title,
+    { color: isSelected ? colors.white : colors.orangeHP },
+  ]
+
   return (
     <TouchableHighlight
       underlayColor={colors.lightBackground}
       onPress={() => onSelect(title)}
-      style={[
-        styles.item,
-        { backgroundColor: selected ? colors.orangeHP : colors.white },
-      ]}
+      style={wrapperStyle}
     >
-      <Text
-        style={[
-          styles.title,
-          { color: selected ? colors.white : colors.orangeHP },
-        ]}
-      >
-        {title}
-      </Text>
+      <Text style={textStyle}>{title}</Text>
     </TouchableHighlight>
   )
 }
 
 type Props = {
   selectedFilter: string
-  onSelectFilter: (id: number) => void
+  onSelectFilter: (category: string) => void
 }
 
 const HomeFilterBar = ({ selectedFilter, onSelectFilter }: Props) => {
-  const [selected, setSelected] = useState("")
-
-  if (!selected) setSelected(selectedFilter)
+  const [selected, setSelected] = useState(selectedFilter)
 
   const onSelect = useCallback(
-    (id) => {
-      setSelected(id)
-      onSelectFilter(id)
+    (category) => {
+      setSelected(category)
+      onSelectFilter(category)
     },
     [onSelectFilter]
+  )
+
+  const handleRenderItem = ({ item }: ListRenderItemInfo<string>) => (
+    <Category
+      title={item}
+      isSelected={!!(selected === item)}
+      onSelect={onSelect}
+    />
   )
 
   return (
@@ -66,13 +71,7 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }: Props) => {
         showsVerticalScrollIndicator={false}
         horizontal={true}
         data={categories}
-        renderItem={({ item }: ListRenderItemInfo<string>) => (
-          <Category
-            title={item}
-            selected={!!(selected === item)}
-            onSelect={onSelect}
-          />
-        )}
+        renderItem={handleRenderItem}
         keyExtractor={(item: string) => item}
         extraData={selected}
       />

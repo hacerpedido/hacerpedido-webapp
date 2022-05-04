@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
+import { categories } from "@/common/utils/categories"
+
 import type { Shop } from "types"
 
 type SliceState = {
@@ -10,7 +12,7 @@ type SliceState = {
 
 const initialState: SliceState = {
   shops: [],
-  selectedFilter: "Comida",
+  selectedFilter: categories[0],
   firstVisibleItem: 0,
 }
 

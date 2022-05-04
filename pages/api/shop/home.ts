@@ -6,9 +6,9 @@ const pg = require("knex")({
 })
 
 export default async function handle(req, res) {
-  const { category } = req.query
+  const { category = categories[0] } = req.query
 
-  if (!category || category === "" || !categories.includes(category)) {
+  if (!categories.includes(category)) {
     res.status(400).json({ error: "Wrong parameters (1)." })
 
     return
