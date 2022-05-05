@@ -13,15 +13,20 @@
     "cypress:headless": "cypress run",
     "e2e": "start-server-and-test dev http://localhost:3000 cypress",
     "e2e:headless": "start-server-and-test dev http://localhost:3000 cypress:headless",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "ts-node": "ts-node --compiler-options '{\\\"module\\\":\\\"commonjs\\\"}'"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@handsontable/react": "^12.0.0",
     "@hookform/devtools": "^4.0.2",
     "@hookform/resolvers": "^2.8.8",
+    "@prisma/client": "2.30.3",
     "@reduxjs/toolkit": "^1.4.0",
     "@types/react-gtm-module": "^2.0.1",
     "aws-sdk": "^2.799.0",
@@ -33,6 +38,7 @@
     "nested-knex": "^0.1.2",
     "next": "^12.1.0",
     "pg": "^8.5.1",
+    "prisma": "2.30.3",
     "react": "^17.0.2",
     "react-albus": "^2.0.0",
     "react-bootstrap": "^2.1.2",

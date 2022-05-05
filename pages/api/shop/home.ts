@@ -1,40 +1,13 @@
 import { categories } from "@/common/utils/categories"
-
-const pg = require("knex")({
-  client: "pg",
-  connection: process.env.PG_CONNECTION_STRING,
-})
+import prisma from "lib/prisma"
 
 export default async function handle(req, res) {
   const { category = categories[0] } = req.query
 
-  if (!categories.includes(category)) {
-    res.status(400).json({ error: "Wrong parameters (1)." })
-
-    return
-  }
-
-  const shops = await pg
-    .select(
-      "id",
-      "name",
-      "slug",
-      "region",
-      "category",
-      "address",
-      "notes",
-      "opentimes",
-      "deliverycost",
-      "visibility",
-      "logo",
-      "background",
-      "ordersphonenumber",
-      "orderswhatsappnumber"
-    )
-    .from("shops")
-    .where("visibility", "=", "public")
-    .where("category", "=", category)
-    .orderBy("name")
+  const shops = await prisma.shops.findMany({
+    where: { visibility: "public", category: category },
+    orderBy: { updated_at: "asc" },
+  })
 
   res.status(200).json(shops)
   res.end()

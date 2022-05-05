@@ -1,5 +1,7 @@
 import * as n from "nested-knex"
 
+import prisma from "lib/prisma"
+
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
@@ -7,8 +9,6 @@ const pg = require("knex")({
 
 export default async function handle(req, res) {
   if (req.method === "POST") {
-    // console.log("POST:", req.body)
-
     const {
       id,
       address,
@@ -21,6 +21,22 @@ export default async function handle(req, res) {
       token,
       products,
     } = req.body
+
+    // const updateShop = await prisma.shop.update({
+    //   where: {
+    //     typeformtoken: token,
+    //   },
+    //   data: {
+    //     address,
+    //     deliverycost,
+    //     name,
+    //     notes,
+    //     opentimes,
+    //     ordersphonenumber,
+    //     orderswhatsappnumber,
+    //   },
+    // })
+    // use connectorcreate for products
 
     if (!token || token === "") {
       res.status(400).json({ error: "Wrong parameters (1)." })
@@ -47,7 +63,7 @@ export default async function handle(req, res) {
       })
       .catch((e) => console.error(e))
 
-    if (!products || products.lenght == 0) {
+    if (!products || products.length == 0) {
       return res.json({
         success: true,
         message: "Tus cambios fueron guardados.",
@@ -74,42 +90,15 @@ export default async function handle(req, res) {
     return
   }
 
-  const data = await n
-    .type({
-      id: n.number("shops.id", { id: true }),
-      name: n.string("shops.name"),
-      slug: n.string("shops.slug"),
-      region: n.nullableString("shops.region"),
-      category: n.nullableString("shops.category"),
-      address: n.nullableString("shops.address"),
-      notes: n.nullableString("shops.notes"),
-      opentimes: n.nullableString("shops.opentimes"),
-      deliverycost: n.nullableString("shops.deliverycost"),
-      visibility: n.nullableString("shops.visibility"),
-      logo: n.nullableString("shops.logo"),
-      background: n.nullableString("shops.background"),
-      ordersphonenumber: n.nullableString("shops.ordersphonenumber"),
-      orderswhatsappnumber: n.nullableString("shops.orderswhatsappnumber"),
-      typeformtoken: n.nullableString("shops.typeformtoken"),
+  const shop = await prisma.shops.findUnique({
+    where: { typeformtoken: token },
+    include: {
+      products: {
+        orderBy: { itemnumber: "asc" },
+      },
+    },
+  })
 
-      products: n.array(
-        n.type({
-          id: n.number("products.id", { id: true }),
-          name: n.string("products.name"),
-          category: n.nullableString("products.category"),
-          price: n.number("products.price"),
-          description: n.nullableString("products.description"),
-          itemnumber: n.number("products.itemnumber"),
-        })
-      ),
-    })
-    .withQuery(
-      pg("shops")
-        .where("typeformtoken", "=", token)
-        .leftJoin("products", "shops.id", "products.shopid")
-        .orderBy("products.itemnumber")
-    )
-
-  res.status(200).json(data)
+  res.status(200).json(shop)
   res.end()
 }

@@ -1,13 +1,11 @@
 import axios from "axios"
+import { GetStaticProps, GetStaticPropsContext } from "next"
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import { StyleSheet, View, ViewStyle } from "react-native"
 
 import { colors } from "@/common/colors"
-import {
-  useAppSelector as useSelector,
-  useAppDispatch as useDispatch,
-} from "@/common/hooks"
+import { useAppDispatch as useDispatch } from "@/common/hooks"
 import { categories } from "@/common/utils/categories"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
@@ -88,3 +86,11 @@ const styles = StyleSheet.create<Styles>({
     zIndex: 2,
   },
 })
+
+// export const getStaticProps: GetStaticProps = async () => {
+//   const shops = await prisma.post.findMany({
+//     where: { visibility: "public", category: "Comida" },
+//     orderBy: "name",
+//   })
+//   return { props: { shops } }
+// }
