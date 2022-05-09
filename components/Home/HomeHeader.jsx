@@ -15,11 +15,14 @@ export default function HomeHeader() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const version = process.env.DEPLOYED_GIT_COMMIT_SHA || ""
+
   return (
     <View style={styles.container}>
       <Link href="/">
         <a>
           <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
+          <input name="deployedVersion" value={ version } type="hidden" />
         </a>
       </Link>
 
