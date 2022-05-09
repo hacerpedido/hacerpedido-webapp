@@ -1,36 +1,53 @@
 import { forwardRef } from "react"
-import { View, TextInput, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, TextStyle, ViewStyle } from "react-native"
 
 import theme from "@/common/theme"
 
 // NOTE: https://react-hook-form.com/ts/
 
-// eslint-disable-next-line react/display-name
-const Input = forwardRef((props, ref) => {
-  const { label, error, value, ...inputProps } = props
-  const borderColor = error ? theme.colors.error : theme.colors.lightGrey2
+type MyInputProps = {
+  label: string
+  error: any
+}
 
-  return (
-    <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+type InputProps = React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>
 
-      <TextInput
-        autoCapitalize="none"
-        placeholderTextColor={theme.colors.lighterBrown}
-        ref={ref}
-        style={[styles.input, { borderColor: borderColor }]}
-        value={value}
-        {...inputProps}
-      />
+const Input = forwardRef<HTMLInputElement, MyInputProps & InputProps>(
+  (props, ref) => {
+    const { label, error, ...inputProps }: MyInputProps = props
+    const borderColor = error ? theme.colors.error : theme.colors.lightGrey2
 
-      {error && <Text style={styles.textError}>{error.message}</Text>}
-    </View>
-  )
-})
+    return (
+      <View style={styles.container}>
+        {label && <Text style={styles.label}>{label}</Text>}
+
+        <input
+          style={[styles.input, { borderColor: borderColor }]}
+          ref={ref}
+          {...inputProps}
+        />
+
+        {error && <Text style={styles.textError}>{error.message}</Text>}
+      </View>
+    )
+  }
+)
+
+Input.displayName = "Input"
 
 export default Input
 
-const styles = StyleSheet.create({
+type Styles = {
+  container: ViewStyle
+  input: ViewStyle
+  label: TextStyle
+  textError: TextStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   container: {
     marginBottom: 10,
     marginTop: "0.25em",

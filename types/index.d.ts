@@ -16,7 +16,7 @@ export type Product = {
   description?: string
   price?: string
   shopid?: string
-  itemNumber?: number
+  itemnumber?: number
   amount?: number // NOTE: only cart products include amounts
 }
 
@@ -35,15 +35,6 @@ export type Shop = {
   region: string
   slug: string
   visibility: string
-  // delivery text
-  // email text
-  // ordersByPhoneOrWhatsApp text
-  // phoneNumber text
-  // submittedAt text
-  // takeaway text
-  // typeformToken text
-  // userName text
-  // whatsAppNumber text
 }
 
 export type ShopWithProducts = Shop & {

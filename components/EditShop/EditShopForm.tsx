@@ -23,7 +23,7 @@ import { validatePhoneNumber } from "@/common/utils/utils"
 
 const formatter = buildFormatter(spanishStrings)
 
-export default function EditShop({
+export default function EditShopForm({
   shop,
   control,
   errors,
@@ -70,12 +70,11 @@ export default function EditShop({
             <Text style={styles.title}>Datos de tu Comercio</Text>
             <Text style={styles.updatedAt}>
               <Text>Actualizado </Text>
-              {/* TODO: uncomment */}
-              {/* <TimeAgo */}
-              {/*   date={shop.updated_at} */}
-              {/*   formatter={formatter} */}
-              {/*   minPeriod={60} */}
-              {/* /> */}
+              <TimeAgo
+                date={shop.updated_at}
+                formatter={formatter}
+                minPeriod={60}
+              />
             </Text>
           </View>
           <View style={styles.buttonsContainer}>
@@ -121,7 +120,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="Nombre del Comercio:"
-                    // defaultValue={shop.name}
                     error={errors.name}
                     maxLength={50}
                   />
@@ -140,7 +138,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="Dirección:"
-                    // defaultValue={shop.address}
                     error={errors.address}
                     maxLength={50}
                   />
@@ -153,7 +150,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="Horario:"
-                    // defaultValue={shop.opentimes}
                     error={errors.opentimes}
                     maxLength={50}
                   />
@@ -166,7 +162,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="Costo del Delivery:"
-                    // defaultValue={shop.deliverycost}
                     error={errors.deliverycost}
                     maxLength={50}
                   />
@@ -182,7 +177,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="WhatsApp del comercio:"
-                    // defaultValue={shop.orderswhatsappnumber}
                     error={errors.orderswhatsappnumber}
                     maxLength={20}
                     placeholder={"Escribilo así: +5492234470974"}
@@ -221,7 +215,6 @@ export default function EditShop({
                   <Input
                     {...field}
                     label="Teléfono Fijo:"
-                    // defaultValue={shop.ordersphonenumber}
                     error={errors.ordersphonenumber}
                     maxLength={20}
                     placeholder={"Escribilo así: +5492234470974"}
@@ -263,7 +256,6 @@ export default function EditShop({
                     multiline
                     numberOfLines={3.5}
                     label="Notas:"
-                    // defaultValue={shop.notes}
                     error={errors.notes}
                     maxLength={1000}
                   />

@@ -369,8 +369,8 @@
 // //       name: name,
 // //       price: parseFloat(price),
 // //       category: section,
-// //       productShopId: shopID,
-// //       itemNumber: itemNumber,
+// //       productshopid: shopID,
+// //       itemnumber: itemNumber,
 // //     };
 
 // //     if (description !== undefined && description !== "") {

@@ -1,11 +1,9 @@
 import axios from "axios"
-import { GetStaticProps, GetStaticPropsContext } from "next"
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import { StyleSheet, View, ViewStyle } from "react-native"
 
 import { colors } from "@/common/colors"
-import { useAppDispatch as useDispatch } from "@/common/hooks"
 import { categories } from "@/common/utils/categories"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
@@ -17,7 +15,6 @@ export default function Home() {
   const [shops, setShops] = useState([])
   const [category, setCategory] = useState(categories[0])
   const [isLoading, setIsLoading] = useState(true)
-  const dispatch = useDispatch()
 
   useEffect(() => {
     setIsLoading(true)
@@ -27,13 +24,13 @@ export default function Home() {
           `${window.location.origin}/api/shop/home`,
           { params: { category } }
         )
-        dispatch(setShops(data))
+        setShops(data)
       } catch (error) {
         console.log(JSON.stringify(error, null, 2))
       }
       setIsLoading(false)
     })()
-  }, [dispatch, category])
+  }, [category])
 
   const filteredShops = shops.filter(
     (shop: Shop) => shop.visibility === "public" && shop.category === category

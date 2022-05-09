@@ -4,6 +4,7 @@ import {
   Text,
   TextStyle,
   View,
+  Linking,
   ViewStyle,
 } from "react-native"
 
@@ -12,32 +13,29 @@ import ShopView from "components/Shop/ShopView"
 import type { Product, Shop } from "types"
 
 type Props = {
-  products: Product[]
   shop: Shop
+  products: Product[]
   isLoading: boolean
-  tempShop: Shop
 }
-const Preview = ({ products, shop, isLoading, tempShop }: Props) => (
+const Preview = ({ shop, products, isLoading }: Props) => (
   <View style={styles.rightContainer}>
-    <a
-      href={`/${shop.slug}`}
-      // style={styles.openProductionLink}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      <Text style={styles.openProductionLinkText}>
+    <View style={styles.openProductionLinkContainer}>
+      <Text
+        onPress={() => Linking.openURL(`/${shop.slug}`)}
+        style={styles.openProductionLinkText}
+      >
         Ir a mi Sitio
         <Image
           source={{ uri: "/images/external-link-alt.png" }}
-          // style={styles.openProductionLinkIcon}
+          style={styles.openProductionLinkIcon}
           alt="Ir a mi sitio"
         />
       </Text>
-    </a>
+    </View>
 
     <ShopView
+      shop={shop}
       products={products}
-      shop={tempShop}
       isLoading={isLoading}
       isPreview={true}
     />
@@ -46,7 +44,7 @@ const Preview = ({ products, shop, isLoading, tempShop }: Props) => (
 
 type Styles = {
   rightContainer: ViewStyle
-  openProductionLink: TextStyle
+  openProductionLinkContainer: ViewStyle
   openProductionLinkText: TextStyle
   openProductionLinkIcon: ViewStyle
 }
@@ -57,10 +55,9 @@ const styles = StyleSheet.create<Styles>({
     padding: 30,
     width: 400,
   },
-  openProductionLink: {
+  openProductionLinkContainer: {
     paddingBottom: 30,
     textAlign: "center",
-    textDecoration: "none",
   },
   openProductionLinkText: {
     color: theme.colors.button1,

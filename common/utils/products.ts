@@ -32,32 +32,41 @@ export function extractSections(products: Product[] = []) {
   return sections
 }
 
+type ProductRow = [boolean, string, string, string]
 export function productForGrid(products: Product[]) {
-  if (!Array.isArray(products) || products.length === 0) {
+  if (products.length === 0) {
     return []
   }
-  const rows: any[] = [] // NOTE: this should be a row HoT type
+  const rows: ProductRow[] = []
   let category = ""
 
   products.forEach((product) => {
     if (category !== product.category) {
       category = product.category
+
       rows.push([false, "", "", ""])
       rows.push([true, category, "", ""])
       rows.push([false, "", "", ""])
     }
-    rows.push([false, product.name, product.description, product.price])
+
+    // TODO: should use db default props for price and description
+    rows.push([
+      false,
+      product.name,
+      product.description || "",
+      product.price || "",
+    ])
   })
 
   return rows
 }
 
-export function productsFromGrid(shopID: number, rows: any[]) {
+export function productsFromGrid(shopId: string, rows: ProductRow[]) {
   if (!Array.isArray(rows) || rows.length === 0) {
     return []
   }
 
-  const result: any[] = []
+  const result: Product[] = []
   let section = ""
   let itemNumber = 0
 
@@ -85,8 +94,8 @@ export function productsFromGrid(shopID: number, rows: any[]) {
       itemnumber: itemNumber,
       name: sanitizeProductName(name),
       price: price ? sanitizePrice(price).toString() : "",
-      shopid: shopID,
-    }
+      shopid: shopId,
+    } // Product
 
     result.push(product)
   })

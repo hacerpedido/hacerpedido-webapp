@@ -46,7 +46,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
         render={({ field }) => (
           <Input
             {...field}
-            autofocus
+            autoFocus
             label="Tu Nombre"
             placeholder="¿Cómo te llamás?"
             autoCompleteType="name"
@@ -64,6 +64,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
         }}
       />
 
+      {/*  TODO: fix */}
       {/* <AnimatedView style={animatedProps}> */}
       {takeaway || (
         <Controller

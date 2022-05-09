@@ -1,5 +1,3 @@
-import * as n from "nested-knex"
-
 import prisma from "lib/prisma"
 
 const pg = require("knex")({
@@ -8,6 +6,8 @@ const pg = require("knex")({
 })
 
 export default async function handle(req, res) {
+  const { token } = req.query
+
   if (req.method === "POST") {
     const {
       id,
@@ -18,7 +18,6 @@ export default async function handle(req, res) {
       opentimes,
       ordersphonenumber,
       orderswhatsappnumber,
-      token,
       products,
     } = req.body
 
@@ -55,8 +54,6 @@ export default async function handle(req, res) {
       })
       .where("typeformtoken", "=", token)
       .then((rows) => {
-        // console.log("update shop")
-
         if (!rows) {
           return res.status(404).json({ success: false })
         }
@@ -82,15 +79,8 @@ export default async function handle(req, res) {
     })
   }
 
-  const { token } = req.query
-
-  if (!token || token === "") {
-    res.status(400).json({ error: "Wrong parameters (1)." })
-
-    return
-  }
-
-  const shop = await prisma.shops.findUnique({
+  // TODO: should make typeformtoken unique and use findUnique
+  const shop = await prisma.shops.findMany({
     where: { typeformtoken: token },
     include: {
       products: {
@@ -99,6 +89,6 @@ export default async function handle(req, res) {
     },
   })
 
-  res.status(200).json(shop)
+  res.status(200).json(shop[0])
   res.end()
 }

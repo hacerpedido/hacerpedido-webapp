@@ -1,6 +1,6 @@
-import axios, { AxiosError } from "axios"
-import ErrorPage from "next/error"
+import axios from "axios"
 import Head from "next/head"
+import ErrorPage from "next/error"
 import { useRouter } from "next/router"
 import { useLayoutEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -19,41 +19,18 @@ import MessageBox from "components/MessageBox"
 import type { Shop } from "types"
 
 export default function EditShopPage() {
-  const [shop, setShop] = useState({ products: [] })
+  const [shop, setShop] = useState()
+  const [products, setProducts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [showMessage, setShowMessage] = useState(false)
   const [message, setMessage] = useState("")
   const [isSaving, setSaving] = useState(false)
 
-  const [tempProducts, setTempProducts] = useState([])
   const router = useRouter()
   const { params } = router.query
   const token = typeof params !== "undefined" ? params[0] : undefined
   const width = typeof window !== "undefined" ? window.innerWidth : 1000
   const showPreview = width > 1000
-
-  const previewProducts = () => tempProducts ?? shop.products
-
-  useLayoutEffect(() => {
-    if (!token) return
-
-    setIsLoading(true)
-    ;(async () => {
-      try {
-        const { data } = await axios.get(
-          `${window.location.origin}/api/shop/by-token`,
-          { params: { token } }
-        )
-        setShop(data)
-      } catch (error: any | AxiosError) {
-        if (!axios.isAxiosError(error)) {
-          const message = error.response.data.message
-          alert(`Error al leer los datos. (${error} Error: ${message})`)
-        }
-      }
-      setIsLoading(false)
-    })()
-  }, [token])
 
   const {
     handleSubmit,
@@ -67,7 +44,35 @@ export default function EditShopPage() {
     mode: "onBlur",
   })
 
+  // TODO: this should update preview values as we edit the table
+  // setShop(trimObject({ ...shop, watch() }))
+  // console.log(watch)
+
+  useLayoutEffect(() => {
+    if (!token) return
+
+    setIsLoading(true)
+    ;(async () => {
+      try {
+        const { data } = await axios.get(
+          `${window.location.origin}/api/shop/by-token`,
+          { params: { token } }
+        )
+
+        setShop(data)
+        setProducts(data.products)
+      } catch (error) {
+        if (!axios.isAxiosError(error)) {
+          const message = error.response.data.message
+          alert(`Error al leer los datos. (${error} Error: ${message})`)
+        }
+      }
+      setIsLoading(false)
+    })()
+  }, [token])
+
   const isError = Object.keys(errors).length > 0
+
   const onSubmit = (data: Shop) => {
     trimObject(data)
 
@@ -80,15 +85,19 @@ export default function EditShopPage() {
         region: shop.region,
       }
 
-      const result = await saveShopWithProducts(token, dataToSave, tempProducts)
+      const result = await saveShopWithProducts(
+        token,
+        dataToSave,
+        products
+      )
       setMessage(result.message)
 
       if (result.error == null) {
-        const editedShop = { ...shop, ...dataToSave }
-        if (tempProducts != null) {
-          editedShop.products = tempProducts
+        const updatedShop = { ...shop, ...dataToSave }
+        if (products != null) {
+          updatedShop.products = products
         }
-        setIsLoading({ shop: editedShop, loading: false })
+        setIsLoading({ shop: updatedShop, loading: false })
       }
 
       setShowMessage(true)
@@ -103,70 +112,72 @@ export default function EditShopPage() {
     setShowMessage(!showMessage)
   }
 
-  const tempValues = watch()
-  const tempShop = trimObject({ ...shop, ...tempValues })
+  const EditView = () => {
+    return (
+      <>
+         : (
+          <View style={styles.container}>
+            <View style={styles.leftContainer}>
+              <Form {...{ register, setValue, errors, control }}>
+                <EditShopForm
+                  shop={shop}
+                  control={control}
+                  errors={errors}
+                  handleSubmit={handleSubmit(onSubmit)}
+                  getValues={getValues}
+                  isSaving={isSaving}
+                />
+                <EditProducts
+                  shop={shop}
+                  products={products}
+                  setProducts={setProducts}
+                />
+              </Form>
+            </View>
 
-  const EditView = () => (
-    <>
-      <View style={styles.container}>
-        <View style={styles.leftContainer}>
-          <Form {...{ register, setValue, errors, control }}>
-            <EditShopForm
-              shop={shop}
-              control={control}
-              errors={errors}
-              handleSubmit={handleSubmit(onSubmit)}
-              getValues={getValues}
-              isSaving={isSaving}
-            />
-            <EditProducts
-              products={shop.products}
-              shopId={shop.id}
-              setTempProducts={setTempProducts}
-            />
-          </Form>
-        </View>
+            {showPreview && (
+              <Preview
+                shop={shop}
+                products={products}
+                isLoading={isLoading}
+              />
+            )}
 
-        {showPreview && (
-          <Preview
-            products={previewProducts}
-            shop={shop}
-            isLoading={isLoading}
-            tempShop={tempShop}
-          />
+            {showMessage && (
+              <MessageBox
+                message={
+                  isError
+                    ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
+                    : message
+                }
+                isError={isError}
+                onMessagePress={onMessagePress}
+              />
+            )}
+          </View>
         )}
-      </View>
+      </>
+    )
+  }
 
-      {showMessage && (
-        <MessageBox
-          message={
-            isError
-              ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
-              : message
-          }
-          isError={isError}
-          onMessagePress={onMessagePress}
-        />
-      )}
-    </>
-  )
+  if (params && params[1] !== "edit") {
+    return <ErrorPage statusCode={404} />
+  }
+
+
+  if(!shop && !isLoading) {
+    return (
+      <Text>{ `No hay un comercio en la base de datos para el token ${token}` }</Text>
+    )
+  }
 
   return (
     <>
       <Head>
-        <title>{tempShop.name} | Hacer Pedido</title>
+        <title>{shop?.name} | Hacer Pedido</title>
       </Head>
 
-      {!params || (isLoading && <Loading />)}
-      {/* // Sólo para las páginas de edit por ahora */}
-      {params && params[1] !== "edit" && <ErrorPage statusCode={404} />}
-      {token == null && <Text>Error cargando el comercio.</Text>}
-      {shop == null && (
-        <Text>
-          `No hay un comercio en la base de datos para el token ${token}`
-        </Text>
-      )}
-      <EditView />
+      {isLoading ? <Loading /> : <EditView />}
     </>
   )
 }
