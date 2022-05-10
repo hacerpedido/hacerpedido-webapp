@@ -1,6 +1,6 @@
 import axios from "axios"
-import Head from "next/head"
 import ErrorPage from "next/error"
+import Head from "next/head"
 import { useRouter } from "next/router"
 import { useLayoutEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -46,13 +46,11 @@ export default function EditShopPage() {
 
   // TODO: this should update preview values as we edit the table
   // setShop(trimObject({ ...shop, watch() }))
-  // console.log(watch)
 
   useLayoutEffect(() => {
     if (!token) return
-
-    setIsLoading(true)
     ;(async () => {
+      setIsLoading(true)
       try {
         const { data } = await axios.get(
           `${window.location.origin}/api/shop/by-token`,
@@ -66,8 +64,9 @@ export default function EditShopPage() {
           const message = error.response.data.message
           alert(`Error al leer los datos. (${error} Error: ${message})`)
         }
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
     })()
   }, [token])
 
@@ -85,11 +84,7 @@ export default function EditShopPage() {
         region: shop.region,
       }
 
-      const result = await saveShopWithProducts(
-        token,
-        dataToSave,
-        products
-      )
+      const result = await saveShopWithProducts(token, dataToSave, products)
       setMessage(result.message)
 
       if (result.error == null) {
@@ -115,47 +110,41 @@ export default function EditShopPage() {
   const EditView = () => {
     return (
       <>
-         : (
-          <View style={styles.container}>
-            <View style={styles.leftContainer}>
-              <Form {...{ register, setValue, errors, control }}>
-                <EditShopForm
-                  shop={shop}
-                  control={control}
-                  errors={errors}
-                  handleSubmit={handleSubmit(onSubmit)}
-                  getValues={getValues}
-                  isSaving={isSaving}
-                />
-                <EditProducts
-                  shop={shop}
-                  products={products}
-                  setProducts={setProducts}
-                />
-              </Form>
-            </View>
-
-            {showPreview && (
-              <Preview
+        <View style={styles.container}>
+          <View style={styles.leftContainer}>
+            <Form {...{ register, setValue, errors, control }}>
+              <EditShopForm
+                shop={shop}
+                control={control}
+                errors={errors}
+                handleSubmit={handleSubmit(onSubmit)}
+                getValues={getValues}
+                isSaving={isSaving}
+              />
+              <EditProducts
                 shop={shop}
                 products={products}
-                isLoading={isLoading}
+                setProducts={setProducts}
               />
-            )}
-
-            {showMessage && (
-              <MessageBox
-                message={
-                  isError
-                    ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
-                    : message
-                }
-                isError={isError}
-                onMessagePress={onMessagePress}
-              />
-            )}
+            </Form>
           </View>
-        )}
+
+          {showPreview && (
+            <Preview shop={shop} products={products} isLoading={isLoading} />
+          )}
+
+          {showMessage && (
+            <MessageBox
+              message={
+                isError
+                  ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
+                  : message
+              }
+              isError={isError}
+              onMessagePress={onMessagePress}
+            />
+          )}
+        </View>
       </>
     )
   }
@@ -164,10 +153,9 @@ export default function EditShopPage() {
     return <ErrorPage statusCode={404} />
   }
 
-
-  if(!shop && !isLoading) {
+  if (!shop && !isLoading) {
     return (
-      <Text>{ `No hay un comercio en la base de datos para el token ${token}` }</Text>
+      <Text>{`No hay un comercio en la base de datos para el token ${token}`}</Text>
     )
   }
 

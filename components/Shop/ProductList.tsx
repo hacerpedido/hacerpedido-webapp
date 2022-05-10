@@ -19,21 +19,22 @@ export default function ProductList({
 }: Props) {
   const listItems: ReactNode[] = []
   let lastCategory = ""
-  let item = 0
 
-  products.forEach((product: ProductType) => {
+  // NOTE: refactor
+  products.forEach((product: ProductType, index) => {
     const { category } = product
 
     // TODO: mejorar esto, deberíamos tener un dato, en vez de usar el nombre "Promociones"
     const isPromo = category === "Promociones"
 
+    // If category changed
     if (lastCategory !== category) {
-      if (item !== 0 && !isPromo) {
-        listItems.push(<Divider key={item++} />)
-      }
+      // Push a divider component if category not promotion type
+      if (!isPromo) listItems.push(<Divider key={index++} />)
 
+      // Push a category component
       listItems.push(
-        <Text key={item++} style={styles.category}>
+        <Text key={index++} style={styles.category}>
           {category}
         </Text>
       )
@@ -41,9 +42,10 @@ export default function ProductList({
       lastCategory = category
     }
 
+    // Push a product
     listItems.push(
       <Product
-        key={item++}
+        key={index++}
         product={product}
         promo={isPromo}
         isCartEnabled={isCartEnabled}
@@ -51,7 +53,8 @@ export default function ProductList({
     )
   })
 
-  listItems.push(<Divider key={item++} />)
+  // Push a divider
+  listItems.push(<Divider key={0} />)
 
   return <>{listItems}</>
 }

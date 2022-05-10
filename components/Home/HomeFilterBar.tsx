@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react"
 import {
   FlatList,
   StyleSheet,
@@ -19,6 +18,7 @@ type CategoryProps = {
   onSelect: (id: string) => void
 }
 
+// TODO: rename to cateogry filter
 function Category({ title, isSelected, onSelect }: CategoryProps) {
   const wrapperStyle = [
     styles.item,
@@ -41,21 +41,11 @@ function Category({ title, isSelected, onSelect }: CategoryProps) {
 }
 
 type Props = {
-  selectedFilter: string
-  onSelectFilter: (category: string) => void
+  selected: string
+  onSelect: (category: string) => void
 }
 
-const HomeFilterBar = ({ selectedFilter, onSelectFilter }: Props) => {
-  const [selected, setSelected] = useState(selectedFilter)
-
-  const onSelect = useCallback(
-    (category) => {
-      setSelected(category)
-      onSelectFilter(category)
-    },
-    [onSelectFilter]
-  )
-
+const HomeFilterBar = ({ selected, onSelect }: Props) => {
   const handleRenderItem = ({ item }: ListRenderItemInfo<string>) => (
     <Category
       title={item}

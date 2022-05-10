@@ -9,10 +9,11 @@ import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
 import ShopList from "@/components/Home/ShopList"
 import Loading from "@/components/Loading"
-import type { Shop } from "types"
 
 export default function Home() {
   const [shops, setShops] = useState([])
+  // TODO: uncomment onece we have pagination
+  // const [category, setCategory] = useState(undefined)
   const [category, setCategory] = useState(categories[0])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -32,11 +33,11 @@ export default function Home() {
     })()
   }, [category])
 
-  const filteredShops = shops.filter(
-    (shop: Shop) => shop.visibility === "public" && shop.category === category
-  )
-
   const handleSelectFilter = (selected: string) => {
+    // TODO: uncomment onece we have pagination
+    // if (selected === category) {
+    //   return setCategory(undefined)
+    // }
     setCategory(selected)
   }
 
@@ -48,14 +49,11 @@ export default function Home() {
 
       <View style={styles.header}>
         <HomeHeader />
-        <HomeFilterBar
-          selectedFilter={category}
-          onSelectFilter={handleSelectFilter}
-        />
+        <HomeFilterBar selected={category} onSelect={handleSelectFilter} />
       </View>
 
       <View style={styles.body}>
-        {isLoading ? <Loading /> : <ShopList shops={filteredShops} />}
+        {isLoading ? <Loading /> : <ShopList shops={shops} />}
       </View>
     </View>
   )

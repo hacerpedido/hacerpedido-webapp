@@ -9,11 +9,7 @@ import {
 } from "react-native"
 
 import { colors } from "@/common/colors"
-
-import { useAppDispatch as useDispatch } from "@/common/hooks"
 import ShopCard from "@/components/Home/ShopCard"
-
-import { setShop } from "@/store/shopSlice"
 import type { Shop } from "types"
 
 type Props = {
@@ -21,22 +17,8 @@ type Props = {
 }
 
 const ShopList = ({ shops }: Props) => {
-  const touchStartingPoint = 0
-  const touchCurrentPoint = 0
-
   const router = useRouter()
-  const dispatch = useDispatch()
-
-  const onSelect = useCallback(
-    (shop) => {
-      const distance = Math.abs(touchStartingPoint - touchCurrentPoint)
-      if (distance <= 10) {
-        dispatch(setShop(shop))
-        router.push(`/${shop.slug}`)
-      }
-    },
-    [router, dispatch, touchCurrentPoint, touchStartingPoint]
-  )
+  const onSelect = useCallback((shop) => router.push(`/${shop.slug}`), [router])
 
   const renderListHeader = (count: number) => {
     const shopText = count > 0 || count === 0 ? "comercios" : "comercio"

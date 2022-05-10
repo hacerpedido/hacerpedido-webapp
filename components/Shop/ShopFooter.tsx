@@ -11,10 +11,8 @@ import {
 } from "react-native"
 
 import { colors } from "@/common/colors"
-import { useAppSelector as useSelector } from "@/common/hooks"
 import { generateCallUrl } from "@/common/utils/utils"
 import { PhoneCallIcon } from "@/components/icons"
-import type { RootState } from "@/store/configureStore"
 import type { Shop } from "types"
 
 type Props = {
@@ -24,7 +22,8 @@ type Props = {
 const ShopFooter = ({ shop }: Props) => {
   const { ordersphonenumber = "", orderswhatsappnumber = "" } = shop
   const router = useRouter()
-  const totalAmount = useSelector((state: RootState) => state.shop.totalAmount)
+  // TODO: implement cart
+  const totalAmount = 0
   const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 }
 
   const ButtonWhatsapp = () => (
@@ -125,7 +124,7 @@ const styles = StyleSheet.create<Styles>({
   totalAmountContainer: {
     alignItems: "center",
     borderColor: colors.white,
-    borderRadius: "50%",
+    borderRadius: 50,
     borderWidth: 1.5,
     height: 24,
     justifyContent: "center",

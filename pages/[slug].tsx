@@ -1,113 +1,82 @@
-import axios from "axios"
+import { GetServerSideProps } from "next"
+import ErrorPage from "next/error"
 import Head from "next/head"
-import { useRouter } from "next/router"
-import { useLayoutEffect, useState } from "react"
-import { Text, View } from "react-native"
+import { View, ViewStyle, StyleSheet } from "react-native"
 
-import {
-  useAppDispatch as useDispatch,
-  useAppSelector as useSelector,
-} from "@/common/hooks"
-import Loading from "@/components/Loading"
+import { colors } from "@/common/colors"
+import ProductList from "@/components/Shop/ProductList"
 import ShopFooter from "@/components/Shop/ShopFooter"
-import ShopView from "@/components/Shop/ShopView"
-import { setShop } from "@/store/shopSlice"
+import ShopHeader from "@/components/Shop/ShopHeader"
+import ShopNotes from "@/components/Shop/ShopNotes"
+import prisma from "lib/prisma"
 
-export default function Shop() {
-  const router = useRouter()
-  const dispatch = useDispatch()
-  const [isLoading, setIsLoading] = useState(true)
-  const shop = useSelector((state) => state.shop.shop)
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const slug = String(context.params.slug)
 
-  const { slug } = router.query
+  const shop = await prisma.shops.findUnique({
+    where: { slug },
+  })
 
-  useLayoutEffect(() => {
-    if (!slug) {
-      return
-    }
+  const products = await prisma.products.findMany({
+    where: { shopid: shop.id },
+    orderBy: { itemnumber: "asc" },
+  })
 
-    ;(async () => {
-      setIsLoading(true)
-
-      try {
-        const { data } = await axios.get(
-          `${window.location.origin}/api/shop/${slug}`
-        )
-        dispatch(setShop(data))
-      } catch (error) {
-        console.log(JSON.stringify(error, null, 2))
-      } finally {
-        setIsLoading(false)
-      }
-    })()
-  }, [dispatch, slug])
-
-  if (!slug || shop?.slug !== slug) {
-    return isLoading ? (
-      <Loading />
-    ) : (
-      <Text>Sin comercios en la base de datos para {slug}.</Text>
-    )
+  return {
+    props: {
+      shop: JSON.parse(JSON.stringify(shop)),
+      products: JSON.parse(JSON.stringify(products)),
+    },
   }
+}
+
+export default function Shop({ shop, products }) {
+  const { name, slug, orderswhatsappnumber } = shop
 
   if (!shop) {
-    return <Text>Sin comercios en la base de datos para {slug}</Text>
+    return <ErrorPage statusCode={404} />
   }
+
+  const url = `https://hacerpedido.com/${slug}`
 
   return (
     <View>
       <Head>
-        <title>{shop.name} | Hacer Pedido</title>
+        <title>{`${name} | Hacer Pedido`}</title>
         <meta property="og:image" content="/logo512.png" />
-        <meta property="og:description" content={shop.name} />
+        <meta property="og:description" content={name} />
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content={shop.name} />
-        <meta
-          property="og:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
+        <meta property="og:title" content={name} />
+        <meta property="og:url" content={url} />
         <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={shop.name} />
-        <meta property="twitter:description" content={shop.name} />
-        <meta
-          property="twitter:url"
-          content={"https://hacerpedido.com/" + shop.slug}
-        />
+        <meta property="twitter:title" content={name} />
+        <meta property="twitter:description" content={name} />
+        <meta property="twitter:url" content={url} />
       </Head>
 
-      <ShopView shop={shop} products={shop?.products} isLoading={isLoading} />
+      <ShopHeader isPreview={false} shop={shop} />
 
-      <ShopFooter shop={shop} />
+      <View style={styles.container}>
+        <ProductList
+          products={products}
+          isCartEnabled={!!orderswhatsappnumber}
+        />
+
+        <ShopNotes shop={shop} />
+        <ShopFooter shop={shop} />
+      </View>
     </View>
   )
 }
 
-//
-//  Implementación inicial de SSR para esta página. El problema es que depende de setShop para el carrito
-//
-// export async function getServerSideProps(context) {
-//   const slug = context.params.slug;
-//
-//   try {
-//     const client = useApolloClient();
-//     const shop = await client.query({
-//       query: getShopWithDetails,
-//       variables: { slug },
-//     });
-//
-//     console.log({ shop, slug });
-//
-//     return {
-//       props: { shop, slug },
-//     };
-//   } catch (error) {
-//     console.log(JSON.stringify(error, null, 2));
-//   }
-//
-//   console.log("slug:" + slug);
-//
-//   return {
-//     props: { slug },
-//   };
-// }
+type Styles = {
+  container: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
+  container: {
+    backgroundColor: colors.white,
+    marginBottom: 130,
+  },
+})

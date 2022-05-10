@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   TouchableHighlight,
   StyleSheet,
@@ -10,27 +9,16 @@ import {
 import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/common/colors"
-import { useAppDispatch as useDispatch } from "@/common/hooks"
-import { setAmount } from "@/store/shopSlice"
 import type { Product } from "types"
-
-const AnimatedView = animated(View)
 
 type Props = {
   product: Product
-  amount: number
   visible: boolean
   handleClose: () => void
 }
 
-const ProductAmountPopup = ({
-  product,
-  amount,
-  visible,
-  handleClose,
-}: Props) => {
-  const [popUpAmount, setPopUpAmount] = useState(amount)
-  const dispatch = useDispatch()
+const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
+  const { amount } = product
 
   // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {
@@ -40,15 +28,14 @@ const ProductAmountPopup = ({
     config: config.stiff,
   })
 
-  const updateAmount = (newAmount: number, persist = false) => {
-    if (newAmount < 0) return false
+  const AnimatedView = animated(View)
 
-    setPopUpAmount(newAmount)
+  const updateAmount = (newAmount: number) => {
+    if (newAmount < 0) return
 
-    if (persist) {
-      handleClose()
-      dispatch(setAmount({ product, amount: newAmount }))
-    }
+    // TODO: implement shopping cart
+    // const updatedProduct = { ...product, amount: newAmount }
+    // setProducts([...products, updatedProduct])
   }
 
   return transitions(
@@ -57,19 +44,19 @@ const ProductAmountPopup = ({
         <AnimatedView style={transitionStyle}>
           <View style={styles.container}>
             <TouchableHighlight
+              onPress={() => updateAmount(amount - 1)}
               underlayColor={"none"}
-              onPress={() => updateAmount(popUpAmount - 1)}
             >
               <View style={styles.buttonQty}>
                 <Text style={styles.buttonQtyText}>-</Text>
               </View>
             </TouchableHighlight>
 
-            <Text style={styles.amountText}>{popUpAmount}</Text>
+            <Text style={styles.amountText}>{amount}</Text>
 
             <TouchableHighlight
               underlayColor={"none"}
-              onPress={() => updateAmount(popUpAmount + 1)}
+              onPress={() => updateAmount(amount + 1)}
             >
               <View style={[styles.buttonQty, styles.buttonPlus]}>
                 <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>
@@ -81,7 +68,7 @@ const ProductAmountPopup = ({
             <View style={styles.lineBreak} />
 
             <TouchableHighlight
-              onPress={() => updateAmount(popUpAmount, true)}
+              onPress={() => updateAmount(amount)}
               underlayColor={"none"}
             >
               <View style={styles.buttonSubmit}>
@@ -136,7 +123,7 @@ const styles = StyleSheet.create<Styles>({
   buttonQty: {
     alignItems: "center",
     borderColor: colors.gray4,
-    borderRadius: "50%",
+    borderRadius: 50,
     borderWidth: 1,
     height: 28,
     justifyContent: "center",
@@ -158,7 +145,7 @@ const styles = StyleSheet.create<Styles>({
   buttonSubmitText: {
     color: colors.white,
     fontFamily: "Barlow",
-    fontWeight: 600,
+    fontWeight: "600",
     lineHeight: 18,
     paddingBottom: 5.5,
     paddingHorizontal: 24,
@@ -182,7 +169,7 @@ const styles = StyleSheet.create<Styles>({
     color: colors.lightGreen,
     fontFamily: "Barlow",
     fontSize: 16,
-    fontWeight: 600,
+    fontWeight: "600",
     transform: "rotate(-45deg)",
   },
   container: {

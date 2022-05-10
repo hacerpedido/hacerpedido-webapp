@@ -8,10 +8,9 @@ import {
   ViewStyle,
 } from "react-native"
 
-import ProductAmountPopup from "./ProductAmountPopup"
-
 import { colors } from "@/common/colors"
 import { sanitizePrice } from "@/common/utils/utils"
+import ProductAmountPopup from "@/components/Shop/ProductAmountPopup"
 
 import type { Product as ProductType } from "types"
 
@@ -24,10 +23,9 @@ type Props = {
 const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
   const ref = useRef(null)
   const [popupVisible, setPopupVisible] = useState(false)
-  const containerStyle = promo ? styles.card : styles.product
-  const { name, amount = 0, description, price = "" } = product
-  const displayPrice = sanitizePrice(price)
+  const { name, description, price = "", amount = 0 } = product
 
+  // TODO: Move to productamountpopup?
   useEffect(() => {
     const listener = (event: TouchEvent) => {
       if (ref.current && !ref.current.contains(event.target))
@@ -39,6 +37,9 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
       document.removeEventListener("touchend", listener)
     }
   }, [ref, setPopupVisible])
+
+  const displayPrice = sanitizePrice(price)
+  const containerStyle = promo ? styles.card : styles.product
 
   return (
     <div ref={ref}>
@@ -68,7 +69,6 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
 
               <ProductAmountPopup
                 product={product}
-                amount={amount}
                 visible={popupVisible}
                 handleClose={() => setPopupVisible(false)}
               />

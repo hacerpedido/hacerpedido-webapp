@@ -14,14 +14,11 @@ import TimeAgo from "react-timeago"
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter"
 import spanishStrings from "react-timeago/lib/language-strings/es"
 
-import Input from "../ShopInput"
-
+import ShopInput from "./ShopInput"
 import UploadImage from "./UploadImage"
 
 import theme from "@/common/theme"
 import { validatePhoneNumber } from "@/common/utils/utils"
-
-const formatter = buildFormatter(spanishStrings)
 
 export default function EditShopForm({
   shop,
@@ -30,17 +27,14 @@ export default function EditShopForm({
   handleSubmit,
   getValues,
   isSaving,
-  refresh,
 }) {
   const [imageType, setImageType] = useState(undefined)
+  const formatter = buildFormatter(spanishStrings)
 
-  const handleClose = (options = { forceRefresh: false }) => {
+  const handleClose = () => {
     setImageType(undefined)
-    if (options.forceRefresh) {
-      refresh()
-    }
   }
-  const handleShow = (type) => setImageType(type)
+  const handleShow = (type: string) => setImageType(type)
 
   const buttonStyles = {
     alignItems: "center",
@@ -79,14 +73,12 @@ export default function EditShopForm({
           </View>
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
-              underlayColor={"none"}
               onPress={() => handleShow("logo")}
               disabled={isSaving}
             >
               <Text style={styles.buttonUploadImage}>Editar logo</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              underlayColor={"none"}
               onPress={() => handleShow("background")}
               disabled={isSaving}
             >
@@ -94,7 +86,6 @@ export default function EditShopForm({
             </TouchableOpacity>
 
             <TouchableOpacity
-              underlayColor={"none"}
               onPress={handleSubmit}
               style={buttonStyles}
               disabled={isSaving}
@@ -117,7 +108,7 @@ export default function EditShopForm({
             <View style={styles.formColumnLeft}>
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="Nombre del Comercio:"
                     error={errors.name}
@@ -135,7 +126,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="Dirección:"
                     error={errors.address}
@@ -147,7 +138,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="Horario:"
                     error={errors.opentimes}
@@ -159,7 +150,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="Costo del Delivery:"
                     error={errors.deliverycost}
@@ -174,7 +165,7 @@ export default function EditShopForm({
             <View style={styles.formColumnRight}>
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="WhatsApp del comercio:"
                     error={errors.orderswhatsappnumber}
@@ -212,7 +203,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     label="Teléfono Fijo:"
                     error={errors.ordersphonenumber}
@@ -250,7 +241,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <Input
+                  <ShopInput
                     {...field}
                     placeholder="¿Querés hacer alguna aclaración?"
                     multiline
