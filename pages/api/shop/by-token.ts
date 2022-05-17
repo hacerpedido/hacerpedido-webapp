@@ -80,7 +80,7 @@ export default async function handle(req, res) {
   }
 
   // TODO: should make typeformtoken unique and use findUnique
-  const shop = await prisma.shops.findMany({
+  const shop = await prisma.shop.findMany({
     where: { typeformtoken: token },
     include: {
       products: {

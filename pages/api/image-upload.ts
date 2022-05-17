@@ -1,4 +1,4 @@
-import { s3utils } from "./aws-s3"
+import { uploadFile, deleteFile } from "./aws-s3"
 
 const formidable = require("formidable")
 const validator = require("validator")
@@ -8,7 +8,6 @@ function randomString(
   characters = "abcdefghijklmnopqrstuvwxyz0123456789"
 ) {
   let result = ""
-  var characters = characters
   const charactersLength = characters.length
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
@@ -92,12 +91,12 @@ export default async function handler(req, res) {
   const random = randomString(10)
   const key = `${shopID}-${imageType}-${random}.${extension}`
 
-  await s3utils.uploadFile(path, key, mime)
+  await uploadFile(path, key, mime)
 
   await pg("shops").where("id", "=", shopID).update(imageType, key)
 
   if (oldKey) {
-    s3utils.deleteFile(oldKey)
+    deleteFile(oldKey)
   }
 
   res.status(200).json({ image: key })

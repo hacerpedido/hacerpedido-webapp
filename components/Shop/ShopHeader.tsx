@@ -37,11 +37,13 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
   const logo = getLogoForShop(shop)
   const router = useRouter()
+
   const containerStyles = {
     backgroundImage: getBackgroundForShop(shop),
     backgroundSize: background ? "100% auto" : "auto",
     backgroundColor: getBackgroundColorForCategory(category),
   }
+
   const onButtonBackPress = () => {
     !isPreview && router.push("/")
   }
@@ -128,6 +130,7 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
 export default ShopHeader
 
+// TODO: the header is dispplaying some extra padding at the bottom
 type Styles = {
   buttonBack: ViewStyle
   buttonCall: ViewStyle

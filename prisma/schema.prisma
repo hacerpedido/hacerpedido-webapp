@@ -1,3 +1,5 @@
+// NOTE: adapt using https://www.prisma.io/docs/concepts/components/prisma-client/working-with-prismaclient/use-custom-model-and-field-names
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,23 +9,26 @@ datasource db {
   url      = env("PG_CONNECTION_STRING")
 }
 
-model products {
+model Product {
   id          String    @id @default(dbgenerated("uuid_generate_v1()")) @db.Uuid
   category    String
   name        String
   description String?
   price       String?
-  shopid      String    @db.Uuid
   itemnumber  Int?
   created_at  DateTime? @default(now()) @db.Timestamp(6)
   updated_at  DateTime? @default(now()) @db.Timestamp(6)
-  shops       shops     @relation(fields: [shopid], references: [id])
+
+  shop        Shop      @relation(fields: [shopid], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  shopid      String    @db.Uuid
+
+  @@map("products")
 }
 
-model shops {
-  id                      String     @id @default(dbgenerated("uuid_generate_v1()")) @db.Uuid
+model Shop {
+  id                      String    @id @default(dbgenerated("uuid_generate_v1()")) @db.Uuid
   name                    String
-  slug                    String     @unique
+  slug                    String    @unique
   region                  String
   username                String?
   category                String?
@@ -44,7 +49,9 @@ model shops {
   typeformtoken           String?
   ordersphonenumber       String?
   orderswhatsappnumber    String?
-  created_at              DateTime?  @default(now()) @db.Timestamp(6)
-  updated_at              DateTime?  @default(now()) @db.Timestamp(6)
-  products                products[]
+  created_at              DateTime? @default(now()) @db.Timestamp(6)
+  updated_at              DateTime? @default(now()) @db.Timestamp(6)
+  products                Product[]
+
+  @@map("shops")
 }

@@ -1,4 +1,8 @@
-import { getBackgroundForShop, getLogoForShop } from "@/lib/utils/shops"
+import {
+  getBackgroundForShop,
+  getLogoForShop,
+  getBackgroundForCategory,
+} from "@/lib/utils/shops"
 
 describe("getBackgroundForShop", () => {
   it("", () => {
@@ -9,5 +13,11 @@ describe("getBackgroundForShop", () => {
 describe("getBackgroundForShop", () => {
   it("", () => {
     expect(getLogoForShop("")).toBe(1)
+  })
+})
+
+describe("getBackgroundForCategory", () => {
+  it("", () => {
+    expect(getBackgroundForCategory("")).toBe(1)
   })
 })

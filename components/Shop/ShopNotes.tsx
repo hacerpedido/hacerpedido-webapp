@@ -18,6 +18,7 @@ const ShopNotes = ({ shop }: { shop: Shop }) => {
 
 export default ShopNotes
 
+// TODO: add some margin to separate from header
 type Styles = {
   category: TextStyle
   container: ViewStyle

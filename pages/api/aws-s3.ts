@@ -1,11 +1,11 @@
 import fs from "fs"
 
-import AWS from "aws-sdk"
+import S3 from "aws-sdk/clients/s3"
 
 export async function uploadFile(fileName, key, mime) {
   const fileContent = fs.readFileSync(fileName)
 
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
   })
@@ -27,7 +27,7 @@ export async function uploadFile(fileName, key, mime) {
 }
 
 export async function deleteFile(key) {
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
   })

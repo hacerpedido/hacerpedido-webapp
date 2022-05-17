@@ -55,6 +55,7 @@ export default function ProductList({
   })
 
   // Push a divider
+  // TODO: this looks weird in the bottom of the list
   listItems.push(<Divider key={item++} />)
 
   return <>{listItems}</>

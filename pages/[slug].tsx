@@ -14,11 +14,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const prisma = new PrismaClient()
   const slug = String(context.params.slug)
 
-  const shop = await prisma.shops.findUnique({
+  const shop = await prisma.shop.findUnique({
     where: { slug },
   })
 
-  const products = await prisma.products.findMany({
+  const products = await prisma.product.findMany({
     where: { shopid: shop.id },
     orderBy: { itemnumber: "asc" },
   })
@@ -59,12 +59,13 @@ export default function Shop({ shop, products }) {
       <ShopHeader isPreview={false} shop={shop} />
 
       <View style={styles.container}>
+        <ShopNotes shop={shop} />
+
         <ProductList
           products={products}
           isCartEnabled={!!orderswhatsappnumber}
         />
 
-        <ShopNotes shop={shop} />
         <ShopFooter shop={shop} />
       </View>
     </View>

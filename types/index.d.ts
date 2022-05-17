@@ -16,24 +16,30 @@ export type Product = {
   category: string
   description?: string
   price?: string
-  shopid?: string
+  shopid?: string // shopid: string
   itemnumber?: number
   amount?: number // NOTE: only cart products include amounts
+
+  created_at: Date
+  updated_at: Date
 }
 
 export type Shop = {
+  id: string
   address?: string
   background: string
   category: string
   deliverycost?: string
-  id: string
   logo?: string
   name: string
   notes: string
   opentimes?: string
-  ordersphonenumber: string
-  orderswhatsappnumber: string
+  ordersphonenumber?: string // NOTE: should be one or the other. Use better validation
+  orderswhatsappnumber?: string
   region: string
   slug: string
   visibility: string
+
+  created_at: Date
+  updated_at: Date
 }

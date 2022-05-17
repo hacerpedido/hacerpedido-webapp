@@ -52,6 +52,7 @@ const ShopFooter = ({ shop }: Props) => {
       underlayColor={"none"}
       style={styles.buttonContainer}
     >
+      {/* TODO: weird styling on this button */}
       <View style={[styles.buttonCall, styles.button]}>
         <Text numberOfLines={1}>
           <PhoneCallIcon color={colors.white} />

@@ -19,8 +19,8 @@ const ShopList = ({ shops }: Props) => {
         {countText} {shopText}
       </Text>
 
-      {shops.map((item) => (
-        <ShopCard key={item.id} shop={item} />
+      {shops.map((shop) => (
+        <ShopCard key={shop.slug} shop={shop} />
       ))}
     </View>
   )
