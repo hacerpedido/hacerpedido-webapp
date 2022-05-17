@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 import { CarIcon, ClockIcon, PinIcon } from "@/components/icons/"
 
 // TODO: Este componente tiene una responsabilidad difusa, mucha
-
 type Props = {
   iconName: string
   text: string
@@ -20,10 +19,8 @@ const DecoratedLabel = ({
   iconColor,
   textColor,
   fontSize = 12,
-  marginBottom = 0,
 }: Props) => {
   type Styles = {
-    container: ViewStyle
     text: TextStyle
   }
 
@@ -35,13 +32,6 @@ const DecoratedLabel = ({
       fontSize: fontSize,
       lineHeight: 14,
       padding: 3,
-    },
-    container: {
-      flexDirection: "row",
-      alignItems: "center",
-      textAlignVertical: "center",
-      marginBottom: marginBottom,
-      maxWidth: "92%",
     },
   })
 
@@ -57,14 +47,10 @@ const DecoratedLabel = ({
   }
 
   return (
-    <View style={styles.container}>
-      {text && (
-        <>
-          <View>{iconList[iconName]}</View>
-          <Text style={styles.text}>{text}</Text>
-        </>
-      )}
-    </View>
+    <Text style={styles.text}>
+      {iconList[iconName]}
+      {text}
+    </Text>
   )
 }
 

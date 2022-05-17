@@ -9,8 +9,8 @@ import {
   ViewStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
-import { categories } from "@/common/utils/categories"
+import { colors } from "@/lib/colors"
+import { categories } from "@/lib/utils/categories"
 
 type CategoryProps = {
   title: string

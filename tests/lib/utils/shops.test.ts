@@ -1,4 +1,4 @@
-import { getBackgroundForShop, getLogoForShop } from "@/common/utils/shops"
+import { getBackgroundForShop, getLogoForShop } from "@/lib/utils/shops"
 
 describe("getBackgroundForShop", () => {
   it("", () => {

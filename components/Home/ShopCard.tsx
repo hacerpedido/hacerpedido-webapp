@@ -1,9 +1,17 @@
-import { View, Image, StyleSheet, Text } from "react-native"
+import Link from "next/link"
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  ViewStyle,
+  TextStyle,
+} from "react-native"
 
 import DecoratedLabel from "../DecoratedLabel"
 
-import { colors } from "@/common/colors"
-import { getLogoForShop } from "@/common/utils/shops"
+import { colors } from "@/lib/colors"
+import { getLogoForShop } from "@/lib/utils/shops"
 
 import type { Shop } from "types"
 
@@ -12,51 +20,56 @@ type Props = {
 }
 
 const ShopCard = ({ shop }: Props) => {
-  const { name, address, opentimes, deliverycost } = shop
+  const { name, slug, address, opentimes, deliverycost } = shop
 
   return (
-    <View style={styles.card}>
-      <View style={styles.container}>
-        <View style={styles.containerLogo}>
-          <Image
-            source={{ uri: getLogoForShop(shop) }}
-            alt={shop.name}
-            style={styles.logo}
-          />
-        </View>
-        <View style={styles.containerLabels}>
-          <Text style={styles.shopName}>{name.toLowerCase()}</Text>
-          {address && (
-            <DecoratedLabel
-              iconName="pin"
-              text={address}
-              iconColor={iconColor}
-              textColor={colors.lightGrey}
+    <Link href={`/${slug}`}>
+      <View style={styles.card}>
+        <View style={styles.container}>
+          <View style={styles.containerLogo}>
+            <Image
+              source={{ uri: getLogoForShop(shop) }}
+              alt={shop.name}
+              style={styles.logo}
             />
-          )}
-          {opentimes && (
-            <DecoratedLabel
-              iconName="clock"
-              text={opentimes}
-              iconColor={iconColor}
-              textColor={colors.lightGrey}
-            />
-          )}
+          </View>
 
-          {/* TODO: El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
-          <Text>
-            {deliverycost && (
+          <View style={styles.containerLabels}>
+            <Text style={styles.shopName}>{name.toLowerCase()}</Text>
+
+            {address && (
               <DecoratedLabel
-                iconName="car"
-                text={deliverycost}
+                iconName="pin"
+                text={address}
                 iconColor={iconColor}
                 textColor={colors.lightGrey}
               />
             )}
-          </Text>
+
+            {opentimes && (
+              <DecoratedLabel
+                iconName="clock"
+                text={opentimes}
+                iconColor={iconColor}
+                textColor={colors.lightGrey}
+              />
+            )}
+
+            {/* NOTE: El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
+            <Text>
+              {deliverycost && (
+                <DecoratedLabel
+                  iconName="car"
+                  text={deliverycost}
+                  iconColor={iconColor}
+                  textColor={colors.lightGrey}
+                />
+              )}
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </Link>
   )
 }
 
@@ -64,7 +77,16 @@ export default ShopCard
 
 const iconColor = "#C5CEE0"
 
-const styles = StyleSheet.create({
+type Styles = {
+  card: ViewStyle
+  container: ViewStyle
+  containerLabels: ViewStyle
+  containerLogo: ViewStyle
+  logo: ViewStyle
+  shopName: TextStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   card: {
     backgroundColor: colors.white,
     borderColor: colors.cardBorder,
@@ -72,6 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 6,
     padding: 15,
+    cursor: "pointer",
   },
   container: {
     flex: 1,

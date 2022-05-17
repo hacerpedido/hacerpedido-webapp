@@ -1,6 +1,6 @@
 import { ActivityIndicator, StyleSheet, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
+import { colors } from "@/lib/colors"
 
 export default function Loading() {
   return (

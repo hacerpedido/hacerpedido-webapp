@@ -1,7 +1,7 @@
 import { forwardRef } from "react"
 import { View, Text, StyleSheet, TextStyle, ViewStyle } from "react-native"
 
-import theme from "@/common/theme"
+import theme from "@/lib/theme"
 
 // NOTE: https://react-hook-form.com/ts/
 

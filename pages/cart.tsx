@@ -2,13 +2,13 @@ import { useRouter } from "next/router"
 import type { SubmitHandler } from "react-hook-form"
 import { StyleSheet, View, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
-import { useAppSelector as useSelector } from "@/common/hooks"
-import { extractSections } from "@/common/utils/products"
-import { generateWhatsappURL } from "@/common/utils/utils"
 import Form from "@/components/Cart/Form"
 import Header from "@/components/Cart/Header"
 import ProductList from "@/components/Cart/ProductList"
+import { colors } from "@/lib/colors"
+import { useAppSelector as useSelector } from "@/lib/hooks"
+import { extractSections } from "@/lib/utils/products"
+import { generateWhatsappURL } from "@/lib/utils/utils"
 import type { Product, CartFormValues } from "types"
 
 export default function Cart() {

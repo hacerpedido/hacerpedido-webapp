@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
+import { colors } from "@/lib/colors"
 import type { Product as ProductType } from "types"
 
 const Product = ({ product }: { product: ProductType }) => {

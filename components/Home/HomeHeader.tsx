@@ -11,8 +11,8 @@ import {
   TextStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
 import { HpLogoIcon } from "@/components/icons"
+import { colors } from "@/lib/colors"
 
 export default function HomeHeader() {
   const [show, setShow] = useState(false)
@@ -29,9 +29,9 @@ export default function HomeHeader() {
       </Link>
 
       <TouchableOpacity onPress={handleShow}>
-        {/* <View>
+        <View>
           <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-        </View> */}
+        </View>
       </TouchableOpacity>
 
       <Modal show={show} onHide={handleClose}>

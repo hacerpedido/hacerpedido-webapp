@@ -1,6 +1,7 @@
-import prisma from "lib/prisma"
+import { PrismaClient } from "@prisma/client"
 
 export default async function handle(req, res) {
+  const prisma = new PrismaClient()
   const { category } = req.query
 
   const shops = await prisma.shops.findMany({
@@ -8,6 +9,5 @@ export default async function handle(req, res) {
     orderBy: { updated_at: "asc" },
   })
 
-  res.status(200).json(shops)
-  res.end()
+  res.json(shops)
 }

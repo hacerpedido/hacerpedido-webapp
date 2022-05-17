@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { StyleSheet, Text, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
+import { colors } from "@/lib/colors"
 
 import Divider from "components/Divider"
 import Product from "components/Shop/Product"
@@ -19,8 +19,9 @@ export default function ProductList({
 }: Props) {
   const listItems: ReactNode[] = []
   let lastCategory = ""
+  let item = 0
 
-  // NOTE: refactor
+  // NOTE: refactor once we have a categories DB table
   products.forEach((product: ProductType, index) => {
     const { category } = product
 
@@ -30,11 +31,11 @@ export default function ProductList({
     // If category changed
     if (lastCategory !== category) {
       // Push a divider component if category not promotion type
-      if (!isPromo) listItems.push(<Divider key={index++} />)
+      if (!isPromo) listItems.push(<Divider key={item++} />)
 
       // Push a category component
       listItems.push(
-        <Text key={index++} style={styles.category}>
+        <Text key={item++} style={styles.category}>
           {category}
         </Text>
       )
@@ -45,7 +46,7 @@ export default function ProductList({
     // Push a product
     listItems.push(
       <Product
-        key={index++}
+        key={item++}
         product={product}
         promo={isPromo}
         isCartEnabled={isCartEnabled}
@@ -54,7 +55,7 @@ export default function ProductList({
   })
 
   // Push a divider
-  listItems.push(<Divider key={0} />)
+  listItems.push(<Divider key={item++} />)
 
   return <>{listItems}</>
 }

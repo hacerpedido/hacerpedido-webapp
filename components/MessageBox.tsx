@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from "react-native"
 
-import theme from "@/common/theme"
+import theme from "@/lib/theme"
 
 interface Props {
   message: string

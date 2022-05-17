@@ -1,3 +1,4 @@
+import ShopView from "components/Shop/ShopView"
 import {
   Image,
   StyleSheet,
@@ -8,8 +9,7 @@ import {
   ViewStyle,
 } from "react-native"
 
-import theme from "@/common/theme"
-import ShopView from "components/Shop/ShopView"
+import theme from "@/lib/theme"
 import type { Product, Shop } from "types"
 
 type Props = {

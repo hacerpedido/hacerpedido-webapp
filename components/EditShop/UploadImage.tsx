@@ -8,7 +8,7 @@ import ReactCrop from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native"
 
-import theme from "@/common/theme"
+import theme from "@/lib/theme"
 
 const DynamicStyledDropZone = dynamic(
   () => import("react-drop-zone").then((mod) => mod.StyledDropZone),

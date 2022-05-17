@@ -2,9 +2,9 @@ import dynamic from "next/dynamic"
 import { useEffect, useMemo, useRef, useCallback, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
-import theme from "@/common/theme"
-import { productForGrid, productsFromGrid } from "@/common/utils/products"
-import { sanitizePrice } from "@/common/utils/utils"
+import theme from "@/lib/theme"
+import { productForGrid, productsFromGrid } from "@/lib/utils/products"
+import { sanitizePrice } from "@/lib/utils/utils"
 
 import type { Shop, Product } from "types"
 

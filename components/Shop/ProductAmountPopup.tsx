@@ -8,7 +8,7 @@ import {
 } from "react-native"
 import { animated, config, useTransition } from "react-spring"
 
-import { colors } from "@/common/colors"
+import { colors } from "@/lib/colors"
 import type { Product } from "types"
 
 type Props = {

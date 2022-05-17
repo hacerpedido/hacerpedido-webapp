@@ -6,12 +6,12 @@ import { useLayoutEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { StyleSheet, Text, View, ViewStyle } from "react-native"
 
-import { saveShopWithProducts } from "@/common/api/shops"
-import theme from "@/common/theme"
-import { trimObject } from "@/common/utils/utils"
+import theme from "@/lib/theme"
+import { trimObject } from "@/lib/utils/utils"
+import { saveShopWithProducts } from "@/pages/api/shop/update"
 import EditProducts from "components/EditShop/EditProducts"
 import EditShopForm from "components/EditShop/EditShopForm"
-import Preview from "components/EditShop/Preview"
+// import Preview from "components/EditShop/Preview"
 import Form from "components/Form"
 import Loading from "components/Loading"
 import MessageBox from "components/MessageBox"
@@ -29,15 +29,15 @@ export default function EditShopPage() {
   const router = useRouter()
   const { params } = router.query
   const token = typeof params !== "undefined" ? params[0] : undefined
-  const width = typeof window !== "undefined" ? window.innerWidth : 1000
-  const showPreview = width > 1000
+  // const width = typeof window !== "undefined" ? window.innerWidth : 1000
+  // const showPreview = width > 1000
 
   const {
     handleSubmit,
     register,
     setValue,
     control,
-    watch,
+    // watch,
     getValues,
     formState: { errors },
   } = useForm({
@@ -129,9 +129,9 @@ export default function EditShopPage() {
             </Form>
           </View>
 
-          {showPreview && (
-            <Preview shop={shop} products={products} isLoading={isLoading} />
-          )}
+          {/* {showPreview && ( */}
+          {/*   <Preview shop={shop} products={products} isLoading={isLoading} /> */}
+          {/* )} */}
 
           {showMessage && (
             <MessageBox

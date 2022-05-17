@@ -10,11 +10,11 @@ import {
   ViewStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
-import { useAppSelector as useSelector } from "@/common/hooks"
 import { WhatsAppIcon } from "@/components/icons"
 import Input from "@/components/Input"
 import Switch from "@/components/Switch"
+import { colors } from "@/lib/colors"
+import { useAppSelector as useSelector } from "@/lib/hooks"
 import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
 

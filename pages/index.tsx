@@ -3,16 +3,16 @@ import Head from "next/head"
 import { useEffect, useState } from "react"
 import { StyleSheet, View, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
-import { categories } from "@/common/utils/categories"
 import HomeFilterBar from "@/components/Home/HomeFilterBar"
 import HomeHeader from "@/components/Home/HomeHeader"
 import ShopList from "@/components/Home/ShopList"
 import Loading from "@/components/Loading"
+import { colors } from "@/lib/colors"
+import { categories } from "@/lib/utils/categories"
 
 export default function Home() {
   const [shops, setShops] = useState([])
-  // TODO: uncomment onece we have pagination
+  // TODO: uncomment once we have pagination
   // const [category, setCategory] = useState(undefined)
   const [category, setCategory] = useState(categories[0])
   const [isLoading, setIsLoading] = useState(true)
@@ -21,10 +21,9 @@ export default function Home() {
     setIsLoading(true)
     ;(async () => {
       try {
-        const { data } = await axios.get(
-          `${window.location.origin}/api/shop/home`,
-          { params: { category } }
-        )
+        const { data } = await axios.get(`${window.location.origin}/api/shop`, {
+          params: { category },
+        })
         setShops(data)
       } catch (error) {
         console.log(JSON.stringify(error, null, 2))
@@ -81,11 +80,3 @@ const styles = StyleSheet.create<Styles>({
     zIndex: 2,
   },
 })
-
-// export const getStaticProps: GetStaticProps = async () => {
-//   const shops = await prisma.post.findMany({
-//     where: { visibility: "public", category: "Comida" },
-//     orderBy: "name",
-//   })
-//   return { props: { shops } }
-// }

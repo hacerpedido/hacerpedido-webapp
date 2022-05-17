@@ -1,16 +1,17 @@
+import { PrismaClient } from "@prisma/client"
 import { GetServerSideProps } from "next"
 import ErrorPage from "next/error"
 import Head from "next/head"
 import { View, ViewStyle, StyleSheet } from "react-native"
 
-import { colors } from "@/common/colors"
 import ProductList from "@/components/Shop/ProductList"
 import ShopFooter from "@/components/Shop/ShopFooter"
 import ShopHeader from "@/components/Shop/ShopHeader"
 import ShopNotes from "@/components/Shop/ShopNotes"
-import prisma from "lib/prisma"
+import { colors } from "@/lib/colors"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const prisma = new PrismaClient()
   const slug = String(context.params.slug)
 
   const shop = await prisma.shops.findUnique({

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
-import { colors } from "@/common/colors"
 import Product from "@/components/Cart/Product"
+import { colors } from "@/lib/colors"
 import type { Product as ProductType, CategoryWithProducts } from "types"
 
 type Props = {

@@ -1,15 +1,7 @@
-import { useRouter } from "next/router"
-import { useCallback } from "react"
-import {
-  StyleSheet,
-  ViewStyle,
-  FlatList,
-  Text,
-  TouchableHighlight,
-} from "react-native"
+import { StyleSheet, ViewStyle, TextStyle, View, Text } from "react-native"
 
-import { colors } from "@/common/colors"
 import ShopCard from "@/components/Home/ShopCard"
+import { colors } from "@/lib/colors"
 import type { Shop } from "types"
 
 type Props = {
@@ -17,44 +9,25 @@ type Props = {
 }
 
 const ShopList = ({ shops }: Props) => {
-  const router = useRouter()
-  const onSelect = useCallback((shop) => router.push(`/${shop.slug}`), [router])
-
-  const renderListHeader = (count: number) => {
-    const shopText = count > 0 || count === 0 ? "comercios" : "comercio"
-    const countText = count === 0 ? "No hay" : count
-
-    return (
-      <Text style={styles.count}>
-        {countText} {shopText} locales
-      </Text>
-    )
-  }
-
-  const renderShop = ({ item }: { item: Shop }) => (
-    <TouchableHighlight
-      delayPressIn={5000}
-      underlayColor={colors.lightBackground}
-      onPress={() => onSelect(item)}
-    >
-      <ShopCard shop={item} />
-    </TouchableHighlight>
-  )
+  const count = shops.length
+  const shopText = count === 1 ? "comercio" : "comercios"
+  const countText = count === 0 ? "No hay" : count
 
   return (
-    <FlatList
-      style={styles.list}
-      data={shops}
-      renderItem={renderShop}
-      keyExtractor={(shop) => shop.id}
-      ListHeaderComponent={renderListHeader(shops.length)}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={styles.list}>
+      <Text style={styles.count}>
+        {countText} {shopText}
+      </Text>
+
+      {shops.map((item) => (
+        <ShopCard key={item.id} shop={item} />
+      ))}
+    </View>
   )
 }
 
 type Styles = {
-  count: ViewStyle
+  count: TextStyle
   list: ViewStyle
 }
 

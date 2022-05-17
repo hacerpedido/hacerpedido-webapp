@@ -1,4 +1,4 @@
-import { extractSections } from "@/common/utils/products"
+import { extractSections } from "@/lib/utils/products"
 
 describe("extraSections", () => {
   it("handle undefined", () => {

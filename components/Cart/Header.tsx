@@ -8,9 +8,9 @@ import {
   ViewStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
-import { useAppSelector } from "@/common/hooks"
 import { ArrowLeftIcon } from "@/components/icons"
+import { colors } from "@/lib/colors"
+import { useAppSelector } from "@/lib/hooks"
 
 export default function CartHeader() {
   const cart = useAppSelector((state) => state.shop)

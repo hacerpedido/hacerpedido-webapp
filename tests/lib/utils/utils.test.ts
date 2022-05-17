@@ -3,7 +3,7 @@ import {
   sanitizeAddress,
   sanitizeProductName,
   sanitizeWhatsAppNumber,
-} from "@/common/utils/utils"
+} from "@/lib/utils/utils"
 
 describe("sanitizePrice", () => {
   it("remove spaces from prices", () => {

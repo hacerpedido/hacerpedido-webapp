@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, TextStyle, ViewStyle } from "react-native"
 
-import theme from "@/common/theme"
+import theme from "@/lib/theme"
 import type { Shop } from "types"
 
 const ShopNotes = ({ shop }: { shop: Shop }) => {

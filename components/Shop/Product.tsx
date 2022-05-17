@@ -8,9 +8,9 @@ import {
   ViewStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
-import { sanitizePrice } from "@/common/utils/utils"
 import ProductAmountPopup from "@/components/Shop/ProductAmountPopup"
+import { colors } from "@/lib/colors"
+import { sanitizePrice } from "@/lib/utils/utils"
 
 import type { Product as ProductType } from "types"
 

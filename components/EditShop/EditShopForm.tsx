@@ -17,8 +17,8 @@ import spanishStrings from "react-timeago/lib/language-strings/es"
 import ShopInput from "./ShopInput"
 import UploadImage from "./UploadImage"
 
-import theme from "@/common/theme"
-import { validatePhoneNumber } from "@/common/utils/utils"
+import theme from "@/lib/theme"
+import { validatePhoneNumber } from "@/lib/utils/utils"
 
 export default function EditShopForm({
   shop,

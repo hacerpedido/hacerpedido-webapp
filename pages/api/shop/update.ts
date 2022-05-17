@@ -1,3 +1,4 @@
+// TODO: use next.js export default async function handler(req, res) {
 import axios, { AxiosError } from "axios"
 
 import type { Product, Shop } from "types"

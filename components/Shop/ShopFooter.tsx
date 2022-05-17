@@ -10,9 +10,9 @@ import {
   TextStyle,
 } from "react-native"
 
-import { colors } from "@/common/colors"
-import { generateCallUrl } from "@/common/utils/utils"
 import { PhoneCallIcon } from "@/components/icons"
+import { colors } from "@/lib/colors"
+import { generateCallUrl } from "@/lib/utils/utils"
 import type { Shop } from "types"
 
 type Props = {

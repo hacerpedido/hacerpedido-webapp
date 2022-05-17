@@ -4,6 +4,7 @@ export type CartFormValues = {
   notes: string
 }
 
+// NOTE: Replaces the use of this type with an array of products
 export type CategoryWithProducts = {
   name: string
   products: Product[]
@@ -35,8 +36,4 @@ export type Shop = {
   region: string
   slug: string
   visibility: string
-}
-
-export type ShopWithProducts = Shop & {
-  products: Product[]
 }
