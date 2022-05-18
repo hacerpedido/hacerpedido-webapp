@@ -35,7 +35,7 @@ const handler = async (req, res) => {
     .from("shops")
     .where("visibility", "=", "public")
     .where("category", "=", category)
-    .orderBy("name");
+    .orderBy("updated_at", "desc");
 
   res.status(200).json(shops);
   res.end();
