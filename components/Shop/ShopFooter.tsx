@@ -1,6 +1,4 @@
-// TODO: missing some styles, verify that I havent erase any
 import { useRouter } from "next/router"
-
 import {
   StyleSheet,
   TouchableHighlight,
@@ -9,26 +7,24 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
+import { useCart } from "react-use-cart"
 
 import { PhoneCallIcon } from "@/components/icons"
 import { colors } from "@/lib/colors"
 import { generateCallUrl } from "@/lib/utils/utils"
 import type { Shop } from "types"
 
-type Props = {
-  shop: Shop
-}
+type Props = { shop: Shop }
 
 const ShopFooter = ({ shop }: Props) => {
   const { ordersphonenumber = "", orderswhatsappnumber = "" } = shop
   const router = useRouter()
-  // TODO: implement cart
-  const totalAmount = 0
-  const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 }
+  const { isEmpty, items } = useCart()
+  const statusOpacity = isEmpty ? { opacity: 0.7 } : { opacity: 1 }
 
   const ButtonWhatsapp = () => (
     <TouchableHighlight
-      disabled={!totalAmount}
+      disabled={isEmpty}
       underlayColor={"none"}
       onPress={() => router.push("/cart")}
       style={styles.buttonContainer}
@@ -36,7 +32,7 @@ const ShopFooter = ({ shop }: Props) => {
       <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
         <Text style={styles.buttonText}> Revisar mi pedido </Text>
         <View style={styles.totalAmountContainer}>
-          <Text style={styles.totalAmountText}> {totalAmount} </Text>
+          <Text style={styles.totalAmountText}> {items.length} </Text>
         </View>
       </View>
     </TouchableHighlight>
@@ -82,6 +78,7 @@ type Styles = {
   totalAmountText: TextStyle
 }
 
+// TODO: missing some styles, verify that I havent erase any
 const styles = StyleSheet.create<Styles>({
   button: {
     alignItems: "center",

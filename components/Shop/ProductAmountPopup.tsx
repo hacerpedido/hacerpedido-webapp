@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   TouchableHighlight,
   StyleSheet,
@@ -7,6 +8,7 @@ import {
   TextStyle,
 } from "react-native"
 import { animated, config, useTransition } from "react-spring"
+import { useCart } from "react-use-cart"
 
 import { colors } from "@/lib/colors"
 import type { Product } from "types"
@@ -18,7 +20,14 @@ type Props = {
 }
 
 const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
-  const { amount } = product
+  const { getItem, addItem, removeItem, updateItemQuantity, items } = useCart()
+  const { id, name, price = 0 } = product
+  const [quantity, setQuantity] = useState(0)
+
+  useEffect(() => {
+    const item = getItem(id)
+    if (item) setQuantity(item.quantity)
+  }, [id, getItem, setQuantity])
 
   // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {
@@ -30,12 +39,21 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
 
   const AnimatedView = animated(View)
 
-  const updateAmount = (newAmount: number) => {
-    if (newAmount < 0) return
+  const updateAmount = () => {
+    // TODO: RFC
+    if (getItem(id)) {
+      if (quantity == 0) {
+        removeItem(id)
+      } else {
+        updateItemQuantity(id, quantity)
+      }
+    } else {
+      if (quantity > 0) {
+        addItem({ id, name, price }, quantity)
+      }
+    }
 
-    // TODO: implement shopping cart
-    // const updatedProduct = { ...product, amount: newAmount }
-    // setProducts([...products, updatedProduct])
+    handleClose()
   }
 
   return transitions(
@@ -44,7 +62,7 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
         <AnimatedView style={transitionStyle}>
           <View style={styles.container}>
             <TouchableHighlight
-              onPress={() => updateAmount(amount - 1)}
+              onPress={() => quantity > 0 && setQuantity(quantity - 1)}
               underlayColor={"none"}
             >
               <View style={styles.buttonQty}>
@@ -52,11 +70,11 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
               </View>
             </TouchableHighlight>
 
-            <Text style={styles.amountText}>{amount}</Text>
+            <Text style={styles.amountText}>{quantity}</Text>
 
             <TouchableHighlight
               underlayColor={"none"}
-              onPress={() => updateAmount(amount + 1)}
+              onPress={() => setQuantity(quantity + 1)}
             >
               <View style={[styles.buttonQty, styles.buttonPlus]}>
                 <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>
@@ -68,7 +86,7 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
             <View style={styles.lineBreak} />
 
             <TouchableHighlight
-              onPress={() => updateAmount(amount)}
+              onPress={() => updateAmount()}
               underlayColor={"none"}
             >
               <View style={styles.buttonSubmit}>

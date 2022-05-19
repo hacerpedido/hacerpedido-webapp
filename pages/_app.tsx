@@ -1,9 +1,11 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import type { AppProps } from "next/app"
 import Head from "next/head"
-import React, { FC, useEffect } from "react"
-
+import { FC, useEffect } from "react"
 import TagManager from "react-gtm-module"
+
+import { CartProvider } from "react-use-cart"
+// import CartProvider from "@/components/CartProvider"
 
 import "@/styles/globals.css"
 
@@ -24,8 +26,6 @@ const CustomApp: FC<AppProps> = ({ Component, pageProps }) => {
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/logo192.png" />
 
-        {/* <script src="https://cdn.jsdelivr.net/npm/handsontable@8.2.0/dist/handsontable.full.min.js"></script> */}
-
         {/* <!-- OG: 2.7.6 --> */}
         <meta property="og:image" content="og_image.jpg" />
         <meta
@@ -42,7 +42,10 @@ const CustomApp: FC<AppProps> = ({ Component, pageProps }) => {
         <meta property="twitter:url" content="https://hacerpedido.com/" />
         {/* <!-- /OG --> */}
       </Head>
-      <Component {...pageProps} />
+
+      <CartProvider>
+        <Component {...pageProps} />
+      </CartProvider>
     </>
   )
 }

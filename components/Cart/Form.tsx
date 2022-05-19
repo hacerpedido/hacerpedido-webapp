@@ -14,12 +14,11 @@ import { WhatsAppIcon } from "@/components/icons"
 import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import { colors } from "@/lib/colors"
-import { useAppSelector as useSelector } from "@/lib/hooks"
 import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
 
 const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
-  const shop = useSelector((state) => state.shop.shop)
+  // const shop = useSelector((state) => state.shop.shop)
   const [takeaway, setTakeaway] = useState(false)
 
   const {

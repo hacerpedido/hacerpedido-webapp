@@ -1,9 +1,18 @@
+import type { NextApiRequest, NextApiResponse } from "next"
+
 const formidable = require("formidable")
 const validator = require("validator")
 
 const s3utils = require("./aws-s3")
 
-export default async function handler(req, res) {
+type ResponseData = {
+  deleted: boolean
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
   if (req.method !== "POST") {
     res.status(400).end()
   }
@@ -64,7 +73,7 @@ export default async function handler(req, res) {
     await s3utils.deleteFile(oldKey)
   }
 
-  res.status(200).json({ deleted: oldKey })
+  res.json({ deleted: oldKey })
 
   //   {
   //     "data": {

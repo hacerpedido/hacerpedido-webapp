@@ -1,3 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from "next"
+
 import { uploadFile, deleteFile } from "./aws-s3"
 
 const formidable = require("formidable")
@@ -15,7 +17,14 @@ function randomString(
   return result
 }
 
-export default async function handler(req, res) {
+type ResponseData = {
+  image: string
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
   if (req.method !== "POST") {
     res.status(400).end()
   }
@@ -99,7 +108,7 @@ export default async function handler(req, res) {
     deleteFile(oldKey)
   }
 
-  res.status(200).json({ image: key })
+  res.json({ image: key })
 
   //   {
   //     "data": {

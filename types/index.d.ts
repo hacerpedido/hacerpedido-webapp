@@ -11,15 +11,13 @@ export type CategoryWithProducts = {
 }
 
 export type Product = {
-  id?: string
+  id: string
   name: string
   category: string
   description?: string
   price?: string
   shopid?: string // shopid: string
   itemnumber?: number
-  amount?: number // NOTE: only cart products include amounts
-
   created_at: Date
   updated_at: Date
 }

@@ -1,11 +1,22 @@
+import type { NextApiRequest, NextApiResponse } from "next"
+
 import prisma from "lib/prisma"
+
+import type { Shop } from "types"
 
 const pg = require("knex")({
   client: "pg",
   connection: process.env.PG_CONNECTION_STRING,
 })
 
-export default async function handle(req, res) {
+type ResponseData = {
+  shop: Shop
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
   const { token } = req.query
 
   if (req.method === "POST") {
@@ -89,6 +100,5 @@ export default async function handle(req, res) {
     },
   })
 
-  res.status(200).json(shop[0])
-  res.end()
+  res.json(shop[0])
 }

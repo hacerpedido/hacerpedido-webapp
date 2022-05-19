@@ -10,12 +10,8 @@ import {
 
 import { ArrowLeftIcon } from "@/components/icons"
 import { colors } from "@/lib/colors"
-import { useAppSelector } from "@/lib/hooks"
 
-export default function CartHeader() {
-  const cart = useAppSelector((state) => state.shop)
-  const slug = cart.shop.slug
-
+export default function CartHeader({ slug }) {
   const router = useRouter()
 
   return (

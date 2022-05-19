@@ -1,3 +1,4 @@
+// TODO: use next.js export default async function handler(req, res) {
 import fs from "fs"
 
 import S3 from "aws-sdk/clients/s3"

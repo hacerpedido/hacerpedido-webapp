@@ -1,12 +1,12 @@
 import { useRouter } from "next/router"
 import type { SubmitHandler } from "react-hook-form"
 import { StyleSheet, View, ViewStyle } from "react-native"
+import { useCart } from "react-use-cart"
 
 import Form from "@/components/Cart/Form"
 import Header from "@/components/Cart/Header"
 import ProductList from "@/components/Cart/ProductList"
 import { colors } from "@/lib/colors"
-import { useAppSelector as useSelector } from "@/lib/hooks"
 import { extractSections } from "@/lib/utils/products"
 import { generateWhatsappURL } from "@/lib/utils/utils"
 import type { Product, CartFormValues } from "types"
@@ -14,18 +14,18 @@ import type { Product, CartFormValues } from "types"
 export default function Cart() {
   const router = useRouter()
 
-  const shop = useSelector((state) => state.shop.shop)
-  const products = useSelector((state) => state.shop.products)
-  const cartProducts = products.filter((p: Product) => p.amount > 0)
-  const categoriesWithCartProducts = extractSections(cartProducts)
+  const { items, metadata } = useCart()
+  const { slug, orderswhatsappnumber } = metadata
+  const cartProducts = items
+  const categoriesWithCartProducts = items
+  // const categoriesWithCartProducts = extractSections(cartProducts)
 
-  if (!shop) {
+  if (!slug) {
     router.push("/")
     return null
   }
 
   const onSubmit: SubmitHandler<CartFormValues> = (data) => {
-    const { orderswhatsappnumber } = shop
     const url = generateWhatsappURL(
       orderswhatsappnumber,
       data,
@@ -36,7 +36,7 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header slug={slug} />
 
       <View style={styles.bodyContainer}>
         <ProductList categoriesWithCartProducts={categoriesWithCartProducts} />

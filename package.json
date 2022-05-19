@@ -48,6 +48,7 @@
     "react-native-web": "^0.17.6",
     "react-spring": "^9.4.3",
     "react-timeago": "^6.2.1",
+    "react-use-cart": "^1.13.0",
     "validator": "^13.1.17"
   },
   "devDependencies": {
