@@ -1,64 +1,34 @@
-import type { ReactNode } from "react"
-import { StyleSheet, Text, ViewStyle } from "react-native"
+import { StyleSheet, Text, ViewStyle, View } from "react-native"
 
+import Product from "@/components/Shop/Product"
 import { colors } from "@/lib/colors"
-
-import Divider from "components/Divider"
-import Product from "components/Shop/Product"
 import type { Product as ProductType } from "types"
 
 type Props = {
   products: ProductType[]
+  category: string
   isCartEnabled?: boolean
 }
 
 // TODO: Merge with cart/productList.jsx
 export default function ProductList({
   products,
+  category,
   isCartEnabled = false,
 }: Props) {
-  const listItems: ReactNode[] = []
-  let lastCategory = ""
-  let item = 0
-
-  // NOTE: refactor once we have a categories DB table
-  products.forEach((product: ProductType, index) => {
-    const { category } = product
-
-    // TODO: mejorar esto, deberíamos tener un dato, en vez de usar el nombre "Promociones"
-    const isPromo = category === "Promociones"
-
-    // If category changed
-    if (lastCategory !== category) {
-      // Push a divider component if category not promotion type
-      if (!isPromo) listItems.push(<Divider key={item++} />)
-
-      // Push a category component
-      listItems.push(
-        <Text key={item++} style={styles.category}>
-          {category}
-        </Text>
-      )
-
-      lastCategory = category
-    }
-
-    // Push a product
-    listItems.push(
-      <Product
-        key={item++}
-        product={product}
-        promo={isPromo}
-        isCartEnabled={isCartEnabled}
-      />
-    )
-  })
-
-  // Push a divider
-  // TODO: this looks weird in the bottom of the list
-  listItems.push(<Divider key={item++} />)
-
-  return <>{listItems}</>
+  return (
+    <View>
+      <Text style={styles.category}>{category}</Text>
+      {products.map((product: ProductType) => (
+        <Product
+          key={product.id}
+          product={product}
+          promo={category == "Promociones"}
+          isCartEnabled={isCartEnabled}
+        />
+      ))}
+    </View>
+  )
 }
 
 type Styles = {

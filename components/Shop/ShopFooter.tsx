@@ -7,11 +7,11 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
-import { useCart } from "react-use-cart"
 
 import { PhoneCallIcon } from "@/components/icons"
 import { colors } from "@/lib/colors"
 import { generateCallUrl } from "@/lib/utils/utils"
+import { isEmpty, totalItemsAmount } from "store"
 import type { Shop } from "types"
 
 type Props = { shop: Shop }
@@ -19,12 +19,16 @@ type Props = { shop: Shop }
 const ShopFooter = ({ shop }: Props) => {
   const { ordersphonenumber = "", orderswhatsappnumber = "" } = shop
   const router = useRouter()
-  const { isEmpty, items } = useCart()
-  const statusOpacity = isEmpty ? { opacity: 0.7 } : { opacity: 1 }
+  const statusOpacity = isEmpty() ? { opacity: 0.7 } : { opacity: 1 }
+  const isCartEmpty = isEmpty()
+  const total = totalItemsAmount()
+
+  const onCall = (phoneNumber: string) =>
+    (window.location.href = generateCallUrl(phoneNumber))
 
   const ButtonWhatsapp = () => (
     <TouchableHighlight
-      disabled={isEmpty}
+      disabled={isCartEmpty}
       underlayColor={"none"}
       onPress={() => router.push("/cart")}
       style={styles.buttonContainer}
@@ -32,14 +36,11 @@ const ShopFooter = ({ shop }: Props) => {
       <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
         <Text style={styles.buttonText}> Revisar mi pedido </Text>
         <View style={styles.totalAmountContainer}>
-          <Text style={styles.totalAmountText}> {items.length} </Text>
+          <Text style={styles.totalAmountText}> {total} </Text>
         </View>
       </View>
     </TouchableHighlight>
   )
-
-  const onCall = (phoneNumber: string) =>
-    (window.location.href = generateCallUrl(phoneNumber))
 
   const ButtonCall = () => (
     // TODO: Extract component, to be reused in header
@@ -50,7 +51,7 @@ const ShopFooter = ({ shop }: Props) => {
     >
       {/* TODO: weird styling on this button */}
       <View style={[styles.buttonCall, styles.button]}>
-        <Text numberOfLines={1}>
+        <Text>
           <PhoneCallIcon color={colors.white} />
           <Text>Llamar</Text>
         </Text>

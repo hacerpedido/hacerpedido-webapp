@@ -1,36 +1,37 @@
+import dynamic from "next/dynamic"
 import { useRouter } from "next/router"
 import type { SubmitHandler } from "react-hook-form"
 import { StyleSheet, View, ViewStyle } from "react-native"
-import { useCart } from "react-use-cart"
 
 import Form from "@/components/Cart/Form"
 import Header from "@/components/Cart/Header"
 import ProductList from "@/components/Cart/ProductList"
 import { colors } from "@/lib/colors"
-import { extractSections } from "@/lib/utils/products"
+import { groupAndSortByCategory } from "@/lib/utils/products"
 import { generateWhatsappURL } from "@/lib/utils/utils"
-import type { Product, CartFormValues } from "types"
+import { getShop, getItems } from "store"
+import type { CartFormValues } from "types"
 
-export default function Cart() {
+function Cart() {
   const router = useRouter()
-
-  const { items, metadata } = useCart()
-  const { slug, orderswhatsappnumber } = metadata
-  const cartProducts = items
-  const categoriesWithCartProducts = items
-  // const categoriesWithCartProducts = extractSections(cartProducts)
+  const shop = getShop()
+  const { slug, orderswhatsappnumber } = shop
 
   if (!slug) {
     router.push("/")
     return null
   }
 
+  const cartProducts = getItems()
+  const groupedCategories = groupAndSortByCategory(cartProducts)
+
   const onSubmit: SubmitHandler<CartFormValues> = (data) => {
     const url = generateWhatsappURL(
       orderswhatsappnumber,
       data,
-      categoriesWithCartProducts
+      groupedCategories
     )
+
     window.location.href = url
   }
 
@@ -39,8 +40,16 @@ export default function Cart() {
       <Header slug={slug} />
 
       <View style={styles.bodyContainer}>
-        <ProductList categoriesWithCartProducts={categoriesWithCartProducts} />
-        <Form onSubmit={onSubmit} />
+        <View style={styles.categoryContainer}>
+          {groupedCategories.map(({ category, products }) => (
+            <ProductList
+              key={category}
+              category={category}
+              products={products}
+            />
+          ))}
+          <Form onSubmit={onSubmit} />
+        </View>
       </View>
     </View>
   )
@@ -49,6 +58,7 @@ export default function Cart() {
 type Styles = {
   bodyContainer: ViewStyle
   container: ViewStyle
+  categoryContainer: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -58,4 +68,11 @@ const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.white,
   },
+  categoryContainer: {
+    marginTop: 13,
+  },
+})
+
+export default dynamic(() => Promise.resolve(Cart), {
+  ssr: false,
 })

@@ -2,22 +2,14 @@ import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
 import Product from "@/components/Cart/Product"
 import { colors } from "@/lib/colors"
-import type { Product as ProductType, CategoryWithProducts } from "types"
+import type { Product as ProductType } from "types"
 
-type Props = {
-  categoriesWithCartProducts: CategoryWithProducts[]
-}
-
-const ProductList = ({ categoriesWithCartProducts }: Props) => {
+const ProductList = ({ category, products }) => {
   return (
-    <View style={styles.container}>
-      {categoriesWithCartProducts.map((category, index) => (
-        <View key={index}>
-          <Text style={styles.category}>{category.name}</Text>
-          {category.products.map((product: ProductType) => (
-            <Product key={product.id} product={product} />
-          ))}
-        </View>
+    <View>
+      <Text style={styles.category}>{category}</Text>
+      {products.map((product: ProductType) => (
+        <Product key={product.id} product={product} />
       ))}
     </View>
   )
@@ -37,8 +29,5 @@ const styles = StyleSheet.create<Styles>({
     fontSize: 17,
     fontWeight: "700",
     marginBottom: 10,
-  },
-  container: {
-    marginTop: 13,
   },
 })

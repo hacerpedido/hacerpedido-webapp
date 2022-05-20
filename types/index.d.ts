@@ -1,3 +1,7 @@
+export type CartItem = Product & {
+  quantity?: number
+}
+
 export type CartFormValues = {
   name: string
   address: string

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
+
 import {
   TouchableHighlight,
   StyleSheet,
@@ -8,9 +9,10 @@ import {
   TextStyle,
 } from "react-native"
 import { animated, config, useTransition } from "react-spring"
-import { useCart } from "react-use-cart"
 
 import { colors } from "@/lib/colors"
+import { getItem, updateItemQuantity, addItem, removeItem } from "store"
+
 import type { Product } from "types"
 
 type Props = {
@@ -20,14 +22,8 @@ type Props = {
 }
 
 const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
-  const { getItem, addItem, removeItem, updateItemQuantity, items } = useCart()
   const { id, name, price = 0 } = product
   const [quantity, setQuantity] = useState(0)
-
-  useEffect(() => {
-    const item = getItem(id)
-    if (item) setQuantity(item.quantity)
-  }, [id, getItem, setQuantity])
 
   // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {
@@ -42,14 +38,14 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
   const updateAmount = () => {
     // TODO: RFC
     if (getItem(id)) {
-      if (quantity == 0) {
+      if (quantity < 1) {
         removeItem(id)
       } else {
         updateItemQuantity(id, quantity)
       }
     } else {
       if (quantity > 0) {
-        addItem({ id, name, price }, quantity)
+        addItem(product, quantity)
       }
     }
 

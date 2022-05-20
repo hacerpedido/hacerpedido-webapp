@@ -1,35 +1,24 @@
+import { groupBy } from "lodash"
+
 import { toTitleCase, sanitizePrice, sanitizeProductName } from "./utils"
 
-import type { Product } from "types"
+import type { Product, CartItem } from "types"
 
-// TODO: Promociones should go first
-
-export function extractSections(products: Product[] = []) {
-  const sections = []
-  let categoryProducts: Product[] = []
-  let lastCategory = ""
-
-  products.forEach((product) => {
-    if (lastCategory != product.category) {
-      // ignore the first case
-      if (lastCategory) {
-        const section = { name: lastCategory, products: categoryProducts }
-        sections.push(section)
-      }
-
-      lastCategory = product.category
-      categoryProducts = []
+export const groupAndSortByCategory = (products: Product[] | CartItem[]) => {
+  const groupedProducts = groupBy(products, "category")
+  const categoriesWithCartProducts = Object.keys(groupedProducts).map(
+    (category) => {
+      return { category, products: groupedProducts[category] }
     }
+  )
+  const index = categoriesWithCartProducts.findIndex(
+    (e) => e.category === "Promociones"
+  )
+  categoriesWithCartProducts.unshift(
+    categoriesWithCartProducts.splice(index, 1)[0]
+  )
 
-    categoryProducts.push(product)
-  })
-
-  if (lastCategory) {
-    const section = { name: lastCategory, products: categoryProducts }
-    sections.push(section)
-  }
-
-  return sections
+  return categoriesWithCartProducts
 }
 
 type ProductRow = [boolean, string, string, string]

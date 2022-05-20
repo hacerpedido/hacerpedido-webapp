@@ -2,6 +2,7 @@ module.exports = {
   extends: [
     "next",
     "plugin:@typescript-eslint/recommended",
+    "plugin:valtio/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:jest/all",

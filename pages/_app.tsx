@@ -3,14 +3,22 @@ import type { AppProps } from "next/app"
 import Head from "next/head"
 import { FC, useEffect } from "react"
 import TagManager from "react-gtm-module"
-
-import { CartProvider } from "react-use-cart"
-// import CartProvider from "@/components/CartProvider"
+import { subscribe } from "valtio"
 
 import "@/styles/globals.css"
+import { store } from "store"
 
-const CustomApp: FC<AppProps> = ({ Component, pageProps }) => {
+const HpApp: FC<AppProps> = ({ Component, pageProps }) => {
   useEffect(() => {
+    subscribe(store, () => {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("cart", JSON.stringify(store))
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    // TODO: move this to an env var
     TagManager.initialize({ gtmId: "GTM-PKPPSFX" })
   }, [])
 
@@ -43,11 +51,9 @@ const CustomApp: FC<AppProps> = ({ Component, pageProps }) => {
         {/* <!-- /OG --> */}
       </Head>
 
-      <CartProvider>
-        <Component {...pageProps} />
-      </CartProvider>
+      <Component {...pageProps} />
     </>
   )
 }
 
-export default CustomApp
+export default HpApp

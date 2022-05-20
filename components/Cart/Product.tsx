@@ -1,13 +1,12 @@
 import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
-import { useCart } from "react-use-cart"
 
 import { colors } from "@/lib/colors"
+import { getItem } from "store"
 import type { Product as ProductType } from "types"
 
 const Product = ({ product }: { product: ProductType }) => {
-  const { getItem } = useCart()
   const { id, description, name } = product
-  const { quantity } = getItem(id)
+  const quantity = getItem(id).quantity
 
   return (
     <View style={styles.container}>

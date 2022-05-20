@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { SubmitHandler } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
+
 import {
   TouchableHighlight,
   StyleSheet,
@@ -14,11 +15,12 @@ import { WhatsAppIcon } from "@/components/icons"
 import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import { colors } from "@/lib/colors"
+import { getShop } from "store"
 import type { CartFormValues } from "types"
 // import {useSpring, animated} from "react-spring";
 
 const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
-  // const shop = useSelector((state) => state.shop.shop)
+  const shop = getShop()
   const [takeaway, setTakeaway] = useState(false)
 
   const {
@@ -41,68 +43,68 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
     <View style={styles.container}>
       <Switch onToggle={toggleTakeAway} value={takeaway} />
 
-      <Controller
-        render={({ field }) => (
-          <Input
-            {...field}
-            autoFocus
-            label="Tu Nombre"
-            placeholder="¿Cómo te llamás?"
-            autoCompleteType="name"
-            error={errors.name}
-            maxLength={50}
-          />
-        )}
-        control={control}
-        name="name"
-        rules={{
-          required: {
-            value: true,
-            message: "Necesitamos tu nombre",
-          },
-        }}
-      />
+      {/* <Controller */}
+      {/*   render={({ field }) => ( */}
+      {/*     <Input */}
+      {/*       {...field} */}
+      {/*       autoFocus */}
+      {/*       label="Tu Nombre" */}
+      {/*       placeholder="¿Cómo te llamás?" */}
+      {/*       // autoCompleteType="name" */}
+      {/*       error={errors.name} */}
+      {/*       maxLength={50} */}
+      {/*     /> */}
+      {/*   )} */}
+      {/*   control={control} */}
+      {/*   name="name" */}
+      {/*   rules={{ */}
+      {/*     required: { */}
+      {/*       value: true, */}
+      {/*       message: "Necesitamos tu nombre", */}
+      {/*     }, */}
+      {/*   }} */}
+      {/* /> */}
 
       {/*  TODO: fix */}
       {/* <AnimatedView style={animatedProps}> */}
-      {takeaway || (
-        <Controller
-          render={({ field }) => (
-            <Input
-              {...field}
-              label="Tu Dirección"
-              autoCompleteType="street-address"
-              placeholder="¿A dónde lo mandamos?"
-              error={errors.address}
-              maxLength={50}
-            />
-          )}
-          control={control}
-          name="address"
-          rules={{
-            required: {
-              value: true,
-              message: "Necesitamos tu dirección",
-            },
-          }}
-        />
-      )}
+      {/*  {takeaway || (  */}
+      {/* <Controller */}
+      {/*   render={({ field }) => ( */}
+      {/*     <Input */}
+      {/*       {...field} */}
+      {/*       label="Tu Dirección" */}
+      {/*       // autoCompleteType="street-address" */}
+      {/*       placeholder="¿A dónde lo mandamos?" */}
+      {/*       error={errors.address} */}
+      {/*       maxLength={50} */}
+      {/*     /> */}
+      {/*   )} */}
+      {/*   control={control} */}
+      {/*   name="address" */}
+      {/*   rules={{ */}
+      {/*     required: { */}
+      {/*       value: true, */}
+      {/*       message: "Necesitamos tu dirección", */}
+      {/*     }, */}
+      {/*   }} */}
+      {/* /> */}
+      {/* )} */}
       {/* </AnimatedView> */}
 
-      <Controller
-        render={({ field }) => (
-          <Input
-            {...field}
-            label="Notas"
-            placeholder="¿Querés hacer alguna aclaración?"
-            multiline
-            numberOfLines={2}
-            maxLength={500}
-          />
-        )}
-        name="notes"
-        control={control}
-      />
+      {/* <Controller */}
+      {/*   render={({ field }) => ( */}
+      {/*     <Input */}
+      {/*       {...field} */}
+      {/*       label="Notas" */}
+      {/*       placeholder="¿Querés hacer alguna aclaración?" */}
+      {/*       // multiline */}
+      {/*       // numberOfLines={2} */}
+      {/*       maxLength={500} */}
+      {/*     /> */}
+      {/*   )} */}
+      {/*   name="notes" */}
+      {/*   control={control} */}
+      {/* /> */}
 
       <Text style={styles.notes}>
         Por favor,

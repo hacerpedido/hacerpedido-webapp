@@ -1,5 +1,6 @@
 module.exports = {
   swcMinify: true,
+  strictMode: true,
   // INFO: https://github.com/vercel/next.js/issues/31255#issuecomment-968614049
   webpack: (config) => {
     config.resolve.alias = {
