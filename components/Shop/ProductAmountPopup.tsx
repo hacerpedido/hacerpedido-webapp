@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import {
   TouchableHighlight,
@@ -11,7 +11,13 @@ import {
 import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/lib/colors"
-import { getItem, updateItemQuantity, addItem, removeItem } from "store"
+import {
+  getItem,
+  getItems,
+  updateItemQuantity,
+  addItem,
+  removeItem,
+} from "store"
 
 import type { Product } from "types"
 
@@ -22,8 +28,14 @@ type Props = {
 }
 
 const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
-  const { id, name, price = 0 } = product
+  const { id } = product
+  const items = getItems()
+  const item = items.find((item) => item.id === id)
   const [quantity, setQuantity] = useState(0)
+
+  useEffect(() => {
+    if (item) setQuantity(item?.quantity)
+  }, [item])
 
   // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {
@@ -35,9 +47,10 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
 
   const AnimatedView = animated(View)
 
+  // TODO: not updating the value in the UI
   const updateAmount = () => {
     // TODO: RFC
-    if (getItem(id)) {
+    if (item) {
       if (quantity < 1) {
         removeItem(id)
       } else {

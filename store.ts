@@ -24,6 +24,7 @@ const getStore = () => {
 
 export const store = getStore()
 
+/////// actions
 export const setItems = (items: CartItem[]) => {
   store.items = items
 }
@@ -31,10 +32,6 @@ export const setItems = (items: CartItem[]) => {
 export const resetCart = (shop: Shop) => {
   store.shop = shop
   store.items = initialStore.items
-}
-
-export const getItem = (id: string) => {
-  return store.items.find((item) => item.id === id)
 }
 
 export const addItem = (product: Product, quantity: number) => {
@@ -49,6 +46,12 @@ export const updateItemQuantity = (id: string, quantity: number) => {
   const item = store.items.find((item) => item.id === id)
   if (item) item.quantity = quantity
 }
+
+export const getItem = (id: string) => {
+  return store.items.find((item) => item.id === id)
+}
+
+/////////////
 
 export const isEmpty = () => {
   return totalItemsAmount() === 0

@@ -11,6 +11,7 @@ import {
 import ProductAmountPopup from "@/components/Shop/ProductAmountPopup"
 import { colors } from "@/lib/colors"
 import { sanitizePrice } from "@/lib/utils/utils"
+import { getItem, getItems } from "store"
 
 import type { Product as ProductType } from "types"
 
@@ -23,7 +24,9 @@ type Props = {
 const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
   const ref = useRef(null)
   const [popupVisible, setPopupVisible] = useState(false)
-  const { name, description, price = "", amount = 0 } = product
+  const { id, name, description, price } = product
+  const items = getItems()
+  const item = items.find((item) => item.id === id)
 
   // TODO: Move to productamountpopup?
   useEffect(() => {
@@ -36,7 +39,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
     return () => {
       document.removeEventListener("touchend", listener)
     }
-  }, [ref, setPopupVisible])
+  }, [ref, setPopupVisible, item])
 
   const displayPrice = sanitizePrice(price)
   const containerStyle = promo ? styles.card : styles.product
@@ -52,9 +55,9 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
             <Text style={styles.name}>
               {name}
 
-              {amount > 0 && (
+              {item?.quantity > 0 && (
                 <View style={styles.amountContainer}>
-                  <Text style={styles.amountText}>{amount}</Text>
+                  <Text style={styles.amountText}>{item.quantity}</Text>
                 </View>
               )}
             </Text>
