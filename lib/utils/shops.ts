@@ -5,8 +5,9 @@ export const getLogoForShop = ({ logo }: Shop) => {
   if (!logo) return ""
 
   const filename = logo.substring(logo.lastIndexOf("/") + 1)
-  // TODO: replace url with an env var
-  return `https://hacerpedido2-images.s3.amazonaws.com/${filename}`
+  const url = process.env.NEXT_PUBLIC_IMAGES_BUCKET_URL
+
+  return `${url}/${filename}`
 }
 
 export const getBackgroundForCategory = (category: string) => {
@@ -68,6 +69,7 @@ export const getBackgroundForShop = ({ background, category }: Shop) => {
   if (!background) return getBackgroundForCategory(category)
   if (isURL(background)) return background
 
-  // TODO: replace url with an env var
-  return `url(https://hacerpedido2-images.s3.amazonaws.com/${background})`
+  const url = process.env.NEXT_PUBLIC_IMAGES_BUCKET_URL
+
+  return `${url}/${background}`
 }
