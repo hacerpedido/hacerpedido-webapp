@@ -129,7 +129,6 @@ const styles = StyleSheet.create<Styles>({
   buttonQtyText: {
     color: colors.lightGreen,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontWeight: "500",
     lineHeight: 20,
     paddingBottom: 2,

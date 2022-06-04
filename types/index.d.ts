@@ -2,7 +2,7 @@ export type CartItem = Product & {
   quantity?: number
 }
 
-export type CartFormValues = {
+export type CartInputs = {
   name: string
   address: string
   notes: string
@@ -15,19 +15,19 @@ export type CategoryWithProducts = {
 }
 
 export type Product = {
-  id: string
+  id?: string
   name: string
   category: string
   description?: string
   price?: string
   shopid?: string // shopid: string
   itemnumber?: number
-  created_at: Date
-  updated_at: Date
+  created_at?: Date
+  updated_at?: Date
 }
 
 export type Shop = {
-  id: string
+  id?: string
   address?: string
   background: string
   category: string
@@ -41,7 +41,6 @@ export type Shop = {
   region: string
   slug: string
   visibility: string
-
-  created_at: Date
-  updated_at: Date
+  created_at?: Date
+  updated_at?: Date
 }

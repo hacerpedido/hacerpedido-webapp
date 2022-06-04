@@ -1,4 +1,4 @@
-import type { Product, CategoryWithProducts, CartFormValues } from "types"
+import type { CartItem, CategoryWithProducts, CartFormValues } from "types"
 
 export function toTitleCase(str: string) {
   if (typeof str !== "string") return ""
@@ -20,28 +20,6 @@ export function validatePhoneNumber(phone: string) {
     valid ||
     "No parece un número de teléfono. Puede ser +542230000000 o +5492230000000. Sin espacios ni guiones."
   )
-}
-
-export function sanitizeWhatsAppNumber(phone: string) {
-  if (typeof phone !== "string") return phone
-
-  let newPhone = phone.replace("+", "")
-  if (newPhone.startsWith("54")) {
-    // Sólo para números de Argentina
-    const matches = newPhone.match(/^(54)([0-9])([0-9]+)$/)
-
-    if (matches) {
-      if (matches[2] === "0") {
-        // Verificar que no tenga 0 luego del 54
-        newPhone = `549${matches[3]}`
-      } else if (matches[2] !== "9") {
-        // Verificar que tenga el 9 luego del 54
-        newPhone = `549${matches[2]}${matches[3]}`
-      }
-    }
-  }
-
-  return newPhone
 }
 
 export const capitalize = (str: string) => {
@@ -112,17 +90,17 @@ export function trimObject(obj: any) {
   return obj
 }
 
-function categoryProductsForMessage(cartProducts: Product[]) {
+function categoryProductsForMessage(cartProducts: CartItem[]) {
   return cartProducts
-    .map(({ amount, name }) => `✅ ${amount} x ${name}`)
+    .map(({ quantity, name }) => `✅ ${quantity} x ${name}`)
     .join("\n")
 }
 
 function productListForMessage(productsByCategory: CategoryWithProducts[]) {
   return productsByCategory
     .map(
-      (category) =>
-        `*${category.name}*\n${categoryProductsForMessage(category.products)}`
+      ({ name, products }) =>
+        `*${name}*\n${categoryProductsForMessage(products)}`
     )
     .join("\n")
 }
@@ -134,7 +112,7 @@ function generateSimpleWhatsappMessage() {
 // TODO: : whatsapp api not accepting emoji, at least on desktop
 function generateWhatsappMessage(
   formData: CartFormValues,
-  categoryWithCartProducts: CategoryWithProducts[]
+  categoriesWithProducts: CategoryWithProducts[]
 ) {
   const { name, address, notes } = formData
 
@@ -143,7 +121,7 @@ function generateWhatsappMessage(
   const notesStr = notes && `📝 *Notas:* ${notes}\n`
 
   const order = `\n*Mi pedido:*\n${productListForMessage(
-    categoryWithCartProducts
+    categoriesWithProducts
   )}`
 
   return [intro, addressStr, notesStr, order].join("")
@@ -152,13 +130,13 @@ function generateWhatsappMessage(
 export function generateWhatsappURL(
   number: string,
   userData: CartFormValues,
-  categoriesWithCartProducts: CategoryWithProducts[]
+  categoriesWithProducts: CategoryWithProducts[]
 ) {
-  const sanitizedNumber = sanitizeWhatsAppNumber(number)
+  const sanitizedNumber = number.replace(/[^\w\s]/gi, "").replace(/ /g, "")
 
   const message =
     typeof userData !== "undefined"
-      ? generateWhatsappMessage(userData, categoriesWithCartProducts)
+      ? generateWhatsappMessage(userData, categoriesWithProducts)
       : generateSimpleWhatsappMessage()
 
   const encodedMessage = encodeURIComponent(message)

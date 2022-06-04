@@ -10,12 +10,12 @@ import { colors } from "@/lib/colors"
 import { groupAndSortByCategory } from "@/lib/utils/products"
 import { generateWhatsappURL } from "@/lib/utils/utils"
 import { getShop, getItems } from "store"
-import type { CartFormValues } from "types"
+import { CartInputs, Shop } from "types"
 
 function Cart() {
   const router = useRouter()
   const shop = getShop()
-  const { slug, orderswhatsappnumber } = shop
+  const { slug, orderswhatsappnumber = "" } = shop as Shop
 
   if (!slug) {
     router.push("/")
@@ -23,16 +23,16 @@ function Cart() {
   }
 
   const cartProducts = getItems()
-  const groupedCategories = groupAndSortByCategory(cartProducts)
+  const categoriesWithProducts = groupAndSortByCategory(cartProducts)
 
-  const onSubmit: SubmitHandler<CartFormValues> = (data) => {
+  const onSubmit: SubmitHandler<CartInputs> = (data) => {
     const url = generateWhatsappURL(
       orderswhatsappnumber,
       data,
-      groupedCategories
+      categoriesWithProducts
     )
 
-    window.location.href = url
+    document.location.href = url
   }
 
   return (
@@ -41,12 +41,8 @@ function Cart() {
 
       <View style={styles.bodyContainer}>
         <View style={styles.categoryContainer}>
-          {groupedCategories.map(({ category, products }) => (
-            <ProductList
-              key={category}
-              category={category}
-              products={products}
-            />
+          {categoriesWithProducts.map(({ name, products }) => (
+            <ProductList key={name} category={name} products={products} />
           ))}
           <Form onSubmit={onSubmit} />
         </View>

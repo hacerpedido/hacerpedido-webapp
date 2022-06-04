@@ -59,16 +59,16 @@ export default function Shop({ shop, products }: Props) {
 
       <View style={styles.container}>
         <ShopNotes shop={shop} />
-        {groupedCategories.map(({ category, products }, index) => (
-          <>
+        {groupedCategories.map(({ name, products }, index) => (
+          <div key={`productList-${index}`}>
             <ProductList
-              key={`productList-${index}`}
-              category={category}
+              category={name}
               products={products}
               isCartEnabled={!!orderswhatsappnumber}
             />
-            <Divider key={`divider-${index}`} />
-          </>
+
+            <Divider />
+          </div>
         ))}
         <ShopFooter shop={shop} />
       </View>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create<Styles>({
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const prisma = new PrismaClient()
   const slug = params?.slug || ""
-  let products = []
+  let products: Product[] = []
 
   const shop = await prisma.shop.findUnique({
     where: { slug },

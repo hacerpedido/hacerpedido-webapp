@@ -1,7 +1,6 @@
 import { useState } from "react"
 import type { SubmitHandler } from "react-hook-form"
-import { Controller, useForm } from "react-hook-form"
-
+import { useForm } from "react-hook-form"
 import {
   TouchableHighlight,
   StyleSheet,
@@ -11,141 +10,111 @@ import {
   ViewStyle,
 } from "react-native"
 
+import { useSpring, animated } from "react-spring"
+
 import { WhatsAppIcon } from "@/components/icons"
 import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import { colors } from "@/lib/colors"
 import { getShop } from "store"
-import type { CartFormValues } from "types"
-// import {useSpring, animated} from "react-spring";
+import { CartInputs } from "types"
 
-const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
-  const shop = getShop()
-  const [takeaway, setTakeaway] = useState(false)
+type Inputs = {
+  name: string
+  address: string
+  notes: string
+}
 
+const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartInputs> }) => {
   const {
     handleSubmit,
-    control,
+    register,
     formState: { errors },
-  } = useForm<CartFormValues>({ mode: "onBlur" })
+  } = useForm<Inputs>({
+    // TODO: Add default values (from localStorage)
+    // defaultValues: {
+    //   name: "bill",
+    //   address: "luo",
+    //   notes: "bluebill1049@hotmail.com",
+    // },
+    mode: "onBlur",
+  })
 
-  const toggleTakeAway = () => {
-    const value = !takeaway
-    setTakeaway(value)
+  const shop = getShop()
+  const [isTakeaway, setIsTakeaway] = useState(false)
+
+  const animatedProps = useSpring({
+    opacity: isTakeaway ? 0 : 1,
+    maxHeight: isTakeaway ? 0 : 100,
+  })
+
+  const validation = {
+    name: {
+      required: {
+        value: true,
+        message: "Necesitamos tu nombre",
+      },
+    },
+    address: {
+      required: {
+        value: true,
+        message: "Necesitamos tu dirección",
+      },
+    },
   }
-
-  // const animatedProps = useSpring({
-  //   opacity: !takeaway ? 1 : 0,
-  //   maxHeight: !takeaway ? 100 : 0,
-  // })
 
   return (
     <View style={styles.container}>
-      <Switch onToggle={toggleTakeAway} value={takeaway} />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Switch
+          onToggle={() => setIsTakeaway(!isTakeaway)}
+          value={isTakeaway}
+        />
 
-      {/* <Controller */}
-      {/*   render={({ field }) => ( */}
-      {/*     <Input */}
-      {/*       {...field} */}
-      {/*       autoFocus */}
-      {/*       label="Tu Nombre" */}
-      {/*       placeholder="¿Cómo te llamás?" */}
-      {/*       // autoCompleteType="name" */}
-      {/*       error={errors.name} */}
-      {/*       maxLength={50} */}
-      {/*     /> */}
-      {/*   )} */}
-      {/*   control={control} */}
-      {/*   name="name" */}
-      {/*   rules={{ */}
-      {/*     required: { */}
-      {/*       value: true, */}
-      {/*       message: "Necesitamos tu nombre", */}
-      {/*     }, */}
-      {/*   }} */}
-      {/* /> */}
+        <Input
+          {...register("name", validation["name"])}
+          autoCompleteType="name"
+          error={errors.name}
+          label="Tu nombre"
+          maxLength={50}
+          placeholder="¿Cómo te llamás?"
+        />
 
-      {/*  TODO: fix */}
-      {/* <AnimatedView style={animatedProps}> */}
-      {/*  {takeaway || (  */}
-      {/* <Controller */}
-      {/*   render={({ field }) => ( */}
-      {/*     <Input */}
-      {/*       {...field} */}
-      {/*       label="Tu Dirección" */}
-      {/*       // autoCompleteType="street-address" */}
-      {/*       placeholder="¿A dónde lo mandamos?" */}
-      {/*       error={errors.address} */}
-      {/*       maxLength={50} */}
-      {/*     /> */}
-      {/*   )} */}
-      {/*   control={control} */}
-      {/*   name="address" */}
-      {/*   rules={{ */}
-      {/*     required: { */}
-      {/*       value: true, */}
-      {/*       message: "Necesitamos tu dirección", */}
-      {/*     }, */}
-      {/*   }} */}
-      {/* /> */}
-      {/* )} */}
-      {/* </AnimatedView> */}
+        <animated.div style={animatedProps}>
+          <Input
+            {...register("address", validation["address"])}
+            autoCompleteType="street-address"
+            error={errors.address}
+            label="Tu Dirección"
+            maxLength={50}
+            placeholder="¿A dónde lo mandamos?"
+          />
+        </animated.div>
 
-      {/* <Controller */}
-      {/*   render={({ field }) => ( */}
-      {/*     <Input */}
-      {/*       {...field} */}
-      {/*       label="Notas" */}
-      {/*       placeholder="¿Querés hacer alguna aclaración?" */}
-      {/*       // multiline */}
-      {/*       // numberOfLines={2} */}
-      {/*       maxLength={500} */}
-      {/*     /> */}
-      {/*   )} */}
-      {/*   name="notes" */}
-      {/*   control={control} */}
-      {/* /> */}
+        {/*  TODO: make this a textarea */}
+        <Input
+          {...register("notes")}
+          label="Notas"
+          placeholder="¿Querés hacer alguna aclaración?"
+          maxLength={500}
+        />
 
-      <Text style={styles.notes}>
-        Por favor,
-        <Text style={textStyles.bold}> confirmá el precio final </Text>
-        con el comercio. No somos responsables de modificaciones en el menú.
-      </Text>
+        <Text style={styles.notes}>
+          Por favor,
+          <b> confirmá el precio final </b>
+          con el comercio. No somos responsables de modificaciones en el menú.
+        </Text>
 
-      <TouchableHighlight onPress={handleSubmit(onSubmit)} underlayColor="none">
-        <div className="bounza">
-          <View style={[styles.buttonWhatsApp, styles.button]}>
-            <Text style={styles.textContainer} numberOfLines={1}>
-              <View style={styles.icon}>
-                <WhatsAppIcon color={colors.white} />
-              </View>
-              <Text style={styles.buttonText}> Pedir a {shop?.name} </Text>
-            </Text>
-          </View>
-        </div>
-      </TouchableHighlight>
+        <button type="submit" className="bounza" style={{ marginTop: 19 }}>
+          <WhatsAppIcon color={colors.white} />
+          {`Pedir a ${shop?.name}`}
+        </button>
+      </form>
     </View>
   )
 }
 
-// const AnimatedView = animated(View)
-
 export default Form
-
-const textStyles = {
-  bold: {
-    fontWeight: "bold",
-  },
-  smallText: {
-    fontFamily: "Barlow",
-    fontSize: 13,
-  },
-  largeText: {
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-}
 
 type Styles = {
   button: ViewStyle
@@ -164,7 +133,6 @@ const styles = StyleSheet.create<Styles>({
     borderWidth: 1,
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 19,
     paddingVertical: 17,
   },
   buttonText: {
@@ -183,12 +151,14 @@ const styles = StyleSheet.create<Styles>({
     top: 2,
   },
   notes: {
-    ...textStyles.smallText,
+    fontFamily: "Barlow",
+    fontSize: 13,
     color: colors.gray4,
     textAlign: "center",
   },
   textContainer: {
-    ...textStyles.largeText,
+    fontFamily: "Barlow",
+    fontWeight: "600",
     alignItems: "center",
     color: colors.white,
     flexDirection: "row",

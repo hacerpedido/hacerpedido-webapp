@@ -62,7 +62,6 @@ const styles = StyleSheet.create<Styles>({
   openProductionLinkText: {
     color: theme.colors.button1,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontStyle: "normal",
     fontWeight: "600",
   },

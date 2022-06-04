@@ -96,7 +96,6 @@ const styles = StyleSheet.create<Styles>({
   title: {
     color: colors.filterButtonTitle,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontWeight: "600",
   },
 })

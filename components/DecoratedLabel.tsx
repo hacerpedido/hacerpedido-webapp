@@ -28,7 +28,6 @@ const DecoratedLabel = ({
     text: {
       color: textColor,
       fontFamily: "Roboto Slab",
-      fontWeight: "400",
       fontSize: fontSize,
       lineHeight: 14,
       padding: 3,

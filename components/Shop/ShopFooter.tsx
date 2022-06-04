@@ -103,7 +103,6 @@ const styles = StyleSheet.create<Styles>({
     color: colors.white,
     flex: 1,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontWeight: "600",
     marginLeft: 5,
   },

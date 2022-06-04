@@ -5,7 +5,7 @@ export const getLogoForShop = ({ logo }: Shop) => {
   if (!logo) return ""
 
   const filename = logo.substring(logo.lastIndexOf("/") + 1)
-  const url = process.env.NEXT_PUBLIC_IMAGES_BUCKET_URL
+  const url = process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL
 
   return `${url}/${filename}`
 }

@@ -15,7 +15,6 @@ const textStyles = {
     fontFamily: "Barlow",
     fontSize: 12,
     fontStyle: "normal",
-    fontWeight: "400",
   },
 }
 

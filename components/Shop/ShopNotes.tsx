@@ -44,7 +44,6 @@ const styles = StyleSheet.create<Styles>({
     color: theme.colors.lightGrey,
     fontFamily: "Roboto Slab",
     fontSize: 12,
-    fontWeight: "400",
     lineHeight: 16,
     marginBottom: 2,
     marginLeft: 16,

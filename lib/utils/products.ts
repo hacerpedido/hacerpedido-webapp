@@ -4,15 +4,17 @@ import { toTitleCase, sanitizePrice, sanitizeProductName } from "./utils"
 
 import type { Product, CartItem } from "types"
 
-export const groupAndSortByCategory = (products: Product[] | CartItem[]) => {
+export const groupAndSortByCategory = (
+  products: Product[] | readonly Product[] | CartItem[]
+) => {
   const groupedProducts = groupBy(products, "category")
   const categoriesWithCartProducts = Object.keys(groupedProducts).map(
     (category) => {
-      return { category, products: groupedProducts[category] }
+      return { name: category, products: groupedProducts[category] }
     }
   )
   const index = categoriesWithCartProducts.findIndex(
-    (e) => e.category === "Promociones"
+    ({ name }) => name === "Promociones"
   )
   categoriesWithCartProducts.unshift(
     categoriesWithCartProducts.splice(index, 1)[0]

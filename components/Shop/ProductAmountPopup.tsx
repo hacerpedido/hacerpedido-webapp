@@ -8,16 +8,11 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
+// TODO: Reaplce with framer motion?
 import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/lib/colors"
-import {
-  getItem,
-  getItems,
-  updateItemQuantity,
-  addItem,
-  removeItem,
-} from "store"
+import { getItems, updateItemQuantity, addItem, removeItem } from "store"
 
 import type { Product } from "types"
 
@@ -195,7 +190,6 @@ const styles = StyleSheet.create<Styles>({
   closeButtonIcon: {
     color: colors.lightGreen,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontWeight: "600",
     transform: "rotate(-45deg)",
   },

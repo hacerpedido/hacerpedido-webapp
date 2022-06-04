@@ -36,7 +36,6 @@ const styles = StyleSheet.create<Styles>({
     color: colors.lightGrey,
     fontFamily: "Barlow",
     fontSize: 14,
-    fontWeight: "400",
     marginVertical: 15,
   },
   list: {

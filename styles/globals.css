@@ -2,45 +2,31 @@
   Based on: https://fonts.google.com/specimen/Roboto+Slab?query=Roboto&selection.family=Barlow:wght@400;600;700|Roboto+Slab:wght@400;500&sidebar.open
   */
 
+/* TODO: use local font? */
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Roboto+Slab:wght@400;500&display=swap");
+@import "bootstrap/dist/css/bootstrap-reboot.css";
 
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    RobotoSlab,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Fira Sans",
-    "Droid Sans",
-    "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #fafcff;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+  /* TODO: Should this be the default font or maybe Roboto Slab? */
+  font-family: "Barlow", sans-serif;
 }
 
 * {
-  box-sizing: border-box;
+  /* NOTE: emulate React native defaults */
+  flex-direction: column;
+  align-content: flex-start;
+  flex-shrink: 0;
 }
 
+/* Animations */
+/* TODO: replace with famer motion */
 .bounza {
-  animation: horizontal_2843 4.72s ease infinite;
+  animation: bounza_frames 4.72s ease infinite;
   transform-origin: 50% 50%;
 }
 
-@keyframes horizontal_2843 {
+@keyframes bounza_frames {
   0% {
     transform: translate(0, 0);
   }

@@ -14,8 +14,9 @@ import TimeAgo from "react-timeago"
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter"
 import spanishStrings from "react-timeago/lib/language-strings/es"
 
-import ShopInput from "./ShopInput"
 import UploadImage from "./UploadImage"
+
+import Input from "@/components/Input"
 
 import theme from "@/lib/theme"
 import { validatePhoneNumber } from "@/lib/utils/utils"
@@ -108,7 +109,7 @@ export default function EditShopForm({
             <View style={styles.formColumnLeft}>
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="Nombre del Comercio:"
                     error={errors.name}
@@ -126,7 +127,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="Dirección:"
                     error={errors.address}
@@ -138,7 +139,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="Horario:"
                     error={errors.opentimes}
@@ -150,7 +151,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="Costo del Delivery:"
                     error={errors.deliverycost}
@@ -165,14 +166,13 @@ export default function EditShopForm({
             <View style={styles.formColumnRight}>
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="WhatsApp del comercio:"
                     error={errors.orderswhatsappnumber}
                     maxLength={20}
                     placeholder={"Escribilo así: +5492234470974"}
                     pattern={"\\+?[0-9]*"}
-                    keyboardType={"phone-pad"}
                     onChange={([e]) => {
                       const value = e.target.value ?? ""
                       return value.replace(/[^0-9+]/g, "")
@@ -203,14 +203,13 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     label="Teléfono Fijo:"
                     error={errors.ordersphonenumber}
                     maxLength={20}
                     placeholder={"Escribilo así: +5492234470974"}
                     pattern={"\\+?[0-9]*"}
-                    keyboardType={"phone-pad"}
                     onChange={([e]) => {
                       const value = e.target.value ?? ""
                       return value.replace(/[^0-9+]/g, "")
@@ -241,7 +240,7 @@ export default function EditShopForm({
               />
               <Controller
                 render={({ field }) => (
-                  <ShopInput
+                  <Input
                     {...field}
                     placeholder="¿Querés hacer alguna aclaración?"
                     multiline
@@ -290,7 +289,6 @@ const styles = StyleSheet.create<Styles>({
     borderRadius: 5,
     color: theme.colors.button1,
     fontFamily: "Barlow",
-    fontSize: 16,
     fontStyle: "normal",
     fontWeight: "600",
     marginHorizontal: 15,
