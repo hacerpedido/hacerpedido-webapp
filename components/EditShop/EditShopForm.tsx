@@ -1,14 +1,12 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import Modal from "react-bootstrap/Modal"
-import { Controller } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import {
   ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ViewStyle,
-  TextStyle,
 } from "react-native"
 import TimeAgo from "react-timeago"
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter"
@@ -16,26 +14,42 @@ import spanishStrings from "react-timeago/lib/language-strings/es"
 
 import UploadImage from "./UploadImage"
 
-import Input from "@/components/Input"
+import Input from "components/Input"
+import theme from "lib/theme"
+import { validatePhoneNumber } from "lib/utils/utils"
 
-import theme from "@/lib/theme"
-import { validatePhoneNumber } from "@/lib/utils/utils"
-
-export default function EditShopForm({
-  shop,
-  control,
-  errors,
-  handleSubmit,
-  getValues,
-  isSaving,
-}) {
+export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
   const [imageType, setImageType] = useState(undefined)
+
   const formatter = buildFormatter(spanishStrings)
 
-  const handleClose = () => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    getValues,
+    watch,
+  } = useForm({
+    // TODO: Add default values (from localStorage)
+    defaultValues: {
+      name: shop.name,
+      address: shop.address,
+      opentimes: shop.opentimes,
+      deliverycost: shop.deliverycost,
+      orderswhatsappnumber: shop.orderswhatsappnumber,
+      ordersphonenumber: shop.ordersphonenumber,
+      notes: shop.notes,
+    },
+    mode: "onBlur",
+  })
+
+  const handleClose = (options = {}) => {
     setImageType(undefined)
+    if (options.forceRefresh) {
+      refresh()
+    }
   }
-  const handleShow = (type: string) => setImageType(type)
+  const handleShow = (type) => setImageType(type)
 
   const buttonStyles = {
     alignItems: "center",
@@ -48,6 +62,52 @@ export default function EditShopForm({
   }
 
   const show = typeof imageType !== "undefined"
+  const validation = {
+    name: {
+      required: {
+        value: true,
+        message: "El nombre del comercio es requerido.",
+      },
+    },
+    orderswhatsappnumber: {
+      validate: {
+        matchesAtLeastAPhone: (value) => {
+          if (value != null && value !== "") {
+            const phoneValidationResult = validatePhoneNumber(value)
+            if (typeof phoneValidationResult === "string") {
+              return phoneValidationResult
+            }
+          }
+          const { ordersphonenumber } = getValues()
+          return (
+            (ordersphonenumber != null && ordersphonenumber !== "") ||
+            (value != null && value !== "") ||
+            "Al menos un número de teléfono debe ser ingresado."
+          )
+        },
+      },
+    },
+    ordersphonenumber: {
+      validate: {
+        matchesAtLeastAPhone: (value) => {
+          if (value != null && value !== "") {
+            const phoneValidationResult = validatePhoneNumber(value)
+            if (typeof phoneValidationResult === "string") {
+              return phoneValidationResult
+            }
+          }
+
+          const { orderswhatsappnumber } = getValues()
+
+          return (
+            (orderswhatsappnumber != null && orderswhatsappnumber !== "") ||
+            (value != null && value !== "") ||
+            "Al menos un número de teléfono debe ser ingresado."
+          )
+        },
+      },
+    },
+  }
 
   return (
     <>
@@ -74,20 +134,22 @@ export default function EditShopForm({
           </View>
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
+              underlayColor={"none"}
               onPress={() => handleShow("logo")}
               disabled={isSaving}
             >
-              <Text style={styles.buttonUploadImage}>Editar logo</Text>
+              <Text style={styles.uploadImageButton}>Editar logo</Text>
             </TouchableOpacity>
             <TouchableOpacity
+              underlayColor={"none"}
               onPress={() => handleShow("background")}
               disabled={isSaving}
             >
-              <Text style={styles.buttonUploadImage}>Editar portada</Text>
+              <Text style={styles.uploadImageButton}>Editar portada</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
-              onPress={handleSubmit}
+              underlayColor={"none"}
+              onPress={handleSubmit(onSubmit)}
               style={buttonStyles}
               disabled={isSaving}
             >
@@ -103,155 +165,75 @@ export default function EditShopForm({
             </TouchableOpacity>
           </View>
         </View>
-
         <View style={styles.formContainer}>
           <View style={styles.formContainer}>
             <View style={styles.formColumnLeft}>
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Nombre del Comercio:"
-                    error={errors.name}
-                    maxLength={50}
-                  />
-                )}
-                control={control}
-                name="name"
-                rules={{
-                  required: {
-                    value: true,
-                    message: "El nombre del comercio es requerido.",
-                  },
-                }}
+              <Input
+                {...register("name", validation["name"])}
+                label="Nombre del Comercio:"
+                error={errors.name}
+                maxLength={50}
               />
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Dirección:"
-                    error={errors.address}
-                    maxLength={50}
-                  />
-                )}
-                control={control}
-                name="address"
+              <Input
+                {...register("address")}
+                label="Dirección:"
+                error={errors.address}
+                maxLength={50}
               />
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Horario:"
-                    error={errors.opentimes}
-                    maxLength={50}
-                  />
-                )}
-                control={control}
-                name="opentimes"
+              <Input
+                {...register("opentimes")}
+                label="Horario:"
+                error={errors.opentimes}
+                maxLength={50}
               />
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Costo del Delivery:"
-                    error={errors.deliverycost}
-                    maxLength={50}
-                  />
-                )}
-                control={control}
+              <Input
                 name="deliverycost"
+                label="Costo del Delivery:"
+                error={errors.deliverycost}
+                maxLength={50}
               />
             </View>
-
             <View style={styles.formColumnRight}>
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="WhatsApp del comercio:"
-                    error={errors.orderswhatsappnumber}
-                    maxLength={20}
-                    placeholder={"Escribilo así: +5492234470974"}
-                    pattern={"\\+?[0-9]*"}
-                    onChange={([e]) => {
-                      const value = e.target.value ?? ""
-                      return value.replace(/[^0-9+]/g, "")
-                    }}
-                  />
+              <Input
+                {...register(
+                  "orderswhatsappnumber",
+                  validation["orderswhatsappnumber"]
                 )}
-                control={control}
-                name="orderswhatsappnumber"
-                rules={{
-                  validate: {
-                    matchesAtLeastAPhone: (value) => {
-                      if (value != null && value !== "") {
-                        const phoneValidationResult = validatePhoneNumber(value)
-                        if (typeof phoneValidationResult === "string") {
-                          return phoneValidationResult
-                        }
-                      }
-                      const { ordersphonenumber } = getValues()
-                      return (
-                        (ordersphonenumber != null &&
-                          ordersphonenumber !== "") ||
-                        (value != null && value !== "") ||
-                        "Al menos un número de teléfono debe ser ingresado."
-                      )
-                    },
-                  },
+                label="WhatsApp del comercio:"
+                error={errors.orderswhatsappnumber}
+                maxLength={20}
+                placeholder={"Escribilo así: +5492234470974"}
+                pattern={"\\+?[0-9]*"}
+                keyboardType={"phone-pad"}
+                onChange={([e]) => {
+                  const value = e.target.value ?? ""
+                  return value.replace(/[^0-9+]/g, "")
                 }}
               />
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    label="Teléfono Fijo:"
-                    error={errors.ordersphonenumber}
-                    maxLength={20}
-                    placeholder={"Escribilo así: +5492234470974"}
-                    pattern={"\\+?[0-9]*"}
-                    onChange={([e]) => {
-                      const value = e.target.value ?? ""
-                      return value.replace(/[^0-9+]/g, "")
-                    }}
-                  />
+              <Input
+                {...register(
+                  "ordersphonenumber",
+                  validation["ordersphonenumber"]
                 )}
-                control={control}
-                name="ordersphonenumber"
-                rules={{
-                  validate: {
-                    matchesAtLeastAPhone: (value) => {
-                      if (value != null && value !== "") {
-                        const phoneValidationResult = validatePhoneNumber(value)
-                        if (typeof phoneValidationResult === "string") {
-                          return phoneValidationResult
-                        }
-                      }
-                      const { orderswhatsappnumber } = getValues()
-                      return (
-                        (orderswhatsappnumber != null &&
-                          orderswhatsappnumber !== "") ||
-                        (value != null && value !== "") ||
-                        "Al menos un número de teléfono debe ser ingresado."
-                      )
-                    },
-                  },
+                label="Teléfono Fijo:"
+                error={errors.ordersphonenumber}
+                maxLength={20}
+                placeholder={"Escribilo así: +5492234470974"}
+                pattern={"\\+?[0-9]*"}
+                keyboardType={"phone-pad"}
+                onChange={([e]) => {
+                  const value = e.target.value ?? ""
+                  return value.replace(/[^0-9+]/g, "")
                 }}
               />
-              <Controller
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    placeholder="¿Querés hacer alguna aclaración?"
-                    multiline
-                    numberOfLines={3.5}
-                    label="Notas:"
-                    error={errors.notes}
-                    maxLength={1000}
-                  />
-                )}
-                control={control}
-                name="notes"
+              <Input
+                placeholder={"¿Querés hacer alguna aclaración?"}
+                {...register("notes")}
+                multiline
+                numberOfLines={3.5}
+                label="Notas:"
+                error={errors.notes}
+                maxLength={1000}
               />
             </View>
           </View>
@@ -261,21 +243,7 @@ export default function EditShopForm({
   )
 }
 
-type Styles = {
-  buttonText: TextStyle
-  buttonsContainer: ViewStyle
-  buttonUploadImage: TextStyle
-  container: ViewStyle
-  formColumnLeft: ViewStyle
-  formColumnRight: ViewStyle
-  formContainer: ViewStyle
-  title: TextStyle
-  titleContainer: ViewStyle
-  titleTextContainer: ViewStyle
-  updatedAt: TextStyle
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
@@ -284,14 +252,6 @@ const styles = StyleSheet.create<Styles>({
   buttonsContainer: {
     alignItems: "baseline",
     flexDirection: "row",
-  },
-  buttonUploadImage: {
-    borderRadius: 5,
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontStyle: "normal",
-    fontWeight: "600",
-    marginHorizontal: 15,
   },
   container: {
     backgroundColor: theme.colors.lightBackground,
@@ -334,5 +294,14 @@ const styles = StyleSheet.create<Styles>({
   updatedAt: {
     ...theme.text.quiet,
     marginHorizontal: 10,
+  },
+  uploadImageButton: {
+    borderRadius: 5,
+    color: theme.colors.button1,
+    fontFamily: "Barlow",
+    fontSize: 16,
+    fontStyle: "normal",
+    fontWeight: "600",
+    marginHorizontal: 15,
   },
 })

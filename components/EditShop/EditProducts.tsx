@@ -1,37 +1,35 @@
 import dynamic from "next/dynamic"
-import { useEffect, useMemo, useRef, useCallback, useState } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
-import theme from "@/lib/theme"
-import { productForGrid, productsFromGrid } from "@/lib/utils/products"
-import { sanitizePrice } from "@/lib/utils/utils"
+// import { setTempProducts } from "../../lib/reducers/shopEditSlice"
+import useWidth from "lib/hooks/use_width"
+import theme from "lib/theme"
+import { productForGrid, productsFromGrid } from "lib/utils/products"
+import { sanitizePrice } from "lib/utils/utils"
 
-import type { Shop, Product } from "types"
-// https://github.com/handsontable/handsontable/issues/7445
-const CustomTable = dynamic(
+const HotTable = dynamic(
   async () => {
+    // await import("handsontable");
     await import("handsontable/dist/handsontable.full.css")
-    // await import("handsontable/languages/es-MX")
-    const { HotTable } = await import("@handsontable/react")
+    await import("handsontable/languages/es-MX")
+    const { default: HT } = await import("@handsontable/react")
 
-    return ({ forwardedRef, ...props }) => (
-      <HotTable ref={forwardedRef} {...props} />
-    )
+    return ({ forwardedRef, ...props }) => <HT ref={forwardedRef} {...props} />
   },
   {
     ssr: false,
   }
 )
-
 type Props = {
-  shop: Shop
+  shopId: number
   products: Product[]
-  setProducts: (products: Product[]) => void
 }
 
-const EditProducts = ({ shop, products, setProducts }: Props) => {
+const EditProducts = ({ products, shopId }: Props) => {
   const grid = useRef(null)
-  const [data, setData] = useState(productForGrid(products)) // this should be one time only
+  const resizedWidth = useWidth()
+  const gridData = useMemo(() => productForGrid(products), [products])
 
   function categoryRenderer(
     instance,
@@ -42,8 +40,8 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
     value,
     cellProperties
   ) {
-    // TODO: Add this
-    // Handsontable.renderers.TextRenderer.apply(this, arguments)
+    // TODO: what's this for?
+    // Handsontable?.renderers.TextRenderer.apply(this, arguments)
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE"
@@ -54,7 +52,7 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
     }
   }
 
-  const getCells = useCallback((row, col) => {
+  function getCells(row, col) {
     const cellProperties = {}
     if (grid.current != null) {
       const tempData = grid.current.hotInstance.getDataAtRow(row)
@@ -68,7 +66,7 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
       }
     }
     return cellProperties
-  }, [])
+  }
 
   useEffect(() => {
     const check = () => {
@@ -82,7 +80,7 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
       setTimeout(check, 50)
     }
     check()
-  }, [grid, getCells])
+  }, [grid])
 
   const spareRows = 10
   const colHeaders = ["Título", "Nombre", "Descripción", "Precio"]
@@ -104,31 +102,16 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
     },
   ]
 
-  const afterChange = (changes, source) => {
-    if (source !== "edit") {
+  const afterChange = (changes) => {
+    if (changes == null || grid.current == null) {
       return
     }
 
-    // const row = changes[0]
-    // const column = changes[1]
-    // const from = changes[2]
-    // const to = changes[3]
+    const tempData = grid.current.hotInstance.getData()
+    const tempProducts = productsFromGrid(shopId, tempData)
 
-    const updatedProduct = {
-      itemnumber: 0,
-      category: "category",
-      description: "description",
-      name: "name",
-      price: "1",
-      shopid: shop.id,
-    }
-
-    const updatedProducts = [...products, updatedProduct]
-    setProducts(updatedProducts)
-    const griddata = grid.current.hotinstance.getdata()
-    setData(griddata)
+    //dispatch(settempproducts({ shopid, tempproducts }));
   }
-
   const beforeChanges = (changes, source) => {
     if (source !== "CopyPaste.paste") {
       return
@@ -165,22 +148,19 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
-
-      <CustomTable
-        settings={{
-          data: data,
-          licenseKey: "non-commercial-and-evaluation",
-          afterChange: afterChange,
-          colHeaders: colHeaders,
-          columns: { columns },
-          beforeChange: beforeChanges,
-          // forwardedRef={grid},
-          // minSpareRows={spareRows},
-          // language={"es-MX"},
-          // preventOverflow={"horizontal"},
-          // colWidths={colWidths}
-          // contextMenu={["row_above", "row_below", "remove_row"]},
-        }}
+      <HotTable
+        forwardedRef={grid}
+        data={gridData}
+        licenseKey={"non-commercial-and-evaluation"}
+        afterChange={afterChange}
+        beforeChange={beforeChanges}
+        minSpareRows={spareRows}
+        language={"es-MX"}
+        preventOverflow={"horizontal"}
+        columns={columns}
+        colHeaders={colHeaders}
+        contextMenu={["row_above", "row_below", "remove_row"]}
+        colWidths={colWidths}
       />
     </View>
   )

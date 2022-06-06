@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client"
 import { GetServerSideProps } from "next"
 import Head from "next/head"
 import { useEffect } from "react"
 import { View } from "react-native"
 
 import Shop from "components/Shop/Shop"
+import prisma from "lib/prisma"
 import { getShop, resetCart } from "store"
 import type { Shop as ShopType, Product } from "types"
 
@@ -46,9 +46,6 @@ export default function ShopView({ shop, products }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const slug = params?.slug
-
-  const prisma = new PrismaClient()
-
   const shop = await prisma.shop.findUnique({
     where: { slug },
   })

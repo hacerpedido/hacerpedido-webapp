@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client"
 import type { NextApiRequest, NextApiResponse } from "next"
 
+import prisma from "lib/prisma"
 import type { Shop } from "types"
 
 type ResponseData = {
@@ -11,7 +11,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  const prisma = new PrismaClient()
   const { category } = req.query
 
   const shops = await prisma.shop.findMany({

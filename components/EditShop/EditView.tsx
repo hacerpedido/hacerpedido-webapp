@@ -1,101 +1,99 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
-
-import { View, StyleSheet, ViewStyle } from "react-native"
-
-import theme from "@/lib/theme"
+import { StyleSheet, View } from "react-native"
+// import { saveShopWithProducts } from "lib/api/shops"
 
 import EditProducts from "components/EditShop/EditProducts"
 import EditShopForm from "components/EditShop/EditShopForm"
-import Form from "components/Form"
+import Preview from "components/EditShop/Preview"
 import MessageBox from "components/MessageBox"
-import Shop from "components/Shop/Shop"
-import type { Shop as ShopType, Product } from "types"
+import theme from "lib/theme"
+import { trimObject } from "lib/utils/utils"
 
-type Props = {
-  shop: ShopType
-  products: Product[]
-  message: string
-  isSaving: boolean
-  onSubmit: () => void
-  setProducts: (products: Product[]) => void
-}
-
-export default function EditView({
-  shop,
-  products,
-  message,
-  isSaving,
-  onSubmit,
-  setProducts,
-}: Props) {
+export default function EditView({ shop, products }) {
   const [showMessage, setShowMessage] = useState(false)
+  const [message, setMessage] = useState("")
+  const [isSaving, setSaving] = useState(false)
+  // TODO: I moved watch to EditShop
+  // const tempValues = watch()
+  const tempProducts = products
   const width = typeof window !== "undefined" ? window.innerWidth : 1000
   const showPreview = width > 1000
+  // const isError = Object.keys(errors).length > 0
+  const isError = false
 
-  const {
-    handleSubmit,
-    register,
-    setValue,
-    control,
-    getValues,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-  })
+  const onSubmit = (data) => {
+    trimObject(data)
 
-  const isError = Object.keys(errors).length > 0
+    async function saveData() {
+      setSaving(true)
+      const dataToSave = {
+        ...data,
+        id: shop.id,
+        slug: shop.slug,
+        region: shop.region,
+      }
+
+      // const result = await saveShopWithProducts(token, dataToSave, tempProducts)
+      const result = {}
+      setMessage(result.message)
+
+      if (result.error == null) {
+        const editedShop = { ...shop, ...dataToSave }
+        if (tempProducts != null) {
+          editedShop.products = tempProducts
+        }
+        // setShopState({ shop: editedShop, loading: false })
+      }
+
+      setShowMessage(true)
+      setSaving(false)
+      refresh()
+    }
+    saveData()
+  }
+  function refresh() {
+    // setShopState({ shop: null, loading: true })
+    // setReloadCount(reloadCount + 1)
+  }
 
   function onMessagePress() {
     setShowMessage(!showMessage)
   }
+
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.leftContainer}>
-          <Form {...{ register, setValue, errors, control }}>
-            <EditShopForm
-              shop={shop}
-              control={control}
-              errors={errors}
-              handleSubmit={handleSubmit(onSubmit)}
-              getValues={getValues}
-              isSaving={isSaving}
-            />
-            <EditProducts
-              shop={shop}
-              products={products}
-              setProducts={setProducts}
-            />
-          </Form>
-        </View>
-
-        {showPreview && (
-          <Shop shop={shop} products={products} isPreview={true} />
-        )}
-
-        {showMessage && (
-          <MessageBox
-            message={
-              isError
-                ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
-                : message
-            }
-            isError={isError}
-            onMessagePress={onMessagePress}
-          />
-        )}
+    <View style={styles.container}>
+      <View style={styles.leftContainer}>
+        <EditShopForm
+          shop={shop}
+          onSubmit={onSubmit}
+          isSaving={isSaving}
+          refresh={refresh}
+        />
+        <EditProducts products={products} shopId={shop.id} />
       </View>
-    </>
+
+      {showPreview && (
+        <View style={styles.rightContainer}>
+          <Preview shop={shop} products={products} />
+        </View>
+      )}
+
+      {showMessage && (
+        <MessageBox
+          message={
+            isError
+              ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
+              : message
+          }
+          isError={isError}
+          onMessagePress={onMessagePress}
+        />
+      )}
+    </View>
   )
 }
 
-type Styles = {
-  container: ViewStyle
-  leftContainer: ViewStyle
-}
-
-const styles = StyleSheet.create<Styles>({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.lightGrey2,
     flexDirection: "row",
@@ -104,7 +102,13 @@ const styles = StyleSheet.create<Styles>({
   leftContainer: {
     backgroundColor: theme.colors.lightBackground,
     flex: 1,
-    overflowY: "scroll",
+    overflow: "scroll",
     padding: 40,
+  },
+  rightContainer: {
+    overflow: "scroll",
+    backgroundColor: theme.colors.lightGrey2,
+    padding: 30,
+    width: 400,
   },
 })

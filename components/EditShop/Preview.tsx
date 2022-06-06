@@ -1,63 +1,41 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  Linking,
-  ViewStyle,
-} from "react-native"
+import { Image, StyleSheet, Text, View } from "react-native"
 
-import theme from "@/lib/theme"
-import { groupAndSortByCategory } from "@/lib/utils/products"
-import type { Product, Shop } from "types"
+import Shop from "components/Shop/Shop"
+import theme from "lib/theme"
 
-type Props = {
-  shop: Shop
-  products: Product[]
-  isLoading: boolean
-}
-const Preview = ({ shop, products, isLoading }: Props) => {
-  const categoriesWithProducts = groupAndSortByCategory(products)
-  return (
-    <View style={styles.rightContainer}>
-      <View style={styles.openProductionLinkContainer}>
-        <Text
-          onPress={() => Linking.openURL(`/${shop.slug}`)}
-          style={styles.openProductionLinkText}
-        >
-          Ir a mi Sitio
-          <Image
-            source={{ uri: "/images/external-link-alt.png" }}
-            style={styles.openProductionLinkIcon}
-            alt="Ir a mi sitio"
-          />
-        </Text>
-      </View>
-    </View>
-  )
-}
-
-type Styles = {
-  rightContainer: ViewStyle
-  openProductionLinkContainer: ViewStyle
-  openProductionLinkText: TextStyle
-  openProductionLinkIcon: ViewStyle
-}
-
-const styles = StyleSheet.create<Styles>({
-  rightContainer: {
-    backgroundColor: theme.colors.lightGrey2,
-    padding: 30,
-    width: 400,
-  },
-  openProductionLinkContainer: {
+export default function Preview({ shop, products }) {
+  const openProductionLink = {
     paddingBottom: 30,
     textAlign: "center",
-  },
-  openProductionLinkText: {
+    textDecoration: "none",
+  }
+
+  return (
+    <>
+      <a
+        href={`/${shop.slug}`}
+        style={openProductionLink}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Text style={styles.openProductionLink}>
+          Ir a mi Sitio
+          <Image
+            source={"/images/external-link-alt.png"}
+            style={styles.openProductionLinkIcon}
+          />
+        </Text>
+      </a>
+
+      <Shop shop={shop} products={products} isPreview={true} />
+    </>
+  )
+}
+const styles = StyleSheet.create({
+  openProductionLink: {
     color: theme.colors.button1,
     fontFamily: "Barlow",
+    fontSize: 16,
     fontStyle: "normal",
     fontWeight: "600",
   },
@@ -68,5 +46,3 @@ const styles = StyleSheet.create<Styles>({
     width: 18,
   },
 })
-
-export default Preview

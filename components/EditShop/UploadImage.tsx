@@ -1,14 +1,14 @@
-import axios from "axios"
-import dynamic from "next/dynamic"
 import { useState, useCallback, useRef } from "react"
-import Button from "react-bootstrap/Button"
-import Modal from "react-bootstrap/Modal"
-import "react-drop-zone/dist/styles.css"
 import ReactCrop from "react-image-crop"
-import "react-image-crop/dist/ReactCrop.css"
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native"
+import "react-image-crop/dist/ReactCrop.css"
+import "react-drop-zone/dist/styles.css"
+import Modal from "react-bootstrap/Modal"
+import Button from "react-bootstrap/Button"
+import dynamic from "next/dynamic"
+import axios from "axios"
 
-import theme from "@/lib/theme"
+import theme from "lib/theme"
 
 const DynamicStyledDropZone = dynamic(
   () => import("react-drop-zone").then((mod) => mod.StyledDropZone),

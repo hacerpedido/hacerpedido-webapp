@@ -22,6 +22,7 @@ type Props = {
 
 export default function Shop({ shop, products, isPreview = false }: Props) {
   const categoriesWithProducts = groupAndSortByCategory(products)
+
   // TODO: isPreview could be a valtio state
 
   const { orderswhatsappnumber } = shop
