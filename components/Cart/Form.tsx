@@ -1,14 +1,7 @@
 import { useState } from "react"
 import type { SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
-import {
-  TouchableHighlight,
-  StyleSheet,
-  Text,
-  View,
-  TextStyle,
-  ViewStyle,
-} from "react-native"
+import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
 import { useSpring, animated } from "react-spring"
 

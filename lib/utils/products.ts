@@ -8,19 +8,17 @@ export const groupAndSortByCategory = (
   products: Product[] | readonly Product[] | CartItem[]
 ) => {
   const groupedProducts = groupBy(products, "category")
-  const categoriesWithCartProducts = Object.keys(groupedProducts).map(
+  const categoriesWithProducts = Object.keys(groupedProducts).map(
     (category) => {
       return { name: category, products: groupedProducts[category] }
     }
   )
-  const index = categoriesWithCartProducts.findIndex(
+  const index = categoriesWithProducts.findIndex(
     ({ name }) => name === "Promociones"
   )
-  categoriesWithCartProducts.unshift(
-    categoriesWithCartProducts.splice(index, 1)[0]
-  )
+  categoriesWithProducts.unshift(categoriesWithProducts.splice(index, 1)[0])
 
-  return categoriesWithCartProducts
+  return categoriesWithProducts
 }
 
 type ProductRow = [boolean, string, string, string]

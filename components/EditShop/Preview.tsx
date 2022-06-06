@@ -1,4 +1,3 @@
-import ShopView from "components/Shop/ShopView"
 import {
   Image,
   StyleSheet,
@@ -10,6 +9,7 @@ import {
 } from "react-native"
 
 import theme from "@/lib/theme"
+import { groupAndSortByCategory } from "@/lib/utils/products"
 import type { Product, Shop } from "types"
 
 type Props = {
@@ -17,30 +17,26 @@ type Props = {
   products: Product[]
   isLoading: boolean
 }
-const Preview = ({ shop, products, isLoading }: Props) => (
-  <View style={styles.rightContainer}>
-    <View style={styles.openProductionLinkContainer}>
-      <Text
-        onPress={() => Linking.openURL(`/${shop.slug}`)}
-        style={styles.openProductionLinkText}
-      >
-        Ir a mi Sitio
-        <Image
-          source={{ uri: "/images/external-link-alt.png" }}
-          style={styles.openProductionLinkIcon}
-          alt="Ir a mi sitio"
-        />
-      </Text>
+const Preview = ({ shop, products, isLoading }: Props) => {
+  const categoriesWithProducts = groupAndSortByCategory(products)
+  return (
+    <View style={styles.rightContainer}>
+      <View style={styles.openProductionLinkContainer}>
+        <Text
+          onPress={() => Linking.openURL(`/${shop.slug}`)}
+          style={styles.openProductionLinkText}
+        >
+          Ir a mi Sitio
+          <Image
+            source={{ uri: "/images/external-link-alt.png" }}
+            style={styles.openProductionLinkIcon}
+            alt="Ir a mi sitio"
+          />
+        </Text>
+      </View>
     </View>
-
-    <ShopView
-      shop={shop}
-      products={products}
-      isLoading={isLoading}
-      isPreview={true}
-    />
-  </View>
-)
+  )
+}
 
 type Styles = {
   rightContainer: ViewStyle

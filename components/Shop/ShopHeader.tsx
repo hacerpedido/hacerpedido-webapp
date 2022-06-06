@@ -18,12 +18,13 @@ import { generateCallUrl } from "@/lib/utils/utils"
 
 import DecoratedLabel from "components/DecoratedLabel"
 
-import type { Shop } from "types"
+import type { ShopType } from "types"
 
 type Props = {
   isPreview?: boolean
-  shop: Shop
+  shop: ShopType
 }
+
 const ShopHeader = ({ isPreview = false, shop }: Props) => {
   const {
     name,

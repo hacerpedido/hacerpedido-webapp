@@ -7,6 +7,21 @@ import { productForGrid, productsFromGrid } from "@/lib/utils/products"
 import { sanitizePrice } from "@/lib/utils/utils"
 
 import type { Shop, Product } from "types"
+// https://github.com/handsontable/handsontable/issues/7445
+const CustomTable = dynamic(
+  async () => {
+    await import("handsontable/dist/handsontable.full.css")
+    // await import("handsontable/languages/es-MX")
+    const { HotTable } = await import("@handsontable/react")
+
+    return ({ forwardedRef, ...props }) => (
+      <HotTable ref={forwardedRef} {...props} />
+    )
+  },
+  {
+    ssr: false,
+  }
+)
 
 type Props = {
   shop: Shop
@@ -18,76 +33,76 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
   const grid = useRef(null)
   const [data, setData] = useState(productForGrid(products)) // this should be one time only
 
-  // function categoryRenderer(
-  //   instance,
-  //   td,
-  //   row,
-  //   col,
-  //   prop,
-  //   value,
-  //   cellProperties
-  // ) {
-  //   // TODO: Add this
-  //   // Handsontable.renderers.TextRenderer.apply(this, arguments)
-  //
-  //   if (col !== 1 && (!value || value === "")) {
-  //     td.style.background = "#EEE"
-  //   }
-  //
-  //   if (col === 1) {
-  //     td.style.fontWeight = "bold"
-  //   }
-  // }
+  function categoryRenderer(
+    instance,
+    td,
+    row,
+    col,
+    prop,
+    value,
+    cellProperties
+  ) {
+    // TODO: Add this
+    // Handsontable.renderers.TextRenderer.apply(this, arguments)
 
-  // const getCells = useCallback((row, col) => {
-  //   const cellProperties = {}
-  //   if (grid.current != null) {
-  //     const tempData = grid.current.hotInstance.getDataAtRow(row)
-  //
-  //     if (tempData[0] && col > 0) {
-  //       cellProperties.renderer = categoryRenderer
-  //
-  //       if (col === 2 || col === 3) {
-  //         cellProperties.readOnly = true
-  //       }
-  //     }
-  //   }
-  //   return cellProperties
-  // }, [])
+    if (col !== 1 && (!value || value === "")) {
+      td.style.background = "#EEE"
+    }
 
-  // useEffect(() => {
-  //   const check = () => {
-  //     if (grid.current) {
-  //       grid.current.hotInstance.updateSettings({
-  //         cells: getCells,
-  //       })
-  //
-  //       return
-  //     }
-  //     setTimeout(check, 50)
-  //   }
-  //   check()
-  // }, [grid, getCells])
+    if (col === 1) {
+      td.style.fontWeight = "bold"
+    }
+  }
 
-  // const spareRows = 10
-  // const colHeaders = ["Título", "Nombre", "Descripción", "Precio"]
+  const getCells = useCallback((row, col) => {
+    const cellProperties = {}
+    if (grid.current != null) {
+      const tempData = grid.current.hotInstance.getDataAtRow(row)
 
-  // const columns = [
-  //   {
-  //     type: "checkbox",
-  //     className: "htCenter",
-  //   },
-  //   {
-  //     type: "text",
-  //   },
-  //   {
-  //     type: "text",
-  //   },
-  //   {
-  //     type: "text",
-  //     className: "htRight",
-  //   },
-  // ]
+      if (tempData[0] && col > 0) {
+        cellProperties.renderer = categoryRenderer
+
+        if (col === 2 || col === 3) {
+          cellProperties.readOnly = true
+        }
+      }
+    }
+    return cellProperties
+  }, [])
+
+  useEffect(() => {
+    const check = () => {
+      if (grid.current) {
+        grid.current.hotInstance.updateSettings({
+          cells: getCells,
+        })
+
+        return
+      }
+      setTimeout(check, 50)
+    }
+    check()
+  }, [grid, getCells])
+
+  const spareRows = 10
+  const colHeaders = ["Título", "Nombre", "Descripción", "Precio"]
+
+  const columns = [
+    {
+      type: "checkbox",
+      className: "htCenter",
+    },
+    {
+      type: "text",
+    },
+    {
+      type: "text",
+    },
+    {
+      type: "text",
+      className: "htRight",
+    },
+  ]
 
   const afterChange = (changes, source) => {
     if (source !== "edit") {
@@ -114,75 +129,57 @@ const EditProducts = ({ shop, products, setProducts }: Props) => {
     setData(griddata)
   }
 
-  // const beforeChanges = (changes, source) => {
-  //   if (source !== "CopyPaste.paste") {
-  //     return
-  //   }
-  //
-  //   let j
-  //   for (j = 0; j < changes.length; j++) {
-  //     // título?
-  //     if (changes[j][1] === 0) {
-  //       if (typeof changes[j][3] === "string") {
-  //         changes[j][3] = changes[j][3].toLowerCase() === "true"
-  //       }
-  //     } else if (changes[j][1] === 3) {
-  //       // precio
-  //       changes[j][3] = sanitizePrice(changes[j][3])
-  //     }
-  //   }
-  // }
-
-  // const colWidths = (index: number) => {
-  //   const width = typeof window !== "undefined" ? window.innerWidth : 1001
-  //
-  //   switch (index) {
-  //     case 0:
-  //       return 50
-  //     case 3:
-  //       return 90
-  //     default:
-  //       const otherElementsWidth = width > 1000 ? 644 : 244
-  //       return (width - otherElementsWidth) / 2
-  //   }
-  // }
-
-  // https://github.com/handsontable/handsontable/issues/7445
-  const CustomTable = dynamic(
-    async () => {
-      await import("handsontable/dist/handsontable.full.css")
-      // await import("handsontable/languages/es-MX")
-      const { HotTable } = await import("@handsontable/react")
-
-      return ({ forwardedRef, ...props }) => (
-        <HotTable ref={forwardedRef} {...props} />
-      )
-    },
-    {
-      ssr: false,
+  const beforeChanges = (changes, source) => {
+    if (source !== "CopyPaste.paste") {
+      return
     }
-  )
+
+    let j
+    for (j = 0; j < changes.length; j++) {
+      // título?
+      if (changes[j][1] === 0) {
+        if (typeof changes[j][3] === "string") {
+          changes[j][3] = changes[j][3].toLowerCase() === "true"
+        }
+      } else if (changes[j][1] === 3) {
+        // precio
+        changes[j][3] = sanitizePrice(changes[j][3])
+      }
+    }
+  }
+
+  const colWidths = (index: number) => {
+    const width = typeof window !== "undefined" ? window.innerWidth : 1001
+
+    switch (index) {
+      case 0:
+        return 50
+      case 3:
+        return 90
+      default:
+        const otherElementsWidth = width > 1000 ? 644 : 244
+        return (width - otherElementsWidth) / 2
+    }
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tu menú o listado de precios</Text>
 
       <CustomTable
-        forwardedRef={grid}
-        // ref={grid}
         settings={{
           data: data,
           licenseKey: "non-commercial-and-evaluation",
           afterChange: afterChange,
-          // colHeaders: colHeaders,
-          // columns: { columns },
-          // beforeChange: beforeChanges,
-          // forwardedRef={grid}
-          // minSpareRows={spareRows}
-          // language={"es-MX"}
-          // preventOverflow={"horizontal"}
-          // contextMenu={["row_above", "row_below", "remove_row"]}
+          colHeaders: colHeaders,
+          columns: { columns },
+          beforeChange: beforeChanges,
+          // forwardedRef={grid},
+          // minSpareRows={spareRows},
+          // language={"es-MX"},
+          // preventOverflow={"horizontal"},
           // colWidths={colWidths}
+          // contextMenu={["row_above", "row_below", "remove_row"]},
         }}
       />
     </View>

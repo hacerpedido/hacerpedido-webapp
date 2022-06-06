@@ -1,37 +1,22 @@
 import { PrismaClient } from "@prisma/client"
 import { GetServerSideProps } from "next"
-import dynamic from "next/dynamic"
-import Error from "next/error"
 import Head from "next/head"
 import { useEffect } from "react"
-import { View, ViewStyle, StyleSheet } from "react-native"
+import { View } from "react-native"
 
-import Divider from "@/components/Divider"
-import ProductList from "@/components/Shop/ProductList"
-import ShopHeader from "@/components/Shop/ShopHeader"
-import ShopNotes from "@/components/Shop/ShopNotes"
-import { colors } from "@/lib/colors"
-import { groupAndSortByCategory } from "@/lib/utils/products"
+import Shop from "components/Shop/Shop"
 import { getShop, resetCart } from "store"
-import type { Shop, Product } from "types"
-
-// NOTE: fixes localstorage ssr issues https://github.com/vercel/next.js/discussions/35773
-const ShopFooter = dynamic(() => import("@/components/Shop/ShopFooter"), {
-  ssr: false,
-})
+import type { Shop as ShopType, Product } from "types"
 
 type Props = {
-  shop: Shop
+  shop: ShopType
   products: Product[]
 }
 
-export default function Shop({ shop, products }: Props) {
-  if (!shop) return <Error statusCode={404} />
-
-  const { name, slug, orderswhatsappnumber } = shop
+export default function ShopView({ shop, products }: Props) {
+  const { name, slug } = shop
   const url = `https://hacerpedido.com/${slug}`
   const cartShop = getShop()
-  const groupedCategories = groupAndSortByCategory(products)
 
   useEffect(() => {
     if (slug != cartShop?.slug) {
@@ -54,54 +39,31 @@ export default function Shop({ shop, products }: Props) {
         <meta property="twitter:description" content={name} />
         <meta property="twitter:url" content={url} />
       </Head>
-
-      <ShopHeader isPreview={false} shop={shop} />
-
-      <View style={styles.container}>
-        <ShopNotes shop={shop} />
-        {groupedCategories.map(({ name, products }, index) => (
-          <div key={`productList-${index}`}>
-            <ProductList
-              category={name}
-              products={products}
-              isCartEnabled={!!orderswhatsappnumber}
-            />
-
-            <Divider />
-          </div>
-        ))}
-        <ShopFooter shop={shop} />
-      </View>
+      <Shop shop={shop} products={products} />
     </View>
   )
 }
 
-type Styles = {
-  container: ViewStyle
-}
-
-const styles = StyleSheet.create<Styles>({
-  container: {
-    backgroundColor: colors.white,
-    marginBottom: 130,
-  },
-})
-
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const slug = params?.slug
+
   const prisma = new PrismaClient()
-  const slug = params?.slug || ""
-  let products: Product[] = []
 
   const shop = await prisma.shop.findUnique({
     where: { slug },
   })
 
-  if (shop) {
-    products = await prisma.product.findMany({
-      where: { shopid: shop.id },
-      orderBy: { itemnumber: "asc" },
-    })
+  if (!shop) {
+    return {
+      notFound: true,
+    }
   }
+
+  // TODO: query should include products
+  const products = await prisma.product.findMany({
+    where: { shopid: shop.id },
+    orderBy: { itemnumber: "asc" },
+  })
 
   return {
     props: {
