@@ -1,12 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
-import {
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  ViewStyle,
-  TextStyle,
-} from "react-native"
+import { View, StyleSheet, Text, ViewStyle, TextStyle } from "react-native"
 
 import DecoratedLabel from "../DecoratedLabel"
 
@@ -28,9 +22,12 @@ const ShopCard = ({ shop }: Props) => {
         <View style={styles.container}>
           <View style={styles.containerLogo}>
             <Image
-              source={{ uri: getLogoForShop(shop) }}
+              src={getLogoForShop(shop)}
               alt={shop.name}
-              style={styles.logo}
+              height={75}
+              width={75}
+              // TODO: blur image before loading
+              // placeholder="blur"
             />
           </View>
 
@@ -82,7 +79,6 @@ type Styles = {
   container: ViewStyle
   containerLabels: ViewStyle
   containerLogo: ViewStyle
-  logo: ViewStyle
   shopName: TextStyle
 }
 
@@ -109,14 +105,9 @@ const styles = StyleSheet.create<Styles>({
   containerLogo: {
     alignItems: "center",
     flex: -1,
-    height: 75,
-    width: 75,
-  },
-  logo: {
     backgroundColor: colors.lightBackground,
+    overflow: "hidden",
     borderRadius: 37.5,
-    height: 75,
-    width: 75,
   },
   shopName: {
     color: colors.brown,

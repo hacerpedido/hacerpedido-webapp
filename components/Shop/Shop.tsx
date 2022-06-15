@@ -37,7 +37,7 @@ export default function Shop({ shop, products, isPreview = false }: Props) {
             <ProductList
               category={name}
               products={products}
-              isCartEnabled={!!orderswhatsappnumber}
+              isCartEnabled={!!orderswhatsappnumber && !isPreview}
             />
 
             <Divider />

@@ -1,6 +1,6 @@
-import React, { useState } from "react"
+import { useEffect, useState } from "react"
 import Modal from "react-bootstrap/Modal"
-import { useForm } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 import {
   ActivityIndicator,
   StyleSheet,
@@ -17,39 +17,43 @@ import UploadImage from "./UploadImage"
 import Input from "components/Input"
 import theme from "lib/theme"
 import { validatePhoneNumber } from "lib/utils/utils"
+import type { Shop } from "types"
 
-export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
-  const [imageType, setImageType] = useState(undefined)
+type Props = {
+  shop: Shop
+  onSubmit: () => void
+  isSaving: boolean
+  setTempShop: (shop: Shop) => void
+}
 
+export default function EditShopForm({
+  shop,
+  onSubmit,
+  isSaving,
+  setTempShop,
+}: Props) {
   const formatter = buildFormatter(spanishStrings)
+  const [imageType, setImageType] = useState(undefined)
+  const handleShow = (type) => setImageType(type)
+  const show = typeof imageType !== "undefined"
 
   const {
     handleSubmit,
     register,
     formState: { errors },
     getValues,
-    watch,
-  } = useForm({
-    // TODO: Add default values (from localStorage)
-    defaultValues: {
-      name: shop.name,
-      address: shop.address,
-      opentimes: shop.opentimes,
-      deliverycost: shop.deliverycost,
-      orderswhatsappnumber: shop.orderswhatsappnumber,
-      ordersphonenumber: shop.ordersphonenumber,
-      notes: shop.notes,
-    },
-    mode: "onBlur",
-  })
+  } = useFormContext()
+
+  const tempValues = useWatch()
+
+  useEffect(() => {
+    // TODO: this should update on blur
+    setTempShop({ ...shop, ...tempValues })
+  }, [setTempShop, shop, tempValues])
 
   const handleClose = (options = {}) => {
     setImageType(undefined)
-    if (options.forceRefresh) {
-      refresh()
-    }
   }
-  const handleShow = (type) => setImageType(type)
 
   const buttonStyles = {
     alignItems: "center",
@@ -61,7 +65,6 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
     padding: 10,
   }
 
-  const show = typeof imageType !== "undefined"
   const validation = {
     name: {
       required: {
@@ -71,7 +74,7 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
     },
     orderswhatsappnumber: {
       validate: {
-        matchesAtLeastAPhone: (value) => {
+        matchesAtLeastAPhone: (value: string) => {
           if (value != null && value !== "") {
             const phoneValidationResult = validatePhoneNumber(value)
             if (typeof phoneValidationResult === "string") {
@@ -89,7 +92,7 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
     },
     ordersphonenumber: {
       validate: {
-        matchesAtLeastAPhone: (value) => {
+        matchesAtLeastAPhone: (value: string) => {
           if (value != null && value !== "") {
             const phoneValidationResult = validatePhoneNumber(value)
             if (typeof phoneValidationResult === "string") {
@@ -126,7 +129,7 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
             <Text style={styles.updatedAt}>
               <Text>Actualizado </Text>
               <TimeAgo
-                date={shop.updated_at}
+                date={shop?.updated_at || ""}
                 formatter={formatter}
                 minPeriod={60}
               />
@@ -171,28 +174,33 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
               <Input
                 {...register("name", validation["name"])}
                 label="Nombre del Comercio:"
+                defaultValue={shop.name}
                 error={errors.name}
                 maxLength={50}
               />
               <Input
                 {...register("address")}
                 label="Dirección:"
+                defaultValue={shop.address}
                 error={errors.address}
                 maxLength={50}
               />
               <Input
                 {...register("opentimes")}
                 label="Horario:"
+                defaultValue={shop.opentimes}
                 error={errors.opentimes}
                 maxLength={50}
               />
               <Input
-                name="deliverycost"
+                {...register("deliverycost")}
                 label="Costo del Delivery:"
+                defaultValue={shop.deliverycost}
                 error={errors.deliverycost}
                 maxLength={50}
               />
             </View>
+
             <View style={styles.formColumnRight}>
               <Input
                 {...register(
@@ -200,15 +208,16 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
                   validation["orderswhatsappnumber"]
                 )}
                 label="WhatsApp del comercio:"
+                defaultValue={shop.orderswhatsappnumber}
                 error={errors.orderswhatsappnumber}
-                maxLength={20}
                 placeholder={"Escribilo así: +5492234470974"}
-                pattern={"\\+?[0-9]*"}
-                keyboardType={"phone-pad"}
-                onChange={([e]) => {
-                  const value = e.target.value ?? ""
+                // keyboardType={"phone-pad"}
+                onChange={(event) => {
+                  const value = event.target.value ?? ""
                   return value.replace(/[^0-9+]/g, "")
                 }}
+                maxLength={20}
+                pattern={"\\+?[0-9]*"}
               />
               <Input
                 {...register(
@@ -216,24 +225,26 @@ export default function EditShopForm({ shop, onSubmit, isSaving, refresh }) {
                   validation["ordersphonenumber"]
                 )}
                 label="Teléfono Fijo:"
+                defaultValue={shop.ordersphonenumber}
                 error={errors.ordersphonenumber}
                 maxLength={20}
                 placeholder={"Escribilo así: +5492234470974"}
                 pattern={"\\+?[0-9]*"}
-                keyboardType={"phone-pad"}
-                onChange={([e]) => {
-                  const value = e.target.value ?? ""
+                // keyboardType={"phone-pad"}
+                onChange={(event) => {
+                  const value = event.target.value ?? ""
                   return value.replace(/[^0-9+]/g, "")
                 }}
               />
               <Input
                 placeholder={"¿Querés hacer alguna aclaración?"}
                 {...register("notes")}
-                multiline
-                numberOfLines={3.5}
                 label="Notas:"
+                defaultValue={shop.notes}
                 error={errors.notes}
                 maxLength={1000}
+                // multiline
+                // numberOfLines={3.5}
               />
             </View>
           </View>

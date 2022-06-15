@@ -21,7 +21,7 @@ function EditShopPage({ shop, products }: Props) {
         <title>{shop.name} | Hacer Pedido</title>
       </Head>
 
-      <EditView shop={shop} products={products} />
+      <EditView initialShop={shop} initialProducts={products} />
     </>
   )
 }

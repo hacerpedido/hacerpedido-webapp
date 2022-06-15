@@ -1,59 +1,79 @@
 import { useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
+import type { SubmitHandler } from "react-hook-form"
 import { StyleSheet, View } from "react-native"
-// import { saveShopWithProducts } from "lib/api/shops"
 
-import EditProducts from "components/EditShop/EditProducts"
+import EditProductsTable from "components/EditShop/EditProductsTable"
 import EditShopForm from "components/EditShop/EditShopForm"
 import Preview from "components/EditShop/Preview"
 import MessageBox from "components/MessageBox"
 import theme from "lib/theme"
-import { trimObject } from "lib/utils/utils"
+// import { trimObject } from "lib/utils/utils"
 
-export default function EditView({ shop, products }) {
+import { Shop, Product } from "types"
+type Props = {
+  initialShop: Shop
+  initialProducts: Product[]
+}
+
+export default function EditView({ initialShop, initialProducts }: Props) {
+  const [shop, setShop] = useState(initialShop)
+  const [tempShop, setTempShop] = useState(initialShop)
+  const [products, setProducts] = useState(initialProducts)
+  const [tempProducts, setTempProducts] = useState(initialProducts)
   const [showMessage, setShowMessage] = useState(false)
   const [message, setMessage] = useState("")
   const [isSaving, setSaving] = useState(false)
-  // TODO: I moved watch to EditShop
-  // const tempValues = watch()
-  const tempProducts = products
   const width = typeof window !== "undefined" ? window.innerWidth : 1000
   const showPreview = width > 1000
+  // TODO: verify that we are showing an error message if needded
   // const isError = Object.keys(errors).length > 0
   const isError = false
 
-  const onSubmit = (data) => {
-    trimObject(data)
+  type FormInputs = {
+    name: string
+    address: string
+    opentimes: string
+    deliverycost: string
+    orderswhatsappnumber: string
+    ordersphonenumner: string
+    notes: string
+  }
+  const methods = useForm({ mode: "onBlur" })
+
+  async function saveShopWithProducts(data): any {
+    await fetch(`${window.location.origin}/api/shop/by-token`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then(({ shop, products }) => {
+        setShop(shop)
+        setProducts(products)
+        setMessage("Tus datos fueron guardados")
+      })
+      .catch((_error) => {
+        setMessage("Error guardando tus datos")
+      })
+  }
+
+  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    // trimObject(data)
+    const shopPatch = {
+      ...data,
+      id: shop.id,
+      products: products,
+    }
 
     async function saveData() {
       setSaving(true)
-      const dataToSave = {
-        ...data,
-        id: shop.id,
-        slug: shop.slug,
-        region: shop.region,
-      }
-
-      // const result = await saveShopWithProducts(token, dataToSave, tempProducts)
-      const result = {}
-      setMessage(result.message)
-
-      if (result.error == null) {
-        const editedShop = { ...shop, ...dataToSave }
-        if (tempProducts != null) {
-          editedShop.products = tempProducts
-        }
-        // setShopState({ shop: editedShop, loading: false })
-      }
-
+      await saveShopWithProducts(shopPatch)
       setShowMessage(true)
       setSaving(false)
-      refresh()
     }
+
     saveData()
-  }
-  function refresh() {
-    // setShopState({ shop: null, loading: true })
-    // setReloadCount(reloadCount + 1)
   }
 
   function onMessagePress() {
@@ -62,21 +82,27 @@ export default function EditView({ shop, products }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.leftContainer}>
-        <EditShopForm
-          shop={shop}
-          onSubmit={onSubmit}
-          isSaving={isSaving}
-          refresh={refresh}
-        />
-        <EditProducts products={products} shopId={shop.id} />
-      </View>
-
-      {showPreview && (
-        <View style={styles.rightContainer}>
-          <Preview shop={shop} products={products} />
+      <FormProvider {...methods}>
+        <View style={styles.leftContainer}>
+          <EditShopForm
+            shop={shop}
+            setTempShop={setTempShop}
+            onSubmit={onSubmit}
+            isSaving={isSaving}
+          />
+          <EditProductsTable
+            products={products}
+            shopId={shop.id}
+            setTempProducts={setTempProducts}
+          />
         </View>
-      )}
+
+        {showPreview && (
+          <View style={styles.rightContainer}>
+            <Preview shop={tempShop} products={tempProducts} />
+          </View>
+        )}
+      </FormProvider>
 
       {showMessage && (
         <MessageBox

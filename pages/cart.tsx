@@ -10,7 +10,13 @@ import { colors } from "@/lib/colors"
 import { groupAndSortByCategory } from "@/lib/utils/products"
 import { generateWhatsappURL } from "@/lib/utils/utils"
 import { getShop, getItems } from "store"
-import { CartInputs, Shop } from "types"
+import { Shop } from "types"
+
+export type CartInputs = {
+  name: string
+  address: string
+  notes: string
+}
 
 function Cart() {
   const router = useRouter()

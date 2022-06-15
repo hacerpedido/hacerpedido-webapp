@@ -26,15 +26,14 @@ export const groupAndSortByCategory = (
   return categoriesWithProducts
 }
 
-type ProductRow = [boolean, string, string, string]
-export function productForGrid(products: Product[]) {
-  if (products.length === 0) {
-    return []
-  }
+type ProductRow = [boolean, string, string | undefined, string | undefined]
+
+export function productsToRows(products: Product[]): ProductRow[] {
   const rows: ProductRow[] = []
   let category = ""
 
   products.forEach((product) => {
+    // adds extra category row if category is different
     if (category !== product.category) {
       category = product.category
 
@@ -43,26 +42,23 @@ export function productForGrid(products: Product[]) {
       rows.push([false, "", "", ""])
     }
 
-    // TODO: should use db default props for price and description
-    rows.push([
-      false,
-      product.name,
-      product.description || "",
-      product.price || "",
-    ])
+    rows.push([false, product.name, product.description, product.price])
   })
 
   return rows
 }
 
-export function productsFromGrid(shopId: string, rows: ProductRow[]) {
+export function productsFromRows(
+  shopId: string,
+  rows: ProductRow[]
+): Product[] {
   if (!Array.isArray(rows) || rows.length === 0) {
     return []
   }
 
   const result: Product[] = []
-  let section = ""
-  let itemNumber = 0
+  let category = ""
+  let itemNumber = 1
 
   rows.forEach((row) => {
     const isCategory = row[0]
@@ -70,26 +66,22 @@ export function productsFromGrid(shopId: string, rows: ProductRow[]) {
     const description = row[2]
     const price = row[3]
 
-    if (name == null || name === "") {
-      return
-    }
+    if (name == null || name === "") return
 
+    // Don't save categories as products
     if (isCategory) {
-      section = toTitleCase(name)
-
+      category = toTitleCase(name)
       return
     }
-
-    itemNumber++
 
     const product = {
-      category: section,
-      description: description,
-      itemnumber: itemNumber,
       name: sanitizeProductName(name),
       price: price ? sanitizePrice(price).toString() : "",
+      category,
       shopid: shopId,
-    } // Product
+      itemnumber: itemNumber++,
+      description: description ? description : "",
+    }
 
     result.push(product)
   })

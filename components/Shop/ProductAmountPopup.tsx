@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-
 import {
   TouchableHighlight,
   StyleSheet,
@@ -29,8 +28,8 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
   const [quantity, setQuantity] = useState(0)
 
   useEffect(() => {
-    if (item) setQuantity(item?.quantity)
-  }, [item])
+    setQuantity(item?.quantity || quantity)
+  }, [item, quantity])
 
   // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {

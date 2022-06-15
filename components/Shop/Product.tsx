@@ -11,7 +11,7 @@ import {
 import ProductAmountPopup from "@/components/Shop/ProductAmountPopup"
 import { colors } from "@/lib/colors"
 import { sanitizePrice } from "@/lib/utils/utils"
-import { getItem, getItems } from "store"
+import { getItems } from "store"
 
 import type { Product as ProductType } from "types"
 
@@ -30,14 +30,16 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
 
   // TODO: Move to productamountpopup?
   useEffect(() => {
-    const listener = (event: TouchEvent) => {
+    const listener = (event: TouchEvent | MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target))
         setPopupVisible(false)
     }
-    document.addEventListener("touchend", listener)
+    document.addEventListener("mousedown", listener)
+    document.addEventListener("touchstart", listener)
 
     return () => {
-      document.removeEventListener("touchend", listener)
+      document.removeEventListener("mousedown", listener)
+      document.removeEventListener("touchstart", listener)
     }
   }, [ref, setPopupVisible, item])
 

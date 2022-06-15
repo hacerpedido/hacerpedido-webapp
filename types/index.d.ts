@@ -2,12 +2,6 @@ export type CartItem = Product & {
   quantity?: number
 }
 
-export type CartInputs = {
-  name: string
-  address: string
-  notes: string
-}
-
 // NOTE: Replaces the use of this type with an array of products
 export type CategoryWithProducts = {
   name: string
@@ -43,4 +37,5 @@ export type Shop = {
   visibility: string
   created_at?: Date
   updated_at?: Date
+  typeformtoken?: string
 }

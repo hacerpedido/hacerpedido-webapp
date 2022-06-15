@@ -1,7 +1,7 @@
+import Image from "next/image"
 import { useRouter } from "next/router"
 
 import {
-  Image,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -18,7 +18,7 @@ import { generateCallUrl } from "@/lib/utils/utils"
 
 import DecoratedLabel from "components/DecoratedLabel"
 
-import type { ShopType } from "types"
+import type { Shop as ShopType } from "types"
 
 type Props = {
   isPreview?: boolean
@@ -91,7 +91,7 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image source={{ uri: logo }} style={styles.logo} alt={name} />
+          <Image src={logo} alt={name} height={100} width={100} />
         </View>
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
@@ -140,7 +140,6 @@ type Styles = {
   containerNavigator: ViewStyle
   containerData: ViewStyle
   containerLogo: ViewStyle
-  logo: ViewStyle
   shopName: TextStyle
 }
 
@@ -190,6 +189,9 @@ const styles = StyleSheet.create<Styles>({
     alignItems: "center",
     height: 100,
     width: 100,
+    backgroundColor: colors.white,
+    borderRadius: 50,
+    overflow: "hidden",
   },
   containerNavigator: {
     backgroundColor: colors.none,
@@ -198,12 +200,6 @@ const styles = StyleSheet.create<Styles>({
     justifyContent: "space-between",
     minHeight: "4em",
     zIndex: 2,
-  },
-  logo: {
-    backgroundColor: colors.white,
-    borderRadius: 50,
-    height: 100,
-    width: 100,
   },
   shopName: {
     color: colors.white,
