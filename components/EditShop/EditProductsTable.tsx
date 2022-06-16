@@ -49,14 +49,11 @@ const EditProductsTable = ({ products, shopId, setTempProducts }: Props) => {
 
       const tempData = grid.current.hotInstance.getDataAtRow(row)
 
-      // if is category
+      // if is category use a special renderer and make description and price coulmns readonly
       if (tempData[0] && col > 0) {
         renderer = catRenderer
 
-        // make description and price columns readonly
-        if (col === 2 || col === 3) {
-          readOnly = true
-        }
+        if (col === 2 || col === 3) readOnly = true
       }
 
       return { renderer, readOnly }
@@ -93,10 +90,9 @@ const EditProductsTable = ({ products, shopId, setTempProducts }: Props) => {
     },
   ]
 
+  // NOTE: sanitices pasted elements
   const beforeChange = (changes, source) => {
-    if (source !== "CopyPaste.paste") {
-      return
-    }
+    if (source !== "CopyPaste.paste") return
 
     changes.forEach((c) => {
       if (c[1] === 0) {
@@ -109,6 +105,7 @@ const EditProductsTable = ({ products, shopId, setTempProducts }: Props) => {
     })
   }
 
+  // NOTE: Updates preview products after the table changes
   const afterChange = (changes) => {
     if (changes == null || grid.current == null) return
 

@@ -13,7 +13,10 @@ export default async function handler(
 ) {
   if (req.method === "PUT") {
     const {
-      id,
+      query: { id },
+    } = req
+
+    const {
       address,
       deliverycost,
       name,
@@ -22,18 +25,7 @@ export default async function handler(
       ordersphonenumber,
       orderswhatsappnumber,
       products,
-      // token,
     } = req.body
-
-    const newProducts = products.map((p: Product) => {
-      return {
-        category: p.category,
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        itemnumber: p.itemnumber,
-      }
-    })
 
     const shop = await prisma.shop.update({
       where: { id: id },
@@ -45,15 +37,20 @@ export default async function handler(
         opentimes,
         ordersphonenumber,
         orderswhatsappnumber,
-        // products: {
-        //   set: newProducts,
-        // },
       },
     })
 
-    await prisma.product.deleteMany({ where: { shopid: id } })
-    const createdProducts = await prisma.product.createMany(newProducts)
+    products.forEach((p: Product) => (p.shopid = id))
 
-    res.json({ shop, products: createdProducts })
+    await prisma.product.deleteMany({ where: { shopid: id } })
+    await prisma.product.createMany({
+      data: products,
+    })
+
+    const updatedProducts = await prisma.product.findMany({
+      where: { shopid: id },
+    })
+
+    res.json({ shop, products: updatedProducts })
   }
 }

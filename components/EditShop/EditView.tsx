@@ -8,9 +8,10 @@ import EditShopForm from "components/EditShop/EditShopForm"
 import Preview from "components/EditShop/Preview"
 import MessageBox from "components/MessageBox"
 import theme from "lib/theme"
-// import { trimObject } from "lib/utils/utils"
+import { trimObject } from "lib/utils/utils"
 
 import { Shop, Product } from "types"
+
 type Props = {
   initialShop: Shop
   initialProducts: Product[]
@@ -39,13 +40,18 @@ export default function EditView({ initialShop, initialProducts }: Props) {
     ordersphonenumner: string
     notes: string
   }
+
+  type ShopWithProducts = FormInputs & {
+    products: Product[]
+  }
+
   const methods = useForm({ mode: "onBlur" })
 
-  async function saveShopWithProducts(data): any {
-    await fetch(`${window.location.origin}/api/shop/by-token`, {
+  async function saveShopWithProducts(shopWithProducts: ShopWithProducts) {
+    await fetch(`/api/shop/${shop.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify(shopWithProducts),
     })
       .then((response) => response.json())
       .then(({ shop, products }) => {
@@ -53,22 +59,20 @@ export default function EditView({ initialShop, initialProducts }: Props) {
         setProducts(products)
         setMessage("Tus datos fueron guardados")
       })
-      .catch((_error) => {
-        setMessage("Error guardando tus datos")
-      })
+      .catch(() => setMessage("Error guardando tus datos"))
   }
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    // trimObject(data)
-    const shopPatch = {
-      ...data,
-      id: shop.id,
-      products: products,
+  const onSubmit: SubmitHandler<FormInputs> = (shopData) => {
+    trimObject(shopData)
+
+    const dataToSave = {
+      ...shopData,
+      products: tempProducts,
     }
 
     async function saveData() {
       setSaving(true)
-      await saveShopWithProducts(shopPatch)
+      await saveShopWithProducts(dataToSave)
       setShowMessage(true)
       setSaving(false)
     }
