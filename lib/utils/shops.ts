@@ -1,6 +1,5 @@
 import type { Shop } from "types"
 
-// TODO: if there's no logo generate one automatically
 export const getLogoForShop = ({ logo }: Shop) => {
   if (!logo) return ""
 

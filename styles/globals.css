@@ -20,7 +20,7 @@ body {
 }
 
 /* Animations */
-/* TODO: replace with famer motion? */
+/* TODO: replace with react-spring? */
 .bounza {
   animation: bounza_frames 4.72s ease infinite;
   transform-origin: 50% 50%;

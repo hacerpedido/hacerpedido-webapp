@@ -18,7 +18,6 @@ type CategoryProps = {
   onSelect: (id: string) => void
 }
 
-// TODO: rename to cateogry filter
 function Category({ title, isSelected, onSelect }: CategoryProps) {
   const wrapperStyle = [
     styles.item,

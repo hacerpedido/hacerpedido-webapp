@@ -7,7 +7,6 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native"
-// TODO: Reaplce with framer motion?
 import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/lib/colors"
@@ -31,7 +30,6 @@ const ProductAmountPopup = ({ product, visible, handleClose }: Props) => {
     setQuantity(item?.quantity || quantity)
   }, [item, quantity])
 
-  // TODO: https://react-spring.io/hooks/use-transition
   const transitions = useTransition(visible, {
     from: { opacity: 0, transform: "scale(0, 0)" },
     enter: { opacity: 1, transform: "scale(1, 1)" },

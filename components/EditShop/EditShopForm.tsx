@@ -47,7 +47,7 @@ export default function EditShopForm({
   const tempValues = useWatch()
 
   useEffect(() => {
-    // TODO: this should update on blur
+    // TODO: this should update on blur insted of ussing useEffect
     setTempShop({ ...shop, ...tempValues })
   }, [setTempShop, shop, tempValues])
 

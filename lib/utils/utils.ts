@@ -1,4 +1,10 @@
-import type { CartItem, CategoryWithProducts, CartFormValues } from "types"
+import type { CartItem, CartFormValues } from "types"
+
+// NOTE: Replaces the use of this type with an array of products
+type CategoryWithProducts = {
+  name: string
+  products: Product[]
+}
 
 export function toTitleCase(str: string) {
   if (typeof str !== "string") return ""
@@ -109,7 +115,7 @@ function generateSimpleWhatsappMessage() {
   return "¡Hola! Quiero hacer un pedido via HacerPedido 💪"
 }
 
-// TODO: : whatsapp api not accepting emoji, at least on desktop
+// TODO: : whatsapp api displaying emoji, on desktop
 function generateWhatsappMessage(
   formData: CartFormValues,
   categoriesWithProducts: CategoryWithProducts[]

@@ -7,7 +7,7 @@ import ShopHeader from "@/components/Shop/ShopHeader"
 import ShopNotes from "@/components/Shop/ShopNotes"
 import { colors } from "@/lib/colors"
 import { groupAndSortByCategory } from "@/lib/utils/products"
-// NOTE: fixes localstorage ssr issues https://github.com/vercel/next.js/discussions/35773
+
 const ShopFooter = dynamic(() => import("@/components/Shop/ShopFooter"), {
   ssr: false,
 })

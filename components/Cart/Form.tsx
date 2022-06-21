@@ -10,28 +10,14 @@ import Input from "@/components/Input"
 import Switch from "@/components/Switch"
 import { colors } from "@/lib/colors"
 import { getShop } from "store"
-import { CartInputs } from "types"
+import type { CartFormValues } from "types"
 
-type Inputs = {
-  name: string
-  address: string
-  notes: string
-}
-
-const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartInputs> }) => {
+const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<Inputs>({
-    // TODO: Add default values (from localStorage)
-    // defaultValues: {
-    //   name: "bill",
-    //   address: "luo",
-    //   notes: "bluebill1049@hotmail.com",
-    // },
-    mode: "onBlur",
-  })
+  } = useForm<CartFormValues>({ mode: "onBlur" })
 
   const shop = getShop()
   const [isTakeaway, setIsTakeaway] = useState(false)

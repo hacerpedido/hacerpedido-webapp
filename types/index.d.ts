@@ -1,11 +1,11 @@
-export type CartItem = Product & {
-  quantity?: number
+export type CartFormValues = {
+  name: string
+  address: string
+  notes: string
 }
 
-// NOTE: Replaces the use of this type with an array of products
-export type CategoryWithProducts = {
-  name: string
-  products: Product[]
+export type CartItem = Product & {
+  quantity?: number
 }
 
 export type Product = {
@@ -30,7 +30,7 @@ export type Shop = {
   name: string
   notes: string
   opentimes?: string
-  ordersphonenumber?: string // NOTE: should be one or the other. Use better validation
+  ordersphonenumber?: string // NOTE: we should have a messaging phone and other phones
   orderswhatsappnumber?: string
   region: string
   slug: string

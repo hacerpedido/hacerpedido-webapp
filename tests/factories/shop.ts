@@ -9,14 +9,14 @@ import { Shop } from "types"
 const shopFactory: Factory<Shop> = Factory.define<Shop>(() => ({
   id: faker.datatype.uuid(),
   address: faker.address.streetAddress(),
-  background: null,
+  background: faker.image.imageUrl(),
   category: categories[0],
   name: faker.company.companyName(),
   notes: faker.lorem.paragraph(),
   region: faker.address.cityName(),
   slug: faker.unique(faker.lorem.slug),
   visibility: "public",
-  logo: faker.image.imageUrl(), // TODO:
+  logo: faker.image.imageUrl(),
 
   created_at: faker.date.recent(),
   updated_at: faker.date.recent(),

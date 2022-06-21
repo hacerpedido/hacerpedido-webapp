@@ -29,7 +29,7 @@ function EditShopPage({ shop, products }: Props) {
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const token = params.params[0]
 
-  // TODO: token should be unique
+  // TODO: use find whn token becomes unique
   const shop = await prisma.shop.findFirst({
     where: { typeformtoken: token },
   })

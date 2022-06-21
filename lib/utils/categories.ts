@@ -1,5 +1,5 @@
 // TODO: Rearmar todo esto en un modelo
-// BUG: Las categorías del Typeform son diferentes,
+// BUG: Las categorías del Typeform son diferentes, comparar con la q hay en BD
 import { backgroundColors } from "@/lib/colors"
 
 export const categories = [

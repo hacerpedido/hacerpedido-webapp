@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
+import { StyleSheet, Text, TextStyle } from "react-native"
 
 import { CarIcon, ClockIcon, PinIcon } from "@/components/icons/"
 
