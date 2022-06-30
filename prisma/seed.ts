@@ -1,9 +1,9 @@
-import { Prisma } from "@prisma/client"
+import { PrismaClient, Prisma } from "@prisma/client"
 
 // import productFactory from "../tests/factories/product"
 import shopFactory from "../tests/factories/shop"
 
-import prisma from "lib/prisma"
+const prisma = new PrismaClient()
 
 const shopData: Prisma.ShopCreateInput[] = shopFactory.buildList(100)
 // const productData: Prisma.ProductCreateInput[] = productFactory.buildList(100)

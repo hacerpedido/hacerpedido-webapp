@@ -15,9 +15,9 @@ const productFactory: Factory<Product> = Factory.define<Product>(() => ({
 
   created_at: faker.date.recent(),
   updated_at: faker.date.recent(),
+  price       fake.commerce.price()
 
   // shopid: shopFactory.build().id,
-  // price       String?
   // itemnumber  Int?
   // shops       shops     @relation(fields: [shopid], references: [id])
 }))

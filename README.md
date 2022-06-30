@@ -1,5 +1,3 @@
-undefined
-
 # Requirements
 
 - Nodejs

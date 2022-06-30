@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 import {
@@ -32,6 +33,7 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
     category,
     address,
     region,
+    typeformtoken,
     ordersphonenumber,
     orderswhatsappnumber,
   } = shop
@@ -93,6 +95,11 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
         <View style={styles.containerLogo}>
           <Image src={logo} alt={name} height={100} width={100} />
         </View>
+
+        <Link href={`/${typeformtoken}/edit`}>
+          <a>edit</a>
+        </Link>
+
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
           <DecoratedLabel

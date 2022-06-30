@@ -2,6 +2,7 @@ import type { Shop } from "types"
 
 export const getLogoForShop = ({ logo }: Shop) => {
   if (!logo) return ""
+  if (logo.startsWith("http://")) return logo
 
   const filename = logo.substring(logo.lastIndexOf("/") + 1)
   const url = process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL

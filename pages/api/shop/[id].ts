@@ -1,20 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next"
 
 import prisma from "lib/prisma"
-import type { Shop, Product } from "types"
-
-type ResponseData = {
-  shop: Shop
-}
+import type { Product } from "types"
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse
 ) {
   if (req.method === "PUT") {
-    const {
-      query: { id },
-    } = req
+    const id = String(req.query.id)
 
     const {
       address,
