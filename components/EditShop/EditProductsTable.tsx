@@ -5,7 +5,6 @@ import { StyleSheet, Text, View } from "react-native"
 import theme from "lib/theme"
 import { productsToRows, productsFromRows } from "lib/utils/products"
 import { sanitizePrice } from "lib/utils/utils"
-import type { Product } from "types"
 
 const CustomTable = dynamic(
   async () => {

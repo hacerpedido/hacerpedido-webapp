@@ -34,7 +34,7 @@ const ShopCard = ({ shop }: Props) => {
           <View style={styles.containerLabels}>
             <Text style={styles.shopName}>{name.toLowerCase()}</Text>
 
-            {address && (
+            {!!address && (
               <DecoratedLabel
                 iconName="pin"
                 text={address}
@@ -43,7 +43,7 @@ const ShopCard = ({ shop }: Props) => {
               />
             )}
 
-            {opentimes && (
+            {!!opentimes && (
               <DecoratedLabel
                 iconName="clock"
                 text={opentimes}
@@ -52,17 +52,14 @@ const ShopCard = ({ shop }: Props) => {
               />
             )}
 
-            {/* NOTE: El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
-            <Text>
-              {deliverycost && (
-                <DecoratedLabel
-                  iconName="car"
-                  text={deliverycost}
-                  iconColor={iconColor}
-                  textColor={colors.lightGrey}
-                />
-              )}
-            </Text>
+            {!!deliverycost && (
+              <DecoratedLabel
+                iconName="car"
+                text={deliverycost}
+                iconColor={iconColor}
+                textColor={colors.lightGrey}
+              />
+            )}
           </View>
         </View>
       </View>

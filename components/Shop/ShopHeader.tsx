@@ -67,6 +67,7 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
   )
 
   const displayAddress = address?.trim() ?? region
+  const addressUrl = `https://www.google.com/maps/?q=${displayAddress}`
   const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null
   const deliverycost =
     shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null
@@ -102,14 +103,21 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
-          <DecoratedLabel
-            iconName="pin"
-            text={displayAddress}
-            iconColor={colors.white}
-            textColor={colors.white}
-            fontSize={13}
-            marginBottom={4}
-          />
+          <a
+            href={addressUrl}
+            style={{ textDecoration: "none" }}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <DecoratedLabel
+              iconName="pin"
+              text={displayAddress}
+              iconColor={colors.white}
+              textColor={colors.white}
+              fontSize={13}
+              marginBottom={4}
+            />
+          </a>
         )}
         {opentimes && (
           <DecoratedLabel

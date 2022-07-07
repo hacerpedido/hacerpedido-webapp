@@ -7,12 +7,10 @@ import ShopHeader from "@/components/Shop/ShopHeader"
 import ShopNotes from "@/components/Shop/ShopNotes"
 import { colors } from "@/lib/colors"
 import { groupAndSortByCategory } from "@/lib/utils/products"
-
+import type { Shop as ShopType, Product } from "types"
 const ShopFooter = dynamic(() => import("@/components/Shop/ShopFooter"), {
   ssr: false,
 })
-
-import type { Shop as ShopType, Product } from "types"
 
 type Props = {
   shop: ShopType

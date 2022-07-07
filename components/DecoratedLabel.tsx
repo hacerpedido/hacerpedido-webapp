@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextStyle } from "react-native"
 
 import { CarIcon, ClockIcon, PinIcon } from "@/components/icons/"
 
-// TODO: Este componente tiene una responsabilidad difusa, mucha
+// TODO: Este componente tiene una responsabilidad difusa
 type Props = {
   iconName: string
   text: string

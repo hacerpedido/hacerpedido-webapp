@@ -1,3 +1,4 @@
+import type { Shop as ShopType, Product } from "@prisma/client"
 import Image from "next/image"
 import Link from "next/link"
 import { StyleSheet, Text } from "react-native"
@@ -5,7 +6,6 @@ import { StyleSheet, Text } from "react-native"
 import Shop from "components/Shop/Shop"
 import theme from "lib/theme"
 
-import type { Shop as ShopType, Product } from "types"
 type Props = {
   shop: ShopType
   products: Product[]
@@ -13,7 +13,7 @@ type Props = {
 export default function Preview({ shop, products }: Props) {
   const openProductionLink = {
     paddingBottom: 30,
-    textAlign: "center",
+    textAlign: "center" as const,
     textDecoration: "none",
   }
 
@@ -24,7 +24,6 @@ export default function Preview({ shop, products }: Props) {
           <Text style={styles.openProductionLink}>
             {"Ir a mi Sitio "}
             <Image
-              style={styles.openProductionLinkIcon}
               src={"/images/external-link-alt.png"}
               alt="open production link"
               width={18}
@@ -46,9 +45,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontStyle: "normal",
     fontWeight: "600",
-  },
-  openProductionLinkIcon: {
-    margin: 3,
-    top: 4,
   },
 })

@@ -11,7 +11,6 @@ import { animated, config, useTransition } from "react-spring"
 
 import { colors } from "@/lib/colors"
 import { getItems, updateItemQuantity, addItem, removeItem } from "store"
-
 import type { Product } from "types"
 
 type Props = {

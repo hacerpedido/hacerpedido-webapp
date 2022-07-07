@@ -13,7 +13,7 @@ model Product {
   name        String
   description String?
   shopid      String    @db.Uuid
-  itemnumber  Int?
+  itemnumber  Int? // TODO: should be unique per shopid
   created_at  DateTime? @default(now()) @db.Timestamp(6)
   updated_at  DateTime? @default(now()) @db.Timestamp(6)
   price       Decimal?
