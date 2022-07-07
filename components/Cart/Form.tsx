@@ -1,7 +1,14 @@
 import { useState } from "react"
 import type { SubmitHandler } from "react-hook-form"
 import { useForm } from "react-hook-form"
-import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextStyle,
+  ViewStyle,
+  TouchableHighlight,
+} from "react-native"
 
 import { useSpring, animated } from "react-spring"
 
@@ -41,6 +48,21 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
       },
     },
   }
+
+  const SubmitButton = () => (
+    <TouchableHighlight
+      underlayColor={"none"}
+      onPress={() => {}}
+      style={styles.buttonContainer}
+    >
+      <View style={[styles.buttonWhatsApp, styles.button]}>
+        <Text style={styles.buttonText}>
+          <WhatsAppIcon color={colors.white} />
+          {`  Pedir a ${shop?.name}`}
+        </Text>
+      </View>
+    </TouchableHighlight>
+  )
 
   return (
     <View style={styles.container}>
@@ -84,10 +106,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
           con el comercio. No somos responsables de modificaciones en el menú.
         </Text>
 
-        <button type="submit" className="bounza" style={{ marginTop: 19 }}>
-          <WhatsAppIcon color={colors.white} />
-          {`Pedir a ${shop?.name}`}
-        </button>
+        <SubmitButton />
       </form>
     </View>
   )
@@ -97,6 +116,8 @@ export default Form
 
 type Styles = {
   button: ViewStyle
+  buttonCall: ViewStyle
+  buttonContainer: ViewStyle
   buttonText: TextStyle
   buttonWhatsApp: ViewStyle
   container: ViewStyle
@@ -111,10 +132,24 @@ const styles = StyleSheet.create<Styles>({
     borderRadius: 4,
     borderWidth: 1,
     flexDirection: "row",
+    paddingVertical: 20,
     justifyContent: "center",
-    paddingVertical: 17,
+    marginTop: 12,
+    textAlign: "center",
+  },
+  buttonCall: {
+    backgroundColor: colors.orangeHP,
+    borderColor: colors.filterButtonBorder,
+  },
+  buttonContainer: {
+    flex: 1,
   },
   buttonText: {
+    color: colors.white,
+    flex: 1,
+    fontFamily: "Barlow",
+    fontWeight: "600",
+    fontSize: 16,
     marginLeft: 5,
   },
   buttonWhatsApp: {

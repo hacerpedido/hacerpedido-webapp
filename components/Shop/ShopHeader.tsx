@@ -40,6 +40,10 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
   const logo = getLogoForShop(shop)
   const router = useRouter()
+  const displayEditLink =
+    (process.env.NODE_ENV == "development" ||
+      process.env.VERCEL_ENV !== "production") &&
+    !isPreview
 
   const containerStyles = {
     backgroundImage: getBackgroundForShop(shop),
@@ -97,9 +101,11 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
           <Image src={logo} alt={name} height={100} width={100} />
         </View>
 
-        <Link href={`/${typeformtoken}/edit`}>
-          <a>edit</a>
-        </Link>
+        {displayEditLink && (
+          <Link href={`/${typeformtoken}/edit`}>
+            <a>edit</a>
+          </Link>
+        )}
 
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (

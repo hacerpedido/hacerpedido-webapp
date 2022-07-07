@@ -50,9 +50,9 @@ const Error = styled.span`
 `
 
 const StyledInput = styled.input`
-  border-color: ${(props) => (props.error ? colors.error : colors.lightGrey2)};
   border-radius: 2px;
-  border-width: 1px;
+  border: 1px solid
+    ${(props) => (props.error ? colors.error : colors.lightGrey2)};
   color: ${colors.brown};
   font-family: Barlow;
   font-size: 15px;
