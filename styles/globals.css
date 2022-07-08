@@ -4,10 +4,13 @@
 
 /* TODO: use local font? */
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Roboto+Slab:wght@400;500&display=swap");
-@import "bootstrap/dist/css/bootstrap-reboot.css";
-input {
-  all: unset;
-}
+@import 'bootstrap/dist/css/bootstrap.css';
+
+/* @import "bootstrap/dist/css/bootstrap-reboot.css"; */
+/* input { */
+/*   all: unset; */
+/* } */
+
 html,
 body {
   /* TODO: Should this be the default font or maybe Roboto Slab? */

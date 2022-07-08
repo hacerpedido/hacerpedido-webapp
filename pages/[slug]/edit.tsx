@@ -28,10 +28,10 @@ export default dynamic(() => Promise.resolve(EditShopPage), {
 })
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const token = String(params?.slug)
+  const typeformtoken = String(params?.slug)
 
   const shopWithProducts = await prisma.shop.findUnique({
-    where: { typeformtoken: token },
+    where: { typeformtoken },
     include: {
       products: {
         orderBy: {

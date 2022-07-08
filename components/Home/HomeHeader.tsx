@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { useState } from "react"
+
 import Button from "react-bootstrap/Button"
 import Modal from "react-bootstrap/Modal"
 import {
@@ -8,7 +9,6 @@ import {
   Text,
   View,
   ViewStyle,
-  TextStyle,
 } from "react-native"
 
 import { HpLogoIcon } from "@/components/icons"
@@ -64,8 +64,6 @@ export default function HomeHeader() {
 type Styles = {
   addShopButton: ViewStyle
   container: ViewStyle
-  modalText: TextStyle
-  modalView: ViewStyle
 }
 
 const styles = StyleSheet.create<Styles>({
@@ -88,19 +86,5 @@ const styles = StyleSheet.create<Styles>({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 16,
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: "500",
-    padding: 32,
-  },
-  modalView: {
-    alignContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    display: "flex",
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
   },
 })

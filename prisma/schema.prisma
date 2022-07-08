@@ -8,22 +8,22 @@ datasource db {
 }
 
 model Product {
-  id          String    @id @default(dbgenerated("extensions.uuid_generate_v1()")) @db.Uuid
+  id          String    @id(map: "id_products") @default(dbgenerated("extensions.uuid_generate_v1()")) @db.Uuid
   category    String
   name        String
   description String?
-  shopid      String    @db.Uuid
-  itemnumber  Int? // TODO: should be unique per shopid
-  created_at  DateTime? @default(now()) @db.Timestamp(6)
-  updated_at  DateTime? @default(now()) @db.Timestamp(6)
   price       Decimal?
-  shop        Shop      @relation(fields: [shopid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  shopid      String    @db.Uuid
+  itemnumber  Int?
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @updatedAt @db.Timestamp(6)
+  shop        Shop      @relation(fields: [shopid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_shopid_fkey")
 
   @@map("products")
 }
 
 model Shop {
-  id                      String    @id @default(dbgenerated("extensions.uuid_generate_v1()")) @db.Uuid
+  id                      String    @id(map: "id_shops") @default(dbgenerated("extensions.uuid_generate_v1()")) @db.Uuid
   name                    String
   slug                    String    @unique
   region                  String
@@ -47,7 +47,7 @@ model Shop {
   ordersphonenumber       String?
   orderswhatsappnumber    String?
   created_at              DateTime? @default(now()) @db.Timestamp(6)
-  updated_at              DateTime? @default(now()) @db.Timestamp(6)
+  updated_at              DateTime? @default(now()) @updatedAt @db.Timestamp(6)
   products                Product[]
 
   @@map("shops")

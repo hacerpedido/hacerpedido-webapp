@@ -1,10 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 14.1
--- Dumped by pg_dump version 14.1
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -16,263 +9,20 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: extensions; Type: SCHEMA; Schema: -; Owner: postgres
---
+SET default_tablespace = '';
 
-CREATE SCHEMA IF NOT EXISTS  extensions ;
+-- SET default_table_access_method = heap;
 
-
-ALTER SCHEMA extensions OWNER TO postgres;
-
-
-CREATE SCHEMA IF NOT EXISTS storage;
-
-
-ALTER SCHEMA storage OWNER TO postgres;
-
---
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA extensions;
-
-
---
--- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics of all SQL statements executed';
-
-
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
-
-
---
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
-
-
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
-
+CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA extensions;
 
-
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
-
-
---
--- Name: grant_pg_cron_access(); Type: FUNCTION; Schema: extensions; Owner: postgres
---
-CREATE FUNCTION extensions.grant_pg_graphql_access() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $_$
-DECLARE
-    func_is_graphql_resolve bool;
-BEGIN
-    func_is_graphql_resolve = (
-        SELECT n.proname = 'resolve'
-        FROM pg_event_trigger_ddl_commands() AS ev
-        LEFT JOIN pg_catalog.pg_proc AS n
-        ON ev.objid = n.oid
-    );
-
-    IF func_is_graphql_resolve
-    THEN
-        grant usage on schema graphql to postgres, anon, authenticated, service_role;
-        grant all on function graphql.resolve to postgres, anon, authenticated, service_role;
-
-        alter default privileges in schema graphql grant all on tables to postgres, anon, authenticated, service_role;
-        alter default privileges in schema graphql grant all on functions to postgres, anon, authenticated, service_role;
-        alter default privileges in schema graphql grant all on sequences to postgres, anon, authenticated, service_role;
-
-        -- Update public wrapper to pass all arguments through to the pg_graphql resolve func
-        create or replace function graphql_public.graphql(
-            "operationName" text default null,
-            query text default null,
-            variables jsonb default null,
-            extensions jsonb default null
-        )
-            returns jsonb
-            language sql
-        as $$
-            -- This changed
-            select graphql.resolve(
-                query := query,
-                variables := coalesce(variables, '{}'),
-                "operationName" := "operationName",
-                extensions := extensions
-            );
-        $$;
-
-        grant select on graphql.field, graphql.type, graphql.enum_value to postgres, anon, authenticated, service_role;
-        grant execute on function graphql.resolve to postgres, anon, authenticated, service_role;
-    END IF;
-
-END;
-$_$;
-
-
-ALTER FUNCTION extensions.grant_pg_graphql_access() OWNER TO postgres;
-
---
--- Name: FUNCTION grant_pg_graphql_access(); Type: COMMENT; Schema: extensions; Owner: postgres
---
-
-COMMENT ON FUNCTION extensions.grant_pg_graphql_access() IS 'Grants access to pg_graphql';
-
-
---
--- Name: grant_pg_net_access(); Type: FUNCTION; Schema: extensions; Owner: postgres
---
-
-CREATE FUNCTION extensions.grant_pg_net_access() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  IF EXISTS (
-    SELECT 1
-    FROM pg_event_trigger_ddl_commands() AS ev
-    JOIN pg_extension AS ext
-    ON ev.objid = ext.oid
-    WHERE ext.extname = 'pg_net'
-  )
-  THEN
-    IF NOT EXISTS (
-      SELECT 1
-      FROM pg_roles
-      WHERE rolname = 'supabase_functions_admin'
-    )
-    THEN
-      CREATE USER supabase_functions_admin NOINHERIT CREATEROLE LOGIN NOREPLICATION;
-    END IF;
-
-    GRANT USAGE ON SCHEMA net TO supabase_functions_admin, postgres, anon, authenticated, service_role;
-
-    ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
-    ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SECURITY DEFINER;
-    ALTER function net.http_collect_response(request_id bigint, async boolean) SECURITY DEFINER;
-
-    ALTER function net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
-    ALTER function net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) SET search_path = net;
-    ALTER function net.http_collect_response(request_id bigint, async boolean) SET search_path = net;
-
-    REVOKE ALL ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
-    REVOKE ALL ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) FROM PUBLIC;
-    REVOKE ALL ON FUNCTION net.http_collect_response(request_id bigint, async boolean) FROM PUBLIC;
-
-    GRANT EXECUTE ON FUNCTION net.http_get(url text, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
-    GRANT EXECUTE ON FUNCTION net.http_post(url text, body jsonb, params jsonb, headers jsonb, timeout_milliseconds integer) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
-    GRANT EXECUTE ON FUNCTION net.http_collect_response(request_id bigint, async boolean) TO supabase_functions_admin, postgres, anon, authenticated, service_role;
-  END IF;
-END;
-$$;
-
-
-ALTER FUNCTION extensions.grant_pg_net_access() OWNER TO postgres;
-
---
--- Name: FUNCTION grant_pg_net_access(); Type: COMMENT; Schema: extensions; Owner: postgres
---
-
-COMMENT ON FUNCTION extensions.grant_pg_net_access() IS 'Grants access to pg_net';
-
-
---
--- Name: pgrst_ddl_watch(); Type: FUNCTION; Schema: extensions; Owner: postgres
---
-
-CREATE FUNCTION extensions.pgrst_ddl_watch() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-  cmd record;
-BEGIN
-  FOR cmd IN SELECT * FROM pg_event_trigger_ddl_commands()
-  LOOP
-    IF cmd.command_tag IN (
-      'CREATE SCHEMA', 'ALTER SCHEMA'
-    , 'CREATE TABLE', 'CREATE TABLE AS', 'SELECT INTO', 'ALTER TABLE'
-    , 'CREATE FOREIGN TABLE', 'ALTER FOREIGN TABLE'
-    , 'CREATE VIEW', 'ALTER VIEW'
-    , 'CREATE MATERIALIZED VIEW', 'ALTER MATERIALIZED VIEW'
-    , 'CREATE FUNCTION', 'ALTER FUNCTION'
-    , 'CREATE TRIGGER'
-    , 'CREATE TYPE', 'ALTER TYPE'
-    , 'CREATE RULE'
-    , 'COMMENT'
-    )
-    -- don't notify in case of CREATE TEMP table or other objects created on pg_temp
-    AND cmd.schema_name is distinct from 'pg_temp'
-    THEN
-      NOTIFY pgrst, 'reload schema';
-    END IF;
-  END LOOP;
-END; $$;
-
-
-ALTER FUNCTION extensions.pgrst_ddl_watch() OWNER TO postgres;
-
---
--- Name: pgrst_drop_watch(); Type: FUNCTION; Schema: extensions; Owner: postgres
---
-
-CREATE FUNCTION extensions.pgrst_drop_watch() RETURNS event_trigger
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-  obj record;
-BEGIN
-  FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects()
-  LOOP
-    IF obj.object_type IN (
-      'schema'
-    , 'table'
-    , 'foreign table'
-    , 'view'
-    , 'materialized view'
-    , 'function'
-    , 'trigger'
-    , 'type'
-    , 'rule'
-    )
-    AND obj.is_temporary IS false -- no pg_temp objects
-    THEN
-      NOTIFY pgrst, 'reload schema';
-    END IF;
-  END LOOP;
-END; $$;
-
-
-ALTER FUNCTION extensions.pgrst_drop_watch() OWNER TO postgres;
-
---
--- Name: set_graphql_placeholder(); Type: FUNCTION; Schema: extensions; Owner: postgres
---
-
-CREATE FUNCTION public.trigger_set_timestamp() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
+CREATE OR REPLACE FUNCTION public.trigger_set_timestamp()
+RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$;
-
-
-ALTER FUNCTION public.trigger_set_timestamp() OWNER TO postgres;
+$$ LANGUAGE plpgsql;
 
 --
 -- Name: products; Type: TABLE; Schema: public; Owner: postgres
@@ -11106,6 +10856,68 @@ b96d4968-f7ce-11eb-a1e9-069092eeb849	Bebidas	Lata schneider	\N	180	fba54fc2-a3ab
 b96d4a12-f7ce-11eb-a1ea-069092eeb849	Bebidas	Lata heineken	\N		fba54fc2-a3ab-4c34-9ec2-8d201de38684	33	2021-08-07 22:28:01.119003	2021-08-07 22:28:01.119003
 b96d4a6c-f7ce-11eb-a1eb-069092eeb849	Bebidas	Lata Andes roja	\N	180	fba54fc2-a3ab-4c34-9ec2-8d201de38684	34	2021-08-07 22:28:01.119003	2021-08-07 22:28:01.119003
 b96d4aa8-f7ce-11eb-a1ec-069092eeb849	Bebidas	Lata Andes Ipa	\N	180	fba54fc2-a3ab-4c34-9ec2-8d201de38684	35	2021-08-07 22:28:01.119003	2021-08-07 22:28:01.119003
+6a547db2-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 15 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	2500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	1	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548280-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 30 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	4500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	2	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5483a2-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 45 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	6500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	3	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5484a6-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 15 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	3000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	4	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5485aa-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 30 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	5500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	5	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5486c2-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla De Sushi 45 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	7750	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	6	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5487bc-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Calientes	Combinado de piezas calientes: Hot Roll, Geishas en Tempura y Furay	3300	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	7	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5488ac-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Vegetariano	Combinado de piezas con variedad de frutas, verduras y queso	2000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	8	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5489a6-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Veganas	Combinado de piezas con variedad de frutas y verduras	2000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	9	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548aa0-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Especial Salmón	Rolls variados de salmón, niguiris de salmón y piezas calientes de salmón	3900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	10	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548b9a-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 30 Piezas Especial Salmón	Rolls variados de salmón, niguiris de salmón y piezas calientes salmón	7000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	11	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548c94-fbef-11ec-89c1-0663a2e72472	Sushi	Tabla de Sushi 45 Piezas Especial Salmón	Rolls variados de salmón, niguiris de salmón y piezas calientes salmón	10500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	12	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548d84-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	New york	Palta, pepino, salmón	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	13	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548e74-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Philadelphia	Palta, salmón, finlandia	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	14	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a548f64-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Sake rolls	Solo salmón	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	15	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549072-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Guacamole rolls	Salmón, coronado con guacamole	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	16	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54916c-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Ceviche rolls	Pepino, palta, mango, coronado con ceviche	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	17	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54925c-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Roll Vegetariano/Vegano	Palta, pepino, zanahoria y mango	1660	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	18	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5494f0-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 New York	Palta, pepino, salmón	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	19	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549608-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Philadelphia	Palta, salmón, finlandia	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	20	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5496f8-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Sake Roll	Solo salmón	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	21	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5497f2-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Guacamole rolls	Salmón, coronado con guacamole	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	22	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5498ec-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Ceviche rolls	Pepino, palta, mango, coronado con ceviche	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	23	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a5499f0-fbef-11ec-89c1-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Roll Vegetariano/Vegano	Palta, pepino, zanahoria y mango	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	24	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549ad6-fbef-11ec-89c1-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Octopus	Pulpo grillado en aceite de ajo, envuelto en remolacha y azúcar quemada	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	25	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549bd0-fbef-11ec-89c1-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Ebi rolls	Langostino crocante, pickles de pepino, queso y salsa de maracuya	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	26	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549cd4-fbef-11ec-89c1-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Mix rolls	Finlandia, palta, mango, ciboulette, envuelto en salmón, batatas crocantes, y salsa agridulce	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	27	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549eb4-fbef-11ec-89c1-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Crocante rolls	Salmón, pepino, garrapiñada, echalotes crocantes y salsa agridulce	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	28	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a549fcc-fbef-11ec-89c1-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Ebi-phila	Langostinos grillados con limón y verdeo, palta y laminas de finlandia	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	29	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a0d0-fbef-11ec-89c1-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Octopus	Pulpo grillado en aceite de ajo, envuelto en remolacha y azúcar quemada	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	30	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a1c0-fbef-11ec-89c1-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Ebi rolls	Langostino crocante, pickles de pepino, queso y salsa de maracuya	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	31	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a2ba-fbef-11ec-89c1-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Mix rolls	Finlandia, palta, mango, ciboulette, envuelto en salmón, batatas crocantes, y salsa agridulce	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	32	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a3b4-fbef-11ec-89c1-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Crocante rolls	Salmón, pepino, garrapiñada, echalotes crocantes y salsa agridulce	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	33	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a4cc-fbef-11ec-89c1-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Ebi-phila	Langostinos grillados con limón y verdeo, palta y laminas de finlandia	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	34	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a5d0-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Hot Roll	Relleno: salmón, palta y queso, cubierto de alga y arroz, bañado en tempura	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	35	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a6c0-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Furay	Relleno: salmón, palta y queso, cubierto de alga apanado con pan rallado	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	36	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a7c4-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Hot Geishas	Relleno: salmón, palta y queso, bañado en tempura	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	37	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a8b4-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Hot Roll	Relleno: salmón, palta y queso, cubierto de alga y arroz, bañado en tempura	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	38	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54a9a4-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Furay	Relleno: salmón, palta y queso, cubierto de alga apanado con pan rallado	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	39	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54aa9e-fbef-11ec-89c1-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Hot Geishas	Relleno: salmón, palta y queso, bañado en tempura	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	40	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54ab98-fbef-11ec-89c1-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Langostino	\N	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	41	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54ac92-fbef-11ec-89c1-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Salmón	\N	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	42	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54ae18-fbef-11ec-89c1-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Pescado blanco	\N	1680	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	43	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54af12-fbef-11ec-89c1-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Pulpo	\N	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	44	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b00c-fbef-11ec-89c1-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 langostino	\N	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	45	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b0fc-fbef-11ec-89c1-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 salmón	\N	1400	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	46	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b1ec-fbef-11ec-89c1-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 pescado blanco	\N	1140	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	47	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b2f0-fbef-11ec-89c1-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 pulpo	\N	1400	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	48	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b3f4-fbef-11ec-89c1-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Salmon	\N	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	49	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b4ee-fbef-11ec-89c1-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Pescado Blanco	\N	1850	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	50	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b5e8-fbef-11ec-89c1-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Langostino	\N	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	51	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b6ec-fbef-11ec-89c1-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Pulpo	\N	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	52	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b7dc-fbef-11ec-89c1-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Salmon	\N	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	53	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b8e0-fbef-11ec-89c1-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Pescado blanco	\N	1150	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	54	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54b9d0-fbef-11ec-89c1-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Langostino	\N	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	55	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54baca-fbef-11ec-89c1-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Pulpo	\N	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	56	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54bbc4-fbef-11ec-89c1-0663a2e72472	Tiraditos	Salmón	\N	2580	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	57	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54bcc8-fbef-11ec-89c1-0663a2e72472	Tiraditos	Pescado Blanco	\N	2280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	58	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54bdcc-fbef-11ec-89c1-0663a2e72472	Tiraditos	Pulpo	\N	2730	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	59	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54bebc-fbef-11ec-89c1-0663a2e72472	Ceviches	Salmón	\N	2500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	60	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54bfa2-fbef-11ec-89c1-0663a2e72472	Ceviches	Pescado blanco	\N	2250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	61	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c09c-fbef-11ec-89c1-0663a2e72472	Ceviches	Mixto	Salmón y pescado blanco	2400	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	62	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
 26b56d04-6fbe-11ec-b04a-069092eeb849	Promociones	1/4 Pizza Mozzarella + Bebida sin alcohol	(Linea Coca Cola, Aquarius o agua Villavicencio)	449	79885373-c109-4f91-b358-8dd3e34ea4e8	1	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 26b57056-6fbe-11ec-b04b-069092eeb849	Promociones	3 Empanadas + Bebida sin alcohol	 	549	79885373-c109-4f91-b358-8dd3e34ea4e8	2	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 26b570f6-6fbe-11ec-b04c-069092eeb849	Promociones	1 Mozzarella mediana + 2 Empanadas	 	999	79885373-c109-4f91-b358-8dd3e34ea4e8	3	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
@@ -11133,6 +10945,9 @@ b96d4aa8-f7ce-11eb-a1ec-069092eeb849	Bebidas	Lata Andes Ipa	\N	180	fba54fc2-a3ab
 26b57704-6fbe-11ec-b062-069092eeb849	Pizzas (Medias)	Pizza Prosciutto Cotto	Salsa de tomate, queso mozzarella, jamón cocido, tomate, albahaca y morrón asado.	1099	79885373-c109-4f91-b358-8dd3e34ea4e8	25	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 26b5774a-6fbe-11ec-b063-069092eeb849	Pizzas (Medias)	Pizza Española	Salsa de tomate, queso mozzarella, chorizo, huevo de codorniz y tomates cherry.	1249	79885373-c109-4f91-b358-8dd3e34ea4e8	26	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 e3ac1b96-6fbf-11ec-8f90-069092eeb849	Promociones	1 Docena Empanadas	 	1499	68196cb0-e11a-48c5-afd8-1f0a670b2e74	4	2022-01-07 13:44:09.076122	2022-01-07 13:44:09.076122
+6a54c1be-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Vieiras sobre colchón de manzanas y cebollas caramelizadas y pesto de menta y apio	\N	1900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	63	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c2ae-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Atún rojo (tataki) con ensalada de rucula / escamas de zanahoria, huevo poche y crocante de calabaza	\N	1900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	64	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c3a8-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Cazuela de mix de mariscos asados c/ papas crocantes	Mariscos: langostinos, chipirones, mejillones, calamar y pulpo	1600	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	65	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
 26b57790-6fbe-11ec-b064-069092eeb849	Pizzas (Medias)	Pizza Espinaca	Salsa de tomate, queso mozzarella, espinaca, salsa blanca y queso parmesano.	1099	79885373-c109-4f91-b358-8dd3e34ea4e8	27	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 26b577d6-6fbe-11ec-b065-069092eeb849	Pizzas (Medias)	Pizza Diavola	Salsa de tomate, queso mozzarella, calabresa, tomate y orégano.	999	79885373-c109-4f91-b358-8dd3e34ea4e8	28	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
 26b5781c-6fbe-11ec-b066-069092eeb849	Pizzas (Medias)	Pizza Rúcula & Crudo	Salsa de tomate, queso mozzarella, jamón crudo y rúcula.	1249	79885373-c109-4f91-b358-8dd3e34ea4e8	29	2022-01-07 13:31:42.551343	2022-01-07 13:31:42.551343
@@ -11313,6 +11128,21 @@ f00c9104-6fbf-11ec-b0d0-069092eeb849	Bebidas	Aguas saborizadas Aquarius 500cc	Sa
 f00c914a-6fbf-11ec-b0d1-069092eeb849	Bebidas	Cerveza Stella Artois 473cc	 	349	87d08756-5f7c-4965-80ec-7ab41ad88695	67	2022-01-07 13:44:29.841172	2022-01-07 13:44:29.841172
 f00c9186-6fbf-11ec-b0d2-069092eeb849	Bebidas	Corona porrón 355cc	 	449	87d08756-5f7c-4965-80ec-7ab41ad88695	68	2022-01-07 13:44:29.841172	2022-01-07 13:44:29.841172
 f00c91cc-6fbf-11ec-b0d3-069092eeb849	Bebidas	Cerveza Patagonia 733cc	\N	449	87d08756-5f7c-4965-80ec-7ab41ad88695	69	2022-01-07 13:44:29.841172	2022-01-07 13:44:29.841172
+6a54c4a2-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Gyosas de cerdo al vapor y \nselladas a la sárten	\N	1100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	66	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c650-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Mollejas con crema de papas, limón, verdeo	\N	1800	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	67	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c740-fbef-11ec-89c1-0663a2e72472	Entradas Cocina	Brie	Queso caliente sobre mermelada de tomates ahumados y almendras	1800	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	68	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c844-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Carnes	Lomo envuelto en jamón crudo y croute de mollejas c/pulpa de tomate, hinojo glaseado y chaucha agridulce (salsa aceto)	\N	2400	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	69	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54c93e-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Carnes	Solomillo de cero relleno de queso de cabra c/ peras envueltas en panceta y rucula con chuckney de mango	\N	2350	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	70	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54ca2e-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Carnes	Pesca del dia c/ verduras salteada con manteca y pesto de menta y frutos secos	\N	2250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	71	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54cb28-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Carnes	Milanesa de ojo de bife c/ cake de papas y chorizo, salsa de pimientos asados y alioli	\N	2250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	72	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54cc2c-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Carnes	Menu Infantil	Nuggets de pollo y papas fritas, agua o agua saborizada	1000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	73	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54cd30-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Pastas	Ñoquis de semola c/ salsa de crema, chipirones, tomates asados y panceta crocante	\N	1900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	74	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54ce2a-fbef-11ec-89c1-0663a2e72472	Principales Cocina: Pastas	Tagliatelle con albondigas de cerdo c/ pesto de tomates cherry confitados, perejil y almendras	\N	2000	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	75	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54cf1a-fbef-11ec-89c1-0663a2e72472	Postres	Crumble de manzanas tibio	\N	700	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	76	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54d014-fbef-11ec-89c1-0663a2e72472	Postres	Flan de dulce de leche	\N	650	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	77	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54d10e-fbef-11ec-89c1-0663a2e72472	Postres	Mousse de chocolate con frutas asadas	\N	780	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	78	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54d208-fbef-11ec-89c1-0663a2e72472	Salsas	Teriyaki	\N	50	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	79	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
+6a54d2f8-fbef-11ec-89c1-0663a2e72472	Salsas	Maracuya	\N	50	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	80	2022-07-04 23:17:04.129292	2022-07-04 23:17:04.129292
 82ff468e-349a-11ec-a0c5-069092eeb849	Delivery En Pet (Botella 1lt Descartable)	Cream Ale ~ La Paloma	[IBU: 20-Alc: 5,5%] Rubia suave y maltosa con notas dulces de maíz.	350	01b45608-bc8e-11ea-8392-16ad4631369f	1	2021-10-24 07:17:56.825798	2021-10-24 07:17:56.825798
 82ff4a6c-349a-11ec-a0c6-069092eeb849	Delivery En Pet (Botella 1lt Descartable)	Amber Ale- La Paloma	[IBU: 25-Alc: 5,8%] Color ámbar con notas dulces de malta caramelo.	350	01b45608-bc8e-11ea-8392-16ad4631369f	2	2021-10-24 07:17:56.825798	2021-10-24 07:17:56.825798
 82ff4b48-349a-11ec-a0c7-069092eeb849	Delivery En Pet (Botella 1lt Descartable)	Scottish - Bohr	[IBU: 20-Alc: 5%] Se trata de una cerveza audaz cuyo protagonismo se centra en la malta, delicadamente caramelizada, y un bajo nivel de amargor. Es cobriza con reflejos rubíes, cuerpo ágil, y espuma cremosa y tostada. Su aroma resulta maltoso y dulce, con un leve catácter frutal.	350	01b45608-bc8e-11ea-8392-16ad4631369f	3	2021-10-24 07:17:56.825798	2021-10-24 07:17:56.825798
@@ -11553,6 +11383,13 @@ d2ccac4e-b215-11ec-8527-069092eeb849	Al Agua	Durazno​	\N		ac05b872-2b92-4c45-b
 6fe759d4-159a-11ec-9de5-069092eeb849	Repostería  Naturista ( Elaborada Con Azúcar Rubia Integral)	Budín Integral De Zanahoria Y Nueces	\N	500	b021362b-b49a-455e-b32e-fd4d2ab4d74e	37	2021-09-14 20:29:18.820328	2021-09-14 20:29:18.820328
 6fe75a1a-159a-11ec-9de6-069092eeb849	Repostería  Naturista ( Elaborada Con Azúcar Rubia Integral)	Budín Integral De Banana	\N	500	b021362b-b49a-455e-b32e-fd4d2ab4d74e	38	2021-09-14 20:29:18.820328	2021-09-14 20:29:18.820328
 6fe75a60-159a-11ec-9de7-069092eeb849	Repostería  Naturista ( Elaborada Con Azúcar Rubia Integral)	Mermeladas orgánicas elaboradas con azúcar rubia ( quinotos, tomate, ciruela y cayote )	\N	450	b021362b-b49a-455e-b32e-fd4d2ab4d74e	39	2021-09-14 20:29:18.820328	2021-09-14 20:29:18.820328
+2ae0fdf4-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	1	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae103ee-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	2	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae104fc-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°1 Hamburgués solo	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	3	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1060a-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°2 Hamburgués con queso	\N	810	066be4be-8afe-41cc-b606-09314fd3140a	4	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae106fa-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°3 Hamburgués con jamón y queso	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	5	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10812-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°4 Hambrgués con jamón, queso y cebolla	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	6	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1090c-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°5 Hamburgués con jamón, queso y tomate	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	7	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
 95c65e24-a2b4-11eb-9fa0-069092eeb849	Empanadas Al Horno De Barro (Docena $900)	Carne	\N	75	84248b79-b4f4-489c-846f-f412bae326b9	1	2021-04-21 15:16:45.553576	2021-04-21 15:16:45.553576
 95c661da-a2b4-11eb-9fa1-069092eeb849	Empanadas Al Horno De Barro (Docena $900)	Carne Picante	\N	75	84248b79-b4f4-489c-846f-f412bae326b9	2	2021-04-21 15:16:45.553576	2021-04-21 15:16:45.553576
 95c6623e-a2b4-11eb-9fa2-069092eeb849	Empanadas Al Horno De Barro (Docena $900)	Carne Cort/ Cuchillo	\N	75	84248b79-b4f4-489c-846f-f412bae326b9	3	2021-04-21 15:16:45.553576	2021-04-21 15:16:45.553576
@@ -11606,6 +11443,27 @@ d2ccac4e-b215-11ec-8527-069092eeb849	Al Agua	Durazno​	\N		ac05b872-2b92-4c45-b
 23ea9e98-9c4f-11eb-90c4-069092eeb849	Otros Productos	Mermelada artesanal "La Seño"	\N		06b45a81-bc1c-463d-acb6-ec9794735513	22	2021-04-13 11:55:28.384057	2021-04-13 11:55:28.384057
 23ea9ede-9c4f-11eb-90c5-069092eeb849	Otros Productos	Pack Galesa	Torta galesa de Trelew y 3 té en hebras nacional a elección entre 20 variedades..		06b45a81-bc1c-463d-acb6-ec9794735513	23	2021-04-13 11:55:28.384057	2021-04-13 11:55:28.384057
 23ea9f24-9c4f-11eb-90c6-069092eeb849	Otros Productos	Blend de condimentos	Consultar por promo: 3 tubitos con 20 gramos c/u.		06b45a81-bc1c-463d-acb6-ec9794735513	24	2021-04-13 11:55:28.384057	2021-04-13 11:55:28.384057
+2ae109f2-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°8 Hamburgués con jamón, queso, tomate y huevo	\N	980	066be4be-8afe-41cc-b606-09314fd3140a	8	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10b64-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°11 Hamburgués con jamón, queso y ananá	\N	1080	066be4be-8afe-41cc-b606-09314fd3140a	9	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10c54-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°12 Hamburgués con panceta, queso y tomate	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	10	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10d62-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°13 Hamburgués con panceta, queso y cebolla	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	11	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10e66-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°14 Hamburgués con panceta, queso y huevo	\N	980	066be4be-8afe-41cc-b606-09314fd3140a	12	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae10f6a-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°15 Hamburgués con panceta, queso, tomate y morrón	\N	980	066be4be-8afe-41cc-b606-09314fd3140a	13	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11050-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°16 Hamburgués con panceta, queso y ciruela	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	14	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11136-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°17 Hamburgués con jamón, queso, tomate, huevo, cebolla y morrón	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	15	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11226-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°18 Hamburgués Crip: Doble medallón de 250grs cada uno, jamón, queso, tomate, huevo y ají	\N	1450	066be4be-8afe-41cc-b606-09314fd3140a	16	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11320-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°19 Hamburgués Napolitana con jamón, queso y salsa napolitana	\N	980	066be4be-8afe-41cc-b606-09314fd3140a	17	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1141a-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°20 Hamburgués Milán rebozada, jamón, queso y morrón)	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	18	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11528-fe24-11ec-a40e-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°150 Hamburgués especial con provoleta, panceta y salsa napolitana	\N	1180	066be4be-8afe-41cc-b606-09314fd3140a	19	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11622-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	20	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11726-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	Con Aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	21	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1182a-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°504 Hamburgués Parklife: con queso, tomate, albahaca y ajo con aceite de oliva	\N	940	066be4be-8afe-41cc-b606-09314fd3140a	22	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1191a-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°505 Hamburgués Draytones: cheddar y cebolla colorada	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	23	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11a14-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°508 Hamburgués Red Hot con jamón, queso y salsa picante	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	24	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11b0e-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°511 Hamburgués Rebel:  cheddar, tomate, rúcula, parmesano y oliva	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	25	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11c08-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°509 Hamburgués Spirit: mozzarella, tomate seco, albahaca, parmesano y aceitunas negras	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	26	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11cf8-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°506 Hamburgués Fantastic Four: mozzarella, cheddar, provoleta y parmesano	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	27	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae11df2-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°510 Hamburgués Chederland: cheddar, panceta o jamón y cebolla caramelizada	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	28	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
 700194ac-cfd5-11ec-ac47-0663a2e72472	Vinos	Otro loco	\N	160	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	1	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
 70019790-cfd5-11ec-ac47-0663a2e72472	Alma Mora	Lola	\N	150	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	2	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
 700198b2-cfd5-11ec-ac47-0663a2e72472	Alma Mora	Portillo	\N	180	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	3	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
@@ -11642,136 +11500,97 @@ d2ccac4e-b215-11ec-8527-069092eeb849	Al Agua	Durazno​	\N		ac05b872-2b92-4c45-b
 7001c030-cfd5-11ec-ac47-0663a2e72472	Whiskys	Game oh thrones	\N	2000	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	34	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
 7001c116-cfd5-11ec-ac47-0663a2e72472	Whiskys	Ballantines 3/4	\N	950	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	35	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
 7001c1f2-cfd5-11ec-ac47-0663a2e72472	Whiskys	Vat	\N	310	fc4bf221-9300-42c6-ab0e-1ea7e2f7af34	36	2022-05-09 20:20:15.576765	2022-05-09 20:20:15.576765
-7b3a3004-cfee-11ec-9004-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Pescado blanco	\N	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	51	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39ecde-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 15 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	1850	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	1	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39f1e8-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 30 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	3450	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	2	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39f300-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 45 Piezas Clásica	Rolls variados de salmón, langostino y pulpo, niguiris de salmón	4950	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	3	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39f3f0-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 15 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	2250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	4	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39f4ea-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 30 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	4250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	5	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3112-cfee-11ec-9004-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Langostino	\N	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	52	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39f5e4-cfee-11ec-9004-0663a2e72472	Sushi	Tabla De Sushi 45 Piezas Especial	Rolls variados de salmón, langostino y pulpo, niguiris de salmón, langostino y pulpo, piezas calientes	5950	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	6	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39fcce-cfee-11ec-9004-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Calientes	Combinado de piezas calientes: Hot Roll, Geishas en Tempura y Furay	2500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	7	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39fe04-cfee-11ec-9004-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Vegetariano	Combinado de piezas con variedad de frutas, verduras y queso	1600	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	8	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b39ff30-cfee-11ec-9004-0663a2e72472	Sushi	Tabla de Sushi 15 Piezas Veganas	Combinado de piezas con variedad de frutas y verduras	1600	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	9	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0020-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	New york	Palta, pepino, salmón	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	10	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a011a-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Philadelphia	Palta, salmón, finlandia	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	11	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a020a-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Sake rolls	Solo salmón	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	12	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0304-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Guacamole rolls	Salmón, coronado con guacamole	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	13	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a03fe-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Ceviche rolls	Pepino, palta, mango, coronado con ceviche	1280	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	14	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a04f8-cfee-11ec-9004-0663a2e72472	Rolls Clásicos : 1 Porción (8 Unidades)	Roll Vegetariano/Vegano	Palta, pepino, zanahoria y mango	1050	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	15	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a06ba-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 New York	Palta, pepino, salmón	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	16	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a07be-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Philadelphia	Palta, salmón, finlandia	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	17	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a08b8-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Sake Roll	Solo salmón	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	18	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a09c6-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Guacamole rolls	Salmón, coronado con guacamole	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	19	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0ab6-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Ceviche rolls	Pepino, palta, mango, coronado con ceviche	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	20	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0ba6-cfee-11ec-9004-0663a2e72472	Rolls Clásicos: 1/2 Porción (4 Unidades)	1/2 Roll Vegetariano/Vegano	Palta, pepino, zanahoria y mango	650	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	21	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0caa-cfee-11ec-9004-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Octopus	Pulpo grillado en aceite de ajo, envuelto en remolacha y azúcar quemada	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	22	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0da4-cfee-11ec-9004-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Ebi rolls	Langostino crocante, pickles de pepino, queso y salsa de maracuya	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	23	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0e9e-cfee-11ec-9004-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Mix rolls	Finlandia, palta, mango, ciboulette, envuelto en salmón, batatas crocantes, y salsa agridulce	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	24	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a0f98-cfee-11ec-9004-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Crocante rolls	Salmón, pepino, garrapiñada, echalotes crocantes y salsa agridulce	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	25	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a107e-cfee-11ec-9004-0663a2e72472	New Rolls: 1 Porción (8 Unidades)	Ebi-phila	Langostinos grillados con limón y verdeo, palta y laminas de finlandia	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	26	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1178-cfee-11ec-9004-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Octopus	Pulpo grillado en aceite de ajo, envuelto en remolacha y azúcar quemada	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	27	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1268-cfee-11ec-9004-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Ebi rolls	Langostino crocante, pickles de pepino, queso y salsa de maracuya	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	28	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1358-cfee-11ec-9004-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Mix rolls	Finlandia, palta, mango, ciboulette, envuelto en salmón, batatas crocantes, y salsa agridulce	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	29	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1448-cfee-11ec-9004-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Crocante rolls	Salmón, pepino, garrapiñada, echalotes crocantes y salsa agridulce	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	30	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1ca4-cfee-11ec-9004-0663a2e72472	New Rolls: 1/2 Porción (4 Unidades)	1/2 Ebi-phila	Langostinos grillados con limón y verdeo, palta y laminas de finlandia	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	31	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1dd0-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Hot Roll	Relleno: salmón, palta y queso, cubierto de alga y arroz, bañado en tempura	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	32	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1eb6-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Furay	Relleno: salmón, palta y queso, cubierto de alga apanado con pan rallado	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	33	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a1fb0-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1 Porción (8 Unidades)	Hot Geishas	Relleno: salmón, palta y queso, bañado en tempura	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	34	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a20a0-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Hot Roll	Relleno: salmón, palta y queso, cubierto de alga y arroz, bañado en tempura	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	35	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a21a4-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Furay	Relleno: salmón, palta y queso, cubierto de alga apanado con pan rallado	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	36	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a22b2-cfee-11ec-9004-0663a2e72472	Rolls Calientes: 1/2 Porción (4 Unidades)	1/2 Hot Geishas	Relleno: salmón, palta y queso, bañado en tempura	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	37	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a23ac-cfee-11ec-9004-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Langostino	\N	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	38	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a24a6-cfee-11ec-9004-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Salmón	\N	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	39	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2596-cfee-11ec-9004-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Pescado blanco	\N	1290	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	40	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a267c-cfee-11ec-9004-0663a2e72472	Niguiris: 1 Porción (8 Unidades)	Pulpo	\N	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	41	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a276c-cfee-11ec-9004-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 langostino	\N	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	42	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a285c-cfee-11ec-9004-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 salmón	\N	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	43	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a294c-cfee-11ec-9004-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 pescado blanco	\N	880	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	44	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2a5a-cfee-11ec-9004-0663a2e72472	Niguiris: 1/2 Porción (4 Unidades)	1/2 pulpo	\N	1080	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	45	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2b54-cfee-11ec-9004-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Salmon	\N	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	46	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2c58-cfee-11ec-9004-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Pescado Blanco	\N	1420	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	47	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2d48-cfee-11ec-9004-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Langostino	\N	1520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	48	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2e24-cfee-11ec-9004-0663a2e72472	Sashimi: 1 Porción (6 Unidades)	Pulpo	\N	1620	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	49	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a2f14-cfee-11ec-9004-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Salmon	\N	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	50	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a322a-cfee-11ec-9004-0663a2e72472	Sashimi: 1/2 Porción (3 Unidades)	1/2 Pulpo	\N	980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	53	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3464-cfee-11ec-9004-0663a2e72472	Tiraditos	Salmón	\N	1980	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	54	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a354a-cfee-11ec-9004-0663a2e72472	Tiraditos	Pescado Blanco	\N	1750	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	55	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a363a-cfee-11ec-9004-0663a2e72472	Tiraditos	Pulpo	\N	2100	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	56	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3720-cfee-11ec-9004-0663a2e72472	Ceviches	Salmón	\N	1900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	57	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3806-cfee-11ec-9004-0663a2e72472	Ceviches	Pescado blanco	\N	1730	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	58	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a38f6-cfee-11ec-9004-0663a2e72472	Ceviches	Mixto	Salmón y pescado blanco	1830	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	59	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a39e6-cfee-11ec-9004-0663a2e72472	Entradas Cocina	Vieiras sobre colchón de manzanas y cebollas caramelizadas y pesto de menta y apio	\N	1500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	60	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3ad6-cfee-11ec-9004-0663a2e72472	Entradas Cocina	Atún rojo (tataki) con ensalada de rucula / escamas de zanahoria, huevo poche y crocante de calabaza	\N	1500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	61	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3bd0-cfee-11ec-9004-0663a2e72472	Entradas Cocina	Cazuela de mix de mariscos asados c/ papas crocantes	Mariscos: langostinos, chipirones, mejillones, calamar y pulpo	1250	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	62	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3cc0-cfee-11ec-9004-0663a2e72472	Entradas Cocina	Gyosas de cerdo al vapor y \nselladas a la sárten	\N	850	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	63	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3dce-cfee-11ec-9004-0663a2e72472	Entradas Cocina	Mollejas con crema de papas, limón, verdeo	\N	1400	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	64	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a3eb4-cfee-11ec-9004-0663a2e72472	Principales Cocina: Carnes	Lomo envuelto en jamón crudo y croute de mollejas c/pulpa de tomate, hinojo glaseado y chaucha agridulce (salsa aceto)	\N	1850	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	65	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a403a-cfee-11ec-9004-0663a2e72472	Principales Cocina: Carnes	Solomillo de cero relleno de queso de cabra c/ peras envueltas en panceta y rucula con chuckney de mango	\N	1800	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	66	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a412a-cfee-11ec-9004-0663a2e72472	Principales Cocina: Carnes	Pesca del dia c/ verduras salteada con manteca y pesto de menta y frutos secos	\N	1750	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	67	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a422e-cfee-11ec-9004-0663a2e72472	Principales Cocina: Carnes	Milanesa de ojo de bife c/ cake de papas y chorizo, salsa de pimientos asados y alioli	\N	1650	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	68	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a431e-cfee-11ec-9004-0663a2e72472	Principales Cocina: Carnes	Menu Infantil	Nuggets de pollo y papas fritas, agua o agua saborizada	900	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	69	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a440e-cfee-11ec-9004-0663a2e72472	Principales Cocina: Pastas	Ñoquis de semola c/ salsa de crema, chipirones, tomates asados y panceta crocante	\N	1500	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	70	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a44fe-cfee-11ec-9004-0663a2e72472	Principales Cocina: Pastas	Tagliatelle con albondigas de cerdo c/ pesto de tomates cherry confitados, perejil y almendras	\N	1600	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	71	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a45e4-cfee-11ec-9004-0663a2e72472	Postres	Crumble de manzanas tibio	\N	550	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	72	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a46d4-cfee-11ec-9004-0663a2e72472	Postres	Flan de dulce de leche	\N	520	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	73	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a47ba-cfee-11ec-9004-0663a2e72472	Postres	Mousse de chocolate con frutas asadas	\N	600	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	74	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a48aa-cfee-11ec-9004-0663a2e72472	Salsas	Teriyaki	\N	20	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	75	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-7b3a4990-cfee-11ec-9004-0663a2e72472	Salsas	Maracuya	\N	20	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	76	2022-05-09 23:19:31.817405	2022-05-09 23:19:31.817405
-db2cf850-db9e-11ec-b842-0663a2e72472	Budines	Vainilla	Budin de vainilla con frutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	1	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d00f2-db9e-11ec-b842-0663a2e72472	Budines	Cacao Amargo	Budin de cacao amargo con frutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	2	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d0232-db9e-11ec-b842-0663a2e72472	Budines	Marmolado	Budin marmolado de vanilla con cacao amargo yfrutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	540	66d7f54b-5989-46d5-9c0a-68a64f6d1145	3	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d034a-db9e-11ec-b842-0663a2e72472	Budines	Algarroba	Todas las propiedades anteriores más el plus proveniente de la harina de algarroba que le aportan vitaminas, hierro, y 7grs más de proteína. Aporta 67 gr de proteinas  y 165 hidratos de calidad.	560	66d7f54b-5989-46d5-9c0a-68a64f6d1145	4	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d0444-db9e-11ec-b842-0663a2e72472	Budines	The Killer monkey	Elaborado con clara de huevo, salvado de avena, pasta de maní, banana, coco y nuez. Contiene más de 55 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el coco.	610	66d7f54b-5989-46d5-9c0a-68a64f6d1145	5	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d0f5c-db9e-11ec-b842-0663a2e72472	Budines	The Black monkey	Elaborado con clara de huevo, salvado de avena, pasta de mani, banana, Cacao %100 y chispas de chocolate semi amargo. Contiene más de 50 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad.	610	66d7f54b-5989-46d5-9c0a-68a64f6d1145	6	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d10b0-db9e-11ec-b842-0663a2e72472	Budines	Manzana y canela	Elaborados a partir de claras de huevo, canela en rama, manzanas verdes, salvado de avena, leche descremada en polvo, salvado de trigo, nuez y pasas de uva.	570	66d7f54b-5989-46d5-9c0a-68a64f6d1145	7	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d11c8-db9e-11ec-b842-0663a2e72472	Budines	Mini Budin de Vainilla	Elaborados a partir de claras de huevo, harina de avena, proteína de suero saborizada y edulcorante. Cada budín provee a tu cuerpo, 32gr de proteína, 8gr de carbohidratos y 2 grs de grasas saludables.	280	66d7f54b-5989-46d5-9c0a-68a64f6d1145	8	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d12d6-db9e-11ec-b842-0663a2e72472	Budines	Mini Budin de Chocolate	Elaborados a partir de claras de huevo, harina de avena, proteína de suero saborizada y edulcorante. Cada budín provee a tu cuerpo, 32gr de proteína, 8gr de carbohidratos y 2 grs de grasas saludables.	300	66d7f54b-5989-46d5-9c0a-68a64f6d1145	9	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d13da-db9e-11ec-b842-0663a2e72472	Budines	Promoción Mini budines (igual sabor) Vainilla	Llevando 3 mini budines de igual sabor.	660	66d7f54b-5989-46d5-9c0a-68a64f6d1145	10	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d14e8-db9e-11ec-b842-0663a2e72472	Budines	Promoción Mini budines (igual sabor) Chocolate	Llevando 3 mini budines de igual sabor.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	11	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d15f6-db9e-11ec-b842-0663a2e72472	Pancakes	Saludables de Vainilla x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y esencia de vainilla o cacao amargo. Cada porción aporta 6gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	300	66d7f54b-5989-46d5-9c0a-68a64f6d1145	12	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d1704-db9e-11ec-b842-0663a2e72472	Pancakes	Saludables de cacao amargo x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y cacao amargo. Cada porción aporta 6gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	320	66d7f54b-5989-46d5-9c0a-68a64f6d1145	13	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d17fe-db9e-11ec-b842-0663a2e72472	Pancakes	Saludables de Algarroba x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y harina de algarroba. Cada porcion aporta 6,9 gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	14	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d18f8-db9e-11ec-b842-0663a2e72472	Pancakes	Saludables de coco x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, coco rallado, edulcorante y harina de almendras. Cada porcion aporta 6,5 gr de proteinas, 2 gr de grasa saludables y 9gr de hidratos saludables.	360	66d7f54b-5989-46d5-9c0a-68a64f6d1145	15	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d19fc-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de Vainilla x6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada y edulcorante. Aportan 13 gr de proteínas, 10 gr de hidratos saludables.	580	66d7f54b-5989-46d5-9c0a-68a64f6d1145	16	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d1b0a-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de vanilla x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada y edulcorante. Aportan 13 gr de proteínas, 10 gr de hidratos saludables.	800	66d7f54b-5989-46d5-9c0a-68a64f6d1145	17	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d1c18-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de cookies & cream x6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada, chispas de chocolate  y edulcorante. Aportan 13 gr de proteínas, 11 gr de hidratos saludables.	630	66d7f54b-5989-46d5-9c0a-68a64f6d1145	18	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d1d08-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de cookies & cream x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada, chispas de chocolate  y edulcorante. Aportan 13 gr de proteínas, 11 gr de hidratos saludables.	880	66d7f54b-5989-46d5-9c0a-68a64f6d1145	19	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d1df8-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de algarroba y frambuesas x 6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de algarroba, proteina de suero saborizada, cacao amargo, edulcorante y frambuesas frescas. Aportan 13 gr de proteinas y 14 gr de hidratos saludables.	630	66d7f54b-5989-46d5-9c0a-68a64f6d1145	20	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d2078-db9e-11ec-b842-0663a2e72472	Pancakes	Proteicos de algarroba y frambuesas x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de algarroba, proteina de suero saborizada, cacao amargo, edulcorante y frambuesas frescas. Aportan 13 gr de proteinas y 14 gr de hidratos saludables.	880	66d7f54b-5989-46d5-9c0a-68a64f6d1145	21	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d2190-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Tradicional x 6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	320	66d7f54b-5989-46d5-9c0a-68a64f6d1145	22	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d22b2-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Tradicional x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	440	66d7f54b-5989-46d5-9c0a-68a64f6d1145	23	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d23b6-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Coco x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	350	66d7f54b-5989-46d5-9c0a-68a64f6d1145	24	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d24b0-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Coco x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, coco rallado y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 23 grs de hidratos.	470	66d7f54b-5989-46d5-9c0a-68a64f6d1145	25	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d25b4-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Banana x 6 unidades	elaborados a partir de claras de huevo, harina de mijo, harina de arroz, coco rallado, leche de coco, banana y edulcorante. Producto sin gluten, carbohidratos 24 y 5gr de proteína por unidad	370	66d7f54b-5989-46d5-9c0a-68a64f6d1145	26	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d26b8-db9e-11ec-b842-0663a2e72472	Waffles Saludables	Banana x 12 unidades	elaborados a partir de claras de huevo, harina de mijo, harina de arroz, coco rallado, leche de coco, banana y edulcorante. Producto sin gluten, carbohidratos 24 y 5gr de proteína por unidad	490	66d7f54b-5989-46d5-9c0a-68a64f6d1145	27	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d27bc-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Vainilla x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	480	66d7f54b-5989-46d5-9c0a-68a64f6d1145	28	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d2a3c-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Vainilla x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	660	66d7f54b-5989-46d5-9c0a-68a64f6d1145	29	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d2b72-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Dulce de leche x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	480	66d7f54b-5989-46d5-9c0a-68a64f6d1145	30	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d2fc8-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Dulce de leche x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	660	66d7f54b-5989-46d5-9c0a-68a64f6d1145	31	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d30f4-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Cacao amargo (premium) x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada, cacao 100% amargo y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	32	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3216-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Cacao amargo (premium) x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada, cacao 100% amargo y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	33	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3342-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Only salad x6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	34	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d345a-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Only salad x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	35	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3568-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Queso x 6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	36	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3658-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Queso x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	37	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3752-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Pizza x 6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	38	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3874-db9e-11ec-b842-0663a2e72472	Waffles Proteicos	Pizza x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	39	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3978-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Vainilla y canela x6 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de almendras, leche de almendras, canela, ensencia de vainilla y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	470	66d7f54b-5989-46d5-9c0a-68a64f6d1145	40	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3a72-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Vainilla y canela x12 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de almendras, leche de almendras, canela, ensencia de vainilla y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	580	66d7f54b-5989-46d5-9c0a-68a64f6d1145	41	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3b9e-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Algarroba y Naranja x6 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de algarroba, leche de almendras, ralladura de naranja y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	470	66d7f54b-5989-46d5-9c0a-68a64f6d1145	42	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3cc0-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Algarroba y Naranja x12 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de algarroba, leche de almendras, ralladura de naranja y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	580	66d7f54b-5989-46d5-9c0a-68a64f6d1145	43	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3df6-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Jengibre y limón (con Matcha) x6 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, Matcha, limón y jengibre natural. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	530	66d7f54b-5989-46d5-9c0a-68a64f6d1145	44	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3ee6-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Jengibre y limón (con Matcha) x12 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, proteina isolada veganada, stevia, Matcha, limón y jengibre natural. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	690	66d7f54b-5989-46d5-9c0a-68a64f6d1145	45	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d3fe0-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Dark chocolate (con cacao 100% y orgánico) x 6 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, cacao amargo 100% orgánico. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	530	66d7f54b-5989-46d5-9c0a-68a64f6d1145	46	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d40e4-db9e-11ec-b842-0663a2e72472	Waffles Veganos	Dark chocolate (con cacao 100% y orgánico) x 12 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, cacao amargo 100% orgánico. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	690	66d7f54b-5989-46d5-9c0a-68a64f6d1145	47	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4206-db9e-11ec-b842-0663a2e72472	Muffins Saludables	Limón y jengibre x6 unidades	Elaborados a partir de avena, harina de arroz, claras de huevo, edulcorante, semillas de amapola, limón y jengibre. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	48	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4314-db9e-11ec-b842-0663a2e72472	Muffins Saludables	Vainilla y canela x6 unidades	Elaborados a partir de avena, harina de arroz, claras de huevo, edulcorante, nueces, esencia de vanilla y canela. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	49	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4440-db9e-11ec-b842-0663a2e72472	Muffins Saludables	Vainilla y manzana verde x6 unidades	Elaborados a partir de avena, claras de huevo, edulcorante, esencia de vainilla, semillas de chia y manzana verde. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	50	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4530-db9e-11ec-b842-0663a2e72472	Muffins Proteicos	Vainilla x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante y chispas de chocolate negro semi amargo. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	540	66d7f54b-5989-46d5-9c0a-68a64f6d1145	51	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4634-db9e-11ec-b842-0663a2e72472	Muffins Proteicos	Dulce de leche x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante y chispas de chocolate blanco. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	540	66d7f54b-5989-46d5-9c0a-68a64f6d1145	52	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d48dc-db9e-11ec-b842-0663a2e72472	Muffins Proteicos	Chocolate amargo x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante, cacao amargo y pasas de arandanos. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	560	66d7f54b-5989-46d5-9c0a-68a64f6d1145	53	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
-db2d4a08-db9e-11ec-b842-0663a2e72472	Muffins Proteicos	Ultra black	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante, cacao amargo, harina de algarroba y nueces. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	590	66d7f54b-5989-46d5-9c0a-68a64f6d1145	54	2022-05-24 20:19:46.892226	2022-05-24 20:19:46.892226
+2ae11ee2-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°507 Hamburgués Black Star: queso, panceta doble y mini tortilla de papas con aros de cebolla	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	29	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae12040-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°500 Hamburgues TNT: mozzarella, jamón o panceta, huevo frito, especies, montada sobre base de pan de pizza (Solo trae una base de pan de pizza, no sale en sandwich)	\N	980	066be4be-8afe-41cc-b606-09314fd3140a	30	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1317a-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°515 Hamburgues Too Much: rebozada, con cheddar, cebolla colorada, verdeo y huevo frito	\N	950	066be4be-8afe-41cc-b606-09314fd3140a	31	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae132f6-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°514 Hamburgues The Wick: rebozada, con cheddar y salsa criolla	\N	950	066be4be-8afe-41cc-b606-09314fd3140a	32	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae133f0-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°503 Hamburgués con  berengenas, queso y tomate	\N	890	066be4be-8afe-41cc-b606-09314fd3140a	33	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13508-fe24-11ec-a40e-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°502 Hamburgués con berengenas	\N	840	066be4be-8afe-41cc-b606-09314fd3140a	34	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13602-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	35	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae136f2-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	36	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae137ec-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°602 Pechuga Ji Ji Ji:  cheddar y crocante de panceta	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	37	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae138e6-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°600 Hamburguesa Zoom: cheddar, panceta y cebolla colorada	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	38	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae139ea-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°601 Pechuga Waiting: cheddar, panceta y cebolla caramelizada	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	39	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13ae4-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°606 Hamburgues Random: rebozado con cheddar, panceta, huevo frito y perejil	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	40	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13bde-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°603 Bondiola Déja Vú:  con queso, panceta, huevo frito y mix de especias	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	41	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13cce-fe24-11ec-a40e-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°605 Hamburguesa Sister Dúo: doble medallón con cheddar, panceta y tomate	\N	1500	066be4be-8afe-41cc-b606-09314fd3140a	42	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13dc8-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Todos con papas y gaseosa junior	\N		066be4be-8afe-41cc-b606-09314fd3140a	43	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13eb8-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #1 Hamburguesa sola con papas fritas	\N	690	066be4be-8afe-41cc-b606-09314fd3140a	44	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae13fc6-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #2 Hamburguesa con tomate	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	45	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14214-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #3 Hamburguesa con jamón y queso	\N	800	066be4be-8afe-41cc-b606-09314fd3140a	46	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14340-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #4 MOLE	\N	890	066be4be-8afe-41cc-b606-09314fd3140a	47	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14458-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #5 ROSTER	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	48	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14552-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #6 Hamburguesa con cheddar	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	49	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14660-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #7 T-REX:  Doble hamburguesa  con doble cheddar, panceta y tomate	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	50	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1475a-fe24-11ec-a40e-0663a2e72472	Menú Infantil	Junior #8 Moon Dog Pancho con cheddar y crocante de panceta	\N	760	066be4be-8afe-41cc-b606-09314fd3140a	51	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1484a-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	52	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1493a-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	53	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14a2a-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	N°626 Bondiola sola	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	54	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14b38-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	N°629 Bondiola con queso y tomate	\N	970	066be4be-8afe-41cc-b606-09314fd3140a	55	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14c46-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	N°631 Bondiola con jamón, queso y huevo	\N	1010	066be4be-8afe-41cc-b606-09314fd3140a	56	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14d4a-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	N°632 Bondiola con jamón y ananá	\N	1030	066be4be-8afe-41cc-b606-09314fd3140a	57	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14e3a-fe24-11ec-a40e-0663a2e72472	Bondiola De Cerdo En Sandwich	N°633 Bondiola con panceta, queso y ciruelas	\N	1030	066be4be-8afe-41cc-b606-09314fd3140a	58	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae14f3e-fe24-11ec-a40e-0663a2e72472	Bondiolas Especiales En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	59	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1504c-fe24-11ec-a40e-0663a2e72472	Bondiolas Especiales En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	60	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15146-fe24-11ec-a40e-0663a2e72472	Bondiolas Especiales En Sandwich	N°636 Bondiola con cheddar, panceta y cebolla caramelizada	\N	1030	066be4be-8afe-41cc-b606-09314fd3140a	61	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1522c-fe24-11ec-a40e-0663a2e72472	Bondiolas Especiales En Sandwich	N°635 Bondiola Crip: con provoleta, panceta, aceitunas negras, albahaca y tomate.	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	62	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1531c-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	63	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15402-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	64	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15524-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°184 Pollo a la plancha solo al limón (al plato)	\N	860	066be4be-8afe-41cc-b606-09314fd3140a	65	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15614-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°71 Pollo a la plancha con mozzarella y cebolla	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	66	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15740-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°67 Pollo a la plancha con jamón, queso y tomate	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	67	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15844-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°69 Pollo a la plancha napolitana con jamón, queso y salsa napolitana	\N	960	066be4be-8afe-41cc-b606-09314fd3140a	68	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1593e-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°68 Pollo a la plancha Crip con panceta, queso, tomate y huevo	\N	1010	066be4be-8afe-41cc-b606-09314fd3140a	69	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15a38-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°70 Pollo a la plancha con panceta y ciruelas	\N	1010	066be4be-8afe-41cc-b606-09314fd3140a	70	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15b1e-fe24-11ec-a40e-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°135 Pollo a la plancha con cheddar, panceta y cebolla caramelizada	\N	1010	066be4be-8afe-41cc-b606-09314fd3140a	71	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15c18-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	72	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15d08-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	73	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15e02-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°26 Lomito solo	\N	990	066be4be-8afe-41cc-b606-09314fd3140a	74	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae15f10-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°30 Lomito CRIP: con panceta, tomate, huevo a la plancha y aji	\N	1270	066be4be-8afe-41cc-b606-09314fd3140a	75	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae16000-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°31 Lomito con queso y tomate	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	76	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae160fa-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°33 Lomito con jamon, queso y huevo a la plancha	\N	1190	066be4be-8afe-41cc-b606-09314fd3140a	77	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae161f4-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°35 Lomito con jamon, queso y cebolla	\N	1190	066be4be-8afe-41cc-b606-09314fd3140a	78	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae162f8-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°126 Lomito con cheddar	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	79	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae163de-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°128 Lomito con queso, tomate y berenjena	\N	1190	066be4be-8afe-41cc-b606-09314fd3140a	80	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae16500-fe24-11ec-a40e-0663a2e72472	Lomitos En Sandwich	N°130 Lomito con jamón, queso y cebolla caramelizada	\N	1190	066be4be-8afe-41cc-b606-09314fd3140a	81	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae165f0-fe24-11ec-a40e-0663a2e72472	Ensaladas	Ensalada green (espinaca, lechuga, rúcula, repollo)	\N	740	066be4be-8afe-41cc-b606-09314fd3140a	82	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae166e0-fe24-11ec-a40e-0663a2e72472	Ensaladas	Ensalada Waldorf (manzana, apio, palmitos, crema y salsa golf)	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	83	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae167da-fe24-11ec-a40e-0663a2e72472	Ensaladas	Ensalada Desiré (rúcula, espinaca, tomate, huevo rallado y parmesano)	\N	800	066be4be-8afe-41cc-b606-09314fd3140a	84	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae169a6-fe24-11ec-a40e-0663a2e72472	Ensaladas	Ensalada Crip (lechuga, espinaca, crocante de panceta, pollo grillado, queso y salsa César)	\N	890	066be4be-8afe-41cc-b606-09314fd3140a	85	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae16aaa-fe24-11ec-a40e-0663a2e72472	Ensaladas	Ensalada César (lechuga, rúcula, pollo grillado, parmesano, salsa césar y crutones)	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	86	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae16d7a-fe24-11ec-a40e-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella, berenjena, tomate y huevo duro	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	87	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae16e7e-fe24-11ec-a40e-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella, tomtate, ajo y oliva	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	88	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae170c2-fe24-11ec-a40e-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella	\N	730	066be4be-8afe-41cc-b606-09314fd3140a	89	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae171f8-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	90	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17306-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	91	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1740a-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Big yuyo (frío de pan negro con queso de zanahoria, tomate, huevo duro, palmitos y golf)	\N	820	066be4be-8afe-41cc-b606-09314fd3140a	92	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1750e-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Glam de vegetales (frío de pan negro con lechuga, cheddar, tomate, pepino y salsa Caesar)	\N	820	066be4be-8afe-41cc-b606-09314fd3140a	93	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1761c-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Burguer de lentejas, arroz integral con queso, tomate, berenjenas y huevo)	Combiná los ingredientes para opción vegana!	730	066be4be-8afe-41cc-b606-09314fd3140a	94	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17734-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Burguer de soja con kale, queso y tomate	Combiná los ingredientes para opción vegana!	770	066be4be-8afe-41cc-b606-09314fd3140a	95	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1782e-fe24-11ec-a40e-0663a2e72472	Green Zone (Vegetarianos)	Burguer de trigo burgol, chía con kale, cheddar y coleslaw	Combiná los ingredientes para opción vegana!	730	066be4be-8afe-41cc-b606-09314fd3140a	96	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17928-fe24-11ec-a40e-0663a2e72472	Omelette	Omelette de mozzarella, espinaca y parmesano	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	97	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17a22-fe24-11ec-a40e-0663a2e72472	Omelette	Omelette de queso	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	98	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17b26-fe24-11ec-a40e-0663a2e72472	Omelette	Omelette de queso y panceta	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	99	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17c34-fe24-11ec-a40e-0663a2e72472	Omelette	Omelette CRIP de panceta, queso, cebolla y morron	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	100	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17d60-fe24-11ec-a40e-0663a2e72472	Omelette	Omelette de jamon y queso	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	101	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17ea0-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Porción de papas fritas	\N	600	066be4be-8afe-41cc-b606-09314fd3140a	102	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae17fa4-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Papas fritas con huevos fritos	\N	720	066be4be-8afe-41cc-b606-09314fd3140a	103	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18080-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Onion rings (aros de cebolla rebozada)	\N	700	066be4be-8afe-41cc-b606-09314fd3140a	104	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18170-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Addiction cheese  (papas con cheddar fundido y pimienta negra)	\N	800	066be4be-8afe-41cc-b606-09314fd3140a	105	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18256-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Yorkers (papas con cheddar fundido, panceta y verdeo)	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	106	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18350-fe24-11ec-a40e-0663a2e72472	Fritos Y Adicionales	Papas Peyson: crema, panceta y cebolla de verdeo	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	107	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18454-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	108	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18558-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella y jamón	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	109	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1863e-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella, berenjena y huevo duro	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	110	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1876a-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pízzeta Napolitana (mozzarella, tomate y ajo)	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	111	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18864-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta Margarita (mozzarella, jamón y ananá)	\N	920	066be4be-8afe-41cc-b606-09314fd3140a	112	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1895e-fe24-11ec-a40e-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta Pepperoni (mozzarella y longaniza calabresa)	\N	950	066be4be-8afe-41cc-b606-09314fd3140a	113	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18a4e-fe24-11ec-a40e-0663a2e72472	Bebidas	Gaseosa 500cc (coca-coca zero)	\N	350	066be4be-8afe-41cc-b606-09314fd3140a	114	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18b84-fe24-11ec-a40e-0663a2e72472	Bebidas	Agua saborizada 500cc (h20, aquarius)	\N	350	066be4be-8afe-41cc-b606-09314fd3140a	115	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18c74-fe24-11ec-a40e-0663a2e72472	Bebidas	Cerveza patagonia 500cc (lata Amber o 24.7)	\N	480	066be4be-8afe-41cc-b606-09314fd3140a	116	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18d64-fe24-11ec-a40e-0663a2e72472	Bebidas	Gaseosa 1.5lt (coca/coca zero/sprite)	\N	500	066be4be-8afe-41cc-b606-09314fd3140a	117	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae18ed6-fe24-11ec-a40e-0663a2e72472	Bebidas	Cerveza Stella 500cc (lata)	\N	480	066be4be-8afe-41cc-b606-09314fd3140a	118	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
+2ae1900c-fe24-11ec-a40e-0663a2e72472	Bebidas	Cerveza Stella Noire 500cc (lata)	\N	480	066be4be-8afe-41cc-b606-09314fd3140a	119	2022-07-07 18:39:43.213885	2022-07-07 18:39:43.213885
 75984eae-dd10-11ec-9e29-0663a2e72472	Promociones	Promo Integral	Pan Integral\nPan De Campo\n4 Pan De Hamburguesa De Papa\n4 Pan De Hamburguesa De Batata	1200	3f3abd4a-5fc8-44f2-9613-b923252116f4	1	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
 759852e6-dd10-11ec-9e29-0663a2e72472	Promociones	Promo brioche	Pan De Molde Brioche\nTrenza Brioche\n4 Panini\n4 Pan De Hamburguesa De Brioche	1200	3f3abd4a-5fc8-44f2-9613-b923252116f4	2	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
 75985412-dd10-11ec-9e29-0663a2e72472	Promociones	Promo Piadina	6 Piadina\nPan De Campo\n4 Burger De Papa\n4 Burger De Batata 4	1200	3f3abd4a-5fc8-44f2-9613-b923252116f4	3	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
@@ -11789,185 +11608,6 @@ db2d4a08-db9e-11ec-b842-0663a2e72472	Muffins Proteicos	Ultra black	Elaborados a 
 75985fde-dd10-11ec-9e29-0663a2e72472	Panes	PANINI x12	\N	1000	3f3abd4a-5fc8-44f2-9613-b923252116f4	15	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
 759860d8-dd10-11ec-9e29-0663a2e72472	Panes	BAGUETIN BATATA C/QUESO x8	\N	1000	3f3abd4a-5fc8-44f2-9613-b923252116f4	16	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
 759861d2-dd10-11ec-9e29-0663a2e72472	Panes	PANCHO DE BATATA CON QUESO x8	\N	1000	3f3abd4a-5fc8-44f2-9613-b923252116f4	17	2022-05-26 16:25:30.374659	2022-05-26 16:25:30.374659
-c42d3c64-e01c-11ec-828c-0663a2e72472	No Probaste Nuestros Productos? Aprovechá El Box Degustación Con 30% De Descuento. Solo Para Nuevos Clientes.	Box degustacion con 30% de descuento, solo para nuevos clientes.incluye 4 muffin, 1 mousse proteico, 6 trufas y 1 yogur de 150gr -$750	\N	750	77ccc1d6-c6d8-48d1-88de-b42199d38985	1	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d44ca-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de mani con corazón de mermelada de frutos rojos sin azúcar. Bañado en choco con stevia -$180-	\N	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	2	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4614-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de mani con cacao 100%. Bañado en choco con stevia -$180-	\N	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	3	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4718-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	X 4 un. Alfajor de algarroba relleno de pasta de mani con cacao 100%. Bañado en choco con stevia. - $690-	\N	690	77ccc1d6-c6d8-48d1-88de-b42199d38985	4	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4830-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de maní, rebosado en coco -$120-	Alfajor de algarroba y cacao 100% puro, relleno de pasta de maní vainillada, rebozado en coco. Endulzado con stevia.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	5	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4934-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	X 4 un. Alfajor de algarroba relleno de pasta de maní, rebosado en coco -$400-	\N	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	6	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4a38-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de cacao y trufa Vegan -$120-	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía, endulzado con stevia. Vegano.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	7	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4b50-e01c-11ec-828c-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 alfajor de cacao y trufa bañado vegan -$180-	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía, endulzado con stevia, bañado con choco con stevia libre de lactosa. Vegano	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	8	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4c54-e01c-11ec-828c-0663a2e72472	Muffins De Avena	Muffins surtidos x 4un. -$330	Consultar disponibilidad	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	9	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4d62-e01c-11ec-828c-0663a2e72472	Muffins De Avena	Vainilla, coco y arandanos x 1un. -$90-	Elaborados a base de salvado de avena y claras de huevo, endulzado con stevia	90	77ccc1d6-c6d8-48d1-88de-b42199d38985	10	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4e66-e01c-11ec-828c-0663a2e72472	Muffins De Avena	Vainilla, coco y arandanos x 4un. -$300-	\N	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	11	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d4f6a-e01c-11ec-828c-0663a2e72472	Muffins De Avena	Cacao 100% y banana x 1 un. -$90-	Elaborados a base de salvado de avena y claras de huevo.endulzado con stevia	90	77ccc1d6-c6d8-48d1-88de-b42199d38985	12	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5064-e01c-11ec-828c-0663a2e72472	Muffins De Avena	Cacao y banana x 4un. -$330-	\N	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	13	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d523a-e01c-11ec-828c-0663a2e72472	Muffins Proteicos X 4un.	Con agregado de proteina de suero de leche. La Proteina te genera saciedad por más tiempo, lo que ayuda al control del apetito, además acelera el metabolismo y es vital para la regeneracion de tejidos y masa muscular	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	14	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5370-e01c-11ec-828c-0663a2e72472	Muffins Proteicos X 4un.	Muffins  marmolado x 1 un. $120-	Elaborados a base de salvado de avena, claras de huevo, cacao puro y endulzado con stevia, con agregado de proteina de suero de leche, whey protein	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	15	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d547e-e01c-11ec-828c-0663a2e72472	Muffins Proteicos X 4un.	Muffin marmolado x 4un $370	\N	430	77ccc1d6-c6d8-48d1-88de-b42199d38985	16	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d55aa-e01c-11ec-828c-0663a2e72472	Muffins Proteicos X 4un.	Coco y arandanos x 1un. -$120-	No disponibles	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	17	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d57f8-e01c-11ec-828c-0663a2e72472	Muffins Proteicos X 4un.	Coco y Arándanos x 4un -$400-	No disponibles	430	77ccc1d6-c6d8-48d1-88de-b42199d38985	18	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5938-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Chocolate y frambuesa -$260	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	19	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5a46-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Chocolate suizo -$260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	20	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5b54-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Tiramisú -$260-	No disponible	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	21	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5c62-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Frutos del bosque $260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	22	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d5d70-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Cheesecake frutos rojos -$260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	23	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d6b12-e01c-11ec-828c-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Capuchino $260	No disponible	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	24	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d6c66-e01c-11ec-828c-0663a2e72472	Lingotes Saludables	Lingote cheesecake frutos rojos. $350-	A base de nuestro mousse proteico de yogur griego y claras de huevo, con fina base de avena.	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	25	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d6db0-e01c-11ec-828c-0663a2e72472	Lingotes Saludables	Lingote tiramisú-- base de avena, relleno de nuestro mousse proteico de vainilla y café. A base de yogur griego y claras de huevo.-$350-	\N	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	26	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d6ec8-e01c-11ec-828c-0663a2e72472	Lingotes Saludables	Lingote mousse de frutos del bosque---- base de avena, mousse proteico de frutos del bosque y mermelada de frutos rojos sin azúcar. a base de yogur griego y claras de huevo -$350-	\N	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	27	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d6fb8-e01c-11ec-828c-0663a2e72472	Barritas Energeticas	Barritas a base de quinoa inflada, avena, frutos secos, pasta de maní y chocolate sin azúcar. -$160-	X 1 unidad	160	77ccc1d6-c6d8-48d1-88de-b42199d38985	28	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d70d0-e01c-11ec-828c-0663a2e72472	Cookie Proteica 1 Un.	Cacao, algarroba y maní x 1 un. $85	Con agregado de whey protein	85	77ccc1d6-c6d8-48d1-88de-b42199d38985	29	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d71c0-e01c-11ec-828c-0663a2e72472	Cookie Proteica 1 Un.	Frutos secos x 1 un. $85	Con agregado de whey protein y arandanos pasa.	85	77ccc1d6-c6d8-48d1-88de-b42199d38985	30	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d7c06-e01c-11ec-828c-0663a2e72472	Trufas Fit. Energéticas X 6un.	Chocolate -$280-	Avena y cacao puro, Chía activada, nueces y pasta de mani.	280	77ccc1d6-c6d8-48d1-88de-b42199d38985	31	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d7d1e-e01c-11ec-828c-0663a2e72472	Trufas Fit. Energéticas X 6un.	De chocolate bañanadas en chocolate sin azúcar $350	Avena y cacao puro, nueces, chia activada y pasta de mani, bañadas en chocolate sin azúcar, endulzado con stevia	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	32	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d7e22-e01c-11ec-828c-0663a2e72472	Trufas Fit. Energéticas X 6un.	Vainilla, frutos secos y coco. -$250-	avena, pasta de maní, chia activada, nueces, rebozadas en coco.	250	77ccc1d6-c6d8-48d1-88de-b42199d38985	33	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d7f1c-e01c-11ec-828c-0663a2e72472	Prepizza 100% Integral Con Semillas X 12un.	Pizzetas x12 -$300-	\N	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	34	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8016-e01c-11ec-828c-0663a2e72472	Pan 100% Integral Con Semillas	550gr -$265	\N	265	77ccc1d6-c6d8-48d1-88de-b42199d38985	35	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8106-e01c-11ec-828c-0663a2e72472	Linea Veggie Congelada.	Quiche de berenjena, cherry y menta 1 porción con sal $300	No disponible	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	36	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d820a-e01c-11ec-828c-0663a2e72472	Linea Veggie Congelada.	Quiché de zuquini y zanahoria 1 porción $300	No disponible	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	37	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8318-e01c-11ec-828c-0663a2e72472	Linea Veggie Congelada.	Quiche de brocoli y cherry. 1 porción -$350	No disponible	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	38	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8426-e01c-11ec-828c-0663a2e72472	Linea Veggie Congelada.	Quiché de humita $350	No disponible	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	39	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d852a-e01c-11ec-828c-0663a2e72472	Linea Veggie Congelada.	Sin sal	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	40	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8624-e01c-11ec-828c-0663a2e72472	Hamburguesas	Hamburguesa verdura y avena x 4un $280	\N	280	77ccc1d6-c6d8-48d1-88de-b42199d38985	41	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d870a-e01c-11ec-828c-0663a2e72472	Budin De Verdura	Budin de verdura tricolor 350gr $350	\N	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	42	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d880e-e01c-11ec-828c-0663a2e72472	Promo Combo Para Llevar Con Vos	6 trufas surtidas + 2 alfajores + 2 barritas de avena, frutos secos y pasta de maní, bañada en choco sin azucar. $730	\N	730	77ccc1d6-c6d8-48d1-88de-b42199d38985	43	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8912-e01c-11ec-828c-0663a2e72472	Promo Combo Integral	6 pizetas 100% integrales, 4 muffins fit,  1 pan integral x 550gr $780	\N	780	77ccc1d6-c6d8-48d1-88de-b42199d38985	44	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8a02-e01c-11ec-828c-0663a2e72472	Yogur Griego	Duracion: 7 dias en heladera.	Para comer con cereales y frutas- para untar tu tostada! Probalo también en su version natural! ideal para acompañar ensaladas y comidas, es una opcion más saludable que un queso crema!		77ccc1d6-c6d8-48d1-88de-b42199d38985	45	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8b06-e01c-11ec-828c-0663a2e72472	Yogur Griego	Los principales beneficios de éste yogurt para la salud son:\n1. Mayor aporte de proteínas. Brinda mayor saciedad, uno se siente más satisfecho.\n2. Más bajo en carbohidratos. Esto puede ser útil para quienes están tratando de limitar el consumo de carbohidratos bajo un régimen alimentario bajo la supervisión de un profesional.\n3. Fuente de calcio. Ayuda a mantener huesos y dientes sanos, así como un buen funcionamiento del sistema nervioso.\n4. Regula la flora intestinal. Es rico en probióticos, por lo que pueden beneficiar el sistema digestivo.\n5. Fuente de vitamina B12. Al igual que el yogurt regular contiene esta vitamina, la cual está relacionada con la producción de glóbulos rojos y funcionamiento del sistema nervioso y cerebro.\n6. Contiene menos lactosa. Debido al proceso de preparación puede eliminar la mayor parte de la lactosa, siendo una posible opción para los intolerantes a la lactosa	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	46	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8c0a-e01c-11ec-828c-0663a2e72472	Yogur Griego	Yogur griego vainilla x 150gr -$170	150gr	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	47	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8d04-e01c-11ec-828c-0663a2e72472	Yogur Griego	Yogur griego de vainilla x 280gr rinde 2 porciones -$300-	280gr	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	48	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8e4e-e01c-11ec-828c-0663a2e72472	Yogur Griego	Yogur griego Natural x 150 gr -$170	150gr	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	49	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d8f52-e01c-11ec-828c-0663a2e72472	Yogur Griego	Yogur griego Natural x 280 gr rinde 2 porciones -$300	280gr	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	50	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9042-e01c-11ec-828c-0663a2e72472	Yogur Griego	Yogur griego de vainilla con dulce de frutos rojos sin azúcar x 280gr rinde 2 porciones $360	280gr	360	77ccc1d6-c6d8-48d1-88de-b42199d38985	51	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9146-e01c-11ec-828c-0663a2e72472	Yogur Griego	Granola sin azúcar para acompañar, semillas, quinoa pop, Arándanos pasa, frutos secos, x 50gr -$150-	No disponible	150	77ccc1d6-c6d8-48d1-88de-b42199d38985	52	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9272-e01c-11ec-828c-0663a2e72472	Linea Vegan	Trufas de frutos secos x 6un -$260.	avena, pasta de maní, Chía,frutos secos, pasas de uva, rebozadas en coco.	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	53	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9380-e01c-11ec-828c-0663a2e72472	Linea Vegan	Trufas de cacao puro y frutos secos x 6un. $280-	Avena y cacao puro, Chía, pasas de uva, frutos secos y pasta de mani.	280	77ccc1d6-c6d8-48d1-88de-b42199d38985	54	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9484-e01c-11ec-828c-0663a2e72472	Linea Vegan	Trufas bañadas en chocolate sin azucar vegan, de cacao puro y frutos secos x 6un. $350	\N	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	55	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9574-e01c-11ec-828c-0663a2e72472	Linea Vegan	1 Alfajor vegan de cacao, relleno dd trufa, bañado en chocolate sin azucar vegan. $180	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía. Baño de chocolate sin azúcar, apto vegan.	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	56	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d966e-e01c-11ec-828c-0663a2e72472	Linea Vegan	1 Alfajor vegan de avena,cacao y trufa desnudo $120	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía. Vegano.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	57	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9768-e01c-11ec-828c-0663a2e72472	Linea Vegan	X 4 un. Alfajor vegan de avena y cacao y trufa desnudo -$400	\N	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	58	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d9862-e01c-11ec-828c-0663a2e72472	Linea Vegan	Pan 100% integral multisemillado, sin lacteos $265	X550gr	265	77ccc1d6-c6d8-48d1-88de-b42199d38985	59	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-c42d995c-e01c-11ec-828c-0663a2e72472	Linea Vegan	Pizzetas x 12 un. -$300	100% integral	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	60	2022-05-30 13:31:09.545973	2022-05-30 13:31:09.545973
-4a72f69e-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	1	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a72fc0c-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	2	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a72fd1a-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°1 Hamburgués solo	\N	650	066be4be-8afe-41cc-b606-09314fd3140a	3	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a72fe0a-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°2 Hamburgués con queso	\N	710	066be4be-8afe-41cc-b606-09314fd3140a	4	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a72ff04-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°3 Hamburgués con jamón y queso	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	5	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730012-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°4 Hambrgués con jamón, queso y cebolla	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	6	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730102-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°5 Hamburgués con jamón, queso y tomate	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	7	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7301fc-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°8 Hamburgués con jamón, queso, tomate y huevo	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	8	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7302ec-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°11 Hamburgués con jamón, queso y ananá	\N	910	066be4be-8afe-41cc-b606-09314fd3140a	9	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7303e6-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°12 Hamburgués con panceta, queso y tomate	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	10	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7304d6-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°13 Hamburgués con panceta, queso y cebolla	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	11	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7305c6-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°14 Hamburgués con panceta, queso y huevo	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	12	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7307e2-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°15 Hamburgués con panceta, queso, tomate y morrón	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	13	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730918-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°16 Hamburgués con panceta, queso y ciruela	\N	910	066be4be-8afe-41cc-b606-09314fd3140a	14	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730a26-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°17 Hamburgués con jamón, queso, tomate, huevo, cebolla y morrón	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	15	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730b20-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°18 Hamburgués Crip: Doble medallón de 250grs cada uno, jamón, queso, tomate, huevo y ají	\N	1600	066be4be-8afe-41cc-b606-09314fd3140a	16	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730c1a-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°19 Hamburgués Napolitana con jamón, queso y salsa napolitana	\N	890	066be4be-8afe-41cc-b606-09314fd3140a	17	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730d14-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°20 Hamburgués Milán rebozada, jamón, queso y morrón)	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	18	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730e0e-e796-11ec-bb15-0663a2e72472	Hamburgues (Old School) Medallón De 250gr	N°150 Hamburgués especial con provoleta, panceta y salsa napolitana	\N	1100	066be4be-8afe-41cc-b606-09314fd3140a	19	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730efe-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	20	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a730fee-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	Con Aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	21	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7310e8-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°504 Hamburgués Parklife: con queso, tomate, albahaca y ajo con aceite de oliva	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	22	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7311e2-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°505 Hamburgués Draytones: cheddar y cebolla colorada	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	23	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7312dc-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°508 Hamburgués Red Hot con jamón, queso y salsa picante	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	24	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7313e0-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°511 Hamburgués Rebel:  cheddar, tomate, rúcula, parmesano y oliva	\N	910	066be4be-8afe-41cc-b606-09314fd3140a	25	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7314da-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°509 Hamburgués Spirit: mozzarella, tomate seco, albahaca, parmesano y aceitunas negras	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	26	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7315c0-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°506 Hamburgués Fantastic Four: mozzarella, cheddar, provoleta y parmesano	\N	940	066be4be-8afe-41cc-b606-09314fd3140a	27	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a731a3e-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°510 Hamburgués Chederland: cheddar, panceta o jamón y cebolla caramelizada	\N	910	066be4be-8afe-41cc-b606-09314fd3140a	28	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a731b6a-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°507 Hamburgués Black Star: queso, panceta doble y mini tortilla de papas con aros de cebolla	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	29	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a731c6e-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°500 Hamburgues TNT: mozzarella, jamón o panceta, huevo frito, especies, montada sobre base de pan de pizza (Solo trae una base de pan de pizza, no sale en sandwich)	\N	860	066be4be-8afe-41cc-b606-09314fd3140a	30	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732524-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°515 Hamburgues Too Much: rebozada, con cheddar, cebolla colorada, verdeo y huevo frito	\N	920	066be4be-8afe-41cc-b606-09314fd3140a	31	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73263c-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°514 Hamburgues The Wick: rebozada, con cheddar y salsa criolla	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	32	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732736-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°503 Hamburgués con  berengenas, queso y tomate	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	33	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732830-e796-11ec-bb15-0663a2e72472	Hamburgues (New Wave) Medallón De 250gr	N°502 Hamburgués con berengenas	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	34	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732920-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	35	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732a10-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	36	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732af6-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°602 Pechuga Ji Ji Ji:  cheddar y crocante de panceta	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	37	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732be6-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°600 Hamburguesa Zoom: cheddar, panceta y cebolla colorada	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	38	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732cea-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°601 Pechuga Waiting: cheddar, panceta y cebolla caramelizada	\N	900	066be4be-8afe-41cc-b606-09314fd3140a	39	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732de4-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°606 Hamburgues Random: rebozado con cheddar, panceta, huevo frito y perejil	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	40	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a732fce-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°603 Bondiola Déja Vú:  con queso, panceta, huevo frito y mix de especias	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	41	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7330d2-e796-11ec-bb15-0663a2e72472	Bbq Style: Salen Con Barbacoa!	N°605 Hamburguesa Sister Dúo: doble medallón con cheddar, panceta y tomate	\N	1150	066be4be-8afe-41cc-b606-09314fd3140a	42	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7331cc-e796-11ec-bb15-0663a2e72472	Menú Infantil	Todos con papas y gaseosa junior	\N		066be4be-8afe-41cc-b606-09314fd3140a	43	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7332e4-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #1 Hamburguesa sola con papas fritas	\N	590	066be4be-8afe-41cc-b606-09314fd3140a	44	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7333de-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #2 Hamburguesa con tomate	\N	650	066be4be-8afe-41cc-b606-09314fd3140a	45	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7334ec-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #3 Hamburguesa con jamón y queso	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	46	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7335f0-e796-11ec-bb15-0663a2e72472	Menú Infantil	Jr4 mole	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	47	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7336ea-e796-11ec-bb15-0663a2e72472	Menú Infantil	Jr5 rooster	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	48	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7337da-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #6 Hamburguesa con cheddar	\N	740	066be4be-8afe-41cc-b606-09314fd3140a	49	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7338ca-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #7 T-REX:  Doble hamburguesa  con doble cheddar, panceta y tomate	\N	940	066be4be-8afe-41cc-b606-09314fd3140a	50	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7339ba-e796-11ec-bb15-0663a2e72472	Menú Infantil	Junior #8 Moon Dog Pancho con cheddar y crocante de panceta	\N	710	066be4be-8afe-41cc-b606-09314fd3140a	51	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a733ac8-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	52	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a733bcc-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	53	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a733ce4-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	N°626 Bondiola sola	\N	770	066be4be-8afe-41cc-b606-09314fd3140a	54	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a733e06-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	N°629 Bondiola con queso y tomate	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	55	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a733f5a-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	N°631 Bondiola con jamón, queso y huevo	\N	910	066be4be-8afe-41cc-b606-09314fd3140a	56	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73405e-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	N°632 Bondiola con jamón y ananá	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	57	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734144-e796-11ec-bb15-0663a2e72472	Bondiola De Cerdo En Sandwich	N°633 Bondiola con panceta, queso y ciruelas	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	58	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734234-e796-11ec-bb15-0663a2e72472	Bondiolas Especiales En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	59	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73431a-e796-11ec-bb15-0663a2e72472	Bondiolas Especiales En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	60	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73440a-e796-11ec-bb15-0663a2e72472	Bondiolas Especiales En Sandwich	N°636 Bondiola con cheddar, panceta y cebolla caramelizada	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	61	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7344fa-e796-11ec-bb15-0663a2e72472	Bondiolas Especiales En Sandwich	N°635 Bondiola Crip: con provoleta, panceta, aceitunas negras, albahaca y tomate.	\N	1000	066be4be-8afe-41cc-b606-09314fd3140a	62	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7345ea-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	63	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7346d0-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	64	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7347d4-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°184 Pollo a la plancha solo al limón (al plato)	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	65	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7348c4-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°71 Pollo a la plancha con mozzarella y cebolla	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	66	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7349b4-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°67 Pollo a la plancha con jamón, queso y tomate	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	67	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734aa4-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°69 Pollo a la plancha napolitana con jamón, queso y salsa napolitana	\N	880	066be4be-8afe-41cc-b606-09314fd3140a	68	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734bc6-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°68 Pollo a la plancha Crip con panceta, queso, tomate y huevo	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	69	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734cca-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°70 Pollo a la plancha con panceta y ciruelas	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	70	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734de2-e796-11ec-bb15-0663a2e72472	Pechuga De Pollo A La Plancha En Sandwich	N°135 Pollo a la plancha con cheddar, panceta y cebolla caramelizada	\N	930	066be4be-8afe-41cc-b606-09314fd3140a	71	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734edc-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	72	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a734fc2-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	73	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735238-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°26 Lomito solo	\N	920	066be4be-8afe-41cc-b606-09314fd3140a	74	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73533c-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°30 Lomito CRIP: con panceta, tomate, huevo a la plancha y aji	\N	1170	066be4be-8afe-41cc-b606-09314fd3140a	75	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73542c-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°31 Lomito con queso y tomate	\N	1000	066be4be-8afe-41cc-b606-09314fd3140a	76	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735512-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°33 Lomito con jamon, queso y huevo a la plancha	\N	1090	066be4be-8afe-41cc-b606-09314fd3140a	77	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7355f8-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°35 Lomito con jamon, queso y cebolla	\N	1090	066be4be-8afe-41cc-b606-09314fd3140a	78	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7356de-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°126 Lomito con cheddar	\N	1000	066be4be-8afe-41cc-b606-09314fd3140a	79	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7357c4-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°128 Lomito con queso, tomate y berenjena	\N	1090	066be4be-8afe-41cc-b606-09314fd3140a	80	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7358b4-e796-11ec-bb15-0663a2e72472	Lomitos En Sandwich	N°130 Lomito con jamón, queso y cebolla caramelizada	\N	1090	066be4be-8afe-41cc-b606-09314fd3140a	81	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7359a4-e796-11ec-bb15-0663a2e72472	Ensaladas	Ensalada green (espinaca, lechuga, rúcula, repollo)	\N	640	066be4be-8afe-41cc-b606-09314fd3140a	82	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735a94-e796-11ec-bb15-0663a2e72472	Ensaladas	Ensalada Waldorf (manzana, apio, palmitos, crema y salsa golf)	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	83	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735b84-e796-11ec-bb15-0663a2e72472	Ensaladas	Ensalada Desiré (rúcula, espinaca, tomate, huevo rallado y parmesano)	\N	700	066be4be-8afe-41cc-b606-09314fd3140a	84	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735c74-e796-11ec-bb15-0663a2e72472	Ensaladas	Ensalada Crip (lechuga, espinaca, crocante de panceta, pollo grillado, queso y salsa César)	\N	790	066be4be-8afe-41cc-b606-09314fd3140a	85	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735d6e-e796-11ec-bb15-0663a2e72472	Ensaladas	Ensalada César (lechuga, rúcula, pollo grillado, parmesano, salsa césar y crutones)	\N	800	066be4be-8afe-41cc-b606-09314fd3140a	86	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735e54-e796-11ec-bb15-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella, berenjena, tomate y huevo duro	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	87	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a735f6c-e796-11ec-bb15-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella, tomtate, ajo y oliva	\N	750	066be4be-8afe-41cc-b606-09314fd3140a	88	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736066-e796-11ec-bb15-0663a2e72472	Pizzeta Integral Multisemillas	Pizzeta integral con mozzarella	\N	650	066be4be-8afe-41cc-b606-09314fd3140a	89	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73616a-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Con papas	\N		066be4be-8afe-41cc-b606-09314fd3140a	90	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73626e-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Con aros de cebolla	\N		066be4be-8afe-41cc-b606-09314fd3140a	91	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736354-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Big yuyo (frío de pan negro con queso de zanahoria, tomate, huevo duro, palmitos y golf)	\N	720	066be4be-8afe-41cc-b606-09314fd3140a	92	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736444-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Glam de vegetales (frío de pan negro con lechuga, cheddar, tomate, pepino y salsa Caesar)	\N	720	066be4be-8afe-41cc-b606-09314fd3140a	93	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736534-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Burguer de lentejas, arroz integral con queso, tomate, berenjenas y huevo)	Combiná los ingredientes para opción vegana!	650	066be4be-8afe-41cc-b606-09314fd3140a	94	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736624-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Burguer de soja con kale, queso y tomate	Combiná los ingredientes para opción vegana!	690	066be4be-8afe-41cc-b606-09314fd3140a	95	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736714-e796-11ec-bb15-0663a2e72472	Green Zone (Vegetarianos)	Burguer de trigo burgol, chía con kale, cheddar y coleslaw	Combiná los ingredientes para opción vegana!	650	066be4be-8afe-41cc-b606-09314fd3140a	96	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736822-e796-11ec-bb15-0663a2e72472	Omelette	Omelette de mozzarella, espinaca y parmesano	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	97	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736912-e796-11ec-bb15-0663a2e72472	Omelette	Omelette de queso	\N	730	066be4be-8afe-41cc-b606-09314fd3140a	98	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736a02-e796-11ec-bb15-0663a2e72472	Omelette	Omelette de queso y panceta	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	99	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736af2-e796-11ec-bb15-0663a2e72472	Omelette	Omelette CRIP de panceta, queso, cebolla y morron	\N	830	066be4be-8afe-41cc-b606-09314fd3140a	100	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736bec-e796-11ec-bb15-0663a2e72472	Omelette	Omelette de jamon y queso	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	101	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736cdc-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Porción de papas fritas	\N	530	066be4be-8afe-41cc-b606-09314fd3140a	102	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736dd6-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Papas fritas con huevos fritos	\N	640	066be4be-8afe-41cc-b606-09314fd3140a	103	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736ed0-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Onion rings (aros de cebolla rebozada)	\N	630	066be4be-8afe-41cc-b606-09314fd3140a	104	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a736fc0-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Addiction cheese  (papas con cheddar fundido y pimienta negra)	\N	730	066be4be-8afe-41cc-b606-09314fd3140a	105	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7370a6-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Yorkers (papas con cheddar fundido, panceta y verdeo)	\N	730	066be4be-8afe-41cc-b606-09314fd3140a	106	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7371c8-e796-11ec-bb15-0663a2e72472	Fritos Y Adicionales	Papas Peyson: crema, panceta y cebolla de verdeo	\N	730	066be4be-8afe-41cc-b606-09314fd3140a	107	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7372c2-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella	\N	680	066be4be-8afe-41cc-b606-09314fd3140a	108	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a7373b2-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella y jamón	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	109	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737498-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta con mozzarella, berenjena y huevo duro	\N	800	066be4be-8afe-41cc-b606-09314fd3140a	110	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73757e-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pízzeta Napolitana (mozzarella, tomate y ajo)	\N	780	066be4be-8afe-41cc-b606-09314fd3140a	111	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737664-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta Margarita (mozzarella, jamón y ananá)	\N	850	066be4be-8afe-41cc-b606-09314fd3140a	112	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73775e-e796-11ec-bb15-0663a2e72472	Pizzetas (4 Porciones)	Pizzeta Pepperoni (mozzarella y longaniza calabresa)	\N	870	066be4be-8afe-41cc-b606-09314fd3140a	113	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a73784e-e796-11ec-bb15-0663a2e72472	Bebidas	Gaseosa 500cc (coca-coca zero)	\N	280	066be4be-8afe-41cc-b606-09314fd3140a	114	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737948-e796-11ec-bb15-0663a2e72472	Bebidas	Agua saborizada 500cc (h20, aquarius)	\N	280	066be4be-8afe-41cc-b606-09314fd3140a	115	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737a56-e796-11ec-bb15-0663a2e72472	Bebidas	Cerveza patagonia 500cc (lata Amber o 24.7)	\N	450	066be4be-8afe-41cc-b606-09314fd3140a	116	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737b6e-e796-11ec-bb15-0663a2e72472	Bebidas	Gaseosa 1.5lt (coca/coca zero/sprite)	\N	380	066be4be-8afe-41cc-b606-09314fd3140a	117	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737c5e-e796-11ec-bb15-0663a2e72472	Bebidas	Cerveza Stella 500cc (lata)	\N	440	066be4be-8afe-41cc-b606-09314fd3140a	118	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
-4a737d58-e796-11ec-bb15-0663a2e72472	Bebidas	Cerveza Stella Noire 500cc (lata)	\N	440	066be4be-8afe-41cc-b606-09314fd3140a	119	2022-06-09 01:48:42.063239	2022-06-09 01:48:42.063239
 4ce59ed6-e836-11ec-8525-0663a2e72472	Promociones	Muzzarella + 6 Empanadas	\N	1450	cb659751-f06f-4810-aca2-345c24c629e3	1	2022-06-09 20:54:05.761797	2022-06-09 20:54:05.761797
 4ce5a372-e836-11ec-8525-0663a2e72472	Promociones	Muzzarella + 12 Empanadas	\N	2100	cb659751-f06f-4810-aca2-345c24c629e3	2	2022-06-09 20:54:05.761797	2022-06-09 20:54:05.761797
 4ce5a480-e836-11ec-8525-0663a2e72472	Promociones	Muzzarella + 18 Empanadas	\N	2750	cb659751-f06f-4810-aca2-345c24c629e3	3	2022-06-09 20:54:05.761797	2022-06-09 20:54:05.761797
@@ -12200,6 +11840,120 @@ dd1279aa-ef4f-11ec-862c-0663a2e72472		Norton Barrell	\N		5ecd593e-8cbe-40d8-997b
 466b0f80-f1c0-11ec-b694-0663a2e72472	Tartas Individuales	Caprese	\N	650	f76564b5-ba48-43da-ae7a-ebb21dc64e16	87	2022-06-22 00:14:25.787743	2022-06-22 00:14:25.787743
 466b1070-f1c0-11ec-b694-0663a2e72472	Tartas Individuales	Jamón y queso	\N	650	f76564b5-ba48-43da-ae7a-ebb21dc64e16	88	2022-06-22 00:14:25.787743	2022-06-22 00:14:25.787743
 466b1156-f1c0-11ec-b694-0663a2e72472	Tartas Individuales	Espinaca	\N	650	f76564b5-ba48-43da-ae7a-ebb21dc64e16	89	2022-06-22 00:14:25.787743	2022-06-22 00:14:25.787743
+aab957de-f770-11ec-867e-0663a2e72472	No Probaste Nuestros Productos? Aprovechá El Box Degustación Con 30% De Descuento. Solo Para Nuevos Clientes.	Box degustacion con 30% de descuento, solo para nuevos clientes.incluye 4 muffin, 1 mousse proteico, 6 trufas y 1 yogur de 150gr -$850	\N	850	77ccc1d6-c6d8-48d1-88de-b42199d38985	1	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab95cf2-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de mani con corazón de mermelada de frutos rojos sin azúcar. Bañado en choco con stevia -$170	\N	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	2	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab95e14-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de mani con cacao 100%. Bañado en choco con stevia -$170	\N	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	3	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab95f22-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	X 4 un. Alfajor de algarroba relleno de pasta de mani con cacao 100%. Bañado en choco con stevia. - $650-	\N	650	77ccc1d6-c6d8-48d1-88de-b42199d38985	4	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9933e-f770-11ec-867e-0663a2e72472	Linea Veggie Congelada.	Quiche de berenjena, cherry y menta 1 porción con sal $300	No disponible	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	36	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9603a-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de algarroba relleno de pasta de maní, rebosado en coco -$120-	Alfajor de algarroba y cacao 100% puro, relleno de pasta de maní vainillada, rebozado en coco. Endulzado con stevia.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	5	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab965ee-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	X 4 un. Alfajor de algarroba relleno de pasta de maní, rebosado en coco -$400-	\N	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	6	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab969ae-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 Alfajor de cacao y trufa Vegan -$120-	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía, endulzado con stevia. Vegano.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	7	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96ae4-f770-11ec-867e-0663a2e72472	Alfajor De Algarroba. La Porción Justa. Tamaño 6,5 Cm	1 alfajor de cacao y trufa bañado vegan -$170-	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía, endulzado con stevia, bañado con choco con stevia libre de lactosa. Vegano	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	8	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96bde-f770-11ec-867e-0663a2e72472	Muffins De Avena	Muffins surtidos x 4un. -$330	Consultar disponibilidad	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	9	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96cd8-f770-11ec-867e-0663a2e72472	Muffins De Avena	Vainilla, coco y arandanos x 1un. -$100-	Elaborados a base de salvado de avena y claras de huevo, endulzado con stevia	100	77ccc1d6-c6d8-48d1-88de-b42199d38985	10	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96dbe-f770-11ec-867e-0663a2e72472	Muffins De Avena	Vainilla, coco y arandanos x 4un. -$330	\N	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	11	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96eb8-f770-11ec-867e-0663a2e72472	Muffins De Avena	Cacao 100% y banana x 1 un. -$100	Elaborados a base de salvado de avena y claras de huevo.endulzado con stevia	100	77ccc1d6-c6d8-48d1-88de-b42199d38985	12	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab96fc6-f770-11ec-867e-0663a2e72472	Muffins De Avena	Cacao y banana x 4un. -$330-	\N	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	13	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab970d4-f770-11ec-867e-0663a2e72472	Muffins Proteicos X 4un.	Con agregado de proteina de suero de leche. La Proteina te genera saciedad por más tiempo, lo que ayuda al control del apetito, además acelera el metabolismo y es vital para la regeneracion de tejidos y masa muscular	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	14	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97200-f770-11ec-867e-0663a2e72472	Muffins Proteicos X 4un.	Muffins  marmolado x 1 un. $150	Elaborados a base de salvado de avena, claras de huevo, cacao puro y endulzado con stevia, con agregado de proteina de suero de leche, whey protein	150	77ccc1d6-c6d8-48d1-88de-b42199d38985	15	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97304-f770-11ec-867e-0663a2e72472	Muffins Proteicos X 4un.	Muffin marmolado x 4un $430	\N	430	77ccc1d6-c6d8-48d1-88de-b42199d38985	16	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab973fe-f770-11ec-867e-0663a2e72472	Muffins Proteicos X 4un.	Coco y arandanos x 1un. -$120-	No disponibles	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	17	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab974f8-f770-11ec-867e-0663a2e72472	Muffins Proteicos X 4un.	Coco y Arándanos x 4un -$430-	No disponibles	430	77ccc1d6-c6d8-48d1-88de-b42199d38985	18	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab975f2-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Chocolate y frambuesa -$260	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	19	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab976e2-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Chocolate suizo -$260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	20	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97980-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Tiramisú -$260-	No disponible	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	21	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97a8e-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Frutos del bosque $260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	22	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97b88-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Cheesecake frutos rojos -$260-	\N	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	23	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97cb4-f770-11ec-867e-0663a2e72472	Mousse Proteico. Comelo En La Merienda, Como Postre, Colación!                                      Altos En Proteínas. A Base De Yogur Griego, Claras De Huevo, Stevia. Duración 5 Dias En Heladera, Conservalos En Freezer Por Más Tiempo Y Tenelos Siempre A Mano! Como Los Decongelo? 2 Hs En Heladera!	Capuchino $260	No disponible	260	77ccc1d6-c6d8-48d1-88de-b42199d38985	24	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97dae-f770-11ec-867e-0663a2e72472	Lingotes Saludables	Lingote cheesecake frutos rojos. $350-	A base de nuestro mousse proteico de yogur griego y claras de huevo, con fina base de avena.	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	25	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97ea8-f770-11ec-867e-0663a2e72472	Lingotes Saludables	Lingote tiramisú-- base de avena, relleno de nuestro mousse proteico de vainilla y café. A base de yogur griego y claras de huevo.-$350-	\N	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	26	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab97fb6-f770-11ec-867e-0663a2e72472	Lingotes Saludables	Lingote mousse de frutos del bosque---- base de avena, mousse proteico de frutos del bosque y mermelada de frutos rojos sin azúcar. a base de yogur griego y claras de huevo -$350-	\N	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	27	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab980a6-f770-11ec-867e-0663a2e72472	Barritas Energeticas	Barritas a base de quinoa inflada, avena, frutos secos, pasta de maní y chocolate sin azúcar. -$170	X 1 unidad	170	77ccc1d6-c6d8-48d1-88de-b42199d38985	28	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab98196-f770-11ec-867e-0663a2e72472	Cookie Proteica 1 Un.	Cacao, algarroba y maní x 1 un. $85	Con agregado de whey protein	85	77ccc1d6-c6d8-48d1-88de-b42199d38985	29	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab98290-f770-11ec-867e-0663a2e72472	Cookie Proteica 1 Un.	Frutos secos x 1 un. $85	Con agregado de whey protein y arandanos pasa.	85	77ccc1d6-c6d8-48d1-88de-b42199d38985	30	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab98e02-f770-11ec-867e-0663a2e72472	Trufas Fit. Energéticas X 6un.	Chocolate -$280-	Avena y cacao puro, Chía activada, nueces y pasta de mani.	280	77ccc1d6-c6d8-48d1-88de-b42199d38985	31	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab98f38-f770-11ec-867e-0663a2e72472	Trufas Fit. Energéticas X 6un.	De chocolate bañanadas en chocolate sin azúcar $350	Avena y cacao puro, nueces, chia activada y pasta de mani, bañadas en chocolate sin azúcar, endulzado con stevia	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	32	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9903c-f770-11ec-867e-0663a2e72472	Trufas Fit. Energéticas X 6un.	Vainilla, frutos secos y coco. -$250-	avena, pasta de maní, chia activada, nueces, rebozadas en coco.	250	77ccc1d6-c6d8-48d1-88de-b42199d38985	33	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99140-f770-11ec-867e-0663a2e72472	Prepizza 100% Integral Con Semillas X 12un.	Pizzetas x12 -$300-	\N	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	34	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99244-f770-11ec-867e-0663a2e72472	Pan 100% Integral Con Semillas	550gr -$265	\N	265	77ccc1d6-c6d8-48d1-88de-b42199d38985	35	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9944c-f770-11ec-867e-0663a2e72472	Linea Veggie Congelada.	Quiché de zuquini y zanahoria 1 porción $300	No disponible	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	37	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99686-f770-11ec-867e-0663a2e72472	Linea Veggie Congelada.	Quiche de brocoli y cherry. 1 porción -$350	No disponible	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	38	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99794-f770-11ec-867e-0663a2e72472	Linea Veggie Congelada.	Quiché de humita $350	No disponible	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	39	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99898-f770-11ec-867e-0663a2e72472	Linea Veggie Congelada.	Sin sal	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	40	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab999c4-f770-11ec-867e-0663a2e72472	Hamburguesas	Hamburguesa verdura y avena x 4un $280	\N	280	77ccc1d6-c6d8-48d1-88de-b42199d38985	41	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99ad2-f770-11ec-867e-0663a2e72472	Budin De Verdura	Budin de verdura tricolor 350gr $350	\N	350	77ccc1d6-c6d8-48d1-88de-b42199d38985	42	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99bf4-f770-11ec-867e-0663a2e72472	Promo Combo Para Llevar Con Vos	6 trufas surtidas + 2 alfajores + 2 barritas de avena, frutos secos y pasta de maní, bañada en choco sin azucar. $730	\N	730	77ccc1d6-c6d8-48d1-88de-b42199d38985	43	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99d16-f770-11ec-867e-0663a2e72472	Promo Combo Integral	6 pizetas 100% integrales, 4 muffins fit,  1 pan integral x 550gr $700	\N	700	77ccc1d6-c6d8-48d1-88de-b42199d38985	44	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99e42-f770-11ec-867e-0663a2e72472	Yogur Griego	Duracion: 7 dias en heladera.	Para comer con cereales y frutas- para untar tu tostada! Probalo también en su version natural! ideal para acompañar ensaladas y comidas, es una opcion más saludable que un queso crema!		77ccc1d6-c6d8-48d1-88de-b42199d38985	45	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab99fa0-f770-11ec-867e-0663a2e72472	Yogur Griego	Los principales beneficios de éste yogurt para la salud son:\n1. Mayor aporte de proteínas. Brinda mayor saciedad, uno se siente más satisfecho.\n2. Más bajo en carbohidratos. Esto puede ser útil para quienes están tratando de limitar el consumo de carbohidratos bajo un régimen alimentario bajo la supervisión de un profesional.\n3. Fuente de calcio. Ayuda a mantener huesos y dientes sanos, así como un buen funcionamiento del sistema nervioso.\n4. Regula la flora intestinal. Es rico en probióticos, por lo que pueden beneficiar el sistema digestivo.\n5. Fuente de vitamina B12. Al igual que el yogurt regular contiene esta vitamina, la cual está relacionada con la producción de glóbulos rojos y funcionamiento del sistema nervioso y cerebro.\n6. Contiene menos lactosa. Debido al proceso de preparación puede eliminar la mayor parte de la lactosa, siendo una posible opción para los intolerantes a la lactosa	\N		77ccc1d6-c6d8-48d1-88de-b42199d38985	46	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a0b8-f770-11ec-867e-0663a2e72472	Yogur Griego	Yogur griego vainilla x 150gr -$180	150gr	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	47	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a1bc-f770-11ec-867e-0663a2e72472	Yogur Griego	Yogur griego de vainilla x 280gr rinde 2 porciones -$330-	280gr	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	48	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a2b6-f770-11ec-867e-0663a2e72472	Yogur Griego	Yogur griego Natural x 150 gr -$180	150gr	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	49	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a3b0-f770-11ec-867e-0663a2e72472	Yogur Griego	Yogur griego Natural x 280 gr rinde 2 porciones -$330	280gr	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	50	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a4aa-f770-11ec-867e-0663a2e72472	Yogur Griego	Yogur griego de vainilla con dulce de frutos rojos sin azúcar x 280gr rinde 2 porciones $370	280gr	370	77ccc1d6-c6d8-48d1-88de-b42199d38985	51	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a5ae-f770-11ec-867e-0663a2e72472	Yogur Griego	Granola sin azúcar para acompañar, semillas, quinoa pop, Arándanos pasa, frutos secos, x 50gr -$150-	No disponible	150	77ccc1d6-c6d8-48d1-88de-b42199d38985	52	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a6e4-f770-11ec-867e-0663a2e72472	Linea Vegan	Trufas de frutos secos x 6un -$300	avena, pasta de maní, Chía,frutos secos, pasas de uva, rebozadas en coco.	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	53	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a82e-f770-11ec-867e-0663a2e72472	Linea Vegan	Trufas de cacao puro y frutos secos x 6un. $330	Avena y cacao puro, Chía, pasas de uva, frutos secos y pasta de mani.	330	77ccc1d6-c6d8-48d1-88de-b42199d38985	54	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9a932-f770-11ec-867e-0663a2e72472	Linea Vegan	Trufas bañadas en chocolate sin azucar vegan, de cacao puro y frutos secos x 6un. $350	\N	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	55	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9aa2c-f770-11ec-867e-0663a2e72472	Linea Vegan	1 Alfajor vegan de cacao, relleno dd trufa, bañado en chocolate sin azucar vegan. $180	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía. Baño de chocolate sin azúcar, apto vegan.	180	77ccc1d6-c6d8-48d1-88de-b42199d38985	56	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9ab44-f770-11ec-867e-0663a2e72472	Linea Vegan	1 Alfajor vegan de avena,cacao y trufa desnudo $120	De avena y cacao, con relleno de trufa de cacao, avena, pasas de uva, nueces, maní, Chía. Vegano.	120	77ccc1d6-c6d8-48d1-88de-b42199d38985	57	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9ac52-f770-11ec-867e-0663a2e72472	Linea Vegan	X 4 un. Alfajor vegan de avena y cacao y trufa desnudo -$400	\N	400	77ccc1d6-c6d8-48d1-88de-b42199d38985	58	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9ad38-f770-11ec-867e-0663a2e72472	Linea Vegan	Pan 100% integral multisemillado, sin lacteos $265	X550gr	265	77ccc1d6-c6d8-48d1-88de-b42199d38985	59	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+aab9ae32-f770-11ec-867e-0663a2e72472	Linea Vegan	Pizzetas x 12 un. -$300	100% integral	300	77ccc1d6-c6d8-48d1-88de-b42199d38985	60	2022-06-29 05:59:41.316015	2022-06-29 05:59:41.316015
+771a2556-f8a7-11ec-b273-0663a2e72472	Budines	Vainilla	Budin de vainilla con frutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	540	66d7f54b-5989-46d5-9c0a-68a64f6d1145	1	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a2ae2-f8a7-11ec-b273-0663a2e72472	Budines	Cacao Amargo	Budin de cacao amargo con frutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	570	66d7f54b-5989-46d5-9c0a-68a64f6d1145	2	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a2bfa-f8a7-11ec-b273-0663a2e72472	Budines	Marmolado	Budin marmolado de vanilla con cacao amargo yfrutos secos. Cada budín contiene más de  60 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el salvado de trigo.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	3	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a2d08-f8a7-11ec-b273-0663a2e72472	Budines	Algarroba	Todas las propiedades anteriores más el plus proveniente de la harina de algarroba que le aportan vitaminas, hierro, y 7grs más de proteína. Aporta 67 gr de proteinas  y 165 hidratos de calidad.	560	66d7f54b-5989-46d5-9c0a-68a64f6d1145	4	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a2e0c-f8a7-11ec-b273-0663a2e72472	Budines	The Killer monkey	Elaborado con clara de huevo, salvado de avena, pasta de maní, banana, coco y nuez. Contiene más de 55 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad como la avena y el coco.	640	66d7f54b-5989-46d5-9c0a-68a64f6d1145	5	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a2f06-f8a7-11ec-b273-0663a2e72472	Budines	The Black monkey	Elaborado con clara de huevo, salvado de avena, pasta de mani, banana, Cacao %100 y chispas de chocolate semi amargo. Contiene más de 50 grs de proteína, provenientes del huevo, 8 grs de grasas saludables, 150 grs de hidratos de calidad.	640	66d7f54b-5989-46d5-9c0a-68a64f6d1145	6	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a300a-f8a7-11ec-b273-0663a2e72472	Budines	Manzana y canela	Elaborados a partir de claras de huevo, canela en rama, manzanas verdes, salvado de avena, leche descremada en polvo, salvado de trigo, nuez y pasas de uva.	590	66d7f54b-5989-46d5-9c0a-68a64f6d1145	7	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a310e-f8a7-11ec-b273-0663a2e72472	Budines	Mini Budin de Vainilla	Elaborados a partir de claras de huevo, harina de avena, proteína de suero saborizada y edulcorante. Cada budín provee a tu cuerpo, 32gr de proteína, 8gr de carbohidratos y 2 grs de grasas saludables.	290	66d7f54b-5989-46d5-9c0a-68a64f6d1145	8	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a31f4-f8a7-11ec-b273-0663a2e72472	Budines	Mini Budin de Chocolate	Elaborados a partir de claras de huevo, harina de avena, proteína de suero saborizada y edulcorante. Cada budín provee a tu cuerpo, 32gr de proteína, 8gr de carbohidratos y 2 grs de grasas saludables.	310	66d7f54b-5989-46d5-9c0a-68a64f6d1145	9	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a37da-f8a7-11ec-b273-0663a2e72472	Budines	Promoción Mini budines (igual sabor) Vainilla	Llevando 3 mini budines de igual sabor.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	10	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a3b86-f8a7-11ec-b273-0663a2e72472	Budines	Promoción Mini budines (igual sabor) Chocolate	Llevando 3 mini budines de igual sabor.	750	66d7f54b-5989-46d5-9c0a-68a64f6d1145	11	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a3ce4-f8a7-11ec-b273-0663a2e72472	Pancakes	Saludables de Vainilla x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y esencia de vainilla o cacao amargo. Cada porción aporta 6gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	310	66d7f54b-5989-46d5-9c0a-68a64f6d1145	12	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a3e2e-f8a7-11ec-b273-0663a2e72472	Pancakes	Saludables de cacao amargo x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y cacao amargo. Cada porción aporta 6gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	13	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a3f1e-f8a7-11ec-b273-0663a2e72472	Pancakes	Saludables de Algarroba x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, salvado de trigo, edulcorante y harina de algarroba. Cada porcion aporta 6,9 gr de proteinas, 2 gr de grasa saludables y 5gr de hidratos saludables.	340	66d7f54b-5989-46d5-9c0a-68a64f6d1145	14	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a422a-f8a7-11ec-b273-0663a2e72472	Pancakes	Saludables de coco x12 unidades	Elaborados a partir de claras de huevo, salvado de avena, coco rallado, edulcorante y harina de almendras. Cada porcion aporta 6,5 gr de proteinas, 2 gr de grasa saludables y 9gr de hidratos saludables.	380	66d7f54b-5989-46d5-9c0a-68a64f6d1145	15	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a432e-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de Vainilla x6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada y edulcorante. Aportan 13 gr de proteínas, 10 gr de hidratos saludables.	600	66d7f54b-5989-46d5-9c0a-68a64f6d1145	16	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4432-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de vanilla x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada y edulcorante. Aportan 13 gr de proteínas, 10 gr de hidratos saludables.	840	66d7f54b-5989-46d5-9c0a-68a64f6d1145	17	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a454a-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de cookies & cream x6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada, chispas de chocolate  y edulcorante. Aportan 13 gr de proteínas, 11 gr de hidratos saludables.	650	66d7f54b-5989-46d5-9c0a-68a64f6d1145	18	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4626-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de cookies & cream x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de almendras, proteína de suero saborizada, chispas de chocolate  y edulcorante. Aportan 13 gr de proteínas, 11 gr de hidratos saludables.	900	66d7f54b-5989-46d5-9c0a-68a64f6d1145	19	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4720-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de algarroba y frambuesas x 6 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de algarroba, proteina de suero saborizada, cacao amargo, edulcorante y frambuesas frescas. Aportan 13 gr de proteinas y 14 gr de hidratos saludables.	660	66d7f54b-5989-46d5-9c0a-68a64f6d1145	20	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4810-f8a7-11ec-b273-0663a2e72472	Pancakes	Proteicos de algarroba y frambuesas x12 unidades	Elaborados a partir de claras de huevo, harina de avena, harina de algarroba, proteina de suero saborizada, cacao amargo, edulcorante y frambuesas frescas. Aportan 13 gr de proteinas y 14 gr de hidratos saludables.	920	66d7f54b-5989-46d5-9c0a-68a64f6d1145	21	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4932-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Tradicional x 6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	330	66d7f54b-5989-46d5-9c0a-68a64f6d1145	22	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4a2c-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Tradicional x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	460	66d7f54b-5989-46d5-9c0a-68a64f6d1145	23	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4b1c-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Coco x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 20 grs de hidratos.	370	66d7f54b-5989-46d5-9c0a-68a64f6d1145	24	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4c16-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Coco x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, coco rallado y edulcorante. Cada Waffle aporta a tu cuerpo 6grs de proteínas, 2 grs de grasa saludable y 23 grs de hidratos.	490	66d7f54b-5989-46d5-9c0a-68a64f6d1145	25	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4d1a-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Banana x 6 unidades	elaborados a partir de claras de huevo, harina de mijo, harina de arroz, coco rallado, leche de coco, banana y edulcorante. Producto sin gluten, carbohidratos 24 y 5gr de proteína por unidad	400	66d7f54b-5989-46d5-9c0a-68a64f6d1145	26	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4e14-f8a7-11ec-b273-0663a2e72472	Waffles Saludables	Banana x 12 unidades	elaborados a partir de claras de huevo, harina de mijo, harina de arroz, coco rallado, leche de coco, banana y edulcorante. Producto sin gluten, carbohidratos 24 y 5gr de proteína por unidad	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	27	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a4f18-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Vainilla x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	28	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a501c-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Vainilla x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	29	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a510c-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Dulce de leche x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	500	66d7f54b-5989-46d5-9c0a-68a64f6d1145	30	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5210-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Dulce de leche x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	700	66d7f54b-5989-46d5-9c0a-68a64f6d1145	31	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5314-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Cacao amargo (premium) x6 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada, cacao 100% amargo y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	32	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a53fa-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Cacao amargo (premium) x12 unidades	Elaborados a partir de salvado de avena, salvado de trigo, claras de huevo, leche descremada, proteina de suero saborizada, cacao 100% amargo y edulcorante. Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 8 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	33	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a56ac-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Only salad x6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	34	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a57a6-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Only salad x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	35	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5896-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Queso x 6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	36	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5986-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Queso x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	37	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5a76-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Pizza x 6 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	520	66d7f54b-5989-46d5-9c0a-68a64f6d1145	38	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5b5c-f8a7-11ec-b273-0663a2e72472	Waffles Proteicos	Pizza x12 unidades	Elaborados a partir de harina de arroz, levadura , claras de huevo, proteina de suero saborizada (componentes sin taac). Cada Waffle aporta a tu cuerpo 13 grs de proteínas, 2 grs de grasa saludable y 10 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	39	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a5f08-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Vainilla y canela x6 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de almendras, leche de almendras, canela, ensencia de vainilla y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	490	66d7f54b-5989-46d5-9c0a-68a64f6d1145	40	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6066-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Vainilla y canela x12 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de almendras, leche de almendras, canela, ensencia de vainilla y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	620	66d7f54b-5989-46d5-9c0a-68a64f6d1145	41	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6160-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Algarroba y Naranja x6 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de algarroba, leche de almendras, ralladura de naranja y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	490	66d7f54b-5989-46d5-9c0a-68a64f6d1145	42	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a625a-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Algarroba y Naranja x12 unidades	Elaborados a partir de harina de avena, salvado de trigo, harina de algarroba, leche de almendras, ralladura de naranja y stevia. Cada Waffle aporta a tu cuerpo 5grs de proteínas y 24 grs de hidratos.	620	66d7f54b-5989-46d5-9c0a-68a64f6d1145	43	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6372-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Jengibre y limón (con Matcha) x6 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, Matcha, limón y jengibre natural. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	44	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6462-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Jengibre y limón (con Matcha) x12 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, proteina isolada veganada, stevia, Matcha, limón y jengibre natural. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	45	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a655c-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Dark chocolate (con cacao 100% y orgánico) x 6 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, cacao amargo 100% orgánico. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	46	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6656-f8a7-11ec-b273-0663a2e72472	Waffles Veganos	Dark chocolate (con cacao 100% y orgánico) x 12 unidades	Elaborados a partir de harina de avena, harina de quinoa, leche de almendras, stevia, cacao amargo 100% orgánico. Cada Waffle aporta a tu cuerpo 7grs de proteínas y 24 grs de hidratos.	730	66d7f54b-5989-46d5-9c0a-68a64f6d1145	47	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6750-f8a7-11ec-b273-0663a2e72472	Muffins Saludables	Limón y jengibre x6 unidades	Elaborados a partir de avena, harina de arroz, claras de huevo, edulcorante, semillas de amapola, limón y jengibre. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	340	66d7f54b-5989-46d5-9c0a-68a64f6d1145	48	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6872-f8a7-11ec-b273-0663a2e72472	Muffins Saludables	Vainilla y canela x6 unidades	Elaborados a partir de avena, harina de arroz, claras de huevo, edulcorante, nueces, esencia de vanilla y canela. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	340	66d7f54b-5989-46d5-9c0a-68a64f6d1145	49	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6962-f8a7-11ec-b273-0663a2e72472	Muffins Saludables	Vainilla y manzana verde x6 unidades	Elaborados a partir de avena, claras de huevo, edulcorante, esencia de vainilla, semillas de chia y manzana verde. Cada muffins aporta a tu cuerpo 6grs de proteínas, 3 grs de grasa saludable y 7 grs de hidratos.	340	66d7f54b-5989-46d5-9c0a-68a64f6d1145	50	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6a5c-f8a7-11ec-b273-0663a2e72472	Muffins Proteicos	Vainilla x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante y chispas de chocolate negro semi amargo. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	51	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6b4c-f8a7-11ec-b273-0663a2e72472	Muffins Proteicos	Dulce de leche x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante y chispas de chocolate blanco. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	550	66d7f54b-5989-46d5-9c0a-68a64f6d1145	52	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6c3c-f8a7-11ec-b273-0663a2e72472	Muffins Proteicos	Chocolate amargo x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante, cacao amargo y pasas de arandanos. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	580	66d7f54b-5989-46d5-9c0a-68a64f6d1145	53	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
+771a6d2c-f8a7-11ec-b273-0663a2e72472	Muffins Proteicos	Ultra black x6 unidades	Elaborados a partir de salvado de avena, claras de huevo, leche descremada, proteina de suero saborizada, edulcorante, cacao amargo, harina de algarroba y nueces. Cada muffin aporta a tu cuerpo 11 grs de proteínas, 2 grs de grasa saludable y 15 grs de hidratos.	620	66d7f54b-5989-46d5-9c0a-68a64f6d1145	54	2022-06-30 19:04:28.190674	2022-06-30 19:04:28.190674
 \.
 
 
@@ -12208,10 +11962,10 @@ dd1279aa-ef4f-11ec-862c-0663a2e72472		Norton Barrell	\N		5ecd593e-8cbe-40d8-997b
 --
 
 COPY public.shops (id, name, slug, region, username, category, address, notes, ordersbyphoneorwhatsapp, delivery, takeaway, whatsappnumber, phonenumber, email, submittedat, opentimes, deliverycost, visibility, logo, background, typeformtoken, ordersphonenumber, orderswhatsappnumber, created_at, updated_at) FROM stdin;
-66d7f54b-5989-46d5-9c0a-68a64f6d1145	Behealthy Alimentos	behealthy	Mar del Plata	Lisandro	Saludable	Mar del Plata	Los productos se realizan por encargue. Para despachar, por zona Güemes (consultar dirección). >Se hacen envíos dependiendo la zona a partir de los $1500, y con un costo adicional entre $150 a $350.	Sí	Sí	Sí	+542235111312	\N	behealthyalimentos@gmail.com	8/04/2020 22:35:31	Lun - vie: 10 a 14 - 16 a 19 Sab: de 10 a 14 hrs	$150-$350	public	66d7f54b-5989-46d5-9c0a-68a64f6d1145-logo-6c69n84f7l.png	\N	p629dan2jgaze7x67qp82ap629danvv8	\N	+5492235111312	2020-07-14 18:52:28.835489	2022-05-24 20:19:46.662932
 73751b1b-74d5-4681-b2db-7dc8f066d3ec	Alimenpes	alimenpes	Mar del Plata	Juan pablo	Comida	Vertiz 3348	\N	\N	\N	\N	\N	\N	ventas@alimenpes.com	29/04/2020 21:52:34	Lunes a viernes de 8 a 16 hs y sábados de 8 a 12 hs	$100 si la compra es mayor de $1500 el envió es gratis	private	\N	\N	u9udnxouwugs03o8dau9udnxsq9uvt6r	+542234891097	+542234060702	2020-07-14 18:52:28.835489	2020-07-14 18:52:33.679062
 aaa244ab-7d28-4e65-9a68-96681e7675d9	test1	test1	test1	\N	\N	sadasda	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	private	\N	\N	\N	\N	\N	2020-07-14 18:52:28.835489	2020-07-14 18:52:33.679062
 e1f43192-d1b2-4bbf-9926-a9530b205dd1	Mis Amores Viandas	mis-amores-viandas	Mar del Plata	Marianella Ciciriello	Comida	Mar del Plata	Menú: misamoresviandas.com	\N	\N	\N	\N	\N	misamoresviandas@gmail.com	29/04/2020 11:50:20	Lunes a Sábado - 10:00 a 16:00	Sin Cargo	public	e1f43192-d1b2-4bbf-9926-a9530b205dd1-logo-d9582slms4.png	e1f43192-d1b2-4bbf-9926-a9530b205dd1-background-e3twaq70v3.png	poddu5yaq9ebzpi4z78poddu5yaoa4xg	+542236966485	+542236966485	2020-07-14 18:52:28.835489	2022-06-09 21:23:38.33918
+66d7f54b-5989-46d5-9c0a-68a64f6d1145	Behealthy Alimentos	behealthy	Mar del Plata	Lisandro	Saludable	Mar del Plata	Los productos se realizan por encargue. Para despachar, por zona Güemes (consultar dirección). >Se hacen envíos dependiendo la zona a partir de los $1500, y con un costo adicional entre $150 a $350.	Sí	Sí	Sí	+542235111312	\N	behealthyalimentos@gmail.com	8/04/2020 22:35:31	Lun - vie: 10 a 14 - 16 a 19 Sab: de 10 a 14 hrs	$150-$350	public	66d7f54b-5989-46d5-9c0a-68a64f6d1145-logo-6c69n84f7l.png	\N	p629dan2jgaze7x67qp82ap629danvv8	\N	+5492235111312	2020-07-14 18:52:28.835489	2022-06-30 19:04:28.009766
 7afd4f28-29ef-11eb-b387-16ad4631369f	Punto Saludable	punto-saludable	Necochea	Punto Saludable	Saludable	\N	\N	\N	\N	\N	\N	\N	eyamila16@gmail.com	26/08/2020 3:44:35	Lunes a Sábado	Sin costo	private	\N	\N	j3uw7zygys06sxl9fd38j3uw79vjyqnf	\N	5492262566491	2020-11-18 22:43:30.213031	2020-11-18 22:43:30.213031
 fbd84bea-d03e-43e4-a906-78eb2ecea37e	Cikolata Artesanales	cikolata-artesanales	Mar del Plata	Dana - Cikolata	Otros	\N	\N	Sí	Sí	Sí	+542235286650	\N	cikolatabon@gmail.com	26/03/2020 16:58:34	\N	\N	private	\N	\N	s5a58aypbo074ca973hps5a58ay31bv6	\N	\N	2020-07-14 18:52:28.835489	2020-07-14 18:52:33.679062
 7afd4c58-29ef-11eb-897b-16ad4631369f	Casa Mexico comidas y delicias	casa-mexico-comidas-y-delicias	Mar del Plata	Casa Mexico	Comida	\N	\N	\N	\N	\N	\N	\N	villarinoproducciones@gmail.com	25/08/2020 22:29:17	11:00 a 23:0	$70	private	\N	\N	kmd1wrchlcl1pqr26oc3zlkmd1wrch9j	+542235231056	5492235028274	2020-11-18 22:43:30.221677	2020-11-18 22:43:30.221677
@@ -12767,8 +12521,8 @@ fba54fc2-a3ab-4c34-9ec2-8d201de38684	Mac chori	mac-chori	Mar del Plata	Matias	Co
 5bbb4beb-7e9e-490b-a8b4-50f5fd585554	Oliva Cosas Ricas	oliva-cosas-ricas	Mar del Plata	Yamila	Saludable	Catamarca 2833	\N	\N	\N	\N	\N	\N	yamilaamancaygasparri@gmail.com	29/04/2020 18:10:01	Martes a Sábado 10:00 a 17:00	$50	public	olivas-logo.jpg	oliva-bg.jpg	vhzthyu7iia6ru30g12vhzth6pbe9vv2	\N	+542236891099	2020-07-14 18:52:28.835489	2020-07-14 18:52:33.679062
 cf4ec576-c1e8-11ea-b033-16ad4631369f	Miel Las Margaritas	miel-las-margaritas	Mar del Plata	Leonardo Cepeda	Saludable	\N	\N	\N	\N	\N	\N	\N	leonardocepeda@hotmail.com	5/07/2020 2:23:46	Lunes a sábado 9 a 17hs	Sin costo	private	margaritas-logo.jpg	margaritas-bg.jpg	pmzlyhhqtrksvuom7h5a6pmzlyhhqp58	+542235386827	5492236323481	2020-07-14 18:52:28.835489	2020-07-15 23:06:13.378151
 01ba5562-bc8e-11ea-8db9-16ad4631369f	Gastronomía Jandaia	gastronomia-jandaia	Provincia 	María Eugenia	Comida	Yerbal 1667	\N	\N	\N	\N	\N	\N	euge@jandaiagastronomia.com.ar	2/07/2020 1:08:09	Lunes a domingo de 10:00 a 19:00	$50	private	jandaia-logo.jpg	jandaia-bg.jpg	4bmvbvv66320ja3rmpmp4bmvbqvy9hic	\N	5491155011598	2020-07-14 18:52:28.835489	2020-07-15 23:04:44.501761
+3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	Hiei's	hieis	Mar del Plata	Daniel	Comida	Castelli 1218	Los pedidos se toman de Lunes a Sabado a partir de las 17 hs.	\N	\N	\N	\N	\N	hieisushigabrieldellepiane@gmail.com	28/04/2020 0:15:47	Lunes a Sábado 17:00 a 22:00	$140.-	public	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396-logo-x4nt8e1ls6.png	hieis-bg.jpg	z60dei5x90k10jbt8z60ddbshmkquig8		+542235166350	2020-07-14 18:52:28.835489	2022-07-04 23:17:03.885847
 c980f4a6-994e-11ea-bf5b-16ad4631369f	Nenecha Bakery	nenecha-bakery	Mar del Plata	Gonzalo	Panadería	Mar del Plata	El envío se realiza en toda la ciudad.\t\t\t\t\t\nLos productos se realizan con antelación para asegurar la calidad, por lo que la entrega es en los días de apertura sin excepción.	\N	\N	\N	\N	\N	nenechabakery@gmail.com	18/05/2020 10:16:23	Lunes a sábado - 9 a 16	$50	public	nenecha-logo.jpg	nenecha-bg.png	8zelwnpuroxhys9uv8zelbhbuc2lzd0g	\N	5492235291696	2020-07-14 18:52:28.835489	2021-06-30 20:39:43.009409
-3c99e5b4-fca3-4bd8-a0d4-e2c18b445396	Hiei's	hieis	Mar del Plata	Daniel	Comida	Castelli 1218	Los pedidos se toman de Lunes a Sabado a partir de las 17 hs.	\N	\N	\N	\N	\N	hieisushigabrieldellepiane@gmail.com	28/04/2020 0:15:47	Lunes a Sábado 17:00 a 22:00	$140.-	public	3c99e5b4-fca3-4bd8-a0d4-e2c18b445396-logo-x4nt8e1ls6.png	hieis-bg.jpg	z60dei5x90k10jbt8z60ddbshmkquig8		+542235166350	2020-07-14 18:52:28.835489	2022-05-09 23:19:31.65637
 cdba3e28-914d-11ea-8729-16ad4631369f	Dietética Bizitza	dietetica-bizitza	Mar del Plata	Belen	Saludable	Colón 3336	\N	\N	\N	\N	\N	\N	belu.moscardi@live.com.ar	7/05/2020 23:57:26	Lunes a viernes de 9 a 19hs. Sabados de 10 a 14hs.	ENVIO SIN CARGO A PARTIR DE 500$	public	bizitza-logo.jpg	bizitza-bg.jpg	s33z251a680x0es33z23x0z8hnozm3nr	\N	5492235591944	2020-07-14 18:52:28.835489	2021-08-09 22:37:30.815033
 b8995fb2-a0f9-4209-bd0a-9ce2e097c1e8	La Burguesa	la-burguesa	Mar del Plata	Paloma	Comida	Mar del Plata	Consultar por opciones de  Hamburguesas Veggie	\N	\N	\N	\N	\N	palomabmdq@gmail.com	27/04/2020 22:45:40	Miercoles a Domingos - 19.00 a 23:00	$50 desde acantilados a Playa Grande	public	b8995fb2-a0f9-4209-bd0a-9ce2e097c1e8-logo-v3igyu3spu.png	b8995fb2-a0f9-4209-bd0a-9ce2e097c1e8-background-dm7bu0g4q9.png	pgjkcrvdm3m4kvlaxixurwenmpgjkcrv	\N	5492236680762	2020-07-14 18:52:28.835489	2021-01-27 18:22:49.029843
 dc595675-df5a-4e11-bce5-8e8ad4cca8c9	Don Antonio Pizzas y Empanadas Tejedor	donantonio-tejedor	Mar del Plata	Lucas Bianchi	Comida	Av. Tejedor 1081	\N	\N	\N	\N	\N	\N	lucasfc283@hotmail.com	28/04/2020 17:35:41	Lun a Sab 11:30 A 15:00 / 19:30 a 23:00 - Dom -19:30 a 23:00	$30	public	donantonio-logo.jpg	donantoniotejedor-bg.jpg	gu0rkj4boqkig9q9i8xgu0rkgp4pwd4q	+542234718500	+542235378743	2020-07-14 18:52:28.835489	2020-07-14 18:52:33.679062
@@ -13004,165 +12758,11 @@ b3f338f9-43c4-45a0-a6b2-fd8af6be9b75	Lunáticos	test-4	Mar del Plata	Test	Helado
 6f5e75b6-54a9-4fc0-890b-23f9177179e5	Al Paso Ezeiza	parrilla-al-paso-ezeiza	Mar del Plata	Eduardo	Comida	Av. Juan B Justo 3600	Aceptamos tarjetas y mercado pago.	\N	\N	\N	\N	\N	parrillaezeiza@gmail.com	28/04/2020 17:21:33	Lun a Sab 12:30-15:30-Mier a Lun 20:30-23:30	Consultar valor según zona.	public	6f5e75b6-54a9-4fc0-890b-23f9177179e5-logo-jftv9qneki.png	6f5e75b6-54a9-4fc0-890b-23f9177179e5-background-4ccp00iunm.png	bqw9uw36zu51cu48bqw9uw30aq6vvfku	+542234725376	+542235867497	2020-07-14 18:52:28.835489	2021-12-18 16:15:11.697507
 01b45608-bc8e-11ea-8392-16ad4631369f	Buka Templo	buka-templo	Necochea	Andres Lopez Artero	Cervecerías	75-1801	⚠️HORARIOS DE DELIVERY POR ZONA: se toman hasta esa hora, se entregan después de ese horario:\n➡️ QUEQUEN hasta 20hs \n➡️ ZONA AV. 98 y VILLA DEL DEPORTISTA hasta 21hs	\N	\N	\N	\N	\N	bukarestcerveceria@gmail.com	30/06/2020 15:41:21	De Martes a Domingo de 19:00 a 00:00 hrs	$100 - Aceptamos Efectivo o Mercado Pago	public	bukatemplo_logo.jpg	bukatemplo-bg.jpg	weli3srd56rcfg7kiiwelaf1qvcjoeeq	\N	5492262658591	2020-07-14 18:52:28.835489	2021-10-29 05:37:01.86727
 84248b79-b4f4-489c-846f-f412bae326b9	Alto Horno	alto-horno	Mar del Plata	Martin Chiabrera	Comida	Alvarado 2848, Mar del Plata	\N	No	Sí	\N	+542234920432	\N	altohornomdp@gmail.com	26/03/2020 0:06:11	Martes a Domingo de 20 a 23hs	Con cargo	public	altohorno-logo.jpg	altohorno-bg.jpg	tns94mhmm75w9ztns96vg962t9fha9aw	2234920432	+5492235325055	2020-07-14 18:52:28.835489	2021-04-21 15:16:45.486158
+066be4be-8afe-41cc-b606-09314fd3140a	Crip Hamburgués	crip	Mar del Plata	Yamila	Comida	Diagonal Pueyrredón 3224, Mar del Plata	Formas de pago: efectivo o mercado pago	Sí	Sí	No	+542235910490	\N	yamilamarto1@gmail.com	18/04/2020 11:21:05	De 20 a 00hs.	Entre $100-$200	public	criphamburgues-logo.jpg	criphamburgues-bg.jpg	ubb2rlqqi504icf0cqdbubb2rusr79tt	+542234936856	+5492234178614	2020-07-14 18:52:28.835489	2022-07-07 18:39:42.986032
 3f3abd4a-5fc8-44f2-9613-b923252116f4	The Fermento	thefermento	Mar del Plata	Lucas govednik	Panadería	SOLO DELIVERY	Zona de reparto Juan b justo hasta constitución y la Costa hasta Jara	Sí	Sí	No	+542236730300	\N	thefermento@outlook.com	28/03/2020 20:55:27	08 - 18 hs	$100	public	3f3abd4a-5fc8-44f2-9613-b923252116f4-logo-cs0w0d8gb2.png	3f3abd4a-5fc8-44f2-9613-b923252116f4-background-1sbxii77nd.png	nsn0e95geem5zff6nwgnsn0edekmpeqg	+542236730300	+542236730300	2020-07-14 18:52:28.835489	2022-05-26 16:25:30.129571
-77ccc1d6-c6d8-48d1-88de-b42199d38985	Magui Fit Food	maguifit	Mar del Plata	Noelia	Saludable	Mar del Plata	Hacemos envios a domicilio \nTake away en Alsina 2295 y cordoba 3991 con pedido previo, también podes encontrar algunos de nuestros productos!\nTodos los productos son sin azúcar agregada, sin hatinas refinadas y si grasas trans.	Sí	Sí	\N	+542235569889	\N	maguimartinez@gmail.com	26/03/2020 1:49:46	Envios lunes y viernes de 10 a 14hs	$200 a $350	public	77ccc1d6-c6d8-48d1-88de-b42199d38985-logo-41abse2487.png	77ccc1d6-c6d8-48d1-88de-b42199d38985-background-agd01qt85b.png	tavuc6gsluwchh8uqtavuc7gs7xc951h	\N	+5492235569889	2020-07-14 18:52:28.835489	2022-05-30 13:31:09.300794
-066be4be-8afe-41cc-b606-09314fd3140a	Crip Hamburgués	crip	Mar del Plata	Yamila	Comida	Diagonal Pueyrredón 3224, Mar del Plata	Formas de pago: efectivo o mercado pago	Sí	Sí	No	+542235910490	\N	yamilamarto1@gmail.com	18/04/2020 11:21:05	De 20 a 00hs.	Entre $80-$160	public	criphamburgues-logo.jpg	criphamburgues-bg.jpg	ubb2rlqqi504icf0cqdbubb2rusr79tt	+542234936856	+5492234178614	2020-07-14 18:52:28.835489	2022-06-09 01:48:41.934575
 b63e2c0c-af6c-40e1-8b90-50dd42ee382d	El Ciclon	el-ciclon	Mar del Plata	Lautaro	Comida	Catamarca 1400, Mar del Plata	\N	Sí	Sí	Sí	+542235271448	\N	zoot.lautaro@gmail.com	8/04/2020 15:35:35	De 9  a 14:30 hs. y de 19hs a 23hs	Por zonas: $60 / $90 / $120/ $150/ $180	public	elciclon-logo.png	elciclon-bg.jpg	iwj6brskkklxuynkkuliwj6brsnd79u6	+542234958691	+5492235397954	2020-07-14 18:52:28.835489	2022-06-15 15:20:11.659434
+77ccc1d6-c6d8-48d1-88de-b42199d38985	Magui Fit Food	maguifit	Mar del Plata	Noelia	Saludable	Mar del Plata	Hacemos envios a domicilio \nTake away en Alsina 2295 y cordoba 3991 con pedido previo, también podes encontrar algunos de nuestros productos!\nTodos los productos son sin azúcar agregada, sin hatinas refinadas y si grasas trans.	Sí	Sí	\N	+542235569889	\N	maguimartinez@gmail.com	26/03/2020 1:49:46	Envios lunes y viernes de 10 a 14hs	$200 a $350	public	77ccc1d6-c6d8-48d1-88de-b42199d38985-logo-41abse2487.png	77ccc1d6-c6d8-48d1-88de-b42199d38985-background-agd01qt85b.png	tavuc6gsluwchh8uqtavuc7gs7xc951h	\N	+5492235569889	2020-07-14 18:52:28.835489	2022-06-29 05:59:41.192558
 \.
-
-
---
--- Data for Name: schema_migrations; Type: TABLE DATA; Schema: realtime; Owner: postgres
---
-
-COPY realtime.schema_migrations (version, inserted_at) FROM stdin;
-20211116024918	2022-05-09 18:57:18
-20211116045059	2022-05-09 18:57:18
-20211116050929	2022-05-09 18:57:18
-20211116051442	2022-05-09 18:57:18
-20211116212300	2022-05-09 18:57:18
-20211116213355	2022-05-09 18:57:18
-20211116213934	2022-05-09 18:57:18
-20211116214523	2022-05-09 18:57:18
-20211122062447	2022-05-09 18:57:18
-20211124070109	2022-05-09 18:57:18
-20211202204204	2022-05-09 18:57:18
-20211202204605	2022-05-09 18:57:18
-20211210212804	2022-05-09 18:57:18
-20211228014915	2022-05-09 18:57:18
-20220107221237	2022-05-09 18:57:18
-20220228202821	2022-05-09 18:57:18
-20220312004840	2022-05-09 18:57:18
-\.
-
-
---
--- Data for Name: subscription; Type: TABLE DATA; Schema: realtime; Owner: postgres
---
-
-COPY realtime.subscription (id, subscription_id, entity, filters, claims, created_at) FROM stdin;
-\.
-
-
---
--- Data for Name: buckets; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
---
-
-COPY storage.buckets (id, name, owner, created_at, updated_at, public) FROM stdin;
-images	images	\N	2022-06-04 00:27:46.763198+00	2022-06-04 00:27:46.763198+00	t
-\.
-
-
---
--- Data for Name: migrations; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
---
-
-COPY storage.migrations (id, name, hash, executed_at) FROM stdin;
-0	create-migrations-table	e18db593bcde2aca2a408c4d1100f6abba2195df	2022-05-09 18:57:25.390366
-1	initialmigration	6ab16121fbaa08bbd11b712d05f358f9b555d777	2022-05-09 18:57:25.393498
-2	pathtoken-column	49756be03be4c17bb85fe70d4a861f27de7e49ad	2022-05-09 18:57:25.395081
-3	add-migrations-rls	bb5d124c53d68635a883e399426c6a5a25fc893d	2022-05-09 18:57:25.417448
-4	add-size-functions	6d79007d04f5acd288c9c250c42d2d5fd286c54d	2022-05-09 18:57:25.420167
-5	change-column-name-in-get-size	fd65688505d2ffa9fbdc58a944348dd8604d688c	2022-05-09 18:57:25.422784
-6	add-rls-to-buckets	63e2bab75a2040fee8e3fb3f15a0d26f3380e9b6	2022-05-09 18:57:25.426608
-7	add-public-to-buckets	82568934f8a4d9e0a85f126f6fb483ad8214c418	2022-05-09 18:57:25.428831
-8	fix-search-function	1a43a40eddb525f2e2f26efd709e6c06e58e059c	2022-05-09 18:57:25.431095
-9	search-files-search-function	34c096597eb8b9d077fdfdde9878c88501b2fafc	2022-05-09 18:57:25.433751
-\.
-
-
---
--- Data for Name: objects; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
---
-
-COPY storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_accessed_at, metadata) FROM stdin;
-\.
-
-
---
--- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
---
-
-SELECT pg_catalog.setval('auth.refresh_tokens_id_seq', 1, false);
-
-
---
--- Name: subscription_id_seq; Type: SEQUENCE SET; Schema: realtime; Owner: postgres
---
-
-SELECT pg_catalog.setval('realtime.subscription_id_seq', 1, false);
-
-
---
--- Name: audit_log_entries audit_log_entries_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.audit_log_entries
-    ADD CONSTRAINT audit_log_entries_pkey PRIMARY KEY (id);
-
-
---
--- Name: identities identities_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.identities
-    ADD CONSTRAINT identities_pkey PRIMARY KEY (provider, id);
-
-
---
--- Name: instances instances_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.instances
-    ADD CONSTRAINT instances_pkey PRIMARY KEY (id);
-
-
---
--- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
-
-
---
--- Name: refresh_tokens refresh_tokens_token_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_token_unique UNIQUE (token);
-
-
---
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
-
-
---
--- Name: users users_email_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
-
-
---
--- Name: users users_phone_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.users
-    ADD CONSTRAINT users_phone_key UNIQUE (phone);
-
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -13190,214 +12790,17 @@ ALTER TABLE ONLY public.shops
 
 
 --
--- Name: subscription pk_subscription; Type: CONSTRAINT; Schema: realtime; Owner: postgres
---
-
-ALTER TABLE ONLY realtime.subscription
-    ADD CONSTRAINT pk_subscription PRIMARY KEY (id);
-
-
---
--- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: realtime; Owner: postgres
---
-
-ALTER TABLE ONLY realtime.schema_migrations
-    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
-
-
---
--- Name: buckets buckets_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.buckets
-    ADD CONSTRAINT buckets_pkey PRIMARY KEY (id);
-
-
---
--- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.migrations
-    ADD CONSTRAINT migrations_name_key UNIQUE (name);
-
-
---
--- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.migrations
-    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
-
-
---
--- Name: objects objects_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.objects
-    ADD CONSTRAINT objects_pkey PRIMARY KEY (id);
-
-
---
--- Name: audit_logs_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX audit_logs_instance_id_idx ON auth.audit_log_entries USING btree (instance_id);
-
-
---
--- Name: confirmation_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE UNIQUE INDEX confirmation_token_idx ON auth.users USING btree (confirmation_token) WHERE ((confirmation_token)::text !~ '^[0-9 ]*$'::text);
-
-
---
--- Name: email_change_token_current_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE UNIQUE INDEX email_change_token_current_idx ON auth.users USING btree (email_change_token_current) WHERE ((email_change_token_current)::text !~ '^[0-9 ]*$'::text);
-
-
---
--- Name: email_change_token_new_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE UNIQUE INDEX email_change_token_new_idx ON auth.users USING btree (email_change_token_new) WHERE ((email_change_token_new)::text !~ '^[0-9 ]*$'::text);
-
-
---
--- Name: identities_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX identities_user_id_idx ON auth.identities USING btree (user_id);
-
-
---
--- Name: reauthentication_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE UNIQUE INDEX reauthentication_token_idx ON auth.users USING btree (reauthentication_token) WHERE ((reauthentication_token)::text !~ '^[0-9 ]*$'::text);
-
-
---
--- Name: recovery_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE UNIQUE INDEX recovery_token_idx ON auth.users USING btree (recovery_token) WHERE ((recovery_token)::text !~ '^[0-9 ]*$'::text);
-
-
---
--- Name: refresh_tokens_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX refresh_tokens_instance_id_idx ON auth.refresh_tokens USING btree (instance_id);
-
-
---
--- Name: refresh_tokens_instance_id_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX refresh_tokens_instance_id_user_id_idx ON auth.refresh_tokens USING btree (instance_id, user_id);
-
-
---
--- Name: refresh_tokens_parent_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX refresh_tokens_parent_idx ON auth.refresh_tokens USING btree (parent);
-
-
---
--- Name: refresh_tokens_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX refresh_tokens_token_idx ON auth.refresh_tokens USING btree (token);
-
-
---
--- Name: users_instance_id_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX users_instance_id_email_idx ON auth.users USING btree (instance_id, lower((email)::text));
-
-
---
--- Name: users_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
---
-
-CREATE INDEX users_instance_id_idx ON auth.users USING btree (instance_id);
-
-
---
--- Name: ix_realtime_subscription_entity; Type: INDEX; Schema: realtime; Owner: postgres
---
-
-CREATE INDEX ix_realtime_subscription_entity ON realtime.subscription USING hash (entity);
-
-
---
--- Name: subscription_subscription_id_entity_filters_key; Type: INDEX; Schema: realtime; Owner: postgres
---
-
-CREATE UNIQUE INDEX subscription_subscription_id_entity_filters_key ON realtime.subscription USING btree (subscription_id, entity, filters);
-
-
---
--- Name: bname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
---
-
-CREATE UNIQUE INDEX bname ON storage.buckets USING btree (name);
-
-
---
--- Name: bucketid_objname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
---
-
-CREATE UNIQUE INDEX bucketid_objname ON storage.objects USING btree (bucket_id, name);
-
-
---
--- Name: name_prefix_search; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
---
-
-CREATE INDEX name_prefix_search ON storage.objects USING btree (name text_pattern_ops);
-
-
---
 -- Name: products set_timestamp; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION public.trigger_set_timestamp();
+CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_timestamp();
 
 
 --
 -- Name: shops set_timestamp; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
-CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.shops FOR EACH ROW EXECUTE FUNCTION public.trigger_set_timestamp();
-
-
---
--- Name: subscription tr_check_filters; Type: TRIGGER; Schema: realtime; Owner: postgres
---
-
-CREATE TRIGGER tr_check_filters BEFORE INSERT OR UPDATE ON realtime.subscription FOR EACH ROW EXECUTE FUNCTION realtime.subscription_check_filters();
-
-
---
--- Name: identities identities_user_id_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.identities
-    ADD CONSTRAINT identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-
-
---
--- Name: refresh_tokens refresh_tokens_parent_fkey; Type: FK CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER TABLE ONLY auth.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_parent_fkey FOREIGN KEY (parent) REFERENCES auth.refresh_tokens(token);
+CREATE TRIGGER set_timestamp BEFORE UPDATE ON public.shops FOR EACH ROW EXECUTE PROCEDURE public.trigger_set_timestamp();
 
 
 --
@@ -13406,1147 +12809,3 @@ ALTER TABLE ONLY auth.refresh_tokens
 
 ALTER TABLE ONLY public.products
     ADD CONSTRAINT products_shopid_fkey FOREIGN KEY (shopid) REFERENCES public.shops(id);
-
-
---
--- Name: buckets buckets_owner_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.buckets
-    ADD CONSTRAINT buckets_owner_fkey FOREIGN KEY (owner) REFERENCES auth.users(id);
-
-
---
--- Name: objects objects_bucketId_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.objects
-    ADD CONSTRAINT "objects_bucketId_fkey" FOREIGN KEY (bucket_id) REFERENCES storage.buckets(id);
-
-
---
--- Name: objects objects_owner_fkey; Type: FK CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE ONLY storage.objects
-    ADD CONSTRAINT objects_owner_fkey FOREIGN KEY (owner) REFERENCES auth.users(id);
-
-
---
--- Name: buckets; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE storage.buckets ENABLE ROW LEVEL SECURITY;
-
---
--- Name: migrations; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE storage.migrations ENABLE ROW LEVEL SECURITY;
-
---
--- Name: objects; Type: ROW SECURITY; Schema: storage; Owner: supabase_storage_admin
---
-
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
---
--- Name: supabase_realtime; Type: PUBLICATION; Schema: -; Owner: postgres
---
-
-CREATE PUBLICATION supabase_realtime WITH (publish = 'insert, update, delete, truncate');
-
-
-ALTER PUBLICATION supabase_realtime OWNER TO postgres;
-
---
--- Name: SCHEMA auth; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT USAGE ON SCHEMA auth TO anon;
-GRANT USAGE ON SCHEMA auth TO authenticated;
-GRANT USAGE ON SCHEMA auth TO service_role;
-GRANT ALL ON SCHEMA auth TO supabase_auth_admin;
-GRANT ALL ON SCHEMA auth TO dashboard_user;
-GRANT ALL ON SCHEMA auth TO postgres;
-
-
---
--- Name: SCHEMA extensions; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT USAGE ON SCHEMA extensions TO anon;
-GRANT USAGE ON SCHEMA extensions TO authenticated;
-GRANT USAGE ON SCHEMA extensions TO service_role;
-GRANT ALL ON SCHEMA extensions TO dashboard_user;
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT USAGE ON SCHEMA public TO anon;
-GRANT USAGE ON SCHEMA public TO authenticated;
-GRANT USAGE ON SCHEMA public TO service_role;
-GRANT ALL ON SCHEMA public TO postgres;
-
-
---
--- Name: SCHEMA graphql_public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT USAGE ON SCHEMA graphql_public TO postgres;
-GRANT USAGE ON SCHEMA graphql_public TO anon;
-GRANT USAGE ON SCHEMA graphql_public TO authenticated;
-GRANT USAGE ON SCHEMA graphql_public TO service_role;
-
-
---
--- Name: SCHEMA realtime; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT USAGE ON SCHEMA realtime TO postgres;
-
-
---
--- Name: SCHEMA storage; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA storage TO postgres;
-GRANT USAGE ON SCHEMA storage TO anon;
-GRANT USAGE ON SCHEMA storage TO authenticated;
-GRANT USAGE ON SCHEMA storage TO service_role;
-GRANT ALL ON SCHEMA storage TO supabase_storage_admin;
-GRANT ALL ON SCHEMA storage TO dashboard_user;
-
-
---
--- Name: FUNCTION email(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON FUNCTION auth.email() TO dashboard_user;
-
-
---
--- Name: FUNCTION jwt(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON FUNCTION auth.jwt() TO postgres;
-GRANT ALL ON FUNCTION auth.jwt() TO dashboard_user;
-
-
---
--- Name: FUNCTION role(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON FUNCTION auth.role() TO dashboard_user;
-
-
---
--- Name: FUNCTION uid(); Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON FUNCTION auth.uid() TO dashboard_user;
-
-
---
--- Name: FUNCTION algorithm_sign(signables text, secret text, algorithm text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.algorithm_sign(signables text, secret text, algorithm text) TO dashboard_user;
-
-
---
--- Name: FUNCTION armor(bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.armor(bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION armor(bytea, text[], text[]); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.armor(bytea, text[], text[]) TO dashboard_user;
-
-
---
--- Name: FUNCTION crypt(text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.crypt(text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION dearmor(text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.dearmor(text) TO dashboard_user;
-
-
---
--- Name: FUNCTION decrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.decrypt(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION decrypt_iv(bytea, bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.decrypt_iv(bytea, bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION digest(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.digest(bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION digest(text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.digest(text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION encrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.encrypt(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION encrypt_iv(bytea, bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.encrypt_iv(bytea, bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION gen_random_bytes(integer); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.gen_random_bytes(integer) TO dashboard_user;
-
-
---
--- Name: FUNCTION gen_random_uuid(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.gen_random_uuid() TO dashboard_user;
-
-
---
--- Name: FUNCTION gen_salt(text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.gen_salt(text) TO dashboard_user;
-
-
---
--- Name: FUNCTION gen_salt(text, integer); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.gen_salt(text, integer) TO dashboard_user;
-
-
---
--- Name: FUNCTION grant_pg_cron_access(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.grant_pg_cron_access() TO dashboard_user;
-
-
---
--- Name: FUNCTION grant_pg_net_access(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.grant_pg_net_access() TO dashboard_user;
-
-
---
--- Name: FUNCTION hmac(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.hmac(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION hmac(text, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.hmac(text, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT blk_read_time double precision, OUT blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pg_stat_statements(showtext boolean, OUT userid oid, OUT dbid oid, OUT toplevel boolean, OUT queryid bigint, OUT query text, OUT plans bigint, OUT total_plan_time double precision, OUT min_plan_time double precision, OUT max_plan_time double precision, OUT mean_plan_time double precision, OUT stddev_plan_time double precision, OUT calls bigint, OUT total_exec_time double precision, OUT min_exec_time double precision, OUT max_exec_time double precision, OUT mean_exec_time double precision, OUT stddev_exec_time double precision, OUT rows bigint, OUT shared_blks_hit bigint, OUT shared_blks_read bigint, OUT shared_blks_dirtied bigint, OUT shared_blks_written bigint, OUT local_blks_hit bigint, OUT local_blks_read bigint, OUT local_blks_dirtied bigint, OUT local_blks_written bigint, OUT temp_blks_read bigint, OUT temp_blks_written bigint, OUT blk_read_time double precision, OUT blk_write_time double precision, OUT wal_records bigint, OUT wal_fpi bigint, OUT wal_bytes numeric) TO dashboard_user;
-
-
---
--- Name: FUNCTION pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pg_stat_statements_info(OUT dealloc bigint, OUT stats_reset timestamp with time zone) TO dashboard_user;
-
-
---
--- Name: FUNCTION pg_stat_statements_reset(userid oid, dbid oid, queryid bigint); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pg_stat_statements_reset(userid oid, dbid oid, queryid bigint) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_armor_headers(text, OUT key text, OUT value text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_armor_headers(text, OUT key text, OUT value text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_key_id(bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_key_id(bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt(bytea, bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt(bytea, bytea, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_decrypt_bytea(bytea, bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_decrypt_bytea(bytea, bytea, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_encrypt(text, bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_encrypt(text, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt(text, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_encrypt_bytea(bytea, bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_pub_encrypt_bytea(bytea, bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_pub_encrypt_bytea(bytea, bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_decrypt(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_decrypt(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt(bytea, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_decrypt_bytea(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_decrypt_bytea(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_decrypt_bytea(bytea, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_encrypt(text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_encrypt(text, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt(text, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_encrypt_bytea(bytea, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION pgp_sym_encrypt_bytea(bytea, text, text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.pgp_sym_encrypt_bytea(bytea, text, text) TO dashboard_user;
-
-
---
--- Name: FUNCTION sign(payload json, secret text, algorithm text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.sign(payload json, secret text, algorithm text) TO dashboard_user;
-
-
---
--- Name: FUNCTION try_cast_double(inp text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.try_cast_double(inp text) TO dashboard_user;
-
-
---
--- Name: FUNCTION url_decode(data text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.url_decode(data text) TO dashboard_user;
-
-
---
--- Name: FUNCTION url_encode(data bytea); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.url_encode(data bytea) TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_generate_v1(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_generate_v1() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_generate_v1mc(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_generate_v1mc() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_generate_v3(namespace uuid, name text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_generate_v3(namespace uuid, name text) TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_generate_v4(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_generate_v4() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_generate_v5(namespace uuid, name text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_generate_v5(namespace uuid, name text) TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_nil(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_nil() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_ns_dns(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_ns_dns() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_ns_oid(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_ns_oid() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_ns_url(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_ns_url() TO dashboard_user;
-
-
---
--- Name: FUNCTION uuid_ns_x500(); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.uuid_ns_x500() TO dashboard_user;
-
-
---
--- Name: FUNCTION verify(token text, secret text, algorithm text); Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON FUNCTION extensions.verify(token text, secret text, algorithm text) TO dashboard_user;
-
-
---
--- Name: FUNCTION get_built_schema_version(); Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql.get_built_schema_version() TO postgres;
-GRANT ALL ON FUNCTION graphql.get_built_schema_version() TO anon;
-GRANT ALL ON FUNCTION graphql.get_built_schema_version() TO authenticated;
-GRANT ALL ON FUNCTION graphql.get_built_schema_version() TO service_role;
-
-
---
--- Name: FUNCTION rebuild_on_ddl(); Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql.rebuild_on_ddl() TO postgres;
-GRANT ALL ON FUNCTION graphql.rebuild_on_ddl() TO anon;
-GRANT ALL ON FUNCTION graphql.rebuild_on_ddl() TO authenticated;
-GRANT ALL ON FUNCTION graphql.rebuild_on_ddl() TO service_role;
-
-
---
--- Name: FUNCTION rebuild_on_drop(); Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql.rebuild_on_drop() TO postgres;
-GRANT ALL ON FUNCTION graphql.rebuild_on_drop() TO anon;
-GRANT ALL ON FUNCTION graphql.rebuild_on_drop() TO authenticated;
-GRANT ALL ON FUNCTION graphql.rebuild_on_drop() TO service_role;
-
-
---
--- Name: FUNCTION rebuild_schema(); Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql.rebuild_schema() TO postgres;
-GRANT ALL ON FUNCTION graphql.rebuild_schema() TO anon;
-GRANT ALL ON FUNCTION graphql.rebuild_schema() TO authenticated;
-GRANT ALL ON FUNCTION graphql.rebuild_schema() TO service_role;
-
-
---
--- Name: FUNCTION variable_definitions_sort(variable_definitions jsonb); Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql.variable_definitions_sort(variable_definitions jsonb) TO postgres;
-GRANT ALL ON FUNCTION graphql.variable_definitions_sort(variable_definitions jsonb) TO anon;
-GRANT ALL ON FUNCTION graphql.variable_definitions_sort(variable_definitions jsonb) TO authenticated;
-GRANT ALL ON FUNCTION graphql.variable_definitions_sort(variable_definitions jsonb) TO service_role;
-
-
---
--- Name: FUNCTION graphql("operationName" text, query text, variables jsonb, extensions jsonb); Type: ACL; Schema: graphql_public; Owner: postgres
---
-
-GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO postgres;
-GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO anon;
-GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO authenticated;
-GRANT ALL ON FUNCTION graphql_public.graphql("operationName" text, query text, variables jsonb, extensions jsonb) TO service_role;
-
-
---
--- Name: FUNCTION get_auth(p_usename text); Type: ACL; Schema: pgbouncer; Owner: postgres
---
-
-REVOKE ALL ON FUNCTION pgbouncer.get_auth(p_usename text) FROM PUBLIC;
-GRANT ALL ON FUNCTION pgbouncer.get_auth(p_usename text) TO pgbouncer;
-
-
---
--- Name: FUNCTION trigger_set_timestamp(); Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON FUNCTION public.trigger_set_timestamp() TO anon;
-GRANT ALL ON FUNCTION public.trigger_set_timestamp() TO authenticated;
-GRANT ALL ON FUNCTION public.trigger_set_timestamp() TO service_role;
-
-
---
--- Name: FUNCTION apply_rls(wal jsonb, max_record_bytes integer); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.apply_rls(wal jsonb, max_record_bytes integer) TO postgres;
-GRANT ALL ON FUNCTION realtime.apply_rls(wal jsonb, max_record_bytes integer) TO dashboard_user;
-
-
---
--- Name: FUNCTION build_prepared_statement_sql(prepared_statement_name text, entity regclass, columns realtime.wal_column[]); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.build_prepared_statement_sql(prepared_statement_name text, entity regclass, columns realtime.wal_column[]) TO postgres;
-GRANT ALL ON FUNCTION realtime.build_prepared_statement_sql(prepared_statement_name text, entity regclass, columns realtime.wal_column[]) TO dashboard_user;
-
-
---
--- Name: FUNCTION "cast"(val text, type_ regtype); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime."cast"(val text, type_ regtype) TO postgres;
-GRANT ALL ON FUNCTION realtime."cast"(val text, type_ regtype) TO dashboard_user;
-
-
---
--- Name: FUNCTION check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text) TO postgres;
-GRANT ALL ON FUNCTION realtime.check_equality_op(op realtime.equality_op, type_ regtype, val_1 text, val_2 text) TO dashboard_user;
-
-
---
--- Name: FUNCTION is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[]); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[]) TO postgres;
-GRANT ALL ON FUNCTION realtime.is_visible_through_filters(columns realtime.wal_column[], filters realtime.user_defined_filter[]) TO dashboard_user;
-
-
---
--- Name: FUNCTION quote_wal2json(entity regclass); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.quote_wal2json(entity regclass) TO postgres;
-GRANT ALL ON FUNCTION realtime.quote_wal2json(entity regclass) TO dashboard_user;
-
-
---
--- Name: FUNCTION subscription_check_filters(); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.subscription_check_filters() TO postgres;
-GRANT ALL ON FUNCTION realtime.subscription_check_filters() TO dashboard_user;
-
-
---
--- Name: FUNCTION to_regrole(role_name text); Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON FUNCTION realtime.to_regrole(role_name text) TO postgres;
-GRANT ALL ON FUNCTION realtime.to_regrole(role_name text) TO dashboard_user;
-
-
---
--- Name: FUNCTION extension(name text); Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON FUNCTION storage.extension(name text) TO anon;
-GRANT ALL ON FUNCTION storage.extension(name text) TO authenticated;
-GRANT ALL ON FUNCTION storage.extension(name text) TO service_role;
-GRANT ALL ON FUNCTION storage.extension(name text) TO dashboard_user;
-GRANT ALL ON FUNCTION storage.extension(name text) TO postgres;
-
-
---
--- Name: FUNCTION filename(name text); Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON FUNCTION storage.filename(name text) TO anon;
-GRANT ALL ON FUNCTION storage.filename(name text) TO authenticated;
-GRANT ALL ON FUNCTION storage.filename(name text) TO service_role;
-GRANT ALL ON FUNCTION storage.filename(name text) TO dashboard_user;
-GRANT ALL ON FUNCTION storage.filename(name text) TO postgres;
-
-
---
--- Name: FUNCTION foldername(name text); Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON FUNCTION storage.foldername(name text) TO anon;
-GRANT ALL ON FUNCTION storage.foldername(name text) TO authenticated;
-GRANT ALL ON FUNCTION storage.foldername(name text) TO service_role;
-GRANT ALL ON FUNCTION storage.foldername(name text) TO dashboard_user;
-GRANT ALL ON FUNCTION storage.foldername(name text) TO postgres;
-
-
---
--- Name: TABLE audit_log_entries; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.audit_log_entries TO dashboard_user;
-GRANT ALL ON TABLE auth.audit_log_entries TO postgres;
-
-
---
--- Name: TABLE identities; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.identities TO postgres;
-GRANT ALL ON TABLE auth.identities TO dashboard_user;
-
-
---
--- Name: TABLE instances; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.instances TO dashboard_user;
-GRANT ALL ON TABLE auth.instances TO postgres;
-
-
---
--- Name: TABLE refresh_tokens; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.refresh_tokens TO dashboard_user;
-GRANT ALL ON TABLE auth.refresh_tokens TO postgres;
-
-
---
--- Name: SEQUENCE refresh_tokens_id_seq; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON SEQUENCE auth.refresh_tokens_id_seq TO dashboard_user;
-GRANT ALL ON SEQUENCE auth.refresh_tokens_id_seq TO postgres;
-
-
---
--- Name: TABLE schema_migrations; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.schema_migrations TO dashboard_user;
-GRANT ALL ON TABLE auth.schema_migrations TO postgres;
-
-
---
--- Name: TABLE users; Type: ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-GRANT ALL ON TABLE auth.users TO dashboard_user;
-GRANT ALL ON TABLE auth.users TO postgres;
-
-
---
--- Name: TABLE pg_stat_statements; Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON TABLE extensions.pg_stat_statements TO dashboard_user;
-
-
---
--- Name: TABLE pg_stat_statements_info; Type: ACL; Schema: extensions; Owner: postgres
---
-
-GRANT ALL ON TABLE extensions.pg_stat_statements_info TO dashboard_user;
-
-
---
--- Name: TABLE schema_version; Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON TABLE graphql.schema_version TO postgres;
-GRANT ALL ON TABLE graphql.schema_version TO anon;
-GRANT ALL ON TABLE graphql.schema_version TO authenticated;
-GRANT ALL ON TABLE graphql.schema_version TO service_role;
-
-
---
--- Name: SEQUENCE seq_schema_version; Type: ACL; Schema: graphql; Owner: postgres
---
-
-GRANT ALL ON SEQUENCE graphql.seq_schema_version TO postgres;
-GRANT ALL ON SEQUENCE graphql.seq_schema_version TO anon;
-GRANT ALL ON SEQUENCE graphql.seq_schema_version TO authenticated;
-GRANT ALL ON SEQUENCE graphql.seq_schema_version TO service_role;
-
-
---
--- Name: TABLE products; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.products TO anon;
-GRANT ALL ON TABLE public.products TO authenticated;
-GRANT ALL ON TABLE public.products TO service_role;
-
-
---
--- Name: TABLE shops; Type: ACL; Schema: public; Owner: postgres
---
-
-GRANT ALL ON TABLE public.shops TO anon;
-GRANT ALL ON TABLE public.shops TO authenticated;
-GRANT ALL ON TABLE public.shops TO service_role;
-
-
---
--- Name: TABLE schema_migrations; Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON TABLE realtime.schema_migrations TO postgres;
-GRANT ALL ON TABLE realtime.schema_migrations TO dashboard_user;
-
-
---
--- Name: TABLE subscription; Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON TABLE realtime.subscription TO postgres;
-GRANT ALL ON TABLE realtime.subscription TO dashboard_user;
-
-
---
--- Name: SEQUENCE subscription_id_seq; Type: ACL; Schema: realtime; Owner: postgres
---
-
-GRANT ALL ON SEQUENCE realtime.subscription_id_seq TO postgres;
-GRANT ALL ON SEQUENCE realtime.subscription_id_seq TO dashboard_user;
-
-
---
--- Name: TABLE buckets; Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON TABLE storage.buckets TO anon;
-GRANT ALL ON TABLE storage.buckets TO authenticated;
-GRANT ALL ON TABLE storage.buckets TO service_role;
-GRANT ALL ON TABLE storage.buckets TO postgres;
-
-
---
--- Name: TABLE migrations; Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON TABLE storage.migrations TO anon;
-GRANT ALL ON TABLE storage.migrations TO authenticated;
-GRANT ALL ON TABLE storage.migrations TO service_role;
-GRANT ALL ON TABLE storage.migrations TO postgres;
-
-
---
--- Name: TABLE objects; Type: ACL; Schema: storage; Owner: supabase_storage_admin
---
-
-GRANT ALL ON TABLE storage.objects TO anon;
-GRANT ALL ON TABLE storage.objects TO authenticated;
-GRANT ALL ON TABLE storage.objects TO service_role;
-GRANT ALL ON TABLE storage.objects TO postgres;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON SEQUENCES  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON FUNCTIONS  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: auth; Owner: supabase_auth_admin
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_auth_admin IN SCHEMA auth GRANT ALL ON TABLES  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: graphql; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON SEQUENCES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON SEQUENCES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON SEQUENCES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: graphql; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON FUNCTIONS  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON FUNCTIONS  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON FUNCTIONS  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: graphql; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON TABLES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON TABLES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql GRANT ALL ON TABLES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: graphql_public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON SEQUENCES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON SEQUENCES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON SEQUENCES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: graphql_public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON FUNCTIONS  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: graphql_public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON TABLES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON TABLES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA graphql_public GRANT ALL ON TABLES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: realtime; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON SEQUENCES  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: realtime; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON FUNCTIONS  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: realtime; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA realtime GRANT ALL ON TABLES  TO dashboard_user;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: storage; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON SEQUENCES  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: storage; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON FUNCTIONS  TO service_role;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: storage; Owner: postgres
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES  TO postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES  TO anon;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES  TO authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA storage GRANT ALL ON TABLES  TO service_role;
-
-
---
--- Name: issue_graphql_placeholder; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER issue_graphql_placeholder ON sql_drop
-         WHEN TAG IN ('DROP EXTENSION')
-   EXECUTE FUNCTION extensions.set_graphql_placeholder();
-
-
-ALTER EVENT TRIGGER issue_graphql_placeholder OWNER TO postgres;
-
---
--- Name: issue_pg_cron_access; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER issue_pg_cron_access ON ddl_command_end
-         WHEN TAG IN ('CREATE SCHEMA')
-   EXECUTE FUNCTION extensions.grant_pg_cron_access();
-
-
-ALTER EVENT TRIGGER issue_pg_cron_access OWNER TO postgres;
-
---
--- Name: issue_pg_graphql_access; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER issue_pg_graphql_access ON ddl_command_end
-         WHEN TAG IN ('CREATE FUNCTION')
-   EXECUTE FUNCTION extensions.grant_pg_graphql_access();
-
-
-ALTER EVENT TRIGGER issue_pg_graphql_access OWNER TO postgres;
-
---
--- Name: issue_pg_net_access; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER issue_pg_net_access ON ddl_command_end
-         WHEN TAG IN ('CREATE EXTENSION')
-   EXECUTE FUNCTION extensions.grant_pg_net_access();
-
-
-ALTER EVENT TRIGGER issue_pg_net_access OWNER TO postgres;
-
---
--- Name: pgrst_ddl_watch; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER pgrst_ddl_watch ON ddl_command_end
-   EXECUTE FUNCTION extensions.pgrst_ddl_watch();
-
-
-ALTER EVENT TRIGGER pgrst_ddl_watch OWNER TO postgres;
-
---
--- Name: pgrst_drop_watch; Type: EVENT TRIGGER; Schema: -; Owner: postgres
---
-
-CREATE EVENT TRIGGER pgrst_drop_watch ON sql_drop
-   EXECUTE FUNCTION extensions.pgrst_drop_watch();
-
-
-ALTER EVENT TRIGGER pgrst_drop_watch OWNER TO postgres;
-
---
--- PostgreSQL database dump complete
---
-

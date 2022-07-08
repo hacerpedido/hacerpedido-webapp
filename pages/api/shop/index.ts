@@ -11,12 +11,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  const { category } = req.query
+  const category = String(req.query.category)
 
   const shops = await prisma.shop.findMany({
     where: { visibility: "public", category },
     orderBy: { updated_at: "desc" },
   })
 
-  res.json(shops)
+  res.json(JSON.parse(JSON.stringify(shops)))
 }

@@ -44,9 +44,10 @@ export default function ShopView({ shop, products }: Props) {
   )
 }
 
-// TODO: this should be getStaticProps
+// TODO: this should be getStaticProps?
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const slug = String(params?.slug)
+
   const shopWithProducts = await prisma.shop.findUnique({
     where: { slug },
     include: {
