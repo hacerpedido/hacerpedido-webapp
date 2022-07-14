@@ -51,7 +51,7 @@ export const getBackgroundForCategory = (category: string) => {
       break
   }
 
-  return `url(/images/backgrounds/${background})`
+  return `url(/images/backgrounds/${background})?auto=format,compress&cs=tinysrgb`
 }
 
 function isURL(s) {
@@ -71,5 +71,5 @@ export const getBackgroundForShop = ({ background, category }: Shop) => {
 
   const url = process.env.NEXT_PUBLIC_IMAGES_BUCKET_URL
 
-  return `${url}/${background}`
+  return `${url}/${background}?auto=format,compress&cs=tinysrgb`
 }

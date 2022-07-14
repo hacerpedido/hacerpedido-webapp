@@ -2,7 +2,14 @@ module.exports = {
   swcMinify: true,
   strictMode: true,
   images: {
-    domains: ["hacerpedido2-images.s3.amazonaws.com", "loremflickr.com"],
+    domains: [
+      "hacerpedido2-images.s3.amazonaws.com",
+      "loremflickr.com",
+      "hacerpedido.imgix.net",
+    ],
+    // deviceSizes: [320, 420, 768, 1024, 1200],
+    // loader: "imgix",
+    // path: "https://hacerpedido.imgix.net",
   },
   compiler: {
     // ssr and displayName are configured by default

@@ -22,12 +22,12 @@ const ShopCard = ({ shop }: Props) => {
         <View style={styles.container}>
           <View style={styles.containerLogo}>
             <Image
-              src={getLogoForShop(shop)}
+              src={`${getLogoForShop(shop)}?auto=format,compress&cs=tinysrgb`}
+              blurDataURL={`${getLogoForShop(shop)}?q=10&blur=100`}
+              placeholder="blur"
               alt={shop.name}
               height={75}
               width={75}
-              // TODO: blur image before loading
-              // placeholder="blur"
             />
           </View>
 

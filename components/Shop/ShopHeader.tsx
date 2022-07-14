@@ -38,7 +38,6 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
     orderswhatsappnumber,
   } = shop
 
-  const logo = getLogoForShop(shop)
   const router = useRouter()
   const displayEditLink =
     (process.env.NODE_ENV == "development" ||
@@ -98,7 +97,14 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
 
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
-          <Image src={logo} alt={name} height={100} width={100} />
+          <Image
+            src={`${getLogoForShop(shop)}?auto=format,compress&cs=tinysrgb`}
+            blurDataURL={`${getLogoForShop(shop)}?q=10&blur=100`}
+            placeholder="blur"
+            alt={name}
+            height={100}
+            width={100}
+          />
         </View>
 
         {displayEditLink && (
