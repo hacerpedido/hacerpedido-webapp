@@ -4,9 +4,12 @@ import { useState, useCallback, useRef, useMemo } from "react"
 import Button from "react-bootstrap/Button"
 import Modal from "react-bootstrap/Modal"
 import Dropzone from "react-dropzone"
-import ReactCrop from "react-image-crop"
-import "react-image-crop/dist/ReactCrop.css"
-import { Crop, PixelCrop } from "react-image-crop/src/types"
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  Crop,
+  PixelCrop,
+} from "react-image-crop"
 import {
   ActivityIndicator,
   StyleSheet,
@@ -21,39 +24,36 @@ import theme from "lib/theme"
 type Props = {
   shopID: string
   imageType: string
+  image: string | undefined
   show: boolean
   onHide: () => void
 }
 
-const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
-  const [isWaiting, setWaiting] = useState(false)
-  const [imgSrc, setImgSrc] = useState("")
-  // const [imageUpload, setImageUpload] = useState()
-  const imgRef = useRef<HTMLImageElement | null>(null)
-
-  const aspect = useMemo(() => (imageType === "logo" ? 1 : 1.2), [imageType])
+const UploadImageModal = ({
+  shopID,
+  imageType,
+  image,
+  show,
+  onHide,
+}: Props) => {
+  const aspect = useMemo(() => (imageType === "logo" ? 1 : 1.2014), [imageType])
   const circularCrop = useMemo(() => imageType === "logo", [imageType])
 
-  const [crop, setCrop] = useState<Crop>({
-    unit: "%",
-    width: 100,
-    height: 100,
-    x: 0,
-    y: 0,
-  })
-
+  const imgRef = useRef()
+  const [isWaiting, setIsWaiting] = useState(false)
+  const [imageCrop, setImageCrop] = useState("")
+  const [crop, setCrop] = useState<Crop>()
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
 
-  const onDrop = useCallback(
-    (acceptedFiles: any[]) => {
-      const file = acceptedFiles[0]
-      setImgSrc(file)
-      // const reader = new FileReader()
-      // reader.onload = () => setImageUpload(reader.result)
-      // reader.readAsDataURL(file)
-    },
-    [setImgSrc]
-  )
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const reader = new FileReader()
+    const file = acceptedFiles[0]
+
+    reader.onabort = () => console.log("file reading was aborted")
+    reader.onerror = () => console.log("file reading has failed")
+    reader.onload = () => setImageCrop(reader.result as string)
+    reader.readAsDataURL(file)
+  }, [])
 
   const onDelete = () => {
     const data = new FormData()
@@ -61,68 +61,62 @@ const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
     data.append("shop_id", shopID)
     data.append("image_type", imageType)
 
-    setWaiting(true)
+    setIsWaiting(true)
+
+    // TODO: should be a put/patch request
     axios
       .post(`${window.location.origin}/api/image-delete`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
-        setWaiting(false)
+        setIsWaiting(false)
         onHide()
       })
   }
 
-  const onUpload = (crop: PixelCrop) => {
-    if (!crop) return
+  const onUpload = () => {
+    if (!completedCrop) return
 
-    setWaiting(true)
+    const imgSrc = imgRef.current as HTMLImageElement
 
-    const image = imgRef.current
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
+    setIsWaiting(true)
+
+    const scaleX = imgSrc.naturalWidth / imgSrc.width
+    const scaleY = imgSrc.naturalHeight / imgSrc.height
 
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
 
-    // Increase pixel density for crop preview quality on retina screens.
-    const pixelRatio =
-      (typeof window !== "undefined" && window.devicePixelRatio) || 1
-
-    canvas.width = crop.width * pixelRatio
-    canvas.height = crop.height * pixelRatio
-
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-    ctx.imageSmoothingQuality = "high"
+    canvas.width = completedCrop.width
+    canvas.height = completedCrop.height
 
     ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      imgSrc,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height
+      completedCrop.width,
+      completedCrop.height
     )
 
     canvas.toBlob(
-      (blob) => {
+      (file) => {
         const data = new FormData()
-        data.append("image", blob)
+        data.append("image", file)
         data.append("shop_id", shopID)
         data.append("image_type", imageType)
 
         axios
-          .post(`${window.location.origin}/api/image-upload`, data, {
+          .post(`${window.location.origin}/api/shop/image-upload`, data, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
           .then(() => {
-            setWaiting(false)
+            setIsWaiting(false)
             onHide()
           })
       },
@@ -132,11 +126,23 @@ const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
   }
 
   function onImageLoad(e: React.SyntheticEvent<HTMLImageElement>) {
-    // if (aspect) {
-    //   const { width, height } = e.currentTarget
-    //   setCrop(centerAspectCrop(width, height, aspect))
-    // }
-    imgRef.current = e.currentTarget
+    const { naturalWidth: width, naturalHeight: height } = e.currentTarget
+
+    const crop = centerCrop(
+      makeAspectCrop(
+        {
+          unit: "%",
+          width: 100,
+        },
+        aspect,
+        width,
+        height
+      ),
+      width,
+      height
+    )
+
+    setCrop(crop)
   }
 
   return (
@@ -147,7 +153,7 @@ const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
 
       <Modal.Body>
         <View style={styles.uploaderContainer}>
-          {!imgSrc && typeof window !== "undefined" && (
+          {!imageCrop && typeof window !== "undefined" && (
             <Dropzone onDrop={onDrop}>
               {({ getRootProps, getInputProps }) => (
                 <section>
@@ -159,19 +165,20 @@ const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
               )}
             </Dropzone>
           )}
-          {imgSrc && (
+          {imageCrop && (
             <View style={styles.preview}>
               <ReactCrop
                 crop={crop}
-                onChange={(_, percentCrop) => setCrop(percentCrop)}
+                onChange={(c) => setCrop(c)}
                 circularCrop={circularCrop}
                 aspect={aspect}
                 onComplete={(c) => setCompletedCrop(c)}
               >
                 <img
+                  ref={imgRef}
                   alt="Recortar imagen"
-                  src={imgSrc}
-                  // onLoad={onImageLoad}
+                  src={imageCrop}
+                  onLoad={onImageLoad}
                 />
               </ReactCrop>
             </View>
@@ -179,32 +186,30 @@ const UploadImageModal = ({ shopID, imageType, show, onHide }: Props) => {
         </View>
       </Modal.Body>
 
-      <Modal.Footer>
-        {isWaiting && (
-          <>
-            <Text>Por favor, espere... </Text>
-            <ActivityIndicator
-              animating={isWaiting}
-              size="large"
-              color={theme.colors.orangeHP}
-            />
-          </>
-        )}
-        {!isWaiting && (
-          <>
-            {imgSrc && (
-              <Button variant="primary" onClick={() => onUpload(completedCrop)}>
-                Aceptar
-              </Button>
-            )}
-            {!imgSrc && (
-              <Button variant="primary" onClick={() => onDelete()}>
-                Borrar imagen actual
-              </Button>
-            )}
-          </>
-        )}
-      </Modal.Footer>
+      {(isWaiting || imageCrop || image) && (
+        <Modal.Footer>
+          {isWaiting && (
+            <>
+              <Text>Por favor, espere... </Text>
+              <ActivityIndicator
+                animating={isWaiting}
+                size="large"
+                color={theme.colors.orangeHP}
+              />
+            </>
+          )}
+          {!isWaiting && imageCrop && (
+            <Button variant="primary" onClick={() => onUpload()}>
+              Aceptar
+            </Button>
+          )}
+          {!isWaiting && image && (
+            <Button variant="primary" onClick={onDelete}>
+              Borrar imagen actual
+            </Button>
+          )}
+        </Modal.Footer>
+      )}
     </Modal>
   )
 }

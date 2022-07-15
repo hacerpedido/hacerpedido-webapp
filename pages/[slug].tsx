@@ -44,7 +44,6 @@ export default function ShopView({ shop, products }: Props) {
   )
 }
 
-// TODO: this should be getStaticProps?
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const slug = String(params?.slug)
 

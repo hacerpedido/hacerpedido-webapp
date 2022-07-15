@@ -1,12 +1,13 @@
+import { IncomingForm } from "formidable"
+
 import type { NextApiRequest, NextApiResponse } from "next"
+import validator from "validator"
 
-import { uploadFile, deleteFile } from "./aws-s3"
-
-const formidable = require("formidable")
-const validator = require("validator")
+import { uploadFile, deleteFile } from "@/lib/aws-s3"
+import prisma from "lib/prisma"
 
 function randomString(
-  length,
+  length: number,
   characters = "abcdefghijklmnopqrstuvwxyz0123456789"
 ) {
   let result = ""
@@ -29,13 +30,8 @@ export default async function handler(
     res.status(400).end()
   }
 
-  const pg = require("knex")({
-    client: "pg",
-    connection: process.env.PG_CONNECTION_STRING,
-  })
-
-  const data = await new Promise(function (resolve, reject) {
-    const form = new formidable.IncomingForm({
+  const data = await new Promise(function (resolve) {
+    const form = new IncomingForm({
       keepExtensions: true,
       multiples: false,
     })
@@ -75,7 +71,6 @@ export default async function handler(
   }
 
   const { type: mime, path } = image
-
   const acceptedMimeTypes = ["image/png", "image/jpeg"]
   if (!mime || !acceptedMimeTypes.includes(mime)) {
     res.status(400).json({ error: "Wrong parameters (4)." })
@@ -83,10 +78,8 @@ export default async function handler(
     return
   }
 
-  const selectData = await pg
-    .select({ oldKey: imageType })
-    .from("shops")
-    .where("id", "=", shopID)
+  const selectData = await prisma.shop.findUnique({ where: { id: shopID } })
+  // .select({ oldKey: imageType }) // TODO: what does this do???
 
   if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
     res.status(400).json({ error: "Wrong parameters (5)." })
@@ -102,31 +95,13 @@ export default async function handler(
 
   await uploadFile(path, key, mime)
 
-  await pg("shops").where("id", "=", shopID).update(imageType, key)
+  const patch = {}
+  patch[imageType] = key
+  await prisma.shop.update({ where: { id: shopID }, data: { patch } })
 
-  if (oldKey) {
-    deleteFile(oldKey)
-  }
+  if (oldKey) deleteFile(oldKey)
 
   res.json({ image: key })
-
-  //   {
-  //     "data": {
-  //         "fields": {
-  //             "shop_id": "b3f338f9-43c4-45a0-a6b2-fd8af6be9b75",
-  //             "image_type": "logo",
-  //         },
-  //         "files": {
-  //             "image": {
-  //                 "size": 11446873,
-  //                 "path": "/var/folders/wz/2dg67cnn6gg2n5pkypy9jxtw0000gn/T/upload_d9d91e9e8d1ff109451c35778b54d845.JPG",
-  //                 "name": "_DSF0777.JPG",
-  //                 "type": "image/jpeg",
-  //                 "mtime": "2020-11-25T10:40:09.775Z"
-  //             }
-  //         }
-  //     }
-  // }
 }
 
 export const config = {

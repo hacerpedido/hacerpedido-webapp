@@ -1,20 +1,17 @@
-// TODO: use next.js API
 import fs from "fs"
 
 import S3 from "aws-sdk/clients/s3"
 
-export async function uploadFile(fileName, key, mime) {
-  const fileContent = fs.readFileSync(fileName)
-
+export async function uploadFile(fileName: string, key: string, mime: string) {
   const s3 = new S3({
     accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
   })
 
   const params = {
-    Bucket: process.env.HP_AWS_IMAGES_BUCKET,
+    Bucket: process.env.HP_AWS_IMAGES_BUCKET || "",
     Key: key, // File name
-    Body: fileContent,
+    Body: fs.readFileSync(fileName),
     ContentType: mime,
     ACL: "public-read",
   }
@@ -27,14 +24,14 @@ export async function uploadFile(fileName, key, mime) {
   }
 }
 
-export async function deleteFile(key) {
+export async function deleteFile(key: string) {
   const s3 = new S3({
     accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
   })
 
   const params = {
-    Bucket: process.env.HP_AWS_IMAGES_BUCKET,
+    Bucket: process.env.HP_AWS_IMAGES_BUCKET || "",
     Key: key, // File name
   }
 

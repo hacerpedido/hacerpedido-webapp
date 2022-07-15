@@ -1,13 +1,21 @@
 import type { Shop } from "types"
 
-export const getLogoForShop = ({ logo }: Shop) => {
-  if (!logo) return ""
+export const getLogoForShop = ({ logo, name }: Shop, blur = false) => {
+  // TODO: Use a better avatar generator, save after generation, do this on creation and on logo delete
+  // TODO: &format=svg
+  if (!logo)
+    return `https://ui-avatars.com/api/?name=${name}&background=random&rounded=true&size=256`
+
   if (logo.startsWith("http://")) return logo
 
   const filename = logo.substring(logo.lastIndexOf("/") + 1)
   const url = process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL
 
-  return `${url}/${filename}`
+  const imgParams = blur
+    ? "?q=10&blur=100"
+    : "?auto=format,compress&cs=tinysrgb"
+
+  return `${url}/${filename}${imgParams}`
 }
 
 export const getBackgroundForCategory = (category: string) => {

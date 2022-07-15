@@ -1,9 +1,9 @@
+import { IncomingForm } from "formidable"
 import type { NextApiRequest, NextApiResponse } from "next"
+import validator from "validator"
 
-const formidable = require("formidable")
-const validator = require("validator")
-
-const s3utils = require("./aws-s3")
+import { deleteFile } from "@/lib/aws-s3"
+import prisma from "lib/prisma"
 
 type ResponseData = {
   deleted: boolean
@@ -17,13 +17,8 @@ export default async function handler(
     res.status(400).end()
   }
 
-  const pg = require("knex")({
-    client: "pg",
-    connection: process.env.PG_CONNECTION_STRING,
-  })
-
-  const data = await new Promise(function (resolve, reject) {
-    const form = new formidable.IncomingForm({
+  const data = await new Promise(function (resolve) {
+    const form = new IncomingForm({
       keepExtensions: true,
       multiples: false,
     })
@@ -54,10 +49,8 @@ export default async function handler(
     return
   }
 
-  const selectData = await pg
-    .select({ oldKey: imageType })
-    .from("shops")
-    .where("id", "=", shopID)
+  const selectData = await prisma.shop.findUnique({ where: { id: shopID } })
+  // .select({ oldKey: imageType }) // TODO: what does this do???
 
   if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
     res.status(400).json({ error: "Wrong parameters (5)." })
@@ -67,11 +60,11 @@ export default async function handler(
 
   const { oldKey } = selectData[0]
 
-  await pg("shops").where("id", "=", shopID).update(imageType, null)
+  const patch = {}
+  patch[imageType] = null
+  await prisma.shop.update({ where: { id: shopID }, data: { patch } })
 
-  if (oldKey) {
-    await s3utils.deleteFile(oldKey)
-  }
+  if (oldKey) await deleteFile(oldKey)
 
   res.json({ deleted: oldKey })
 

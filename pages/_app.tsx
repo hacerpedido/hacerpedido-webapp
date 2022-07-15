@@ -17,8 +17,7 @@ const HpApp: FC<AppProps> = ({ Component, pageProps }) => {
   }, [])
 
   useEffect(() => {
-    // TODO: move this to an env var
-    TagManager.initialize({ gtmId: process.env.GTM_ID || "" })
+    if (process.env.GTM_ID) TagManager.initialize({ gtmId: process.env.GTM_ID })
   }, [])
 
   return (

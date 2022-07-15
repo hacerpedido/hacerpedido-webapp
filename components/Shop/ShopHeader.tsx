@@ -98,8 +98,8 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
       <View style={styles.containerData}>
         <View style={styles.containerLogo}>
           <Image
-            src={`${getLogoForShop(shop)}?auto=format,compress&cs=tinysrgb`}
-            blurDataURL={`${getLogoForShop(shop)}?q=10&blur=100`}
+            src={`${getLogoForShop(shop)}`}
+            blurDataURL={`${getLogoForShop(shop, true)}`}
             placeholder="blur"
             alt={name}
             height={100}

@@ -117,10 +117,11 @@ export default function EditShopForm({
   return (
     <View style={styles.container}>
       <UploadImageModal
-        show={showModal}
-        onHide={handleCloseModal}
         shopID={shop.id}
         imageType={imageType}
+        image={imageType === "logo" ? shop.logo : shop.background}
+        show={showModal}
+        onHide={handleCloseModal}
       />
 
       <View style={styles.titleContainer}>

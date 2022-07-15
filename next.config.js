@@ -5,6 +5,7 @@ module.exports = {
     domains: [
       "hacerpedido2-images.s3.amazonaws.com",
       "loremflickr.com",
+      "ui-avatars.com",
       "hacerpedido.imgix.net",
     ],
     // deviceSizes: [320, 420, 768, 1024, 1200],
