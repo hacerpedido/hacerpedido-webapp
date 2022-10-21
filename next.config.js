@@ -1,6 +1,5 @@
 module.exports = {
   swcMinify: true,
-  strictMode: true,
   images: {
     domains: [
       "hacerpedido2-images.s3.amazonaws.com",
