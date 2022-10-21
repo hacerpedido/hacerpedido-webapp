@@ -1,4 +1,4 @@
-import type { CartItem, CartFormValues } from "types"
+import type { CartItem, CartFormValues, Product } from "types"
 
 // NOTE: Replaces the use of this type with an array of products
 type CategoryWithProducts = {
@@ -6,12 +6,12 @@ type CategoryWithProducts = {
   products: Product[]
 }
 
-export function toTitleCase(str: string) {
-  if (typeof str !== "string") return ""
+export function validateUUID(str: string) {
+  // Regular expression to check if string is a valid UUID
+  const regexExp =
+    /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi
 
-  return str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-  })
+  return regexExp.test(str)
 }
 
 export function validatePhoneNumber(phone: string) {
@@ -28,71 +28,19 @@ export function validatePhoneNumber(phone: string) {
   )
 }
 
-export const capitalize = (str: string) => {
-  if (typeof str !== "string") return ""
-
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
-export function sanitizeProductName(str: string) {
-  if (typeof str !== "string") return str
-
-  if (str === str.toUpperCase()) {
-    return toTitleCase(str)
-  }
-
-  return capitalize(str)
-}
-
-export function sanitizeAddress(address = "") {
-  const newAddress = address.trim().replace(/no/gi, "")
-
-  return toTitleCase(newAddress)
-}
-
-export function sleep(ms: number) {
-  // Usar: await sleep(1000);
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
+// NOTE: Modifies string to be titlecase
+export function sanitizeProductName(name: string) {
+  return name.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
   })
-}
-
-export function sanitizePrice(str: string) {
-  if (typeof str !== "string") return str
-
-  const newPrice = str
-    .trim()
-    .replace(/(\$|\.00$|,00$)/g, "")
-    .replace(/([.,])(\d{3}\D|\d{3}$)/g, "$2")
-
-  const parsedPrice = parseFloat(newPrice)
-
-  if (Number.isNaN(parsedPrice)) {
-    return ""
-  }
-
-  return parsedPrice
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function removeEmptyStringElements(obj: any) {
-  for (const prop in obj) {
-    if (typeof obj[prop] === "object") {
-      removeEmptyStringElements(obj[prop])
-    } else if (obj[prop] === "") {
-      delete obj[prop]
-    }
-  }
-  return obj
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function trimObject(obj: any) {
   for (const prop in obj) {
-    if (typeof obj[prop] === "string") {
-      obj[prop] = obj[prop].trim()
-    }
+    if (typeof obj[prop] === "string") obj[prop] = obj[prop].trim()
   }
+
   return obj
 }
 
@@ -111,11 +59,6 @@ function productListForMessage(productsByCategory: CategoryWithProducts[]) {
     .join("\n")
 }
 
-function generateSimpleWhatsappMessage() {
-  return "¡Hola! Quiero hacer un pedido via HacerPedido 💪"
-}
-
-// TODO: : whatsapp api displaying emoji, on desktop
 function generateWhatsappMessage(
   formData: CartFormValues,
   categoriesWithProducts: CategoryWithProducts[]
@@ -140,18 +83,13 @@ export function generateWhatsappURL(
 ) {
   const sanitizedNumber = number.replace(/[^\w\s]/gi, "").replace(/ /g, "")
 
-  const message =
-    typeof userData !== "undefined"
-      ? generateWhatsappMessage(userData, categoriesWithProducts)
-      : generateSimpleWhatsappMessage()
+  const message = generateWhatsappMessage(userData, categoriesWithProducts)
 
   const encodedMessage = encodeURIComponent(message)
 
   return `https://wa.me/${sanitizedNumber}?text=${encodedMessage}`
 }
 
-export function generateCallUrl(number: string | null) {
-  if (number) return ""
-
-  return `tel: ${encodeURIComponent(number)}`
+export function generateCallUrl(phoneNumber: string) {
+  return `tel: ${encodeURIComponent(phoneNumber)}`
 }

@@ -1,10 +1,10 @@
 import { IncomingForm } from "formidable"
 
 import type { NextApiRequest, NextApiResponse } from "next"
-import validator from "validator"
 
 import { uploadFile, deleteFile } from "@/lib/aws-s3"
 import prisma from "lib/prisma"
+import { validateUUID } from "lib/utils/utils"
 
 function randomString(
   length: number,
@@ -56,7 +56,7 @@ export default async function handler(
     return
   }
 
-  if (!shopID || shopID === "" || !validator.isUUID(shopID)) {
+  if (!shopID || shopID === "" || !validateUUID(shopID)) {
     res.status(400).json({ error: "Wrong parameters (2)." })
 
     return

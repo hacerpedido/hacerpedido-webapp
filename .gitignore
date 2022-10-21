@@ -1,8 +1,7 @@
-# dependencies
+# npm
 /node_modules
 /.pnp
 .pnp.js
-yarn-error.log*
 
 # Next.js stuff
 /.next/

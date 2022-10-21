@@ -10,7 +10,6 @@ import {
 
 import ProductAmountPopup from "@/components/Shop/ProductAmountPopup"
 import { colors } from "@/lib/colors"
-import { sanitizePrice } from "@/lib/utils/utils"
 import { getItems } from "store"
 
 import type { Product as ProductType } from "types"
@@ -43,7 +42,6 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
     }
   }, [ref, setPopupVisible, item])
 
-  const displayPrice = sanitizePrice(price)
   const containerStyle = promo ? styles.card : styles.product
 
   return (
@@ -66,7 +64,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
             <Text style={styles.description}>{description}</Text>
           </View>
 
-          <Text style={styles.price}>{displayPrice && `$${displayPrice}`}</Text>
+          <Text style={styles.price}>{`$${price}`}</Text>
 
           {isCartEnabled && (
             <View style={styles.buttonQty}>

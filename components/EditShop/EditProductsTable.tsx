@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from "react-native"
 
 import theme from "lib/theme"
 import { productsToRows, productsFromRows } from "lib/utils/products"
-import { sanitizePrice } from "lib/utils/utils"
 
 const CustomTable = dynamic(
   async () => {
@@ -99,7 +98,7 @@ const EditProductsTable = ({ products, shopId, setTempProducts }: Props) => {
           c[3] = c[3].toLowerCase() === "true"
         }
       } else if (c[1] === 3) {
-        c[3] = sanitizePrice(c[3])
+        c[3] = c[3] // TODO: Remove?
       }
     })
   }

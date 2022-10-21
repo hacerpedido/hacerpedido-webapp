@@ -1,6 +1,6 @@
 import { groupBy } from "lodash"
 
-import { toTitleCase, sanitizePrice, sanitizeProductName } from "./utils"
+import { toTitleCase, sanitizeProductName } from "./utils"
 
 import type { Product, CartItem } from "types"
 
@@ -76,7 +76,7 @@ export function productsFromRows(
 
     const product = {
       name: sanitizeProductName(name),
-      price: price ? sanitizePrice(price).toString() : "",
+      price: price,
       category,
       shopid: shopId,
       itemnumber: itemNumber++,

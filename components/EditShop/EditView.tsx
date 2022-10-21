@@ -8,6 +8,7 @@ import EditShopForm from "components/EditShop/EditShopForm"
 import Preview from "components/EditShop/Preview"
 import MessageBox from "components/MessageBox"
 import theme from "lib/theme"
+import { trimObject } from "lib/utils/utils"
 import type { Shop, Product } from "types"
 
 type Props = {
