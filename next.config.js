@@ -16,6 +16,9 @@ const moduleExports = {
     config.resolve.extensions = [".web.js", ".web.ts", ".web.tsx", ...config.resolve.extensions];
     return config;
   },
+  sentry: {
+    hideSourceMaps: true
+  }
 };
 
 const sentryWebpackPluginOptions = {
