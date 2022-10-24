@@ -8,6 +8,7 @@ import {
   TextStyle,
 } from "react-native"
 
+import { buttonStyles } from "@/components/buttonStyles"
 import { PhoneCallIcon } from "@/components/icons"
 import { colors } from "@/lib/colors"
 import { generateCallUrl } from "@/lib/utils/utils"
@@ -31,12 +32,17 @@ const ShopFooter = ({ shop }: Props) => {
       disabled={isCartEmpty}
       underlayColor={"none"}
       onPress={() => router.push("/cart")}
-      style={styles.buttonContainer}
     >
-      <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
-        <Text style={styles.buttonText}> Revisar mi pedido </Text>
-        <View style={styles.totalAmountContainer}>
-          <Text style={styles.totalAmountText}> {total} </Text>
+      <View
+        style={[
+          buttonStyles.buttonWhatsApp,
+          buttonStyles.button,
+          statusOpacity,
+        ]}
+      >
+        <Text style={buttonStyles.buttonText}> Revisar mi pedido </Text>
+        <View style={s.totalAmountContainer}>
+          <Text style={s.totalAmountText}> {total} </Text>
         </View>
       </View>
     </TouchableHighlight>
@@ -47,10 +53,9 @@ const ShopFooter = ({ shop }: Props) => {
     <TouchableHighlight
       onPress={() => onCall(ordersphonenumber)}
       underlayColor={"none"}
-      style={styles.buttonContainer}
     >
       {/* TODO: weird styling on this button */}
-      <View style={[styles.buttonCall, styles.button]}>
+      <View style={[buttonStyles.buttonCall, buttonStyles.button]}>
         <Text>
           <PhoneCallIcon color={colors.white} />
           <Text>Llamar</Text>
@@ -60,7 +65,7 @@ const ShopFooter = ({ shop }: Props) => {
   )
 
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       {orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}
     </View>
   )
@@ -69,54 +74,19 @@ const ShopFooter = ({ shop }: Props) => {
 export default ShopFooter
 
 type Styles = {
-  button: ViewStyle
-  buttonCall: ViewStyle
-  buttonContainer: ViewStyle
-  buttonText: TextStyle
-  buttonWhatsApp: ViewStyle
   container: ViewStyle
   totalAmountContainer: ViewStyle
   totalAmountText: TextStyle
 }
 
 // TODO: missing some styles, verify that I havent erase any
-const styles = StyleSheet.create<Styles>({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    height: 50,
-    justifyContent: "center",
-    marginHorizontal: 18,
-    marginTop: 12,
-    textAlign: "center",
-  },
-  buttonCall: {
-    backgroundColor: colors.orangeHP,
-    borderColor: colors.filterButtonBorder,
-  },
-  buttonContainer: {
-    flex: 1,
-  },
-  buttonText: {
-    color: colors.white,
-    flex: 1,
-    fontFamily: "Barlow",
-    fontWeight: "600",
-    marginLeft: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: colors.lightGreen,
-    borderColor: colors.button1,
-  },
+const s = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.lightBackground,
     bottom: 0,
-    flex: 1,
-    flexDirection: "row",
-    height: 100,
-    position: "fixed",
+    paddingHorizontal: 24,
+    paddingBottom: 12,
+    position: "fixed", //NOTE: there's a RNW bug marking this as an error
     width: "100%",
   },
   totalAmountContainer: {

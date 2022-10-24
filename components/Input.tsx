@@ -1,4 +1,5 @@
-import React, { forwardRef } from "react"
+import { forwardRef } from "react"
+import type { FieldError } from "react-hook-form"
 import styled from "styled-components"
 
 import { colors } from "@/lib/colors"
@@ -10,7 +11,7 @@ type InputProps = React.DetailedHTMLProps<
 
 type Props = InputProps & {
   label: string
-  error: { name: string; message: string }
+  error: FieldError
 }
 
 const Input = forwardRef<HTMLInputElement, Props>(
@@ -51,8 +52,7 @@ const Error = styled.span`
 
 const StyledInput = styled.input`
   border-radius: 2px;
-  border: 1px solid
-    ${(props) => (props.error ? colors.error : colors.lightGrey2)};
+  border: 1px solid ${({ error }) => (error ? colors.error : colors.lightGrey2)};
   color: ${colors.brown};
   font-family: Barlow;
   font-size: 15px;

@@ -12,6 +12,7 @@ import {
 
 import { useSpring, animated } from "react-spring"
 
+import { buttonStyles } from "@/components/buttonStyles"
 import { WhatsAppIcon } from "@/components/icons"
 import Input from "@/components/Input"
 import Switch from "@/components/Switch"
@@ -52,11 +53,12 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   const SubmitButton = () => (
     <TouchableHighlight
       underlayColor={"none"}
-      onPress={() => {}}
-      style={styles.buttonContainer}
+      onPress={() => {
+        handleSubmit(onSubmit) //TODO: not working
+      }}
     >
-      <View style={[styles.buttonWhatsApp, styles.button]}>
-        <Text style={styles.buttonText}>
+      <View style={[buttonStyles.buttonWhatsApp, buttonStyles.button]}>
+        <Text style={buttonStyles.buttonText}>
           <WhatsAppIcon color={colors.white} />
           {`  Pedir a ${shop?.name}`}
         </Text>
@@ -65,7 +67,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
   )
 
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Switch
           onToggle={() => setIsTakeaway(!isTakeaway)}
@@ -100,7 +102,7 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
           maxLength={500}
         />
 
-        <Text style={styles.notes}>
+        <Text style={s.notes}>
           Por favor,
           <b> confirmá el precio final </b>
           con el comercio. No somos responsables de modificaciones en el menú.
@@ -115,47 +117,13 @@ const Form = ({ onSubmit }: { onSubmit: SubmitHandler<CartFormValues> }) => {
 export default Form
 
 type Styles = {
-  button: ViewStyle
-  buttonCall: ViewStyle
-  buttonContainer: ViewStyle
-  buttonText: TextStyle
-  buttonWhatsApp: ViewStyle
   container: ViewStyle
   icon: ViewStyle
   notes: TextStyle
   textContainer: ViewStyle
 }
 
-const styles = StyleSheet.create<Styles>({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    paddingVertical: 20,
-    justifyContent: "center",
-    marginTop: 12,
-    textAlign: "center",
-  },
-  buttonCall: {
-    backgroundColor: colors.orangeHP,
-    borderColor: colors.filterButtonBorder,
-  },
-  buttonContainer: {
-    flex: 1,
-  },
-  buttonText: {
-    color: colors.white,
-    flex: 1,
-    fontFamily: "Barlow",
-    fontWeight: "600",
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: colors.lightGreen,
-    borderColor: colors.button1,
-  },
+const s = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.white,
     paddingBottom: 30,

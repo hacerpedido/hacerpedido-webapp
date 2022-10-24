@@ -1,6 +1,6 @@
-import { groupBy } from "lodash"
+import { capitalize, groupBy } from "lodash"
 
-import { toTitleCase, sanitizeProductName } from "./utils"
+import { sanitizeProductName } from "./utils"
 
 import type { Product, CartItem } from "types"
 
@@ -70,7 +70,7 @@ export function productsFromRows(
 
     // Don't save categories as products
     if (isCategory) {
-      category = toTitleCase(name)
+      category = capitalize(name)
       return
     }
 

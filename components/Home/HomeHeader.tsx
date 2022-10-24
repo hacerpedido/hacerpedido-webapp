@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TextStyle,
   ViewStyle,
 } from "react-native"
 
@@ -20,62 +21,64 @@ export default function HomeHeader() {
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
+  const AddShopButton = () => (
+    <TouchableOpacity onPress={handleShow}>
+      <View style={s.button}>
+        <Text style={s.buttonText}>¡Sumá tu comercio!</Text>
+      </View>
+    </TouchableOpacity>
+  )
+  const AddShopModal = () => (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Ups...</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        Por el momento no estamos haciendo nuevas altas. Próximamente habrá
+        novedades :)
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  )
+
   return (
-    <View style={styles.container}>
+    <View style={s.container}>
       <Link href="/">
         <a>
           <HpLogoIcon width={177} height={19} color={colors.white} />
         </a>
       </Link>
 
-      <TouchableOpacity onPress={handleShow}>
-        <View>
-          <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-        </View>
-      </TouchableOpacity>
+      <AddShopButton />
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Ups...</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Por el momento no estamos haciendo nuevas altas. Próximamente habrá
-          novedades :)
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/*
-      <a
-        href="https://comercios.hacerpedido.com/"
-        style={{ textDecoration: "none" }}
-      >
-        <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-      </a>
-      */}
+      <AddShopModal />
     </View>
   )
 }
 
 type Styles = {
-  addShopButton: ViewStyle
+  button: ViewStyle
+  buttonText: TextStyle
   container: ViewStyle
 }
 
-const styles = StyleSheet.create<Styles>({
-  addShopButton: {
+const s = StyleSheet.create<Styles>({
+  button: {
     backgroundColor: colors.lightGreen,
     borderColor: colors.button1,
-    borderRadius: 3,
+    borderRadius: 4,
     borderWidth: 1,
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: "500",
     padding: 7,
+  },
+  buttonText: {
+    color: colors.white,
+    fontFamily: "Barlow",
+    fontWeight: "600",
+    fontSize: 14,
   },
   container: {
     alignItems: "center",

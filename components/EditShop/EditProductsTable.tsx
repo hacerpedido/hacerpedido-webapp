@@ -1,13 +1,14 @@
 import dynamic from "next/dynamic"
 import { useEffect, useMemo, useCallback, useRef } from "react"
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, TextStyle, ViewStyle } from "react-native"
 
 import theme from "lib/theme"
 import { productsToRows, productsFromRows } from "lib/utils/products"
+import type { Product } from "types"
 
 const CustomTable = dynamic(
   async () => {
-    await import("handsontable/dist/handsontable.full.css")
+    await import("handsontable/react/dist/handsontable.full.css")
     await import("handsontable/languages/es-MX")
     const { HotTable } = await import("@handsontable/react")
 
@@ -149,7 +150,12 @@ const EditProductsTable = ({ products, shopId, setTempProducts }: Props) => {
 
 export default EditProductsTable
 
-const styles = StyleSheet.create({
+type Styles = {
+  title: TextStyle
+  container: ViewStyle
+}
+
+const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: theme.colors.lightBackground,
   },
