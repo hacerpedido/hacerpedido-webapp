@@ -6,7 +6,7 @@ import type { Product as ProductType } from "types"
 
 const Product = ({ product }: { product: ProductType }) => {
   const { id, description, name } = product
-  const quantity = getItem(id).quantity
+  const quantity = getItem(id)?.quantity
 
   return (
     <View style={styles.container}>

@@ -64,7 +64,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
             <Text style={styles.description}>{description}</Text>
           </View>
 
-          <Text style={styles.price}>{`$${price}`}</Text>
+          <Text style={styles.price}>{price && `$${price}`}</Text>
 
           {isCartEnabled && (
             <View style={styles.buttonQty}>

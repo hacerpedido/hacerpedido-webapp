@@ -15,7 +15,6 @@
       "@/store/*": ["store/*"],
       "@/styles/*": ["styles/*"]
     },
-    "reactStrictMode": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "preserve",
