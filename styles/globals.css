@@ -1,16 +1,4 @@
-/*
-  Based on: https://fonts.google.com/specimen/Roboto+Slab?query=Roboto&selection.family=Barlow:wght@400;600;700|Roboto+Slab:wght@400;500&sidebar.open
-  */
-
-/* TODO: use local font? */
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Roboto+Slab:wght@400;500&display=swap');
 @import 'bootstrap/dist/css/bootstrap.css';
-@import 'react-image-crop/dist/ReactCrop.css';
-
-/* @import "bootstrap/dist/css/bootstrap-reboot.css"; */
-/* input { */
-/*   all: unset; */
-/* } */
 
 html,
 body {

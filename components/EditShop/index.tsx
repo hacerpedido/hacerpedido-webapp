@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import type { SubmitHandler } from "react-hook-form"
+import "react-image-crop/dist/ReactCrop.css"
 import { StyleSheet, View } from "react-native"
 
 import EditProductsTable from "components/EditShop/EditProductsTable"
