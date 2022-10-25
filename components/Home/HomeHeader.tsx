@@ -48,9 +48,7 @@ export default function HomeHeader() {
   return (
     <View style={s.container}>
       <Link href="/">
-        <a>
-          <HpLogoIcon width={177} height={19} color={colors.white} />
-        </a>
+        <HpLogoIcon width={177} height={19} color={colors.white} />
       </Link>
 
       <AddShopButton />

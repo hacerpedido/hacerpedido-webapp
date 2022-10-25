@@ -19,18 +19,21 @@ export default function Preview({ shop, products }: Props) {
 
   return (
     <>
-      <Link href={`/${shop.slug}`}>
-        <a style={openProductionLink} rel="noopener noreferrer" target="_blank">
-          <Text style={styles.openProductionLink}>
-            {"Ir a mi Sitio "}
-            <Image
-              src={"/images/external-link-alt.png"}
-              alt="open production link"
-              width={18}
-              height={16}
-            />
-          </Text>
-        </a>
+      <Link
+        href={`/${shop.slug}`}
+        style={openProductionLink}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Text style={styles.openProductionLink}>
+          {"Ir a mi Sitio "}
+          <Image
+            src={"/images/external-link-alt.png"}
+            alt="open production link"
+            width={18}
+            height={16}
+          />
+        </Text>
       </Link>
 
       <Shop shop={shop} products={products} isPreview={true} />

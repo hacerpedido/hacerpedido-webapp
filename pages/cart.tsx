@@ -10,7 +10,7 @@ import { colors } from "@/lib/colors"
 import { groupAndSortByCategory } from "@/lib/utils/products"
 import { generateWhatsappURL } from "@/lib/utils/utils"
 import { getShop, getItems } from "store"
-import { Shop } from "types"
+import type { Shop } from "types"
 
 export type CartInputs = {
   name: string

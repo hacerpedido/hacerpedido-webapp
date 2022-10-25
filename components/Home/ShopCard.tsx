@@ -1,6 +1,13 @@
 import Image from "next/image"
-import Link from "next/link"
-import { View, StyleSheet, Text, ViewStyle, TextStyle } from "react-native"
+import { useRouter } from "next/router"
+import {
+  View,
+  StyleSheet,
+  Text,
+  ViewStyle,
+  TextStyle,
+  TouchableOpacity,
+} from "react-native"
 
 import DecoratedLabel from "../DecoratedLabel"
 
@@ -15,9 +22,10 @@ type Props = {
 
 const ShopCard = ({ shop }: Props) => {
   const { name, slug, address, opentimes, deliverycost } = shop
+  const router = useRouter()
 
   return (
-    <Link href={`/${slug}`}>
+    <TouchableOpacity onPress={() => router.push(`/${slug}`)}>
       <View style={styles.card}>
         <View style={styles.container}>
           <View style={styles.containerLogo}>
@@ -63,7 +71,7 @@ const ShopCard = ({ shop }: Props) => {
           </View>
         </View>
       </View>
-    </Link>
+    </TouchableOpacity>
   )
 }
 

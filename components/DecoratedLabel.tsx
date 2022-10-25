@@ -3,6 +3,11 @@ import { StyleSheet, Text, TextStyle } from "react-native"
 
 import { CarIcon, ClockIcon, PinIcon } from "@/components/icons/"
 
+type IconList = {
+  // [key: "car" | "clock" | "pin"]: ReactNode
+  [key: string]: ReactNode
+}
+
 // TODO: Este componente tiene una responsabilidad difusa
 type Props = {
   iconName: string
@@ -20,25 +25,6 @@ const DecoratedLabel = ({
   textColor,
   fontSize = 12,
 }: Props) => {
-  type Styles = {
-    text: TextStyle
-  }
-
-  const styles = StyleSheet.create<Styles>({
-    text: {
-      color: textColor,
-      fontFamily: "Roboto Slab",
-      fontSize: fontSize,
-      lineHeight: 14,
-      padding: 3,
-    },
-  })
-
-  type IconList = {
-    // [key: "car" | "clock" | "pin"]: ReactNode
-    [key: string]: ReactNode
-  }
-
   const iconList: IconList = {
     car: <CarIcon color={iconColor} width={18} />,
     clock: <ClockIcon color={iconColor} width={18} />,
@@ -46,11 +32,25 @@ const DecoratedLabel = ({
   }
 
   return (
-    <Text style={styles.text}>
+    <Text style={s.text(textColor, fontSize)}>
       {iconList[iconName]}
       {text}
     </Text>
   )
 }
+
+type Styles = {
+  text: TextStyle
+}
+
+const s = StyleSheet.create<Styles>({
+  text: (textColor: string, fontSize: number) => ({
+    color: textColor,
+    fontFamily: "Roboto Slab",
+    fontSize: fontSize,
+    lineHeight: 14,
+    padding: 3,
+  }),
+})
 
 export default DecoratedLabel

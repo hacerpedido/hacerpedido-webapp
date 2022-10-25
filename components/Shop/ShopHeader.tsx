@@ -107,11 +107,7 @@ const ShopHeader = ({ isPreview = false, shop }: Props) => {
           />
         </View>
 
-        {displayEditLink && (
-          <Link href={`/${typeformtoken}/edit`}>
-            <a>edit</a>
-          </Link>
-        )}
+        {displayEditLink && <Link href={`/${typeformtoken}/edit`}>edit</Link>}
 
         <Text style={styles.shopName}>{name?.toLowerCase()}</Text>
         {displayAddress && (
