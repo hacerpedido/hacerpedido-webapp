@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-  TextStyle,
-  StyleSheet,
-} from "react-native"
-import TimeAgo from "react-timeago"
-import buildFormatter from "react-timeago/lib/formatters/buildFormatter"
-import spanishStrings from "react-timeago/lib/language-strings/es"
-
-import UploadImageModal from "./UploadImageModal"
+import { View, ViewStyle, TextStyle, StyleSheet } from "react-native"
 
 import Input from "components/Input"
 import theme from "lib/theme"
@@ -23,23 +10,11 @@ import type { Shop } from "types"
 
 type Props = {
   shop: Shop
-  onSubmit: () => void
-  isSaving: boolean
   setTempShop: (shop: Shop) => void
 }
 
-export default function EditShopForm({
-  shop,
-  onSubmit,
-  isSaving,
-  setTempShop,
-}: Props) {
-  const formatter = buildFormatter(spanishStrings)
-  const [showModal, setShowModal] = useState(false)
-  const [imageType, setImageType] = useState("")
-
+export default function EditShopForm({ shop, setTempShop }: Props) {
   const {
-    handleSubmit,
     register,
     formState: { errors },
     getValues,
@@ -50,12 +25,6 @@ export default function EditShopForm({
   useEffect(() => {
     setTempShop({ ...shop, ...tempValues })
   }, [setTempShop, shop, tempValues])
-
-  useEffect(() => {
-    setShowModal(["logo", "background"].includes(imageType))
-  }, [imageType])
-
-  const handleCloseModal = () => setImageType("")
 
   const validation = {
     name: {
@@ -104,45 +73,8 @@ export default function EditShopForm({
     },
   }
 
-  const Actions = () => (
-    <View style={s.buttonsContainer}>
-      <TouchableOpacity
-        onPress={() => setImageType("logo")}
-        disabled={isSaving}
-      >
-        <Text style={s.uploadImageButton}>Editar logo</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => setImageType("background")}
-        disabled={isSaving}
-      >
-        <Text style={s.uploadImageButton}>Editar portada</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={handleSubmit(onSubmit)}
-        style={s.buttonStyles(isSaving)}
-        disabled={isSaving}
-      >
-        <Text style={s.buttonText}>Guardar</Text>
-        {isSaving && (
-          <ActivityIndicator animating={isSaving} color={theme.colors.white} />
-        )}
-      </TouchableOpacity>
-
-      <UploadImageModal
-        shopID={shop.id}
-        imageType={imageType}
-        image={imageType === "logo" ? shop.logo : shop.background}
-        show={showModal}
-        onHide={handleCloseModal}
-      />
-    </View>
-  )
-
-  const Form = () => (
-    <View style={s.formContainer}>
+  return (
+    <View>
       <View style={s.formContainer}>
         <View style={s.formColumnLeft}>
           <Input
@@ -221,67 +153,22 @@ export default function EditShopForm({
       </View>
     </View>
   )
-
-  return (
-    <View style={s.container}>
-      <View style={s.header}>
-        <View style={s.titleContainer}>
-          <Text style={s.title}>Datos de tu Comercio</Text>
-          <Text style={s.updatedAt}>
-            <Text>Actualizado </Text>
-            <TimeAgo
-              date={shop?.updated_at || ""}
-              formatter={formatter}
-              minPeriod={60}
-            />
-          </Text>
-        </View>
-
-        <Actions />
-      </View>
-
-      <Form />
-    </View>
-  )
 }
 
 type Styles = {
-  buttonText: TextStyle
-  buttonsContainer: ViewStyle
-  buttonStyles: ViewStyle
-  container: ViewStyle
   formColumnLeft: ViewStyle
   formColumnRight: ViewStyle
   formContainer: ViewStyle
-  title: TextStyle
-  header: ViewStyle
-  titleContainer: TextStyle
-  updatedAt: TextStyle
-  uploadImageButton: ViewStyle
 }
 
 const s = StyleSheet.create<Styles>({
-  buttonStyles: (isSaving: boolean) => ({
-    alignItems: "center",
-    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
+  formContainer: {
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.gray2,
     borderRadius: 5,
+    borderStyle: "solid",
+    borderWidth: 1,
     flexDirection: "row",
-    marginLeft: 15,
-    marginVertical: 10,
-    padding: 10,
-  }),
-  buttonText: {
-    color: theme.colors.white,
-    fontWeight: "bold",
-    paddingHorizontal: 10,
-  },
-  buttonsContainer: {
-    alignItems: "baseline",
-    flexDirection: "row",
-  },
-  container: {
-    backgroundColor: theme.colors.lightBackground,
-    justifyContent: "center",
   },
   formColumnLeft: {
     backgroundColor: theme.colors.white,
@@ -294,40 +181,5 @@ const s = StyleSheet.create<Styles>({
     backgroundColor: theme.colors.white,
     flex: 0.5,
     padding: 20,
-  },
-  formContainer: {
-    backgroundColor: theme.colors.white,
-    borderColor: theme.colors.gray2,
-    borderRadius: 5,
-    borderStyle: "solid",
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: "row",
-  },
-  title: {
-    ...theme.text.title,
-    marginVertical: 10,
-  },
-  header: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  titleContainer: {
-    alignItems: "baseline",
-    flexDirection: "row",
-  },
-  updatedAt: {
-    ...theme.text.quiet,
-    marginHorizontal: 10,
-  },
-  uploadImageButton: {
-    borderRadius: 5,
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "600",
-    marginHorizontal: 15,
   },
 })

@@ -24,17 +24,18 @@ import theme from "lib/theme"
 type Props = {
   shopID: string
   imageType: string
-  image: string | undefined
+  image: string | null
   show: boolean
-  onHide: () => void
+  handleHide: () => void
+  onImageDelete: (imageType: string) => void
 }
 
 const UploadImageModal = ({
-  shopID,
-  imageType,
+  shopID: shopId, imageType,
   image,
   show,
-  onHide,
+  handleHide,
+  onImageDelete,
 }: Props) => {
   const aspect = useMemo(() => (imageType === "logo" ? 1 : 1.2014), [imageType])
   const circularCrop = useMemo(() => imageType === "logo", [imageType])
@@ -56,20 +57,16 @@ const UploadImageModal = ({
   }, [])
 
   const onDelete = async () => {
-    const data = new FormData()
-
-    data.append("shop_id", shopID)
-    data.append("image_type", imageType)
-
     setIsLoading(true)
 
     try {
-      const response = await axios.delete("/api/shop/image-delete", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await axios({
+        method: "delete",
+        url: "/api/shop/image-delete/",
+        params: { imageType, shopId },
       })
-      // TODO: update image on preview
       console.log(response.data)
-      onHide()
+      onImageDelete(imageType)
     } catch (err) {
       // TODO: Replace this with a proper user error
       console.error(err.message)
@@ -110,7 +107,7 @@ const UploadImageModal = ({
       async (file) => {
         const data = new FormData()
         data.append("image", file)
-        data.append("shop_id", shopID)
+        data.append("shop_id", shopId)
         data.append("image_type", imageType)
 
         await fetch("/api/shop/image-upload", {
@@ -119,7 +116,7 @@ const UploadImageModal = ({
           body: data,
         })
           .then((res) => res.json())
-          .then((data) => onHide())
+          .then(() => handleHide())
           .catch((error) => console.error(error.message))
 
         setIsLoading(false)
@@ -150,13 +147,13 @@ const UploadImageModal = ({
   }
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={handleHide}>
       <Modal.Header closeButton>
         <Modal.Title>Sube una imagen</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <View style={styles.uploaderContainer}>
+        <View style={s.uploaderContainer}>
           {!imageCrop && typeof window !== "undefined" && (
             <Dropzone onDrop={onDrop}>
               {({ getRootProps, getInputProps }) => (
@@ -170,7 +167,7 @@ const UploadImageModal = ({
             </Dropzone>
           )}
           {imageCrop && (
-            <View style={styles.preview}>
+            <View style={s.preview}>
               <ReactCrop
                 crop={crop}
                 onChange={(c) => setCrop(c)}
@@ -192,26 +189,26 @@ const UploadImageModal = ({
 
       {(isLoading || imageCrop || image) && (
         <Modal.Footer>
-          {isLoading && (
-            <>
-              <Text>Por favor, espere... </Text>
-              <ActivityIndicator
-                animating={isLoading}
-                size="large"
-                color={theme.colors.orangeHP}
-              />
-            </>
-          )}
-          {!isLoading && imageCrop && (
-            <Button variant="primary" onClick={() => onUpload()}>
-              Aceptar
-            </Button>
-          )}
-          {!isLoading && image && (
-            <Button variant="primary" onClick={onDelete}>
-              Borrar imagen actual
-            </Button>
-          )}
+          <View style={s.footerContainer}>
+            {isLoading && (
+              <>
+                <Text>Por favor, espere... </Text>
+                <ActivityIndicator size="large" color={theme.colors.orangeHP} />
+              </>
+            )}
+
+            {!isLoading && imageCrop && (
+              <Button variant="primary" onClick={() => onUpload()}>
+                Aceptar
+              </Button>
+            )}
+
+            {!isLoading && image && (
+              <Button variant="primary" onClick={onDelete}>
+                Borrar imagen actual
+              </Button>
+            )}
+          </View>
         </Modal.Footer>
       )}
     </Modal>
@@ -221,6 +218,7 @@ const UploadImageModal = ({
 export default UploadImageModal
 
 type Styles = {
+  footerContainer: ViewStyle
   containerView: ViewStyle
   textClose: TextStyle
   title: TextStyle
@@ -229,7 +227,12 @@ type Styles = {
   preview: TextStyle
 }
 
-const styles = StyleSheet.create<Styles>({
+const s = StyleSheet.create<Styles>({
+  footerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    columnGap: 12,
+  },
   containerView: {
     backgroundColor: theme.colors.lightBackground,
     borderColor: theme.colors.gray2,
