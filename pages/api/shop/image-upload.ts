@@ -26,7 +26,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  if (req.method !== "POST") {
+  if (req.method !== "PUT") {
     res.status(400).end()
   }
 

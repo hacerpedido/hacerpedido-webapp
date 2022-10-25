@@ -2,7 +2,7 @@ import type { GetServerSideProps } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
 
-import EditView from "components/EditShop/EditView"
+import EditShop from "components/EditShop"
 import prisma from "lib/prisma"
 import type { Shop as ShopType, Product } from "types"
 
@@ -18,7 +18,7 @@ function EditShopPage({ shop, products }: Props) {
         <title>{shop.name} | Hacer Pedido</title>
       </Head>
 
-      <EditView initialShop={shop} initialProducts={products} />
+      <EditShop initialShop={shop} initialProducts={products} />
     </>
   )
 }

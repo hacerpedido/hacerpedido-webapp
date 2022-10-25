@@ -2,6 +2,7 @@ module.exports = {
   swcMinify: true,
   images: {
     domains: [
+      "hacerpedido2-images-dev.s3.amazonaws.com",
       "hacerpedido2-images.s3.amazonaws.com",
       "loremflickr.com",
       "ui-avatars.com",

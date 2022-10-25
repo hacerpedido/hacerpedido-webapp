@@ -8,7 +8,7 @@ import type { Product } from "types"
 
 const CustomTable = dynamic(
   async () => {
-    await import("handsontable/react/dist/handsontable.full.css")
+    await import("handsontable/dist/handsontable.full.css")
     await import("handsontable/languages/es-MX")
     const { HotTable } = await import("@handsontable/react")
 

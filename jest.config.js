@@ -4,7 +4,6 @@ const createJestConfig = nextJest()
 
 // Any custom config you want to pass to Jest
 const customJestConfig = {
-  preset: "react-native-web",
   testMatch: ["**/*.test.ts", "**/*.test.tsx"],
   moduleDirectories: ["node_modules", "."],
   transformIgnorePatterns: ["/next[/\\\\]dist/", "/\\.next/"],

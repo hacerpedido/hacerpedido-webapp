@@ -40,7 +40,7 @@ const UploadImageModal = ({
   const circularCrop = useMemo(() => imageType === "logo", [imageType])
 
   const imgRef = useRef()
-  const [isWaiting, setIsWaiting] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [imageCrop, setImageCrop] = useState("")
   const [crop, setCrop] = useState<Crop>()
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>()
@@ -55,23 +55,27 @@ const UploadImageModal = ({
     reader.readAsDataURL(file)
   }, [])
 
-  const onDelete = () => {
+  const onDelete = async () => {
     const data = new FormData()
 
     data.append("shop_id", shopID)
     data.append("image_type", imageType)
 
-    setIsWaiting(true)
+    setIsLoading(true)
 
-    // TODO: should be a put/patch request
-    axios
-      .post(`${window.location.origin}/api/image-delete`, data, {
+    try {
+      const response = await axios.delete("/api/shop/image-delete", data, {
         headers: { "Content-Type": "multipart/form-data" },
       })
-      .then(() => {
-        setIsWaiting(false)
-        onHide()
-      })
+      // TODO: update image on preview
+      console.log(response.data)
+      onHide()
+    } catch (err) {
+      // TODO: Replace this with a proper user error
+      console.error(err.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const onUpload = () => {
@@ -79,7 +83,7 @@ const UploadImageModal = ({
 
     const imgSrc = imgRef.current as HTMLImageElement
 
-    setIsWaiting(true)
+    setIsLoading(true)
 
     const scaleX = imgSrc.naturalWidth / imgSrc.width
     const scaleY = imgSrc.naturalHeight / imgSrc.height
@@ -103,22 +107,22 @@ const UploadImageModal = ({
     )
 
     canvas.toBlob(
-      (file) => {
+      async (file) => {
         const data = new FormData()
         data.append("image", file)
         data.append("shop_id", shopID)
         data.append("image_type", imageType)
 
-        axios
-          .post(`${window.location.origin}/api/shop/image-upload`, data, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then(() => {
-            setIsWaiting(false)
-            onHide()
-          })
+        await fetch("/api/shop/image-upload", {
+          method: "PUT",
+          headers: { "Content-Type": "multipart/form-data" },
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((data) => onHide())
+          .catch((error) => console.error(error.message))
+
+        setIsLoading(false)
       },
       "image/png",
       1
@@ -186,24 +190,24 @@ const UploadImageModal = ({
         </View>
       </Modal.Body>
 
-      {(isWaiting || imageCrop || image) && (
+      {(isLoading || imageCrop || image) && (
         <Modal.Footer>
-          {isWaiting && (
+          {isLoading && (
             <>
               <Text>Por favor, espere... </Text>
               <ActivityIndicator
-                animating={isWaiting}
+                animating={isLoading}
                 size="large"
                 color={theme.colors.orangeHP}
               />
             </>
           )}
-          {!isWaiting && imageCrop && (
+          {!isLoading && imageCrop && (
             <Button variant="primary" onClick={() => onUpload()}>
               Aceptar
             </Button>
           )}
-          {!isWaiting && image && (
+          {!isLoading && image && (
             <Button variant="primary" onClick={onDelete}>
               Borrar imagen actual
             </Button>

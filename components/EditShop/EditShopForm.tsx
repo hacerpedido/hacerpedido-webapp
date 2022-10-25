@@ -57,16 +57,6 @@ export default function EditShopForm({
 
   const handleCloseModal = () => setImageType("")
 
-  const buttonStyles = {
-    alignItems: "center",
-    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
-    borderRadius: 5,
-    flexDirection: "row",
-    marginLeft: 15,
-    marginVertical: 10,
-    padding: 10,
-  }
-
   const validation = {
     name: {
       required: {
@@ -114,8 +104,33 @@ export default function EditShopForm({
     },
   }
 
-  return (
-    <View style={styles.container}>
+  const Actions = () => (
+    <View style={s.buttonsContainer}>
+      <TouchableOpacity
+        onPress={() => setImageType("logo")}
+        disabled={isSaving}
+      >
+        <Text style={s.uploadImageButton}>Editar logo</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => setImageType("background")}
+        disabled={isSaving}
+      >
+        <Text style={s.uploadImageButton}>Editar portada</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={handleSubmit(onSubmit)}
+        style={s.buttonStyles(isSaving)}
+        disabled={isSaving}
+      >
+        <Text style={s.buttonText}>Guardar</Text>
+        {isSaving && (
+          <ActivityIndicator animating={isSaving} color={theme.colors.white} />
+        )}
+      </TouchableOpacity>
+
       <UploadImageModal
         shopID={shop.id}
         imageType={imageType}
@@ -123,11 +138,96 @@ export default function EditShopForm({
         show={showModal}
         onHide={handleCloseModal}
       />
+    </View>
+  )
 
-      <View style={styles.titleContainer}>
-        <View style={styles.titleTextContainer}>
-          <Text style={styles.title}>Datos de tu Comercio</Text>
-          <Text style={styles.updatedAt}>
+  const Form = () => (
+    <View style={s.formContainer}>
+      <View style={s.formContainer}>
+        <View style={s.formColumnLeft}>
+          <Input
+            {...register("name", validation["name"])}
+            label="Nombre del Comercio:"
+            defaultValue={shop.name}
+            error={errors.name}
+            maxLength={50}
+          />
+          <Input
+            {...register("address")}
+            label="Dirección:"
+            defaultValue={shop.address}
+            error={errors.address}
+            maxLength={50}
+          />
+          <Input
+            {...register("opentimes")}
+            label="Horario:"
+            defaultValue={shop.opentimes}
+            error={errors.opentimes}
+            maxLength={50}
+          />
+          <Input
+            {...register("deliverycost")}
+            label="Costo del Delivery:"
+            defaultValue={shop.deliverycost}
+            error={errors.deliverycost}
+            maxLength={50}
+          />
+        </View>
+
+        <View style={s.formColumnRight}>
+          <Input
+            {...register(
+              "orderswhatsappnumber",
+              validation["orderswhatsappnumber"]
+            )}
+            label="WhatsApp del comercio:"
+            defaultValue={shop.orderswhatsappnumber}
+            error={errors.orderswhatsappnumber}
+            placeholder={"Escribilo así: +5492234470974"}
+            // keyboardType={"phone-pad"}
+            onChange={(event) => {
+              const value = event.target.value ?? ""
+              return value.replace(/[^0-9+]/g, "")
+            }}
+            maxLength={20}
+            pattern={"\\+?[0-9]*"}
+          />
+          <Input
+            {...register("ordersphonenumber", validation["ordersphonenumber"])}
+            label="Teléfono Fijo:"
+            defaultValue={shop.ordersphonenumber}
+            error={errors.ordersphonenumber}
+            maxLength={20}
+            placeholder={"Escribilo así: +5492234470974"}
+            pattern={"\\+?[0-9]*"}
+            // keyboardType={"phone-pad"}
+            onChange={(event) => {
+              const value = event.target.value ?? ""
+              return value.replace(/[^0-9+]/g, "")
+            }}
+          />
+          <Input
+            placeholder={"¿Querés hacer alguna aclaración?"}
+            {...register("notes")}
+            label="Notas:"
+            defaultValue={shop.notes}
+            error={errors.notes}
+            maxLength={1000}
+            // multiline
+            // numberOfLines={3.5}
+          />
+        </View>
+      </View>
+    </View>
+  )
+
+  return (
+    <View style={s.container}>
+      <View style={s.header}>
+        <View style={s.titleContainer}>
+          <Text style={s.title}>Datos de tu Comercio</Text>
+          <Text style={s.updatedAt}>
             <Text>Actualizado </Text>
             <TimeAgo
               date={shop?.updated_at || ""}
@@ -136,123 +236,11 @@ export default function EditShopForm({
             />
           </Text>
         </View>
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-            underlayColor={"none"}
-            onPress={() => setImageType("logo")}
-            disabled={isSaving}
-          >
-            <Text style={styles.uploadImageButton}>Editar logo</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            underlayColor={"none"}
-            onPress={() => setImageType("background")}
-            disabled={isSaving}
-          >
-            <Text style={styles.uploadImageButton}>Editar portada</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            underlayColor={"none"}
-            onPress={handleSubmit(onSubmit)}
-            style={buttonStyles}
-            disabled={isSaving}
-          >
-            <>
-              <Text style={styles.buttonText}>Guardar</Text>
-              {isSaving && (
-                <ActivityIndicator
-                  animating={isSaving}
-                  color={theme.colors.white}
-                />
-              )}
-            </>
-          </TouchableOpacity>
-        </View>
+        <Actions />
       </View>
 
-      <View style={styles.formContainer}>
-        <View style={styles.formContainer}>
-          <View style={styles.formColumnLeft}>
-            <Input
-              {...register("name", validation["name"])}
-              label="Nombre del Comercio:"
-              defaultValue={shop.name}
-              error={errors.name}
-              maxLength={50}
-            />
-            <Input
-              {...register("address")}
-              label="Dirección:"
-              defaultValue={shop.address}
-              error={errors.address}
-              maxLength={50}
-            />
-            <Input
-              {...register("opentimes")}
-              label="Horario:"
-              defaultValue={shop.opentimes}
-              error={errors.opentimes}
-              maxLength={50}
-            />
-            <Input
-              {...register("deliverycost")}
-              label="Costo del Delivery:"
-              defaultValue={shop.deliverycost}
-              error={errors.deliverycost}
-              maxLength={50}
-            />
-          </View>
-
-          <View style={styles.formColumnRight}>
-            <Input
-              {...register(
-                "orderswhatsappnumber",
-                validation["orderswhatsappnumber"]
-              )}
-              label="WhatsApp del comercio:"
-              defaultValue={shop.orderswhatsappnumber}
-              error={errors.orderswhatsappnumber}
-              placeholder={"Escribilo así: +5492234470974"}
-              // keyboardType={"phone-pad"}
-              onChange={(event) => {
-                const value = event.target.value ?? ""
-                return value.replace(/[^0-9+]/g, "")
-              }}
-              maxLength={20}
-              pattern={"\\+?[0-9]*"}
-            />
-            <Input
-              {...register(
-                "ordersphonenumber",
-                validation["ordersphonenumber"]
-              )}
-              label="Teléfono Fijo:"
-              defaultValue={shop.ordersphonenumber}
-              error={errors.ordersphonenumber}
-              maxLength={20}
-              placeholder={"Escribilo así: +5492234470974"}
-              pattern={"\\+?[0-9]*"}
-              // keyboardType={"phone-pad"}
-              onChange={(event) => {
-                const value = event.target.value ?? ""
-                return value.replace(/[^0-9+]/g, "")
-              }}
-            />
-            <Input
-              placeholder={"¿Querés hacer alguna aclaración?"}
-              {...register("notes")}
-              label="Notas:"
-              defaultValue={shop.notes}
-              error={errors.notes}
-              maxLength={1000}
-              // multiline
-              // numberOfLines={3.5}
-            />
-          </View>
-        </View>
-      </View>
+      <Form />
     </View>
   )
 }
@@ -260,18 +248,28 @@ export default function EditShopForm({
 type Styles = {
   buttonText: TextStyle
   buttonsContainer: ViewStyle
+  buttonStyles: ViewStyle
   container: ViewStyle
   formColumnLeft: ViewStyle
   formColumnRight: ViewStyle
   formContainer: ViewStyle
   title: TextStyle
-  titleContainer: ViewStyle
-  titleTextContainer: TextStyle
+  header: ViewStyle
+  titleContainer: TextStyle
   updatedAt: TextStyle
   uploadImageButton: ViewStyle
 }
 
-const styles = StyleSheet.create<Styles>({
+const s = StyleSheet.create<Styles>({
+  buttonStyles: (isSaving: boolean) => ({
+    alignItems: "center",
+    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
+    borderRadius: 5,
+    flexDirection: "row",
+    marginLeft: 15,
+    marginVertical: 10,
+    padding: 10,
+  }),
   buttonText: {
     color: theme.colors.white,
     fontWeight: "bold",
@@ -310,12 +308,12 @@ const styles = StyleSheet.create<Styles>({
     ...theme.text.title,
     marginVertical: 10,
   },
-  titleContainer: {
+  header: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  titleTextContainer: {
+  titleContainer: {
     alignItems: "baseline",
     flexDirection: "row",
   },

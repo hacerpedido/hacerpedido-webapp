@@ -13,9 +13,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
-  if (req.method !== "POST") {
-    res.status(400).end()
-  }
+  if (req.method !== "DELETE") res.status(400).end()
 
   const data = await new Promise(function (resolve) {
     const form = new IncomingForm({

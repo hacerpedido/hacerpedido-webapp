@@ -1,19 +1,37 @@
 {
-  "files": [],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "types/index.d.ts"
+  ],
   "compilerOptions": {
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
     "target": "esnext",
-    "lib": ["DOM", "DOM.iterable", "esnext"],
+    "lib": [
+      "DOM",
+      "DOM.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "strict": true,
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/pages/*": ["pages/*"],
-      "@/store/*": ["store/*"],
-      "@/styles/*": ["styles/*"]
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/pages/*": [
+        "pages/*"
+      ],
+      "@/store/*": [
+        "store/*"
+      ],
+      "@/styles/*": [
+        "styles/*"
+      ]
     },
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -25,7 +43,9 @@
     "module": "esnext",
     "skipLibCheck": true,
     "importsNotUsedAsValues": "error",
-    "noUncheckedIndexedAccess": true,
-    "typeRoots": ["../types", "../node_modules/@types"]
-  }
+    "noUncheckedIndexedAccess": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
