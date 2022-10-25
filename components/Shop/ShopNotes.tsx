@@ -6,9 +6,9 @@ import type { Shop } from "types"
 const ShopNotes = ({ shop }: { shop: Shop }) => {
   if (shop.notes) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.category}>Notas</Text>
-        <Text style={styles.notes}>{shop.notes}</Text>
+      <View>
+        <Text style={s.category}>Notas</Text>
+        <Text style={s.notes}>{shop.notes}</Text>
       </View>
     )
   }
@@ -21,11 +21,10 @@ export default ShopNotes
 // TODO: add some margin to separate from header
 type Styles = {
   category: TextStyle
-  container: ViewStyle
   notes: TextStyle
 }
 
-const styles = StyleSheet.create<Styles>({
+const s = StyleSheet.create<Styles>({
   category: {
     color: theme.colors.brown,
     fontFamily: "Barlow",
@@ -35,10 +34,6 @@ const styles = StyleSheet.create<Styles>({
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
-  },
-  container: {
-    flex: 1,
-    marginBottom: 40,
   },
   notes: {
     color: theme.colors.lightGrey,

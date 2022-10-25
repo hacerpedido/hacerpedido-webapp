@@ -10,6 +10,10 @@ type Props = {
   isCartEnabled?: boolean
 }
 
+function Divider() {
+  return <View style={s.divider}></View>
+}
+
 // TODO: Merge with cart/productList.jsx
 export default function ProductList({
   products,
@@ -18,14 +22,19 @@ export default function ProductList({
 }: Props) {
   return (
     <View>
-      <Text style={styles.category}>{category}</Text>
-      {products.map((product: ProductType) => (
-        <Product
-          key={product.id}
-          product={product}
-          promo={category == "Promociones"}
-          isCartEnabled={isCartEnabled}
-        />
+      <Text style={s.category}>{category}</Text>
+
+      {products.map((product, i, arr) => (
+        <div key={product.id}>
+          <Product
+            key={product.id}
+            product={product}
+            promo={category == "Promociones"}
+            isCartEnabled={isCartEnabled}
+          />
+
+          {i != arr.length - 1 && <Divider />}
+        </div>
       ))}
     </View>
   )
@@ -33,17 +42,22 @@ export default function ProductList({
 
 type Styles = {
   category: ViewStyle
+  divider: ViewStyle
 }
 
-const styles = StyleSheet.create<Styles>({
+const s = StyleSheet.create<Styles>({
   category: {
     color: colors.brown,
     fontFamily: "Barlow",
     fontSize: 17,
     fontWeight: "700",
-    marginBottom: 2,
     marginLeft: 16,
     marginRight: 16,
     marginTop: 16,
+    marginBottom: 2,
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderColor: colors.dividerBorder,
   },
 })

@@ -42,7 +42,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
     }
   }, [ref, setPopupVisible, item])
 
-  const containerStyle = promo ? styles.card : styles.product
+  const containerStyle = promo ? s.card : s.product
 
   return (
     <div ref={ref}>
@@ -50,25 +50,25 @@ const Product = ({ product, promo = false, isCartEnabled = false }: Props) => {
         onPress={() => setPopupVisible(!popupVisible)}
         underlayColor={"none"}
       >
-        <View style={[styles.container, containerStyle]}>
-          <View style={styles.nameDescription}>
-            <Text style={styles.name}>
+        <View style={[s.container, containerStyle]}>
+          <View style={s.nameDescription}>
+            <Text style={s.name}>
               {name}
 
               {item?.quantity > 0 && (
-                <View style={styles.amountContainer}>
-                  <Text style={styles.amountText}>{item.quantity}</Text>
+                <View style={s.amountContainer}>
+                  <Text style={s.amountText}>{item.quantity}</Text>
                 </View>
               )}
             </Text>
-            <Text style={styles.description}>{description}</Text>
+            <Text style={s.description}>{description}</Text>
           </View>
 
-          <Text style={styles.price}>{price && `$${price}`}</Text>
+          <Text style={s.price}>{price && `$${price}`}</Text>
 
           {isCartEnabled && (
-            <View style={styles.buttonQty}>
-              <Text style={styles.buttonQtyText}>+</Text>
+            <View style={s.buttonQty}>
+              <Text style={s.buttonQtyText}>+</Text>
 
               <ProductAmountPopup
                 product={product}
@@ -99,7 +99,13 @@ type Styles = {
   product: ViewStyle
 }
 
-const styles = StyleSheet.create<Styles>({
+const s = StyleSheet.create<Styles>({
+  container: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    minHeight: 52,
+  },
   amountContainer: {
     alignItems: "center",
     backgroundColor: colors.orangeHP,
@@ -144,12 +150,6 @@ const styles = StyleSheet.create<Styles>({
     paddingLeft: 15,
     paddingRight: 15,
   },
-  container: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    minHeight: 52,
-  },
   description: {
     flex: 1,
     flexWrap: "wrap",
@@ -179,8 +179,6 @@ const styles = StyleSheet.create<Styles>({
     marginLeft: 12,
   },
   product: {
-    borderBottomWidth: 1,
-    borderColor: colors.dividerBorder,
     marginLeft: 16,
     marginRight: 16,
     marginTop: 15,

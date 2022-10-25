@@ -39,6 +39,7 @@ export default function ShopView({ shop, products }: Props) {
         <meta property="twitter:description" content={name} />
         <meta property="twitter:url" content={url} />
       </Head>
+
       <Shop shop={shop} products={products} />
     </View>
   )

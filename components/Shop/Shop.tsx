@@ -30,15 +30,17 @@ export default function Shop({ shop, products, isPreview = false }: Props) {
 
       <View style={styles.container}>
         <ShopNotes shop={shop} />
-        {categoriesWithProducts.map(({ name, products }, index) => (
-          <div key={`productList-${index}`}>
+        <Divider />
+
+        {categoriesWithProducts.map(({ name, products }, i, arr) => (
+          <div key={`productList-${name}`}>
             <ProductList
               category={name}
               products={products}
               isCartEnabled={!!orderswhatsappnumber && !isPreview}
             />
 
-            <Divider />
+            {i != arr.length - 1 && <Divider />}
           </div>
         ))}
 
@@ -55,6 +57,5 @@ type Styles = {
 const styles = StyleSheet.create<Styles>({
   container: {
     backgroundColor: colors.white,
-    marginBottom: 130,
   },
 })
