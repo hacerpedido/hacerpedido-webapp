@@ -1,7 +1,6 @@
-import { StyleSheet, ViewStyle, TextStyle, View, Text } from "react-native"
+import styles from "./ShopList.module.css"
 
 import ShopCard from "@/components/Home/ShopCard"
-import { colors } from "@/lib/colors"
 import type { Shop } from "types"
 
 type Props = {
@@ -14,33 +13,16 @@ const ShopList = ({ shops }: Props) => {
   const countText = count === 0 ? "No hay" : count
 
   return (
-    <View style={styles.list}>
-      <Text style={styles.count}>
+    <div className={styles.list}>
+      <p className={styles.count}>
         {countText} {shopText}
-      </Text>
+      </p>
 
       {shops.map((shop) => (
         <ShopCard key={shop.slug} shop={shop} />
       ))}
-    </View>
+    </div>
   )
 }
-
-type Styles = {
-  count: TextStyle
-  list: ViewStyle
-}
-
-const styles = StyleSheet.create<Styles>({
-  count: {
-    color: colors.lightGrey,
-    fontFamily: "Barlow",
-    fontSize: 14,
-    marginVertical: 15,
-  },
-  list: {
-    height: "100vh",
-  },
-})
 
 export default ShopList

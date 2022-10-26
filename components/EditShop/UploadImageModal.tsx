@@ -31,7 +31,8 @@ type Props = {
 }
 
 const UploadImageModal = ({
-  shopID: shopId, imageType,
+  shopID: shopId,
+  imageType,
   image,
   show,
   handleHide,
@@ -110,14 +111,14 @@ const UploadImageModal = ({
         data.append("shop_id", shopId)
         data.append("image_type", imageType)
 
-        await fetch("/api/shop/image-upload", {
-          method: "PUT",
+        await axios({
+          url: "/api/shop/image-upload",
+          method: "POST",
           headers: { "Content-Type": "multipart/form-data" },
-          body: data,
+          params: data,
         })
-          .then((res) => res.json())
-          .then(() => handleHide())
-          .catch((error) => console.error(error.message))
+          // .then(() => handleHide())
+          // .catch((error) => console.error(error.message))
 
         setIsLoading(false)
       },

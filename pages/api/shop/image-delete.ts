@@ -20,7 +20,7 @@ export default async function handler(
 
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
     res.status(400).json({
-      error: `Wrong parameters (1).${imageType}`,
+      error: `Wrong parameters (1).`,
     })
 
     return

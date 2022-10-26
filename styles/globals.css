@@ -1,9 +1,10 @@
-@import 'bootstrap/dist/css/bootstrap.css';
+@import url("bootstrap/dist/css/bootstrap.css");
+@import url("./colors.css");
 
 html,
 body {
   /* TODO: Should this be the default font or maybe Roboto Slab? */
-  font-family: "Barlow", sans-serif;
+  font-family: Barlow, sans-serif;
 }
 
 * {
@@ -14,6 +15,7 @@ body {
 }
 
 /* Animations */
+
 /* TODO: replace with react-spring? */
 .bounza {
   animation: bounza_frames 4.72s ease infinite;

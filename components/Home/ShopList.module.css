@@ -1,0 +1,10 @@
+.list {
+  height: "100vh";
+}
+
+.count {
+  color: var(--color-lightgrey); /* TODO: should use variables from colors.tsx */
+  font-family: Barlow;
+  font-size: 14px;
+  margin: 1.2em 0 0.8em;
+}

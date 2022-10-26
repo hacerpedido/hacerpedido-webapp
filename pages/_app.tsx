@@ -5,6 +5,7 @@ import TagManager from "react-gtm-module"
 import { subscribe } from "valtio"
 
 import "@/styles/globals.css"
+
 import { store } from "store"
 
 const HpApp: FC<AppProps> = ({ Component, pageProps }) => {

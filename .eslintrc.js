@@ -5,10 +5,10 @@ module.exports = {
     "plugin:valtio/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
-    "plugin:jest/all",
+    // "plugin:jest/all",
     "plugin:prettier/recommended",
   ],
-  plugins: ["@typescript-eslint", "import", "prettier", "jest", "cypress"],
+  plugins: ["@typescript-eslint", "import", "prettier", "cypress"], //jest
   parser: "@typescript-eslint/parser",
   // parserOptions: {
   //   sourceType: "module",
@@ -26,6 +26,6 @@ module.exports = {
       },
     ],
     "prettier/prettier": "error",
-    "jest/prefer-expect-assertions": 0,
+    // "jest/prefer-expect-assertions": 0,
   },
 }
