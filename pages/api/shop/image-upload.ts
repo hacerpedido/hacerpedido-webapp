@@ -1,5 +1,4 @@
-import { IncomingForm } from "formidable"
-
+import formidable from "formidable"
 import type { NextApiRequest, NextApiResponse } from "next"
 
 import { uploadFile, deleteFile } from "@/lib/aws-s3"
@@ -21,27 +20,41 @@ function randomString(
 type ResponseData = {
   image: string
 }
+type ResponseError = {
+  error: string
+}
 
-export default async function handler(
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  if (req.method !== "POST") res.status(400).end()
+  res: NextApiResponse<ResponseData | ResponseError>
+) => {
+  if (req.method !== "POST") return res.status(400)
 
-  const data = await new Promise(function (resolve) {
-    const form = new IncomingForm({ multiples: false })
+  const { fields, files } = await new Promise(function (resolve, reject) {
+    const form = new formidable.IncomingForm({
+      keepExtensions: true,
+      multiples: false,
+    })
 
     form.parse(req, function (err, fields, files) {
-      if (err) return res.status(400).json({ error: err.message })
+      if (err) {
+        res.status(400).json({ error: err.message })
+        return
+      }
+
       resolve({ fields, files })
     })
   })
 
-  // This is not working
-  const { image_type: imageType, shop_id: shopId } = data.fields
-  console.log(data.fields);
-  console.log(req.query);
-  
+  const { image_type: imageType, shop_id: shopId } = fields
+  const { image } = files
+
   const acceptedImageTypes = ["logo", "background"]
 
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
@@ -52,16 +65,14 @@ export default async function handler(
     return res.status(400).json({ error: "Wrong parameters (2)." })
   }
 
-  const { image } = data.files
-
-  if (!image || image?.size === 0) {
+  if (!image || image.size === 0) {
     return res.status(400).json({ error: "Wrong parameters (3)." })
   }
 
-  const { type: mime, path } = image
+  const { mimetype, filepath } = image
   const acceptedMimeTypes = ["image/png", "image/jpeg"]
 
-  if (!mime || !acceptedMimeTypes.includes(mime)) {
+  if (!mimetype || !acceptedMimeTypes.includes(mimetype)) {
     return res.status(400).json({ error: "Wrong parameters (4)." })
   }
 
@@ -70,26 +81,22 @@ export default async function handler(
 
   if (!found) return res.status(400).json({ error: "Wrong parameters (5)." })
 
-  const { oldKey } = found
-
-  const extension = mime === "image/png" ? "png" : "jpg"
+  const extension = mimetype === "image/png" ? "png" : "jpg"
   const random = randomString(10)
   const key = `${shopId}-${imageType}-${random}.${extension}`
 
-  await uploadFile(path, key, mime)
+  console.log(filepath)
 
-  let patch = {}
+  await uploadFile(filepath, key, mimetype)
+
+  const patch = {}
   patch[imageType] = key
 
-  await prisma.shop.update({ where: { id: shopId }, data: { patch } })
-
-  // if (oldKey) deleteFile(oldKey) // TODO: Re enable this
+  await prisma.shop.update({ where: { id: shopId }, data: patch })
+  const oldFile = found[imageType]
+  if (oldFile) deleteFile(oldFile) // TODO: Re enable this
 
   res.json({ image: key })
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+export default handler

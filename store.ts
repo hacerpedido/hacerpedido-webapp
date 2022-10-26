@@ -1,6 +1,6 @@
 import { proxy, useSnapshot } from "valtio"
 
-import { CartItem, Product, Shop } from "types"
+import type { CartItem, Product, Shop } from "types"
 
 interface Store {
   shop: Shop | undefined

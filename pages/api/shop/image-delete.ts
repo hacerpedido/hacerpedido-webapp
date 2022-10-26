@@ -8,6 +8,12 @@ type ResponseData = {
   message: string
 }
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -41,10 +47,4 @@ export default async function handler(
   await deleteFile(found[imageType])
 
   res.status(200).json({ message: "ok" })
-}
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
 }

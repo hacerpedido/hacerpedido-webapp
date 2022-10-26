@@ -111,15 +111,13 @@ const UploadImageModal = ({
         data.append("shop_id", shopId)
         data.append("image_type", imageType)
 
-        await axios({
-          url: "/api/shop/image-upload",
-          method: "POST",
+        const res = await axios.post("/api/shop/image-upload", data, {
           headers: { "Content-Type": "multipart/form-data" },
-          params: data,
         })
-          // .then(() => handleHide())
-          // .catch((error) => console.error(error.message))
+        // .then(() => handleHide())
+        // .catch((error) => console.error(error.message))
 
+        handleHide()
         setIsLoading(false)
       },
       "image/png",

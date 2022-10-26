@@ -1,5 +1,5 @@
 module.exports = {
-  swcMinify: true,
+  reactStrictMode: true,
   images: {
     domains: [
       "hacerpedido2-images-dev.s3.amazonaws.com",
@@ -11,10 +11,6 @@ module.exports = {
     // deviceSizes: [320, 420, 768, 1024, 1200],
     // loader: "imgix",
     // path: "https://hacerpedido.imgix.net",
-  },
-  compiler: {
-    // ssr and displayName are configured by default
-    styledComponents: true,
   },
   // INFO: https://github.com/vercel/next.js/issues/31255#issuecomment-968614049
   webpack: (config) => {
