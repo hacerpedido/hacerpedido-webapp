@@ -1,9 +1,9 @@
 {
   "name": "hacerpedido-webapp",
   "scripts": {
-    "dev": "next",
-    "build": "next build",
-    "start": "next start",
+    "dev": "NODE_OPTIONS='--openssl-legacy-provider' next",
+    "build": "NODE_OPTIONS='--openssl-legacy-provider' next build",
+    "start": "NODE_OPTIONS='--openssl-legacy-provider' next start",
     "test": "jest",
     "lint": "eslint .",
     "import-data": "npx babel --presets '@babel/preset-env,@babel/preset-react'  -d build-scripts/ src/graphql scripts/import-data.js src/utils/utils.js src/aws-exports.js src/utils/categories.js && node build-scripts/import-data.js",
