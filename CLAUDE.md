@@ -162,6 +162,10 @@ Core functionality generates formatted WhatsApp messages including:
 
 ## Environment Setup
 
+### Database
+- **PostgreSQL 17.6** - Supabase-hosted database version. Keep migrations, SQL features, and extension choices compatible with Postgres 17.6.
+- Do not rely on Supabase extensions removed from Postgres 17 support, including `pgjwt`, `timescaledb`, `plv8`, `pls`, or `plcoffee`.
+
 ### Required Environment Variables
 - `PG_CONNECTION_STRING` - PostgreSQL database connection
 - `SENTRY_DSN` or `NEXT_PUBLIC_SENTRY_DSN` - Sentry error tracking
