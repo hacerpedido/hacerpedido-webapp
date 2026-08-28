@@ -1,6 +1,19 @@
 module.exports = {
-  extends: ["react-app", "plugin:react-native/all", "prettier", "prettier/react"],
-  plugins: ["react-native", "prettier"],
+  extends: ["eslint:recommended", "plugin:react/recommended", "plugin:react-native/all", "prettier", "prettier/react"],
+  plugins: ["import", "react-native", "prettier"],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+  env: {
+    browser: true,
+    es6: true,
+    jest: true,
+    node: true,
+  },
   rules: {
     "react/display-name": 0,
     "react/prop-types": 0,
@@ -13,6 +26,9 @@ module.exports = {
     "react-native/sort-styles": "warn",
   },
   settings: {
+    react: {
+      version: "16.13",
+    },
     "import/ignore": ["react-native"],
     "import/resolver": {
       node: {
