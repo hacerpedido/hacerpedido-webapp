@@ -29,7 +29,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
         accessibilityLabel={name}
         accessibilityRole="button"
         onPress={() => setPopupVisible(!popupVisible)}
-        testID="product-e2e-fixture-product"
+        testID={`product-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
         underlayColor={"none"}
       >
         <View style={[styles.container, containerStyle]}>

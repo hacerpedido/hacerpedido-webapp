@@ -3,9 +3,12 @@
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const PRODUCT_ID = "00000000-0000-0000-0000-000000000002";
+const SECOND_PRODUCT_ID = "00000000-0000-0000-0000-000000000003";
 
 exports.seed = async (knex) => {
-  await knex("products").del().where("id", "=", PRODUCT_ID);
+  await knex("products")
+    .del()
+    .whereIn("id", [PRODUCT_ID, SECOND_PRODUCT_ID]);
   await knex("shops").del().where("id", "=", SHOP_ID);
 
   await knex("shops").insert({
@@ -44,6 +47,18 @@ exports.seed = async (knex) => {
     price: "1000",
     description: "E2E fixture product",
     itemnumber: 1,
+    created_at: "2020-01-01 00:00:00",
+    updated_at: "2020-01-01 00:00:00",
+  });
+
+  await knex("products").insert({
+    id: SECOND_PRODUCT_ID,
+    shopid: SHOP_ID,
+    name: "E2E Second Product",
+    category: "E2E Category",
+    price: "2500",
+    description: "E2E second fixture product",
+    itemnumber: 2,
     created_at: "2020-01-01 00:00:00",
     updated_at: "2020-01-01 00:00:00",
   });

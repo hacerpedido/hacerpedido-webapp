@@ -40,6 +40,7 @@ module.exports = defineConfig({
           command: 'npm run build && npm run start',
           url: baseURL,
           reuseExistingServer: false,
+          timeout: 180000,
           env: {
             PG_CONNECTION_STRING: dbConnectionString,
           },
