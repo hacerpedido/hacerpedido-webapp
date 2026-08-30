@@ -1,43 +1,62 @@
--- Inferred E2E-only fixture seed.
--- This data is deterministic, disposable, and is not production business data.
+-- Deterministic E2E seed aligned with the real production schema.
+-- Disposable, not production business data.
 
 INSERT INTO shops (
+  id,
   name,
   slug,
   region,
+  username,
   category,
   address,
   notes,
+  ordersbyphoneorwhatsapp,
+  delivery,
+  takeaway,
+  whatsappnumber,
+  phonenumber,
+  email,
+  submittedat,
   opentimes,
   deliverycost,
   visibility,
   logo,
   background,
+  typeformtoken,
   ordersphonenumber,
   orderswhatsappnumber,
-  typeformtoken,
   created_at,
   updated_at
 ) VALUES (
+  '00000000-0000-0000-0000-000000000001',
   'E2E Fixture Shop',
   'e2e-fixture-shop',
   'E2E Region',
+  NULL,
   'Comida',
   'E2E Address',
   'E2E fixture shop',
+  'whatsapp',
+  NULL,
+  NULL,
+  '+5491100000000',
+  NULL,
+  NULL,
+  NULL,
   'E2E hours',
   '0',
   'public',
   NULL,
   NULL,
-  '+5491100000000',
-  '+5491100000000',
   'e2e-fixture-token',
-  '2020-01-01T00:00:00Z',
-  '2020-01-01T00:00:00Z'
+  '+5491100000000',
+  '+5491100000000',
+  '2020-01-01 00:00:00',
+  '2020-01-01 00:00:00'
 );
 
 INSERT INTO products (
+  id,
   shopid,
   name,
   category,
@@ -46,15 +65,14 @@ INSERT INTO products (
   itemnumber,
   created_at,
   updated_at
-)
-SELECT
-  id,
+) VALUES (
+  '00000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000001',
   'E2E Product',
   'E2E Category',
-  1000.00,
+  '1000',
   'E2E fixture product',
   1,
-  '2020-01-01T00:00:00Z',
-  '2020-01-01T00:00:00Z'
-FROM shops
-WHERE slug = 'e2e-fixture-shop';
+  '2020-01-01 00:00:00',
+  '2020-01-01 00:00:00'
+);
