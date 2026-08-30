@@ -1,10 +1,20 @@
 // 0001_baseline.js
-// Baseline inferido del schema real de producción (Supabase PostgreSQL 17.6).
-// Fuente: pg_dump --schema-only provisto por el equipo, complementado con
-// extensiones, funciones, triggers e índices confirmados en el dashboard.
+// Baseline del schema real de producción (Supabase PostgreSQL 17.6), inferido
+// del pg_dump original y VERIFICADO contra producción vía Supabase MCP
+// (list_tables verbose + queries a pg_trigger/pg_proc/pg_event_trigger,
+// project xpnthjdzqrnpgwzquszb, 2026-08-30).
 //
-// Pendiente de verificación: fingerprint contra un pg_dump completo de
-// producción antes de marcarlo como aplicado en el ambiente real.
+// Verificación confirmada:
+//  * Columnas, tipos y nullability de public.shops y public.products: 100% match.
+//  * Default de id: uuid_generate_v1() en el schema `extensions` en prod; el
+//    baseline usa la llamada sin calificar, que resuelve vía search_path.
+//  * Extensions instaladas en prod: uuid-ossp 1.1, pgcrypto 1.3,
+//    pg_stat_statements 1.11 (coinciden). pgjwt NO está instalado en prod.
+//  * trigger_set_timestamp() y los triggers set_timestamp sobre ambas tablas:
+//    coinciden.
+//  * rls_auto_enable() existe en prod; el event trigger ensure_rls es de la
+//    plataforma y NO se replica en E2E (decisión deliberada).
+//  * knex_migrations está vacío en prod: el baseline nunca se aplicó allí.
 //
 // Decisiones deliberadas:
 //  * pg_stat_statements requiere shared_preload_libraries; el ambiente E2E
@@ -12,6 +22,7 @@
 //  * La función rls_auto_enable se replica tal cual existe en producción,
 //    pero el event trigger de Supabase NO se crea aquí: en la base E2E el
 //    rol no es superusuario y un RLS activo sin policies bloquearía todo.
+//  * RLS en tablas: habilitado en prod, deshabilitado en E2E (decisión).
 //  * Los índices id_products / id_shops que muestra el dashboard son los
 //    índices implícitos de las PRIMARY KEY; no se crean explícitamente.
 
