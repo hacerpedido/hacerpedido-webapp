@@ -1,22 +1,21 @@
--- 0001_baseline.sql
--- Baseline inferido del schema real de producción (Supabase PostgreSQL 17.6).
---
--- Fuente: pg_dump --schema-only provisto por el equipo, complementado con
--- extensiones, funciones, triggers e índices confirmados en el dashboard.
--- Este archivo SÍ es ejecutable sobre una base PostgreSQL 17.6 vacía.
---
--- Pendiente de verificación: fingerprint contra un pg_dump completo de
--- producción antes de marcarlo como aplicado en el ambiente real.
---
--- Decisiones deliberadas:
---  * pg_stat_statements requiere shared_preload_libraries; el ambiente E2E
---    debe preloadearla (ver compose.e2e.yaml).
---  * La función rls_auto_enable se replica tal cual existe en producción,
---    pero el event trigger de Supabase NO se crea aquí: en la base E2E el
---    rol no es superusuario y un RLS activo sin policies bloquearía todo.
---  * Los índices id_products / id_shops que muestra el dashboard son los
---    índices implícitos de las PRIMARY KEY; no se crean explícitamente.
+// 0001_baseline.js
+// Baseline inferido del schema real de producción (Supabase PostgreSQL 17.6).
+// Fuente: pg_dump --schema-only provisto por el equipo, complementado con
+// extensiones, funciones, triggers e índices confirmados en el dashboard.
+//
+// Pendiente de verificación: fingerprint contra un pg_dump completo de
+// producción antes de marcarlo como aplicado en el ambiente real.
+//
+// Decisiones deliberadas:
+//  * pg_stat_statements requiere shared_preload_libraries; el ambiente E2E
+//    debe preloadearla (ver compose.e2e.yaml).
+//  * La función rls_auto_enable se replica tal cual existe en producción,
+//    pero el event trigger de Supabase NO se crea aquí: en la base E2E el
+//    rol no es superusuario y un RLS activo sin policies bloquearía todo.
+//  * Los índices id_products / id_shops que muestra el dashboard son los
+//    índices implícitos de las PRIMARY KEY; no se crean explícitamente.
 
+const SQL = `
 -- ============ Extensions ============
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";      -- uuid_generate_v1()
@@ -77,12 +76,12 @@ CREATE TABLE public.products (
 CREATE OR REPLACE FUNCTION public.trigger_set_timestamp()
 RETURNS trigger
 LANGUAGE plpgsql
-AS $$
+AS $fn$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$;
+$fn$;
 
 CREATE TRIGGER set_timestamp
   BEFORE UPDATE ON public.shops
@@ -99,7 +98,7 @@ CREATE TRIGGER set_timestamp
 CREATE OR REPLACE FUNCTION public.rls_auto_enable()
 RETURNS event_trigger
 LANGUAGE plpgsql
-AS $$
+AS $fn$
 DECLARE
   cmd record;
 BEGIN
@@ -122,4 +121,11 @@ BEGIN
      END IF;
   END LOOP;
 END;
-$$;
+$fn$;
+`;
+
+exports.up = (knex) => knex.raw(SQL);
+
+exports.down = () => {
+  throw new Error("0001_baseline is not reversible");
+};

@@ -13,8 +13,6 @@ services:
       - "shared_preload_libraries=pg_stat_statements"
     volumes:
       - hacerpedido_e2e_pgdata:/var/lib/postgresql/data
-      - ./db/migrations/0001_baseline.sql:/docker-entrypoint-initdb.d/01-baseline.sql:ro
-      - ./tests/e2e/fixtures/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U e2e_user -d hacerpedido_e2e"]
       interval: 2s
