@@ -33,8 +33,13 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
     ({ item, key, props }) =>
       item && (
         <AnimatedView style={props} key={key}>
-          <View style={styles.container}>
-            <TouchableHighlight underlayColor={"none"} onPress={() => updateAmount(popUpAmount - 1)}>
+          <View accessibilityRole="dialog" style={styles.container} testID="quantity-popup">
+            <TouchableHighlight
+              accessibilityLabel="Decrease quantity"
+              accessibilityRole="button"
+              underlayColor={"none"}
+              onPress={() => updateAmount(popUpAmount - 1)}
+            >
               <View style={styles.buttonQty}>
                 <Text style={styles.buttonQtyText}>-</Text>
               </View>
@@ -42,7 +47,13 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
 
             <Text style={styles.amountText}>{popUpAmount}</Text>
 
-            <TouchableHighlight underlayColor={"none"} onPress={() => updateAmount(popUpAmount + 1)}>
+            <TouchableHighlight
+              accessibilityLabel="Increase quantity"
+              accessibilityRole="button"
+              onPress={() => updateAmount(popUpAmount + 1)}
+              testID="quantity-increase"
+              underlayColor={"none"}
+            >
               <View style={[styles.buttonQty, styles.buttonPlus]}>
                 <Text style={[styles.buttonQtyText, styles.buttonPlusText]}>+</Text>
               </View>
@@ -50,7 +61,13 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
 
             <View style={styles.lineBreak} />
 
-            <TouchableHighlight onPress={() => updateAmount(popUpAmount, true)} underlayColor={"none"}>
+            <TouchableHighlight
+              accessibilityLabel="Add product"
+              accessibilityRole="button"
+              onPress={() => updateAmount(popUpAmount, true)}
+              testID="quantity-add"
+              underlayColor={"none"}
+            >
               <View style={styles.buttonSubmit}>
                 <Text style={styles.buttonSubmitText}>Agregar</Text>
               </View>

@@ -95,6 +95,8 @@ export default function App(props) {
       data={filteredShops}
       renderItem={({ item }) => (
         <TouchableHighlight
+          accessibilityLabel={item.name}
+          accessibilityRole="button"
           delayPressIn={5000}
           underlayColor={colors.lightBackground}
           onTouchStart={(evt) => {
@@ -109,6 +111,7 @@ export default function App(props) {
             }
           }}
           onPress={() => onSelect(item)}
+          testID={`shop-card-${item.slug}`}
         >
           <ShopCard shop={item} />
         </TouchableHighlight>

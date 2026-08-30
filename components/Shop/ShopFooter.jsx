@@ -14,10 +14,13 @@ const ShopFooter = ({ shop }) => {
 
   const ButtonWhatsapp = () => (
     <TouchableHighlight
+      accessibilityLabel="Review order"
+      accessibilityRole="button"
       disabled={!totalAmount}
       underlayColor={"none"}
       onPress={() => router.push("/cart")}
       style={styles.buttonContainer}
+      testID="review-order"
     >
       <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
         <Text style={styles.buttonText}> Revisar mi pedido </Text>

@@ -25,7 +25,13 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
 
   return (
     <div ref={ref}>
-      <TouchableHighlight onPress={() => setPopupVisible(!popupVisible)} underlayColor={"none"}>
+      <TouchableHighlight
+        accessibilityLabel={name}
+        accessibilityRole="button"
+        onPress={() => setPopupVisible(!popupVisible)}
+        testID="product-e2e-fixture-product"
+        underlayColor={"none"}
+      >
         <View style={[styles.container, containerStyle]}>
           <View style={styles.nameDescription}>
             <Text style={styles.name}>

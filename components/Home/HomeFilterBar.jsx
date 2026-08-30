@@ -7,9 +7,12 @@ import colors from "../../assets/colors";
 function Item({ id, title, selected, onSelect }) {
   return (
     <TouchableHighlight
+      accessibilityLabel={title}
+      accessibilityRole="button"
       underlayColor={colors.lightBackground}
       onPress={() => onSelect(id)}
       style={[styles.item, { backgroundColor: selected ? colors.orangeHP : colors.white }]}
+      testID={`category-${id}`}
     >
       <Text style={[styles.title, { color: selected ? colors.white : colors.orangeHP }]}>{title}</Text>
     </TouchableHighlight>

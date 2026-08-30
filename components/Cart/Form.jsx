@@ -39,6 +39,7 @@ const Form = ({ onSubmit }) => {
         label="Tu Nombre"
         autoCompleteType="name"
         placeholder="¿Cómo te llamás?"
+        testID="customer-name"
         defaultValue={""}
         rules={{
           required: {
@@ -59,6 +60,7 @@ const Form = ({ onSubmit }) => {
           label="Tu Dirección"
           autoCompleteType="street-address"
           placeholder="¿A dónde lo mandamos?"
+          testID="customer-address"
           defaultValue={""}
           rules={{
             required: {
@@ -78,6 +80,7 @@ const Form = ({ onSubmit }) => {
         name="notes"
         label="Notas"
         placeholder="¿Querés hacer alguna aclaración?"
+        testID="order-notes"
         defaultValue={""}
         multiline
         numberOfLines={2}
@@ -92,7 +95,13 @@ const Form = ({ onSubmit }) => {
       </Text>
       {/* eslint-enable react-native/no-raw-text */}
 
-      <TouchableHighlight onPress={handleSubmit(onSubmit)} underlayColor="none">
+      <TouchableHighlight
+        accessibilityLabel="Submit WhatsApp order"
+        accessibilityRole="button"
+        onPress={handleSubmit(onSubmit)}
+        testID="submit-whatsapp-order"
+        underlayColor="none"
+      >
         <div className="bounza">
           <View style={[styles.buttonWhatsApp, styles.button]}>
             <Text style={styles.textContainer} numberOfLines={1}>
