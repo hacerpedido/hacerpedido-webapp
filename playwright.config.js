@@ -6,6 +6,9 @@ const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || defaultBaseURL;
 const localHostnames = ['localhost', '127.0.0.1', '::1'];
 const isExternalBaseURL = !localHostnames.includes(new URL(baseURL).hostname);
 
+// Allow an externally provided DB (e.g. preview env) to override the local compose one.
+const dbConnectionString = process.env.PG_CONNECTION_STRING || pgConnectionString;
+
 module.exports = defineConfig({
   testDir: './tests/e2e',
   globalSetup: isExternalBaseURL
@@ -38,7 +41,7 @@ module.exports = defineConfig({
           url: baseURL,
           reuseExistingServer: false,
           env: {
-            PG_CONNECTION_STRING: pgConnectionString,
+            PG_CONNECTION_STRING: dbConnectionString,
           },
         },
       }),
