@@ -60,6 +60,7 @@ export default function App(props) {
 
   useEffect(() => {
     dispatch(loading(true));
+    dispatch(setShops([]));
 
     async function getData() {
       const shopData = await axios.get(`${window.location.origin}/api/shop/home`, { params: { category } });
@@ -71,6 +72,8 @@ export default function App(props) {
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
+      dispatch(setShops([]));
+      dispatch(loading(false));
     });
   }, [dispatch, category]);
 

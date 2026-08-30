@@ -47,6 +47,7 @@ const handler = async (req, res) => {
     .withQuery(
       pg("shops")
         .where("slug", "=", slug)
+        .where("shops.visibility", "=", "public")
         .leftJoin("products", "shops.id", "products.shopid")
         .orderBy("products.itemnumber")
     );
