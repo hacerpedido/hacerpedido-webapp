@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: hacerpedido_e2e
+      POSTGRES_PASSWORD: e2e_password
+      POSTGRES_USER: e2e_user
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - hacerpedido_e2e_pgdata:/var/lib/postgresql/data
+      - ./tests/e2e/fixtures/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./tests/e2e/fixtures/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U e2e_user -d hacerpedido_e2e"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  hacerpedido_e2e_pgdata:
