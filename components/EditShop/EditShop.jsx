@@ -58,7 +58,13 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
             <TouchableOpacity underlayColor={"none"} onPress={() => handleShow("background")} disabled={isSaving}>
               <Text style={styles.uploadImageButton}>Editar portada</Text>
             </TouchableOpacity>
-            <TouchableOpacity underlayColor={"none"} onPress={handleSubmit} style={buttonStyles} disabled={isSaving}>
+            <TouchableOpacity
+              underlayColor={"none"}
+              onPress={handleSubmit}
+              style={buttonStyles}
+              disabled={isSaving}
+              testID="save-shop"
+            >
               <>
                 <Text style={styles.buttonText}>Guardar</Text>
                 {isSaving && <ActivityIndicator animating={isSaving} color={theme.colors.white} />}
@@ -75,6 +81,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 name="name"
                 label="Nombre del Comercio:"
                 defaultValue={shop.name}
+                testID="edit-shop-name"
                 rules={{
                   required: {
                     value: true,
@@ -90,6 +97,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 name="address"
                 label="Dirección:"
                 defaultValue={shop.address}
+                testID="edit-shop-address"
                 error={errors.address}
                 maxLength={50}
               />
@@ -99,6 +107,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 name="opentimes"
                 label="Horario:"
                 defaultValue={shop.opentimes}
+                testID="edit-shop-opentimes"
                 error={errors.opentimes}
                 maxLength={50}
               />
@@ -108,6 +117,7 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 name="deliverycost"
                 label="Costo del Delivery:"
                 defaultValue={shop.deliverycost}
+                testID="edit-shop-deliverycost"
                 error={errors.deliverycost}
                 maxLength={50}
               />
