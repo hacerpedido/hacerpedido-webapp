@@ -33,18 +33,14 @@ if (process.env.JEST_WORKER_ID) {
     await expect(page.getByTestId('edit-shop-name')).toHaveValue(editedName);
   });
 
-  // Characterizes a security-relevant gap (#128/#146): for an unknown token
-  // the editor still renders an empty form instead of the not-found state.
-  // nested-knex returns a truthy empty object for a missing row, so the
-  // `shop == null` guard in pages/[...params].jsx never fires.
-  test('renders an empty editor for an unknown token instead of a not-found state (#128)', async ({ page }) => {
+  // Regression for #128: an unknown token must NOT render an empty editor.
+  // The by-token API answers 404 and the page shows the not-found state.
+  test('shows a not-found state for an unknown token', async ({ page }) => {
     await page.goto('/does-not-exist/edit');
 
-    // The editor form is shown with no seeded data.
-    await expect(page.getByTestId('edit-shop-name')).toBeVisible();
-    await expect(page.getByTestId('edit-shop-name')).toHaveValue('');
     await expect(
       page.getByText('No hay un comercio en la base de datos para el token does-not-exist')
-    ).not.toBeVisible();
+    ).toBeVisible();
+    await expect(page.getByTestId('edit-shop-name')).not.toBeVisible();
   });
 }

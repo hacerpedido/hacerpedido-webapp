@@ -113,6 +113,15 @@ const handler = async(req, res) => {
         .orderBy("products.itemnumber")
     );
 
+  // nested-knex devuelve un array vacío (truthy) cuando no hay shop para el
+  // token; sin este guard la página renderiza un editor vacío en vez del
+  // estado not-found. (#128)
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    res.status(404).json({ error: "No hay un comercio para ese token." });
+    res.end();
+    return;
+  }
+
   res.status(200).json(data);
   res.end();
 }

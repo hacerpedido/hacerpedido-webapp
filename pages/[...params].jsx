@@ -58,7 +58,15 @@ export default function EditShopPage() {
 
         setShopState({ shop: shopData.data, loading: false });
       } catch (error) {
-        alert(`Error al leer los datos. (${error} Error: ${error.response.data.message})`);
+        // Token sin shop: el API responde 404 y la página muestra el estado
+        // not-found (renderizado abajo) sin molestar con un alert. (#128)
+        if (error.response && error.response.status === 404) {
+          setShopState({ shop: null, loading: false });
+          return;
+        }
+
+        const message = error.response?.data?.message;
+        alert(`Error al leer los datos. (${error} Error: ${message ?? "Desconocido"})`);
         setShopState({ shop: null, loading: false });
       }
     }
