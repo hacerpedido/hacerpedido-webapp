@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ export default function Shop() {
   const shop = useSelector((state) => state.shop.shop);
   const { slug } = router.query;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getData = async () => {
       dispatch(loading(true));
 
@@ -35,7 +35,7 @@ export default function Shop() {
     if (slug != null) {
       getData();
     }
-  }, [dispatch, shop, slug]);
+  }, [dispatch, slug]);
 
   if (!slug || shop?.slug !== slug) {
     return isLoading ? <Loading /> : <p className={styles.message}>Sin comercios en la base de datos para {slug}.</p>;
