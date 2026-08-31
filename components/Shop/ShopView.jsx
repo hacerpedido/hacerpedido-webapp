@@ -1,5 +1,4 @@
 import React from "react";
-import { useSelector } from "react-redux";
 
 import Loading from "../Loading";
 import ShopHeader from "./ShopHeader";
@@ -9,8 +8,7 @@ import EditMenuLink from "./EditMenuLink";
 import { useCart } from "../../lib/context/CartContext";
 import styles from "./ShopView.module.css";
 
-export default function ShopView({ isPreview = false, shop, previewProducts = [] }) {
-  const isLoading = useSelector((state) => state.app.loading);
+export default function ShopView({ isPreview = false, shop, previewProducts = [], isLoading = false }) {
   const { state } = useCart();
   const storedProducts = state.products;
   const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;

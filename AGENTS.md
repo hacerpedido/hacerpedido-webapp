@@ -17,7 +17,7 @@ Convenciones de idioma:
 |---|---|
 | Framework | Next.js 10.2.3 (SSR/SSG), React 16.14 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
-| Estado | Redux Toolkit + redux-persist |
+| Estado | CartContext (useReducer + localStorage) |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
 | DB | PostgreSQL 17.6 (Supabase) vía Knex |
 | Files | AWS SDK v2 → S3 |
@@ -27,7 +27,7 @@ Convenciones de idioma:
 ## Convenciones críticas
 
 - **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales.
-- **Estado**: slices de Redux Toolkit en `lib/reducers/` (`appSlice`, `cartSlice`, `homeSlice`, `shopSlice`, `shopEditSlice`), persistidos con redux-persist (`PersistGate` en `pages/_app.jsx`). Cuidado con **estado persistido stale** al cambiar la forma de un slice (un shop archivado puede reaparecer desde localStorage).
+- **Estado**: CartContext con `useReducer` + persistencia en localStorage (`CartProvider` en `pages/_app.jsx`, `useCart` hook). No hay Redux.
 - **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.
 - **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.js`, endpoints en `pages/api/image-upload.js` y `image-delete.js`.
@@ -45,7 +45,7 @@ pages/
   api/shop/by-token.js      Gestión del local vía token (EditShop)
   api/image-upload.js       Upload S3
   api/image-delete.js       Delete S3
-  _app.jsx                  Provider Redux + PersistGate
+  _app.jsx                  CartProvider wrapper
   _document.jsx, _error.js
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
@@ -55,7 +55,7 @@ components/
   primitivas                Input, Form, Switch, MessageBox, ShopInput, Loading, Divider, DecoratedLabel
 lib/
   api/                      index.js (axios baseURL), shops.js
-  reducers/                 slices + store persistido (index.js)
+  context/                CartContext (useReducer + localStorage)
   utils/                    utils.js (toTitleCase, sanitizeWhatsAppNumber, generateWhatsappURL, sanitizePrice, …), products.js, shops.js, categories.js, categoriesHelper.js, aws-s3.js
   hooks/                    use_width.js
   graphql/                  shop.js (legacy, Apollo comentado)
@@ -97,7 +97,7 @@ Solo nombres — nunca imprimas/commitees valores:
 
 ## Expectativas de testing
 
-- Jest para lógica pura (`lib/utils/`, `lib/reducers/`) — mantené verdes los tests existentes al tocar helpers.
+- Jest para lógica pura (`lib/utils/`, `lib/context/`) — mantené verdes los tests existentes al tocar helpers.
 - Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.js`).
 - Antes de terminar una tarea con tests: `npm run lint` + `npm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
 

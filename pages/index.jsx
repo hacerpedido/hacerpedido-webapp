@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import axios from "axios";
 import Head from "next/head";
@@ -7,9 +6,6 @@ import Head from "next/head";
 import HomeHeader from "../components/Home/HomeHeader";
 import HomeFilterBar from "../components/Home/HomeFilterBar";
 import ShopCard from "../components/Home/ShopCard";
-import { loading } from "../lib/reducers/appSlice";
-import { setCategory, setShops, setFirstVisibleItem } from "../lib/reducers/homeSlice";
-import { setShop } from "../lib/reducers/shopSlice";
 import Loading from "../components/Loading";
 import styles from "./index.module.css";
 
@@ -25,16 +21,15 @@ const renderHeader = (count) => {
 };
 
 export default function App() {
-  const firstVisibleItem = useSelector((state) => state.home.firstVisibleItem);
-  const category = useSelector((state) => state.home.selectedFilter);
-  const shops = useSelector((state) => state.home.shops);
-  const isLoading = useSelector((state) => state.app.loading);
-  const dispatch = useDispatch();
-  const listRef = React.useRef(null);
-  const firstVisibleItemRef = React.useRef(firstVisibleItem ?? 0);
-  const visibleItemsRef = React.useRef(new Map());
+  const [firstVisibleItem, setFirstVisibleItem] = useState(0);
+  const [category, setCategory] = useState("Comida");
+  const [shops, setShops] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const listRef = useRef(null);
+  const firstVisibleItemRef = useRef(firstVisibleItem);
+  const visibleItemsRef = useRef(new Map());
 
-  const onSelect = React.useCallback(
+  const onSelect = useCallback(
     (shop) => {
       const header = document.querySelector(`.${styles.header}`);
       const viewportTop = header ? header.getBoundingClientRect().bottom : 0;
@@ -52,28 +47,27 @@ export default function App() {
       if (visibleIndex !== undefined) {
         firstVisibleItemRef.current = visibleIndex;
       }
-      dispatch(setFirstVisibleItem(firstVisibleItemRef.current));
-      dispatch(setShop(shop));
+      setFirstVisibleItem(firstVisibleItemRef.current);
     },
-    [dispatch]
+    []
   );
 
   useEffect(() => {
-    dispatch(loading(true));
-    dispatch(setShops([]));
+    setIsLoading(true);
+    setShops([]);
 
     async function getData() {
       const shopData = await axios.get(`${window.location.origin}/api/shop/home`, { params: { category } });
 
-      dispatch(setShops(shopData.data));
-      dispatch(loading(false));
+      setShops(shopData.data);
+      setIsLoading(false);
     }
     getData().catch((error) => {
       console.log(JSON.stringify(error, null, 2));
-      dispatch(setShops([]));
-      dispatch(loading(false));
+      setShops([]);
+      setIsLoading(false);
     });
-  }, [dispatch, category]);
+  }, [category]);
 
   const filteredShops = shops.filter((shop) => shop.visibility === "public" && shop.category === category);
 
@@ -169,8 +163,8 @@ export default function App() {
           selectedFilter={category}
           onSelectFilter={(selected) => {
             firstVisibleItemRef.current = 0;
-            dispatch(setFirstVisibleItem(0));
-            dispatch(setCategory(selected));
+            setFirstVisibleItem(0);
+            setCategory(selected);
           }}
         />
       </div>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Head from "next/head";
@@ -23,15 +22,13 @@ import styles from "./[...params].module.css";
 
 export default function EditShopPage() {
   const router = useRouter();
-  const dispatch = useDispatch();
 
   const [shopState, setShopState] = useState({ shop: null, loading: true });
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [isSaving, setSaving] = useState(false);
   const [reloadCount, setReloadCount] = useState(0);
-
-  const tempProducts = useSelector((state) => state.shopEdit.tempProducts);
+  const [tempProducts, setTempProducts] = useState(null);
 
   let { params } = router.query;
 
@@ -68,7 +65,7 @@ export default function EditShopPage() {
       }
     }
     getData();
-  }, [token, dispatch, reloadCount]);
+  }, [token, reloadCount]);
 
   const { handleSubmit, register, setValue, errors, control, watch, getValues } = useForm({
     mode: "onBlur",
@@ -159,7 +156,7 @@ export default function EditShopPage() {
               isSaving={isSaving}
               refresh={refresh}
             />
-            <EditProductsForm products={products} shopId={shopState.shop.id} />
+            <EditProductsForm products={products} shopId={shopState.shop.id} onTempProductsChange={setTempProducts} />
           </Form>
         </section>
         {showPreview && (

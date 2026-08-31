@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
 
 import "handsontable/dist/handsontable.full.css";
 
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { sanitizePrice } from "../../lib/utils/utils";
-import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import useWidth from "../../lib/hooks/use_width";
 import styles from "./EditProducts.module.css";
 
@@ -26,8 +24,7 @@ const HotTable = dynamic(
   }
 );
 
-const EditProducts = ({ products, shopId }) => {
-  const dispatch = useDispatch();
+const EditProducts = ({ products, shopId, onTempProductsChange }) => {
   const grid = useRef(null);
   useWidth();
 
@@ -55,7 +52,7 @@ const EditProducts = ({ products, shopId }) => {
     let tempData = grid.current.hotInstance.getData();
     let tempProducts = productsFromGrid(shopId, tempData);
 
-    dispatch(setTempProducts({ shopId, tempProducts }));
+    onTempProductsChange(tempProducts);
   };
 
   const colHeaders = ["Título", "Nombre", "Descripción", "Precio"];

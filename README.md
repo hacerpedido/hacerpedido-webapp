@@ -7,7 +7,7 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 | | |
 |---|---|
 | **Frontend** | Next.js 10 (SSR/SSG), React 16, React Native Web |
-| **Estado** | Redux Toolkit + redux-persist |
+| **Estado** | CartContext (useReducer + localStorage) |
 | **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
 | **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
 | **Testing** | Jest (unit) + Playwright (E2E) |
@@ -41,10 +41,10 @@ pages/            Páginas SSR y API routes
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Lógica de aplicación
-  api/            Cliente axios (backend REST externo)
-  reducers/       Slices de Redux (app, cart, home, shop, shopEdit) + store persistido
-  utils/          Helpers: WhatsApp, teléfonos, precios, productos, categorías, S3
-  hooks/          use_width
+    api/            Cliente axios (backend REST externo)
+    context/        CartContext (estado del carrito con useReducer + localStorage)
+    utils/          Helpers: WhatsApp, teléfonos, precios, productos, categorías, S3
+    hooks/          use_width
 db/               Migraciones Knex (baseline shops/products)
 tests/            Unit (Jest, junto al código) y E2E (Playwright)
 assets/ public/   Colores/tema/fondos; manifest, favicons, OG image
@@ -116,7 +116,7 @@ La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (
 npm test
 ```
 
-Pruebas junto al código: `lib/utils/*.test.js`, `lib/reducers/*.test.js`.
+Pruebas junto al código: `lib/utils/*.test.js`, `lib/context/*.test.jsx`.
 
 ### E2E (Playwright)
 

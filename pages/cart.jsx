@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 
 import Form from "../components/Cart/Form";
@@ -13,13 +13,18 @@ export default function Cart() {
   const { state } = useCart();
   const shop = state.shop;
   const router = useRouter();
+
+  // Redirect to home on the client side if there is no shop in context
+  useEffect(() => {
+    if (!shop) {
+      router.push("/");
+    }
+  }, [shop, router]);
+
+  if (!shop) return null;
+
   const products = state.products.filter((product) => product.amount > 0);
   const productsByCategory = extractSections(products);
-
-  if (!shop) {
-    router.push("/");
-    return null;
-  }
 
   const onSubmit = (data) => {
     const { orderswhatsappnumber } = shop;
@@ -36,4 +41,9 @@ export default function Cart() {
       </div>
     </main>
   );
+}
+
+// cart.jsx is client-only, prevent static prerendering
+export async function getServerSideProps() {
+  return { props: {} };
 }

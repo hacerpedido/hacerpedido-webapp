@@ -1,28 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import axios from "axios";
 
 import Loading from "../components/Loading";
 import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
-import { loading } from "../lib/reducers/appSlice";
 import { useCart } from "../lib/context/CartContext";
-import { useDispatch } from "react-redux";
 import styles from "./[slug].module.css";
 
 export default function Shop() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
   const { state, dispatch: cartDispatch } = useCart();
-  const isLoading = useSelector((state) => state.app.loading);
   const shop = state.shop;
   const { slug } = router.query;
 
   useEffect(() => {
     const getData = async () => {
-      dispatch(loading(true));
+      setIsLoading(true);
 
       try {
         const shopData = await axios.get(`${window.location.origin}/api/shop/${slug}`);
@@ -30,14 +26,14 @@ export default function Shop() {
       } catch (error) {
         console.log(JSON.stringify(error, null, 2));
       } finally {
-        dispatch(loading(false));
+        setIsLoading(false);
       }
     };
 
     if (slug != null) {
       getData();
     }
-  }, [dispatch, cartDispatch, slug]);
+  }, [cartDispatch, slug]);
 
   if (!slug || shop?.slug !== slug) {
     return isLoading ? <Loading /> : <p className={styles.message}>Sin comercios en la base de datos para {slug}.</p>;
@@ -63,7 +59,7 @@ export default function Shop() {
         <meta property="twitter:url" content={`https://hacerpedido.com/${shop.slug}`} />
       </Head>
 
-      <ShopView shop={shop} />
+      <ShopView shop={shop} isLoading={isLoading} />
       <ShopFooter shop={shop} />
     </main>
   );
