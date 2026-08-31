@@ -21,7 +21,7 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 - **Páginas SSR** en `pages/`: home (`index.jsx`, locales por categoría), shop público (`[slug].jsx`), checkout (`cart.jsx` → WhatsApp), página de gestión para comercios (`by-token.js` + `components/EditShop/`).
 - **API routes** en `pages/api/`: `shop/home`, `shop/[slug]`, `shop/by-token`, `image-upload`, `image-delete`.
 - **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.js`).
-- **Estilos**: componentes de `react-native` (View/Text/StyleSheet) resueltos a `react-native-web` vía alias webpack y plugin de babel; Bootstrap 4 para grid/utilities.
+- **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.jsx` + `Component.module.css`).
 
 ### Flujo de pedido por WhatsApp
 
@@ -173,5 +173,7 @@ Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se 
 
 - Commits en formato [Conventional Commits](https://www.conventionalcommits.org/).
 - Corré `npm run lint` y `npm test` antes de abrir un PR (E2E si tocás flujos).
-- Mantené las convenciones de React Native Web (View/Text/StyleSheet, `.web.js`), nada de div/span/css suelto.
+- Para cada componente visual, colocá los estilos en un archivo `*.module.css` junto al componente e importalos como `styles`.
+- Usá nombres de clase semánticos en kebab-free camelCase (`containerLogo`, `shopName`) y aplicalos con `className={styles.nombre}`.
+- Preferí variables CSS para valores que cambian desde React y mantené los estados visuales (`:hover`, `:focus`) en el módulo.
 - Agentes de IA: leé [AGENTS.md](AGENTS.md) y usá las skills en `.agents/skills/` cuando apliquen.

@@ -26,7 +26,7 @@ Convenciones de idioma:
 
 ## Convenciones críticas
 
-- **UI con react-native-web, no HTML**: `import { View, Text, StyleSheet } from "react-native"` + `StyleSheet.create()`. Nada de `div`/`span`/CSS suelto. El alias webpack mapea `react-native` → `react-native-web`; las extensiones `.web.js` tienen prioridad de resolución; el plugin de babel `react-native-web` está activo.
+- **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales ni `StyleSheet.create()`.
 - **Estado**: slices de Redux Toolkit en `lib/reducers/` (`appSlice`, `cartSlice`, `homeSlice`, `shopSlice`, `shopEditSlice`), persistidos con redux-persist (`PersistGate` en `pages/_app.jsx`). Cuidado con **estado persistido stale** al cambiar la forma de un slice (un shop archivado puede reaparecer desde localStorage).
 - **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.
