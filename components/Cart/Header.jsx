@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";

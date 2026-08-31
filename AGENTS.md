@@ -16,7 +16,7 @@ Convenciones de idioma:
 | Capa | Tecnología |
 |---|---|
 | Framework | Next.js 10.2.3 (SSR/SSG), React 16.14 |
-| UI | react-native-web 0.13.18 (View/Text/StyleSheet), Bootstrap 4.6 |
+| UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | Estado | Redux Toolkit + redux-persist |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
 | DB | PostgreSQL 17.6 (Supabase) vía Knex |
@@ -26,7 +26,7 @@ Convenciones de idioma:
 
 ## Convenciones críticas
 
-- **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales ni `StyleSheet.create()`.
+- **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales.
 - **Estado**: slices de Redux Toolkit en `lib/reducers/` (`appSlice`, `cartSlice`, `homeSlice`, `shopSlice`, `shopEditSlice`), persistidos con redux-persist (`PersistGate` en `pages/_app.jsx`). Cuidado con **estado persistido stale** al cambiar la forma de un slice (un shop archivado puede reaparecer desde localStorage).
 - **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.

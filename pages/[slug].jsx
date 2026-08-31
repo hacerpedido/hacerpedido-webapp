@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React, { useLayoutEffect } from "react";
 import Head from "next/head";
 import { useSelector, useDispatch } from "react-redux";

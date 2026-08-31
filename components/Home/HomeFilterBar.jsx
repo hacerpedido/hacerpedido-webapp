@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React from "react";
 
 import { categories } from "../../lib/utils/categories";

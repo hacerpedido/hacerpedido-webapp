@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { animated, config, useTransition } from "react-spring";

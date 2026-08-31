@@ -1,4 +1,3 @@
-/* eslint react-native/no-raw-text: 0 */
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";

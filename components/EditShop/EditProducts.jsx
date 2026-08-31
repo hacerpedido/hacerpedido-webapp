@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 /* global Handsontable */
 import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";

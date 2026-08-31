@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React, { useEffect, useState, useRef } from "react";
 
 import { sanitizePrice } from "../../lib/utils/utils";

@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-raw-text */
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Link from "next/link";

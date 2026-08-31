@@ -38,7 +38,7 @@ pages/            Páginas SSR y API routes
   api/            shop/home, shop/[slug], shop/by-token, image-upload, image-delete
   [slug].jsx      Página pública del local
   cart.jsx        Checkout → WhatsApp
-components/       UI (react-native-web)
+components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Lógica de aplicación
   api/            Cliente axios (backend REST externo)
