@@ -1,44 +1,36 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { StyleSheet, ScrollView, View } from "react-native";
 
+import Loading from "../Loading";
 import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
 import ProductList from "./ProductList";
-import colors from "../../assets/colors";
-import Loading from "../Loading";
+import EditMenuLink from "./EditMenuLink";
+import styles from "./ShopView.module.css";
 
 export default function ShopView({ isPreview = false, shop, previewProducts = [] }) {
-  // TODO: se esta renderizando 2 veces todo el componente. Deberia renderizar solo el prodlist?
   const isLoading = useSelector((state) => state.app.loading);
+  const storedProducts = useSelector((state) => state.shop.products);
   const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;
-  const products = isPreview ? previewProducts : useSelector((state) => state.shop.products);
+  const products = isPreview ? previewProducts : storedProducts;
 
   return (
-    <ScrollView>
+    <div className={styles.scrollView}>
+      {process.env.NODE_ENV === "development" && !isPreview && shop?.typeformtoken ? <EditMenuLink shop={shop} /> : null}
       <ShopHeader isPreview={isPreview} shop={shop} />
 
-      <View style={styles.container}>
+      <div className={styles.container}>
         {!isPreview && isLoading ? (
           <Loading />
         ) : (
-          <>
-            {products.length && (
-              <>
-                <ProductList products={products} isCartEnabled={isCartEnabled} />
-                <ShopNotes shop={shop} />
-              </>
-            )}
-          </>
+          products.length > 0 && (
+            <>
+              <ProductList products={products} isCartEnabled={isCartEnabled} />
+              <ShopNotes shop={shop} />
+            </>
+          )
         )}
-      </View>
-    </ScrollView>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.white,
-    marginBottom: 130,
-  },
-});
