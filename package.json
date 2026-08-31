@@ -22,8 +22,7 @@
     "db:logs": "docker compose -f compose.dev.yaml logs --follow postgres",
     "db:check": "docker compose -f compose.dev.yaml exec postgres pg_isready -U dev_user -d hacerpedido_dev",
     "lint": "eslint .",
-    "import-data": "npx babel --presets '@babel/preset-env,@babel/preset-react'  -d build-scripts/ src/graphql scripts/import-data.js src/utils/utils.js src/aws-exports.js src/utils/categories.js && node build-scripts/import-data.js",
-    "svg": "npx @svgr/cli --out-dir src/assets/icons svgs/",
+    "deps:check": "depcheck --skip-missing --ignores='@reduxjs/toolkit,react-redux,redux-persist,pg'",
     "prettier": "npx prettier --write \"**/*.js?\" "
   },
   "dependencies": {
@@ -54,14 +53,12 @@
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
     "@playwright/test": "^1.62.1",
-    "@testing-library/jest-dom": "^5.17.0",
-    "babel-eslint": "^10.1.0",
+    "depcheck": "^1.4.7",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^4.6.2",
     "jest": "^26.6.3",
     "prettier": "^2.8.8"
   },
