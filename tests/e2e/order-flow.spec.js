@@ -2,83 +2,43 @@ if (process.env.JEST_WORKER_ID) {
   test.skip('runs with the Playwright E2E runner', () => {});
 } else {
   const { expect, test } = require('@playwright/test');
+  const {
+    addProduct,
+    interceptWhatsApp,
+    navigateToShop,
+    submitAndParseWhatsApp,
+  } = require('./helpers');
 
   test('places one deterministic fixture product order through WhatsApp', async ({ page }) => {
-    await page.goto('/');
-
-    await page.getByTestId('category-Comida').click();
-    await page.getByTestId('shop-card-e2e-fixture-shop').click();
-
-    const product = page.getByTestId('product-e2e-product');
-    await expect(product).toBeVisible();
-    await product.click();
-
-    await expect(page.getByTestId('quantity-popup')).toBeVisible();
-    await page.getByTestId('quantity-increase').click();
-    await page.getByTestId('quantity-add').click();
-
+    await navigateToShop(page);
+    await addProduct(page, 'product-e2e-product', 1);
     await page.getByTestId('review-order').click();
+
     await page.getByTestId('customer-name').fill('E2E Customer');
     await page.getByTestId('customer-address').fill('E2E Address');
     await page.getByTestId('order-notes').fill('E2E Notes');
 
-    await page.route('https://wa.me/**', (route) =>
-      route.fulfill({ body: '', contentType: 'text/plain', status: 200 })
-    );
-    const whatsappNavigation = page.waitForURL(/^https:\/\/wa\.me\/5491100000000\?text=/, {
-      waitUntil: 'commit',
-    });
-    await page.getByTestId('submit-whatsapp-order').click({ noWaitAfter: true });
-    await whatsappNavigation;
+    await interceptWhatsApp(page);
+    const outgoingURL = await submitAndParseWhatsApp(page);
 
-    const outgoingURL = new URL(page.url());
     expect(outgoingURL.hostname).toBe('wa.me');
     expect(outgoingURL.pathname).toBe('/5491100000000');
-
-    const decodedOrder = outgoingURL.searchParams.get('text');
-    expect(decodedOrder).toContain('✅ 1 x E2E Product');
+    expect(outgoingURL.searchParams.get('text')).toContain('✅ 1 x E2E Product');
   });
 
   test('orders two products with quantities through a golden WhatsApp message', async ({ page }) => {
-    const addProduct = async (productTestId, quantity) => {
-      const product = page.getByTestId(productTestId);
-      await product.click();
-      const popup = product.getByTestId('quantity-popup');
-      await expect(popup).toBeVisible();
-      for (let i = 0; i < quantity; i++) {
-        await popup.getByTestId('quantity-increase').click();
-      }
-      await popup.getByTestId('quantity-add').click();
-      await expect(popup).not.toBeVisible();
-    };
+    await navigateToShop(page);
 
-    await page.goto('/');
-
-    await page.getByTestId('category-Comida').click();
-    await page.getByTestId('shop-card-e2e-fixture-shop').click();
-
-    // First product: quantity 1
-    await addProduct('product-e2e-product', 1);
-
-    // Second product: quantity 2
-    await addProduct('product-e2e-second-product', 2);
+    await addProduct(page, 'product-e2e-product', 1);
+    await addProduct(page, 'product-e2e-second-product', 2);
 
     await page.getByTestId('review-order').click();
     await page.getByTestId('customer-name').fill('Golden Customer');
     await page.getByTestId('customer-address').fill('Golden Address');
     await page.getByTestId('order-notes').fill('Golden Notes');
 
-    await page.route('https://wa.me/**', (route) =>
-      route.fulfill({ body: '', contentType: 'text/plain', status: 200 })
-    );
-    const whatsappNavigation = page.waitForURL(/^https:\/\/wa\.me\/5491100000000\?text=/, {
-      waitUntil: 'commit',
-    });
-    await page.getByTestId('submit-whatsapp-order').click({ noWaitAfter: true });
-    await whatsappNavigation;
-
-    const outgoingURL = new URL(page.url());
-    const decodedOrder = outgoingURL.searchParams.get('text');
+    await interceptWhatsApp(page);
+    const outgoingURL = await submitAndParseWhatsApp(page);
 
     const expectedMessage = [
       '¡Hola! soy *Golden Customer* y quiero hacer un pedido via HacerPedido 💪',
@@ -92,6 +52,37 @@ if (process.env.JEST_WORKER_ID) {
       '✅ 2 x E2E Second Product',
     ].join('\n');
 
-    expect(decodedOrder).toBe(expectedMessage);
+    expect(outgoingURL.searchParams.get('text')).toBe(expectedMessage);
+  });
+
+  test('preserves large quantities and every order field in the WhatsApp message', async ({ page }) => {
+    await navigateToShop(page);
+
+    await addProduct(page, 'product-e2e-product', 4);
+    await addProduct(page, 'product-e2e-second-product', 7);
+
+    await page.getByTestId('review-order').click();
+    await page.getByTestId('customer-name').fill('Large Order Customer');
+    await page.getByTestId('customer-address').fill('Large Order Address');
+    await page.getByTestId('order-notes').fill('Please check both quantities');
+
+    await interceptWhatsApp(page);
+    const outgoingURL = await submitAndParseWhatsApp(page);
+
+    expect(outgoingURL.hostname).toBe('wa.me');
+    expect(outgoingURL.pathname).toBe('/5491100000000');
+    expect(outgoingURL.searchParams.get('text')).toBe(
+      [
+        '¡Hola! soy *Large Order Customer* y quiero hacer un pedido via HacerPedido 💪',
+        '',
+        '📍 *Mi dirección:* Large Order Address',
+        '📝 *Notas:* Please check both quantities',
+        '',
+        '*Mi pedido:*',
+        '*E2E Category*',
+        '✅ 4 x E2E Product',
+        '✅ 7 x E2E Second Product',
+      ].join('\n')
+    );
   });
 }
