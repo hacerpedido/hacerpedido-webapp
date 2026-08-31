@@ -11,6 +11,7 @@ const composeArgs = ['compose', '--project-name', composeProject, '-f', composeF
 
 const knexEnv = {
   ...process.env,
+  NODE_ENV: 'test',
   PG_CONNECTION_STRING: pgConnectionString,
 };
 

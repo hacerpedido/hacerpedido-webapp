@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: hacerpedido_dev
+      POSTGRES_PASSWORD: dev_password
+      POSTGRES_USER: dev_user
+    ports:
+      - "127.0.0.1:54328:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+    volumes:
+      - hacerpedido_dev_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user -d hacerpedido_dev"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  hacerpedido_dev_pgdata:

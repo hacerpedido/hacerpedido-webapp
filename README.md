@@ -57,12 +57,12 @@ docs/             Documentación
 
 - Node.js 22 (el CI usa 22; aunque `.nvmrc` diga 12.4.0 — ver Troubleshooting)
 - npm
-- **Docker** (solo para E2E: levanta PostgreSQL 17.6 con `pg_stat_statements`)
-- PostgreSQL 17.6 (para desarrollo local de base de datos, opcional si usás Supabase)
+- **Docker** (para la base local y E2E; levanta PostgreSQL 17.6 con `pg_stat_statements`)
 
 ### Variables de entorno
 
-Copiá `.env.local` (o crealo) en la raíz:
+Copiá `.env.example` a `.env.local` (o crealo) en la raíz. Para desarrollo local,
+el valor de `PG_CONNECTION_STRING` del ejemplo funciona con `compose.dev.yaml`:
 
 | Variable | Para qué sirve | ¿Requerida? |
 |---|---|---|
@@ -79,6 +79,7 @@ Copiá `.env.local` (o crealo) en la raíz:
 
 ```bash
 npm install
+npm run db:setup   # Docker + migraciones + datos de desarrollo
 npm run dev        # http://localhost:3000
 ```
 
@@ -87,9 +88,23 @@ npm run dev        # http://localhost:3000
 ```bash
 npm run db:migrate       # Aplica migraciones (knex migrate:latest)
 npm run db:migrate:make  # Crea una nueva migración
+npm run db:migrate:status # Muestra el estado de las migraciones
 npm run db:rollback      # Revierte la última
-npm run db:seed:e2e      # Seed de fixtures E2E
+npm run db:create         # Crea/inicia la base local (idempotente)
+npm run db:seed           # Levanta PostgreSQL y carga datos sintéticos
+npm run db:seed:test      # Fixtures E2E (base de test)
+npm run db:up             # Levanta PostgreSQL local en 54328
+npm run db:down           # Detiene PostgreSQL local
+npm run db:logs           # Sigue los logs de PostgreSQL
+npm run db:check          # Comprueba que PostgreSQL responde
+npm run db:reset          # Borra el volumen local y recrea todo
 ```
+
+La base de desarrollo usa `compose.dev.yaml` y el puerto **54328**. La base E2E
+usa `compose.e2e.yaml`, el puerto **54329** y fixtures deterministas; son bases
+separadas. `db:reset` elimina permanentemente los datos del volumen local:
+usalo solo cuando quieras empezar de cero. No requiere `psql` instalado en el
+host; los checks se ejecutan dentro del contenedor.
 
 La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (`down()` lanza error a propósito). Requiere extensiones `uuid-ossp`, `pgcrypto` y `pg_stat_statements` (esta última debe estar pre-cargada — ver `compose.e2e.yaml`). Compatible con Postgres 17.6.
 
@@ -134,8 +149,11 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 | `npm run test:e2e` | E2E (Playwright + Docker) |
 | `npm run test:e2e:install` | Instala Chromium |
 | `npm run lint` | ESLint |
-| `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Migraciones Knex |
-| `npm run db:seed:e2e` | Seed E2E |
+| `npm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Migraciones Knex |
+| `npm run db:seed` | Seed de desarrollo |
+| `npm run db:seed:test` / `db:seed:e2e` | Seed E2E |
+| `npm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operar DB local |
+| `npm run db:setup` / `db:reset` | Preparar / recrear DB local |
 | `npm run prettier` | Formatea código |
 | `npm run import-data` | ⚠️ Rotto (paths legacy `src/` que ya no existen) |
 | `npm run svg` | ⚠️ Rotto (ídem) |

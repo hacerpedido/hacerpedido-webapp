@@ -14,6 +14,9 @@ module.exports = {
     tableName: "knex_migrations",
   },
   seeds: {
-    directory: "./tests/e2e/fixtures/seeds",
+    directory:
+      process.env.NODE_ENV === "test"
+        ? "./tests/e2e/fixtures/seeds"
+        : "./db/seeds/dev",
   },
 };
