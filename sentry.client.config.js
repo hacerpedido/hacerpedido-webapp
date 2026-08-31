@@ -5,9 +5,10 @@
 import * as Sentry from '@sentry/nextjs';
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopmentOrTest =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
 
-if (!isDevelopment && SENTRY_DSN) {
+if (!isDevelopmentOrTest && SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
     // Adjust this value in production, or use tracesSampler for greater control
