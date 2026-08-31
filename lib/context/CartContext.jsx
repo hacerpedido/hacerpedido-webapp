@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, useState } from "react";
 
 // ── Constants ───────────────────────────────────────────────────────────────────
-const CART_FORM_KEY = "hacerpedido_cart_form";
+const CART_STATE_KEY = "hacerpedido_cart_state";
+const CART_FORM_KEY_LEGACY = "hacerpedido_cart_form";
 const CartContext = createContext(null);
 
 // ── SSR-safe localStorage helpers ───────────────────────────────────────────────
@@ -37,6 +38,20 @@ const initialState = {
 // ── Reducer ─────────────────────────────────────────────────────────────────────
 function cartReducer(state, action) {
   switch (action.type) {
+    case "HYDRATE": {
+      const payload = action.payload || {};
+      const products = (payload.products || []).map((p) => ({ ...p, amount: p.amount || 0 }));
+      const totalAmount = products.reduce((prev, p) => prev + p.amount, 0);
+      return {
+        shop: payload.shop || null,
+        products,
+        totalAmount,
+        name: payload.name ?? "",
+        address: payload.address ?? "",
+        notes: payload.notes ?? "",
+      };
+    }
+
     case "SET_SHOP": {
       const shop = action.payload;
       const shopHasChanged = state.shop?.slug !== shop?.slug;
@@ -86,31 +101,67 @@ function cartReducer(state, action) {
 // ── Provider ────────────────────────────────────────────────────────────────────
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [isHydrated, setIsHydrated] = useState(false);
   const hydrated = useRef(false);
 
-  // Hydrate persisted cart form from localStorage on client mount
+  // Hydrate persisted full cart state from localStorage on client mount
   useEffect(() => {
-    const saved = getStorageValue(CART_FORM_KEY, {});
-    if (saved.name) dispatch({ type: "SET_NAME", payload: saved.name });
-    if (saved.address) dispatch({ type: "SET_ADDRESS", payload: saved.address });
-    if (saved.notes) dispatch({ type: "SET_NOTES", payload: saved.notes });
+    const saved = getStorageValue(CART_STATE_KEY, null);
+
+    if (saved && saved.shop && saved.shop.slug) {
+      dispatch({
+        type: "HYDRATE",
+        payload: {
+          shop: saved.shop,
+          products: saved.products || [],
+          name: saved.name ?? "",
+          address: saved.address ?? "",
+          notes: saved.notes ?? "",
+        },
+      });
+    }
+
+    // Clean up legacy per-field key now that we persist the full state
+    try {
+      window.localStorage.removeItem(CART_FORM_KEY_LEGACY);
+    } catch {
+      /* noop */
+    }
+
     hydrated.current = true;
+    setIsHydrated(true);
   }, []);
 
-  // Persist cart form data to localStorage on change
+  // Persist full cart state to localStorage on every meaningful change
   useEffect(() => {
     if (!hydrated.current) return;
-    setStorageValue(CART_FORM_KEY, {
+
+    const toPersist = {
+      shop: state.shop,
+      products: state.products,
+      totalAmount: state.totalAmount,
       name: state.name,
       address: state.address,
       notes: state.notes,
-    });
-  }, [state.name, state.address, state.notes]);
+    };
+
+    // Don't persist transient empty state that would look like "no cart" on reload
+    if (!toPersist.shop && !toPersist.products.length && !toPersist.name && !toPersist.address && !toPersist.notes) {
+      try {
+        window.localStorage.removeItem(CART_STATE_KEY);
+      } catch {
+        /* noop */
+      }
+      return;
+    }
+
+    setStorageValue(CART_STATE_KEY, toPersist);
+  }, [state.shop, state.products, state.totalAmount, state.name, state.address, state.notes]);
 
   const stableDispatch = useCallback(dispatch, []);
 
   return (
-    <CartContext.Provider value={{ state, dispatch: stableDispatch }}>
+    <CartContext.Provider value={{ state, dispatch: stableDispatch, isHydrated }}>
       {children}
     </CartContext.Provider>
   );
@@ -124,3 +175,6 @@ export function useCart() {
   }
   return context;
 }
+
+// Export key for tests
+export const __CART_STATE_KEY = CART_STATE_KEY;

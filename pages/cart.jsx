@@ -10,18 +10,19 @@ import { generateWhatsappURL } from "../lib/utils/utils";
 import styles from "./cart.module.css";
 
 export default function Cart() {
-  const { state } = useCart();
+  const { state, isHydrated } = useCart();
   const shop = state.shop;
   const router = useRouter();
 
-  // Redirect to home on the client side if there is no shop in context
+  // Redirect to home only after hydration is complete and there is no shop
   useEffect(() => {
-    if (!shop) {
+    if (isHydrated && !shop) {
       router.push("/");
     }
-  }, [shop, router]);
+  }, [isHydrated, shop, router]);
 
-  if (!shop) return null;
+  // Prevent redirect before hydration completes — show a loading state
+  if (!isHydrated || !shop) return null;
 
   const products = state.products.filter((product) => product.amount > 0);
   const productsByCategory = extractSections(products);

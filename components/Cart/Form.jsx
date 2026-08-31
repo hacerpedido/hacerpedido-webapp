@@ -8,12 +8,16 @@ import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
 import styles from "./Form.module.css";
 
 const Form = ({ onSubmit }) => {
-  const { state } = useCart();
+  const { state, dispatch } = useCart();
   const shop = state.shop;
   const { name } = shop;
   const [takeaway, setTakeaway] = useState(false);
 
   const { handleSubmit, errors, control } = useForm({ mode: "onBlur" });
+
+  const onNameChange = (value) => dispatch({ type: "SET_NAME", payload: value });
+  const onAddressChange = (value) => dispatch({ type: "SET_ADDRESS", payload: value });
+  const onNotesChange = (value) => dispatch({ type: "SET_NOTES", payload: value });
 
   const toggleTakeAway = () => {
     const value = !takeaway;
@@ -33,12 +37,13 @@ const Form = ({ onSubmit }) => {
         as={Input}
         control={control}
         autofocus
+        defaultValue={state.name ?? ""}
         name="name"
         label="Tu Nombre"
         autoCompleteType="name"
         placeholder="¿Cómo te llamás?"
         testID="customer-name"
-        defaultValue={""}
+        onChangeText={onNameChange}
         rules={{
           required: {
             value: true,
@@ -54,12 +59,13 @@ const Form = ({ onSubmit }) => {
         <Controller
           as={Input}
           control={control}
+          defaultValue={state.address ?? ""}
           name="address"
           label="Tu Dirección"
           autoCompleteType="street-address"
           placeholder="¿A dónde lo mandamos?"
           testID="customer-address"
-          defaultValue={""}
+          onChangeText={onAddressChange}
           rules={{
             required: {
               value: true,
@@ -75,11 +81,12 @@ const Form = ({ onSubmit }) => {
       <Controller
         as={Input}
         control={control}
+        defaultValue={state.notes ?? ""}
         name="notes"
         label="Notas"
         placeholder="¿Querés hacer alguna aclaración?"
         testID="order-notes"
-        defaultValue={""}
+        onChangeText={onNotesChange}
         multiline
         numberOfLines={2}
         maxLength={500}
