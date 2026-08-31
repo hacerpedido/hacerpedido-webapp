@@ -1,25 +1,159 @@
-# React Native Web example
+# HacerPedido WebApp
 
-This example features how to use [react-native-web](https://github.com/necolas/react-native-web) to bring the platform-agnostic Components and APIs of React Native to the web.
+HacerPedido es una aplicación web (Next.js + React Native Web) que permite a negocios locales recibir pedidos por WhatsApp. Los clientes navegan la vidriera de un local, arman su pedido en un carrito y lo envían como mensaje de WhatsApp pre-armado, sin registrarse.
 
-> **High-quality user interfaces**: React Native for Web makes it easy to create fast, adaptive web UIs in JavaScript. It provides native-like interactions, support for multiple input modes (touch, mouse, keyboard), optimized vendor-prefixed styles, built-in support for RTL layout, built-in accessibility, and integrates with React Dev Tools.
->
-> **Write once, render anywhere**: React Native for Web interoperates with existing React DOM components and is compatible with the majority of the React Native API. You can develop new components for native and web without rewriting existing code. React Native for Web can also render to HTML and critical CSS on the server using Node.js.
+Este repositorio es la **webapp** (frontend + API routes internas). Los datos se sirven desde un backend REST externo (`https://backend-restapi.hacerpedido.com:5001`) y una base PostgreSQL.
 
-## Deploy your own
+| | |
+|---|---|
+| **Frontend** | Next.js 10 (SSR/SSG), React 16, React Native Web |
+| **Estado** | Redux Toolkit + redux-persist |
+| **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
+| **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
+| **Testing** | Jest (unit) + Playwright (E2E) |
+| **CI** | GitHub Actions (lint, unit, E2E) |
+| **Estado del proyecto** | En desarrollo activo — ver issues abiertos |
 
-Deploy the example using [Vercel](https://vercel.com):
+> Instrucciones para agentes de IA: ver [AGENTS.md](AGENTS.md).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/vercel/next.js/tree/canary/examples/with-react-native-web)
+## Arquitectura
 
-## How to use
+- **Páginas SSR** en `pages/`: home (`index.jsx`, locales por categoría), shop público (`[slug].jsx`), checkout (`cart.jsx` → WhatsApp), página de gestión para comercios (`by-token.js` + `components/EditShop/`).
+- **API routes** en `pages/api/`: `shop/home`, `shop/[slug]`, `shop/by-token`, `image-upload`, `image-delete`.
+- **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.js`).
+- **Estilos**: componentes de `react-native` (View/Text/StyleSheet) resueltos a `react-native-web` vía alias webpack y plugin de babel; Bootstrap 4 para grid/utilities.
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+### Flujo de pedido por WhatsApp
 
-```bash
-npx create-next-app --example with-react-native-web
-# or
-yarn create next-app --example with-react-native-web with-react-native-web-app
+1. El cliente agrega productos al carrito en la página del local (`[slug].jsx`).
+2. En `cart.jsx` completa nombre, dirección y notas.
+3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` en `lib/utils/utils.js` normaliza el número (ver `sanitizeWhatsAppNumber`, reglas de Argentina) y arma `https://wa.me/<número>?text=<mensaje codificado>`.
+4. El mensaje incluye introducción, dirección, notas y el pedido agrupado por categoría (`✅ 2 x Ñoquis`).
+5. El comercio recibe el pedido en su WhatsApp.
+
+## Estructura del proyecto
+
+```
+pages/            Páginas SSR y API routes
+  api/            shop/home, shop/[slug], shop/by-token, image-upload, image-delete
+  [slug].jsx      Página pública del local
+  cart.jsx        Checkout → WhatsApp
+components/       UI (react-native-web)
+  Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
+lib/              Lógica de aplicación
+  api/            Cliente axios (backend REST externo)
+  reducers/       Slices de Redux (app, cart, home, shop, shopEdit) + store persistido
+  utils/          Helpers: WhatsApp, teléfonos, precios, productos, categorías, S3
+  hooks/          use_width
+db/               Migraciones Knex (baseline shops/products)
+tests/            Unit (Jest, junto al código) y E2E (Playwright)
+assets/ public/   Colores/tema/fondos; manifest, favicons, OG image
+docs/             Documentación
 ```
 
-Deploy it to the cloud with [Vercel](https://vercel.com/import?filter=next.js&utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+## Puesta en marcha
+
+### Requisitos
+
+- Node.js 22 (el CI usa 22; aunque `.nvmrc` diga 12.4.0 — ver Troubleshooting)
+- npm
+- **Docker** (solo para E2E: levanta PostgreSQL 17.6 con `pg_stat_statements`)
+- PostgreSQL 17.6 (para desarrollo local de base de datos, opcional si usás Supabase)
+
+### Variables de entorno
+
+Copiá `.env.local` (o crealo) en la raíz:
+
+| Variable | Para qué sirve | ¿Requerida? |
+|---|---|---|
+| `PG_CONNECTION_STRING` | Conexión PostgreSQL (Knex, migraciones, override E2E) | Sí (db) |
+| `HP_AWS_ACCESS_KEY_ID` | Upload de imágenes a S3 | Solo uploads |
+| `HP_AWS_SECRET_ACCESS_KEY` | Upload de imágenes a S3 | Solo uploads |
+| `HP_AWS_IMAGES_BUCKET` | Bucket S3 de imágenes | Solo uploads |
+| `NEXT_PUBLIC_IMAGE_BUCKET_URL` | URL pública del bucket | Solo imágenes |
+| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Monitoreo de errores (deshabilitado en dev) | No |
+
+> Nunca commitees valores de secretos. `Sentry` se desactiva automáticamente en desarrollo.
+
+### Instalación y dev
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+```
+
+### Base de datos
+
+```bash
+npm run db:migrate       # Aplica migraciones (knex migrate:latest)
+npm run db:migrate:make  # Crea una nueva migración
+npm run db:rollback      # Revierte la última
+npm run db:seed:e2e      # Seed de fixtures E2E
+```
+
+La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (`down()` lanza error a propósito). Requiere extensiones `uuid-ossp`, `pgcrypto` y `pg_stat_statements` (esta última debe estar pre-cargada — ver `compose.e2e.yaml`). Compatible con Postgres 17.6.
+
+## Testing
+
+### Unit (Jest)
+
+```bash
+npm test
+```
+
+Pruebas junto al código: `lib/utils/*.test.js`, `lib/reducers/*.test.js`.
+
+### E2E (Playwright)
+
+```bash
+npm run test:e2e
+```
+
+Levanta automáticamente (vía `global-setup`) el stack Docker Compose con PostgreSQL 17.6, aplica migraciones + seed, hace build de la app, la sirve y corre los journeys en Chromium:
+
+- `tests/e2e/order-flow.spec.js` — flujo de pedido que intercepta `wa.me` y valida el mensaje
+- `tests/e2e/cart-persistence.spec.js` — carrito persiste entre sesiones (multi-producto)
+- `tests/e2e/admin-flow.spec.js` — gestión del local por token
+
+Overrides útiles: `PLAYWRIGHT_TEST_BASE_URL` (app ya desplegada, saltea el setup local) y `PG_CONNECTION_STRING` (base externa en vez del compose local).
+
+Primera vez: `npm run test:e2e:install` (instala Chromium).
+
+## CI
+
+`.github/workflows/node.js.yml` corre en cada push: `npm ci` + `npm run lint` + `npm test -- --runInBand` + `npm run test:e2e` (con Playwright instalado), y sube el reporte como artefacto. `codeql-analysis.yml` hace code scanning de JavaScript.
+
+## Scripts disponibles
+
+| Script | Descripción |
+|---|---|
+| `npm run dev` | Dev server (puerto 3000; `PORT=3001 npm run dev` para otro) |
+| `npm run build` | Producción build |
+| `npm run start` | Servir build de producción |
+| `npm test` | Unit tests (Jest) |
+| `npm run test:e2e` | E2E (Playwright + Docker) |
+| `npm run test:e2e:install` | Instala Chromium |
+| `npm run lint` | ESLint |
+| `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Migraciones Knex |
+| `npm run db:seed:e2e` | Seed E2E |
+| `npm run prettier` | Formatea código |
+| `npm run import-data` | ⚠️ Rotto (paths legacy `src/` que ya no existen) |
+| `npm run svg` | ⚠️ Rotto (ídem) |
+
+## Deploy
+
+Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se activa en producción). No hay URLs de deploy públicas documentadas en este repo.
+
+## Troubleshooting
+
+- **`ERR_OSSL_EVP_UNSUPPORTED` / falla de build**: Next.js 10 requiere el flag `--openssl-legacy-provider` con Node moderno. Ya está incluido en los scripts de `package.json`; si corrés `next` directo, agregalo.
+- **`.nvmrc` vs Node real**: `.nvmrc` dice 12.4.0 pero CI y `.tool-versions` usan Node 22; seguí Node 22.
+- **`npm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.js` y `compose.e2e.yaml`.
+- **PostgreSQL local**: `pg_stat_statements` debe estar en `shared_preload_libraries` (como en `compose.e2e.yaml`).
+
+## Contribuir
+
+- Commits en formato [Conventional Commits](https://www.conventionalcommits.org/).
+- Corré `npm run lint` y `npm test` antes de abrir un PR (E2E si tocás flujos).
+- Mantené las convenciones de React Native Web (View/Text/StyleSheet, `.web.js`), nada de div/span/css suelto.
+- Agentes de IA: leé [AGENTS.md](AGENTS.md) y usá las skills en `.agents/skills/` cuando apliquen.
