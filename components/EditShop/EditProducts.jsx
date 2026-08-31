@@ -1,4 +1,3 @@
-/* global Handsontable */
 import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
@@ -11,11 +10,14 @@ import { setTempProducts } from "../../lib/reducers/shopEditSlice";
 import useWidth from "../../lib/hooks/use_width";
 import styles from "./EditProducts.module.css";
 
+let handsontableCore;
+
 const HotTable = dynamic(
   async () => {
-    // await import("handsontable");
+    const { default: Handsontable } = await import("handsontable");
     await import("handsontable/languages/es-MX");
     const { default: HT } = await import("@handsontable/react");
+    handsontableCore = Handsontable;
 
     return ({ forwardedRef, ...props }) => <HT ref={forwardedRef} {...props} />;
   },
@@ -77,7 +79,7 @@ const EditProducts = ({ products, shopId }) => {
 
   function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
     void cellProperties;
-    Handsontable?.renderers.TextRenderer.apply(this, arguments);
+    handsontableCore.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";

@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Head from "next/head";
-import TagManager from "react-gtm-module";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
@@ -10,11 +9,6 @@ import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function MyApp({ Component, pageProps }) {
-
-  useEffect(() => {
-    TagManager.initialize({ gtmId: "GTM-PKPPSFX" });
-  }, []);
-
   return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
@@ -27,8 +21,6 @@ function MyApp({ Component, pageProps }) {
             />
             <link rel="icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" href="/logo192.png" />
-
-            <script src="https://cdn.jsdelivr.net/npm/handsontable@8.2.0/dist/handsontable.full.min.js"></script>
 
             {/* <!-- OG: 2.7.6 --> */}
             <meta property="og:image" content="og_image.jpg" />
