@@ -1,8 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 import { generateCallUrl } from "../../lib/utils/utils";
+import { useCart } from "../../lib/context/CartContext";
 import colors from "../../assets/colors";
 import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
 import styles from "./ShopFooter.module.css";
@@ -10,7 +10,8 @@ import styles from "./ShopFooter.module.css";
 const ShopFooter = ({ shop }) => {
   const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop;
   const router = useRouter();
-  const totalAmount = useSelector((state) => state.shop.totalAmount);
+  const { state } = useCart();
+  const totalAmount = state.totalAmount;
   const buttonState = totalAmount ? styles.buttonEnabled : styles.buttonDisabled;
 
   const ButtonWhatsapp = () => (

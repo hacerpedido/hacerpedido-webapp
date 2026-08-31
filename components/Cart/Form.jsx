@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 
 import Switch from "../Switch";
 import Input from "../Input";
+import { useCart } from "../../lib/context/CartContext";
 import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
 import styles from "./Form.module.css";
 
 const Form = ({ onSubmit }) => {
-  const shop = useSelector((state) => state.shop.shop);
+  const { state } = useCart();
+  const shop = state.shop;
   const { name } = shop;
   const [takeaway, setTakeaway] = useState(false);
 

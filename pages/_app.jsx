@@ -4,12 +4,14 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { store, persistor } from "../lib/reducers";
+import { CartProvider } from "../lib/context/CartContext";
 
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function MyApp({ Component, pageProps }) {
   return (
+    <CartProvider>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <Head>
@@ -38,6 +40,7 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
         </PersistGate>
       </Provider>
+    </CartProvider>
   );
 }
 

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { animated, config, useTransition } from "react-spring";
-import { setAmount } from "../../lib/reducers/shopSlice";
+import { useCart } from "../../lib/context/CartContext";
 import styles from "./ProductAmountPopup.module.css";
 
 const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
   const [popUpAmount, setPopUpAmount] = useState(amount);
-  const dispatch = useDispatch();
+  const { dispatch } = useCart();
 
   const transitions = useTransition(visible, null, {
     from: { opacity: 0, transform: "scale(0, 0)" },
@@ -22,7 +21,7 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
 
     if (persist) {
       handleClose();
-      dispatch(setAmount({ product, amount: newAmount }));
+      dispatch({ type: "SET_AMOUNT", payload: { product, amount: newAmount } });
     }
   };
 

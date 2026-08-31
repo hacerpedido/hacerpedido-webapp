@@ -1,12 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 import { ArrowLeft as ArrowLeftIcon } from "../../assets/icons";
+import { useCart } from "../../lib/context/CartContext";
 import styles from "./Header.module.css";
 
 export default function CartHeader() {
-  const { slug } = useSelector((state) => state.shop.shop);
+  const { state } = useCart();
+  const { slug } = state.shop;
   const router = useRouter();
 
   return (

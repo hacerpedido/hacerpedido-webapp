@@ -6,11 +6,13 @@ import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
 import ProductList from "./ProductList";
 import EditMenuLink from "./EditMenuLink";
+import { useCart } from "../../lib/context/CartContext";
 import styles from "./ShopView.module.css";
 
 export default function ShopView({ isPreview = false, shop, previewProducts = [] }) {
   const isLoading = useSelector((state) => state.app.loading);
-  const storedProducts = useSelector((state) => state.shop.products);
+  const { state } = useCart();
+  const storedProducts = state.products;
   const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;
   const products = isPreview ? previewProducts : storedProducts;
 
