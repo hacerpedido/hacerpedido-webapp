@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import Product from "./Product";
-import colors from "../../assets/colors";
+import styles from "./ProductList.module.css";
 
 const ProductList = ({ products, shop }) => {
   const Products = ({ categoryProducts }) => {
@@ -16,10 +16,10 @@ const ProductList = ({ products, shop }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className={styles.container}>
       {products.map((category, index) => (
         <View key={index}>
-          <Text style={styles.category}>{category.name}</Text>
+          <Text className={styles.category}>{category.name}</Text>
           <Products categoryProducts={category.products} />
         </View>
       ))}
@@ -28,16 +28,3 @@ const ProductList = ({ products, shop }) => {
 };
 
 export default ProductList;
-
-const styles = StyleSheet.create({
-  category: {
-    color: colors.brown,
-    fontFamily: "Barlow",
-    fontSize: 17,
-    fontWeight: "700",
-    marginBottom: 10,
-  },
-  container: {
-    marginTop: 13,
-  },
-});

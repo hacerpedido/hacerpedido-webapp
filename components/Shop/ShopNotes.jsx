@@ -1,14 +1,13 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-
-import theme from "../../assets/theme";
+import { View, Text } from "react-native";
+import styles from "./ShopNotes.module.css";
 
 const ShopNotes = ({ shop }) => {
   if (shop.notes) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.category}>Notas</Text>
-        <Text style={styles.notes}>{shop.notes}</Text>
+      <View className={styles.container}>
+        <Text className={styles.category}>Notas</Text>
+        <Text className={styles.notes}>{shop.notes}</Text>
       </View>
     );
   }
@@ -17,31 +16,3 @@ const ShopNotes = ({ shop }) => {
 };
 
 export default ShopNotes;
-
-const styles = StyleSheet.create({
-  category: {
-    color: theme.colors.brown,
-    fontFamily: "Barlow",
-    fontSize: 17,
-    fontWeight: "800",
-    marginBottom: 2,
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 16,
-  },
-  container: {
-    flex: 1,
-    marginBottom: 40,
-  },
-  notes: {
-    color: theme.colors.lightGrey,
-    fontFamily: "Roboto Slab",
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 16,
-    marginBottom: 2,
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 8,
-  },
-});

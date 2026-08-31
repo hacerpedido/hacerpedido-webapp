@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 import * as Icons from "../assets/icons/";
+import styles from "./DecoratedLabel.module.css";
 
 // TODO: Este componente tiene una responsabilidad difusa, mucha
 // configuración externa. Repensar.
@@ -17,30 +18,14 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
     displayText = null;
   }
 
-  const styles = {
-    text: {
-      color: textColor,
-      fontFamily: "Roboto Slab",
-      fontWeight: "400",
-      fontSize: fontSize ?? 12,
-      lineHeight: 14,
-      padding: 3,
-    },
-    container: {
-      flexDirection: "row",
-      alignItems: "center",
-      textAlignVertical: "center",
-      marginBottom: marginBottom ?? 0,
-      maxWidth: "92%",
-    },
-  };
-
   return (
-    <View style={styles.container}>
+    <View className={styles.container} style={{ marginBottom: marginBottom ?? 0 }}>
       {displayText && (
         <>
           <View>{icons[iconName]}</View>
-          <Text style={styles.text}>{displayText}</Text>
+          <Text className={styles.text} style={{ color: textColor, fontSize: fontSize ?? 12 }}>
+            {displayText}
+          </Text>
         </>
       )}
     </View>
