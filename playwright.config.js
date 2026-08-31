@@ -1,7 +1,7 @@
 const { defineConfig } = require('@playwright/test');
 const { pgConnectionString } = require('./tests/e2e/fixtures/database');
 
-const defaultBaseURL = 'http://127.0.0.1:3000';
+const defaultBaseURL = 'http://127.0.0.1:3001';
 const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || defaultBaseURL;
 const localHostnames = ['localhost', '127.0.0.1', '::1'];
 const isExternalBaseURL = !localHostnames.includes(new URL(baseURL).hostname);
@@ -20,6 +20,10 @@ module.exports = defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
+  timeout: 30000,
+  expect: {
+    timeout: 5000,
+  },
   reporter: [
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
@@ -27,7 +31,8 @@ module.exports = defineConfig({
   outputDir: 'test-results',
   use: {
     baseURL,
-    browserName: 'chromium',
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
     video: 'on-first-retry',
@@ -37,9 +42,9 @@ module.exports = defineConfig({
     ? {}
     : {
         webServer: {
-          command: 'npm run build && npm run start',
+          command: 'npm run build && npm run start -- -p 3001',
           url: baseURL,
-          reuseExistingServer: false,
+          reuseExistingServer: !process.env.CI,
           timeout: 180000,
           env: {
             PG_CONNECTION_STRING: dbConnectionString,

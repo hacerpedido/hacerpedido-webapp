@@ -6,6 +6,16 @@
   margin-bottom: 10px;
 }
 
+.categorySection {
+  margin: 0;
+}
+
 .container {
   margin-top: 13px;
+}
+
+.products {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

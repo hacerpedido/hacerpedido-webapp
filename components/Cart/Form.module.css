@@ -1,0 +1,62 @@
+.container {
+  background-color: #ffffff;
+  padding-bottom: 30px;
+  padding-top: 21px;
+}
+
+.button {
+  align-items: center;
+  appearance: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 19px;
+  padding: 17px;
+  width: 100%;
+}
+
+.buttonWhatsApp {
+  background-color: #3ecb7d;
+  border: 1px solid #37b26e;
+}
+
+.buttonText {
+  flex: 1;
+  font-family: Barlow, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 0;
+  margin-left: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  display: inline-flex;
+  position: relative;
+  top: 2px;
+}
+
+.notes {
+  color: #999999;
+  font-family: Barlow, sans-serif;
+  font-size: 13px;
+  margin: 0;
+  text-align: center;
+}
+
+.textContainer {
+  align-items: center;
+  color: #ffffff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

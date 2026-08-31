@@ -1,15 +1,15 @@
+/* eslint react-native/no-raw-text: 0 */
 import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import spanishStrings from "react-timeago/lib/language-strings/es";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import Modal from "react-bootstrap/Modal";
 
-import UploadImage from "./UploadImage";
 import Input from "../ShopInput";
-import theme from "../../assets/theme";
 import { validatePhoneNumber } from "../../lib/utils/utils";
+import UploadImage from "./UploadImage";
+import styles from "./EditShop.module.css";
 
 const formatter = buildFormatter(spanishStrings);
 
@@ -24,16 +24,6 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
   };
   const handleShow = (type) => setImageType(type);
 
-  const buttonStyles = {
-    alignItems: "center",
-    backgroundColor: isSaving ? theme.colors.lightGrey : theme.colors.button1,
-    borderRadius: 5,
-    flexDirection: "row",
-    marginLeft: 15,
-    marginVertical: 10,
-    padding: 10,
-  };
-
   const show = typeof imageType !== "undefined";
 
   return (
@@ -42,39 +32,36 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
         <UploadImage shopID={shop.id} imageType={imageType} handleClose={handleClose} />
       </Modal>
 
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <View style={styles.titleTextContainer}>
-            <Text style={styles.title}>Datos de tu Comercio</Text>
-            <Text style={styles.updatedAt}>
-              <Text>Actualizado </Text>
+      <section className={styles.container}>
+        <header className={styles.titleContainer}>
+          <div className={styles.titleTextContainer}>
+            <h1 className={styles.title}>Datos de tu Comercio</h1>
+            <p className={styles.updatedAt}>
+              <span>Actualizado </span>
               <TimeAgo date={shop.updated_at} formatter={formatter} minPeriod={60} />
-            </Text>
-          </View>
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity underlayColor={"none"} onPress={() => handleShow("logo")} disabled={isSaving}>
-              <Text style={styles.uploadImageButton}>Editar logo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity underlayColor={"none"} onPress={() => handleShow("background")} disabled={isSaving}>
-              <Text style={styles.uploadImageButton}>Editar portada</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={"none"}
-              onPress={handleSubmit}
-              style={buttonStyles}
+            </p>
+          </div>
+          <div className={styles.buttonsContainer}>
+            <button className={styles.uploadImageButton} onClick={() => handleShow("logo")} disabled={isSaving} type="button">
+              Editar logo
+            </button>
+            <button className={styles.uploadImageButton} onClick={() => handleShow("background")} disabled={isSaving} type="button">
+              Editar portada
+            </button>
+            <button
+              className={`${styles.saveButton} ${isSaving ? styles.saveButtonSaving : ""}`}
+              onClick={handleSubmit}
               disabled={isSaving}
-              testID="save-shop"
+              data-testid="save-shop"
+              type="button"
             >
-              <>
-                <Text style={styles.buttonText}>Guardar</Text>
-                {isSaving && <ActivityIndicator animating={isSaving} color={theme.colors.white} />}
-              </>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.formContainer}>
-          <View style={styles.formContainer}>
-            <View style={styles.formColumnLeft}>
+              <span className={styles.buttonText}>Guardar</span>
+              {isSaving && <span aria-label="Guardando" className={styles.spinner} role="status" />}
+            </button>
+          </div>
+        </header>
+        <div className={styles.formContainer}>
+          <div className={styles.formColumnLeft}>
               <Controller
                 as={Input}
                 control={control}
@@ -121,8 +108,8 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 error={errors.deliverycost}
                 maxLength={50}
               />
-            </View>
-            <View style={styles.formColumnRight}>
+          </div>
+          <div className={styles.formColumnRight}>
               <Controller
                 as={Input}
                 control={control}
@@ -203,73 +190,9 @@ export default function EditShop({ shop, control, errors, handleSubmit, getValue
                 error={errors.notes}
                 maxLength={1000}
               />
-            </View>
-          </View>
-        </View>
-      </View>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonText: {
-    color: theme.colors.white,
-    fontWeight: "bold",
-    paddingHorizontal: 10,
-  },
-  buttonsContainer: {
-    alignItems: "baseline",
-    flexDirection: "row",
-  },
-  container: {
-    backgroundColor: theme.colors.lightBackground,
-    justifyContent: "center",
-  },
-  formColumnLeft: {
-    backgroundColor: theme.colors.white,
-    flex: 0.5,
-    marginRight: 8,
-    paddingLeft: 20,
-    paddingVertical: 20,
-  },
-  formColumnRight: {
-    backgroundColor: theme.colors.white,
-    flex: 0.5,
-    padding: 20,
-  },
-  formContainer: {
-    backgroundColor: theme.colors.white,
-    borderColor: theme.colors.gray2,
-    borderRadius: 5,
-    borderStyle: "solid",
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: "row",
-  },
-  title: {
-    ...theme.text.title,
-    marginVertical: 10,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  titleTextContainer: {
-    alignItems: "baseline",
-    flexDirection: "row",
-  },
-  updatedAt: {
-    ...theme.text.quiet,
-    marginHorizontal: 10,
-  },
-  uploadImageButton: {
-    borderRadius: 5,
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "600",
-    marginHorizontal: 15,
-  },
-});

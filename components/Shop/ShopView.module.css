@@ -1,0 +1,9 @@
+.scrollView {
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 130px;
+}
+
+.container {
+  background-color: #ffffff;
+}

@@ -1,0 +1,9 @@
+.page {
+  min-height: 100vh;
+}
+
+.message {
+  color: #4d360f;
+  font-family: Barlow, sans-serif;
+  padding: 32px;
+}

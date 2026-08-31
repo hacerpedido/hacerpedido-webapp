@@ -60,6 +60,17 @@ function createDevData() {
     "San Telmo", "Flores", "Recoleta", "Villa Devoto", "Boedo",
   ];
   const regions = ["CABA", "Buenos Aires", "Córdoba", "Santa Fe", "Mendoza"];
+  const logoImages = [
+    "/images/backgrounds/comida.jpg",
+    "/images/backgrounds/cerveceria.jpg",
+    "/images/backgrounds/helados.jpg",
+    "/images/backgrounds/panaderia.jpg",
+    "/images/backgrounds/saludable.jpg",
+    "/images/backgrounds/kiosko.jpg",
+    "/images/backgrounds/cafe.jpg",
+    "/images/backgrounds/bebida.jpg",
+    "/images/backgrounds/otros.jpg",
+  ];
   const productNames = {
     Comida: ["Empanadas salteñas", "Milanesa napolitana", "Tarta de verdura", "Locro criollo", "Ravioles caseros", "Parrillada para dos"],
     "Cervecerías": ["IPA artesanal", "Golden ale tirada", "Porter ahumada", "Pinta roja", "Picada cervecera", "Lager porteña"],
@@ -90,6 +101,9 @@ function createDevData() {
       const name = `${category} ${shopIndex + 1}`;
       const region = regions[number % regions.length];
       const phone = `+54911 5555 ${String(1000 + number).slice(-4)}`;
+      const logo = shopIndex % 3 === 0
+        ? logoImages[number % logoImages.length]
+        : null;
       return shopFactory({
         id,
         name,
@@ -100,6 +114,7 @@ function createDevData() {
         typeformtoken: `dev-fixture-token-${number}`,
         whatsappnumber: phone,
         orderswhatsappnumber: phone,
+        logo,
       });
     })
   );

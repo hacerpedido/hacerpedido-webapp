@@ -1,38 +1,25 @@
+/* eslint-disable react-native/no-raw-text */
 import React from "react";
-import { StyleSheet, View, Switch, Text } from "react-native";
-import colors from "../assets/colors";
+import styles from "./Switch.module.css";
 
 const SwitchComponent = ({ toggle, value }) => {
   return (
-    <View style={styles.container}>
-      <Text>Delivery</Text>
+    <div className={styles.container}>
+      <span>Delivery</span>
 
-      <Switch
-        trackColor={colors.lightGray}
-        thumbColor={colors.lightGray}
-        activeTrackColor={colors.lightGreen}
-        activeThumbColor={colors.lightGreen}
-        onValueChange={toggle}
-        style={styles.switch}
-        value={value}
-      />
+      <label className={styles.switch}>
+        <input
+          type="checkbox"
+          aria-label="Cambiar entre delivery y takeaway"
+          checked={value}
+          onChange={(event) => toggle(event.target.checked)}
+        />
+      </label>
 
-      <Text>Takeaway</Text>
-    </View>
+      <span>Takeaway</span>
+    </div>
   );
 };
 
 // https://upmostly.com/tutorials/build-a-react-switch-toggle-component
 export default SwitchComponent;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 10,
-  },
-  switch: {
-    marginHorizontal: 7,
-  },
-});

@@ -56,3 +56,6 @@ yarn-error.log*
 
 # Sentry
 .sentryclirc
+
+# local AI workflow state
+.slim/deepwork/

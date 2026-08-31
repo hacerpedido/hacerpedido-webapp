@@ -1,0 +1,104 @@
+.container {
+  align-items: center;
+  background-color: #fafafa;
+  bottom: 0;
+  display: flex;
+  height: 100px;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 3;
+}
+
+.buttonContainer {
+  flex: 1;
+}
+
+.button {
+  align-items: center;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  justify-content: center;
+  margin: 12px 18px 0;
+  position: relative;
+  text-align: center;
+}
+
+button.buttonContainer {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+button.buttonContainer:disabled {
+  cursor: default;
+}
+
+.buttonWhatsApp {
+  background-color: #3ecb7d;
+  border-color: #37b26e;
+}
+
+.buttonCall {
+  background-color: #ffb233;
+  border-color: #e6a02e;
+  color: #fff;
+  text-decoration: none;
+}
+
+.buttonCall:hover,
+.buttonCall:focus,
+.buttonCall:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+.buttonText {
+  color: #fff;
+  flex: 1;
+  font-family: Barlow, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.buttonEnabled {
+  opacity: 1;
+}
+
+.buttonDisabled {
+  opacity: 0.7;
+}
+
+.totalAmountContainer {
+  align-items: center;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  font-family: Barlow, sans-serif;
+  font-size: 14px;
+  height: 24px;
+  justify-content: center;
+  position: absolute;
+  right: 20px;
+  top: 13px;
+  width: 24px;
+}
+
+.textContainer {
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.icon {
+  display: inline-flex;
+  margin-left: 10px;
+}

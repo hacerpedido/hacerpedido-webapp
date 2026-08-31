@@ -1,5 +1,5 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useState, useCallback, useRef } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
@@ -8,7 +8,7 @@ import Button from "react-bootstrap/Button";
 import dynamic from "next/dynamic";
 import axios from "axios";
 
-import theme from "../../assets/theme";
+import styles from "./UploadImage.module.css";
 
 const DynamicStyledDropZone = dynamic(() => import("react-drop-zone").then((mod) => mod.StyledDropZone), {
   ssr: false,
@@ -38,7 +38,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
   };
 
   const onDelete = () => {
-    let data = new FormData();
+    const data = new FormData();
 
     data.append("shop_id", shopID);
     data.append("image_type", imageType);
@@ -50,9 +50,8 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then((res) => {
+      .then(() => {
         setWaiting(false);
-        // console.log(res);
         handleClose({ forceRefresh: true });
       });
   };
@@ -64,12 +63,10 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
 
     setWaiting(true);
 
-    let data = new FormData();
-
+    const data = new FormData();
     const image = imgRef.current;
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     canvas.width = crop.width * pixelRatio;
@@ -77,7 +74,6 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
 
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     ctx.imageSmoothingQuality = "high";
-
     ctx.drawImage(
       image,
       crop.x * scaleX,
@@ -102,7 +98,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
               "Content-Type": "multipart/form-data",
             },
           })
-          .then((res) => {
+          .then(() => {
             setWaiting(false);
             handleClose({ forceRefresh: true });
           });
@@ -116,59 +112,51 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
     imgRef.current = img;
   }, []);
 
-  const footerStyles = image ? {} : { justifyContent: "right" };
-
   return (
     <>
       <Modal.Header closeButton>
         <Modal.Title>Sube una imagen</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <View style={styles.uploaderContainer}>
+        <div className={styles.uploaderContainer}>
           {!image && typeof window !== "undefined" && (
             <DynamicStyledDropZone
               accept="image/*"
-              children={"Haga click o arrastre un archivo aquí"}
+              children="Haga click o arrastre un archivo aquí"
               onDrop={onDropFile}
               multiple={false}
             />
           )}
           {image && (
-            <View>
-              <View style={styles.preview}>
-                <ReactCrop
-                  src={upImg}
-                  onImageLoaded={onLoad}
-                  circularCrop={circularCrop}
-                  crop={crop}
-                  onChange={(c) => setCrop(c)}
-                  onComplete={(c) => setCompletedCrop(c)}
-                />
-              </View>
-            </View>
+            <div className={styles.preview}>
+              <ReactCrop
+                src={upImg}
+                onImageLoaded={onLoad}
+                circularCrop={circularCrop}
+                crop={crop}
+                onChange={(nextCrop) => setCrop(nextCrop)}
+                onComplete={(nextCrop) => setCompletedCrop(nextCrop)}
+              />
+            </div>
           )}
-        </View>
+        </div>
       </Modal.Body>
-      <Modal.Footer style={footerStyles}>
+      <Modal.Footer className={`${styles.footer} ${!image ? styles.footerEmpty : ""}`}>
         {isWaiting && (
-          <>
-            <Text>Por favor, espere... </Text>
-            <ActivityIndicator animating={isWaiting} size="large" color={theme.colors.orangeHP} />
-          </>
+          <div className={styles.waiting} role="status">
+            <span>Por favor, espere... </span>
+            <span className={styles.spinner} aria-label="Cargando" />
+          </div>
         )}
-        {!isWaiting && (
-          <>
-            {image && (
-              <Button variant="primary" onClick={() => onUpload(completedCrop)}>
-                Aceptar
-              </Button>
-            )}
-            {!image && (
-              <Button variant="primary" onClick={() => onDelete()}>
-                Borrar imagen actual
-              </Button>
-            )}
-          </>
+        {!isWaiting && image && (
+          <Button variant="primary" onClick={() => onUpload(completedCrop)}>
+            Aceptar
+          </Button>
+        )}
+        {!isWaiting && !image && (
+          <Button variant="primary" onClick={onDelete}>
+            Borrar imagen actual
+          </Button>
         )}
       </Modal.Footer>
     </>
@@ -176,48 +164,3 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
 };
 
 export default UploadImage;
-
-const styles = StyleSheet.create({
-  containerView: {
-    backgroundColor: theme.colors.lightBackground,
-    borderColor: theme.colors.gray2,
-    borderRadius: 5,
-    borderStyle: "solid",
-    borderWidth: 1,
-    flex: 1,
-    flexDirection: "column",
-    margin: 50,
-    padding: 20,
-  },
-  preview: {
-    alignItems: "center",
-    backgroundColor: theme.colors.gray4,
-    justifyContent: "center",
-    maxHeight: "75vh",
-    overflow: "scroll",
-  },
-  textClose: {
-    borderRadius: 5,
-    color: theme.colors.black,
-    fontSize: "1.5em",
-    textAlign: "center",
-    width: 60,
-  },
-  title: {
-    ...theme.text.title,
-    marginVertical: 10,
-  },
-  titleView: {
-    alignItems: "baseline",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  uploaderContainer: {
-    backgroundColor: theme.colors.white,
-    borderColor: theme.colors.gray2,
-    borderRadius: 5,
-    borderStyle: "solid",
-    borderWidth: 1,
-    flex: 1,
-  },
-});

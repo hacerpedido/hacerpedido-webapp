@@ -1,5 +1,4 @@
 import React from "react";
-import { Text, View } from "react-native";
 import * as Icons from "../assets/icons/";
 import styles from "./DecoratedLabel.module.css";
 
@@ -13,22 +12,28 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
     pin: <Icons.Pin color={iconColor} width={18} />,
   };
 
-  var displayText = text;
+  let displayText = text;
   if (displayText.trim() === "") {
     displayText = null;
   }
 
+  const style = {
+    "--label-font-size": `${fontSize ?? 12}px`,
+    "--label-margin-bottom": `${marginBottom ?? 0}px`,
+    "--label-text-color": textColor,
+  };
+
   return (
-    <View classList={[styles.container]} style={{ marginBottom: marginBottom ?? 0 }}>
+    <div className={styles.container} style={style}>
       {displayText && (
         <>
-          <View>{icons[iconName]}</View>
-          <Text classList={[styles.text]} style={{ color: textColor, fontSize: fontSize ?? 12 }}>
+          <span className={styles.icon}>{icons[iconName]}</span>
+          <span className={styles.text}>
             {displayText}
-          </Text>
+          </span>
         </>
       )}
-    </View>
+    </div>
   );
 };
 

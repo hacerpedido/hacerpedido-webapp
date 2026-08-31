@@ -4,19 +4,52 @@
 }
 
 .label {
+  display: block;
+}
+
+.labelText {
   color: #8f9bb3;
+  display: block;
   font-size: 0.75em;
   padding: 0.25em 0;
 }
 
 .input {
+  background-color: transparent;
   border: 1px solid;
+  border-color: #ececec;
   border-radius: 3px;
+  display: block;
   font-size: 1em;
   padding: 0.25em 0.5em;
+  width: 100%;
+}
+
+.input:not(textarea) {
+  height: 40px;
+}
+
+.inputLines2 {
+  height: 62px;
+}
+
+.inputLines3_5 {
+  height: 108.5px;
+}
+
+.inputError {
+  border-color: #fc6d47;
 }
 
 .textError {
   color: #fc6d47;
   font-size: 0.75em;
+}
+
+.input::placeholder {
+  color: var(--placeholder-color, currentColor);
+}
+
+textarea.input {
+  resize: none;
 }

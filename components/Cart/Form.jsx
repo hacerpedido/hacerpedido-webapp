@@ -1,14 +1,12 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
-import { TouchableHighlight, StyleSheet, Text, View } from "react-native";
-// import {useSpring, animated} from "react-spring";
 
-import colors from "../../assets/colors";
-// import {setName, setAddress, setNotes} from "reducers/cartSlice";
 import Switch from "../Switch";
 import Input from "../Input";
 import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
+import styles from "./Form.module.css";
 
 const Form = ({ onSubmit }) => {
   const shop = useSelector((state) => state.shop.shop);
@@ -28,7 +26,7 @@ const Form = ({ onSubmit }) => {
   // })
 
   return (
-    <View style={styles.container}>
+    <form className={styles.container} onSubmit={handleSubmit(onSubmit)}>
       <Switch toggle={toggleTakeAway} value={takeaway} />
 
       <Controller
@@ -87,90 +85,27 @@ const Form = ({ onSubmit }) => {
         maxLength={500}
       />
 
-      {/* eslint-disable react-native/no-raw-text */}
-      <Text style={styles.notes}>
+      <p className={styles.notes}>
         Por favor,
-        <Text style={textStyles.bold}> confirmá el precio final </Text>
+        <strong> confirmá el precio final </strong>
         con el comercio. No somos responsables de modificaciones en el menú.
-      </Text>
-      {/* eslint-enable react-native/no-raw-text */}
+      </p>
 
-      <TouchableHighlight
-        accessibilityLabel="Submit WhatsApp order"
-        accessibilityRole="button"
-        onPress={handleSubmit(onSubmit)}
-        testID="submit-whatsapp-order"
-        underlayColor="none"
+      <button
+        aria-label="Submit WhatsApp order"
+        className={`${styles.button} ${styles.buttonWhatsApp} bounza`}
+        data-testid="submit-whatsapp-order"
+        type="submit"
       >
-        <div className="bounza">
-          <View style={[styles.buttonWhatsApp, styles.button]}>
-            <Text style={styles.textContainer} numberOfLines={1}>
-              <View style={styles.icon}>
-                <WhatsappFillIcon color={colors.white} />
-              </View>
-              <Text style={styles.buttonText}> Pedir a {name} </Text>
-            </Text>
-          </View>
-        </div>
-      </TouchableHighlight>
-    </View>
+        <span className={styles.textContainer}>
+          <span className={styles.icon}>
+            <WhatsappFillIcon color="#ffffff" />
+          </span>
+          <span className={styles.buttonText}> Pedir a {name} </span>
+        </span>
+      </button>
+    </form>
   );
 };
 
-// const AnimatedView = animated(View)
-
 export default Form;
-
-const textStyles = {
-  bold: {
-    fontWeight: "bold",
-  },
-  smallText: {
-    fontFamily: "Barlow",
-    fontSize: 13,
-  },
-  largeText: {
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-};
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 19,
-    paddingVertical: 17,
-  },
-  buttonText: {
-    marginLeft: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: colors.lightGreen,
-    borderColor: colors.button1,
-  },
-  container: {
-    backgroundColor: colors.white,
-    paddingBottom: 30,
-    paddingTop: 21,
-  },
-  icon: {
-    top: 2,
-  },
-  notes: {
-    ...textStyles.smallText,
-    color: colors.gray4,
-    textAlign: "center",
-  },
-  textContainer: {
-    ...textStyles.largeText,
-    alignItems: "center",
-    color: colors.white,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-});

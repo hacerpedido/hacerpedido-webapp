@@ -1,6 +1,5 @@
-import React from "react";
-import { View, Image, Text } from "react-native";
-import { getLogoForShop } from "../../lib/utils/shops";
+import React, { useState } from "react";
+import { getLogoForShop, getShopInitials, getShopInitialsColor } from "../../lib/utils/shops";
 
 import DecoratedLabel from "../DecoratedLabel";
 import colors from "../../assets/colors";
@@ -9,30 +8,36 @@ import styles from "./ShopCard.module.css";
 const ShopCard = ({ shop }) => {
   const { name, address, opentimes, deliverycost } = shop;
   const logo = getLogoForShop(shop);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const initials = getShopInitials(name);
+  const initialsColor = getShopInitialsColor(name);
 
   return (
-    <View classList={[styles.card]}>
-      <View classList={[styles.container]}>
-        <View classList={[styles.containerLogo]}>
-          <Image source={{ uri: logo }} classList={[styles.logo]} />
-        </View>
-        <View classList={[styles.containerLabels]}>
-          <Text classList={[styles.shopName]}>{name.toLowerCase()}</Text>
+    <article className={styles.card}>
+      <div className={styles.container}>
+        <div className={styles.containerLogo}>
+          {logo && !logoFailed ? (
+            <img className={styles.logo} src={logo} alt={name} onError={() => setLogoFailed(true)} />
+          ) : (
+            <div className={styles.logoPlaceholder} style={{ backgroundColor: initialsColor }} aria-label={name || ""}>
+              <span className={styles.logoInitials}>{initials}</span>
+            </div>
+          )}
+        </div>
+        <div className={styles.containerLabels}>
+          <h2 className={styles.shopName}>{name.toLowerCase()}</h2>
           {address && (
             <DecoratedLabel iconName="pin" text={address} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
           {opentimes && (
             <DecoratedLabel iconName="clock" text={opentimes} iconColor={iconColor} textColor={colors.lightGrey} />
           )}
-          {/* El siguiente Text tag está agregado para evitar errores en la consola: A text node cannot be a child of a <View> */}
-          <Text>
-            {deliverycost && (
-              <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
-            )}
-          </Text>
-        </View>
-      </View>
-    </View>
+          {deliverycost && (
+            <DecoratedLabel iconName="car" text={deliverycost} iconColor={iconColor} textColor={colors.lightGrey} />
+          )}
+        </div>
+      </div>
+    </article>
   );
 };
 

@@ -1,114 +1,47 @@
+/* eslint-disable react-native/no-raw-text */
 import React from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
+
 import { generateCallUrl } from "../../lib/utils/utils";
 import colors from "../../assets/colors";
 import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
+import styles from "./ShopFooter.module.css";
 
 const ShopFooter = ({ shop }) => {
   const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop;
   const router = useRouter();
   const totalAmount = useSelector((state) => state.shop.totalAmount);
-  const statusOpacity = totalAmount ? { opacity: 1 } : { opacity: 0.7 };
+  const buttonState = totalAmount ? styles.buttonEnabled : styles.buttonDisabled;
 
   const ButtonWhatsapp = () => (
-    <TouchableHighlight
-      accessibilityLabel="Review order"
-      accessibilityRole="button"
+    <button
+      aria-label="Review order"
+      className={styles.buttonContainer}
       disabled={!totalAmount}
-      underlayColor={"none"}
-      onPress={() => router.push("/cart")}
-      style={styles.buttonContainer}
-      testID="review-order"
+      onClick={() => router.push("/cart")}
+      data-testid="review-order"
+      type="button"
     >
-      <View style={[styles.buttonWhatsApp, styles.button, statusOpacity]}>
-        <Text style={styles.buttonText}> Revisar mi pedido </Text>
-        <View style={styles.totalAmountContainer}>
-          <Text style={styles.totalAmountText}> {totalAmount} </Text>
-        </View>
-      </View>
-    </TouchableHighlight>
+      <span className={`${styles.buttonWhatsApp} ${styles.button} ${buttonState}`}>
+        <span className={styles.buttonText}>Revisar mi pedido</span>
+        <span className={styles.totalAmountContainer}>{totalAmount}</span>
+      </span>
+    </button>
   );
-
-  const onCall = (number) => (window.location.href = generateCallUrl(number));
 
   const ButtonCall = () => (
-    // TODO: Extract component, to be reused in header
-    <TouchableHighlight onPress={() => onCall(ordersphonenumber)} underlayColor={"none"} style={styles.buttonContainer}>
-      <View style={[styles.buttonCall, styles.button]}>
-        <Text style={styles.textContainer} numberOfLines={1}>
-          <View style={styles.icon}>
-            <PhoneCallIcon color={colors.white} />
-          </View>
-          <Text style={styles.buttonText}>Llamar</Text>
-        </Text>
-      </View>
-    </TouchableHighlight>
+    <a className={`${styles.buttonCall} ${styles.button} ${styles.buttonContainer}`} href={generateCallUrl(ordersphonenumber)}>
+      <span className={styles.textContainer}>
+        <span className={styles.icon}>
+          <PhoneCallIcon color={colors.white} />
+        </span>
+        <span className={styles.buttonText}>Llamar</span>
+      </span>
+    </a>
   );
 
-  return <View style={styles.container}>{orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}</View>;
+  return <footer className={styles.container}>{orderswhatsappnumber ? <ButtonWhatsapp /> : <ButtonCall />}</footer>;
 };
 
 export default ShopFooter;
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    borderRadius: 4,
-    borderWidth: 1,
-    flexDirection: "row",
-    height: 50,
-    justifyContent: "center",
-    marginHorizontal: 18,
-    marginTop: 12,
-    textAlign: "center",
-  },
-  buttonCall: {
-    backgroundColor: colors.orangeHP,
-    borderColor: colors.filterButtonBorder,
-  },
-  buttonContainer: {
-    flex: 1,
-  },
-  buttonText: {
-    color: colors.white,
-    flex: 1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 5,
-  },
-  buttonWhatsApp: {
-    backgroundColor: colors.lightGreen,
-    borderColor: colors.button1,
-  },
-  container: {
-    backgroundColor: colors.lightBackground,
-    bottom: 0,
-    flex: 1,
-    flexDirection: "row",
-    height: 100,
-    position: "fixed",
-    width: "100%",
-  },
-  totalAmountContainer: {
-    alignItems: "center",
-    borderColor: colors.white,
-    borderRadius: "50%",
-    borderWidth: 1.5,
-    height: 24,
-    justifyContent: "center",
-    position: "absolute",
-    right: 20,
-    top: 13,
-    width: 24,
-  },
-  totalAmountText: {
-    color: colors.white,
-    fontFamily: "Barlow",
-    fontSize: 14,
-    fontWeight: 600,
-    marginBottom: 1,
-  },
-});

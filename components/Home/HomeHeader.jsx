@@ -1,7 +1,6 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useState } from "react";
 
-import { Text, View } from "react-native";
-import { TouchableOpacity } from "react-native";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
@@ -16,22 +15,20 @@ export default function HomeHeader() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const version = process.env.DEPLOYED_GIT_COMMIT_SHA || ""
+  const version = process.env.DEPLOYED_GIT_COMMIT_SHA || "";
 
   return (
-    <View classList={[styles.container]}>
+    <header className={styles.container}>
       <Link href="/">
         <a>
           <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
-          <input name="deployedVersion" value={ version } type="hidden" />
+          <input name="deployedVersion" value={version} type="hidden" readOnly />
         </a>
       </Link>
 
-      <TouchableOpacity onPress={handleShow}>
-        <View>
-          <Text classList={[styles.addShopButton]}>¡Sumá tu comercio!</Text>
-        </View>
-      </TouchableOpacity>
+      <button type="button" className={styles.addShopButton} onClick={handleShow}>
+        ¡Sumá tu comercio!
+      </button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -40,21 +37,10 @@ export default function HomeHeader() {
         <Modal.Body>Por el momento no estamos haciendo nuevas altas. Próximamente habrá novedades :)</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Cerrar
           </Button>
         </Modal.Footer>
       </Modal>
-
-      {/*
-      <a
-        href="https://comercios.hacerpedido.com/"
-        style={{ textDecoration: "none" }}
-      >
-        <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
-      </a>
-      */}
-    </View>
+    </header>
   );
 }
-
-// Styles moved to HomeHeader.module.css

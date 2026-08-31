@@ -1,60 +1,20 @@
+/* eslint-disable react-native/no-raw-text */
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import colors from "../../assets/colors";
+
+import styles from "./Product.module.css";
 
 const Product = ({ product }) => {
   const { amount, description, name } = product;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.amount}>{amount}</Text>
-
-      <View style={styles.nameDescription}>
-        <Text style={styles.text}>{name}</Text>
-        <Text style={styles.description}>{description}</Text>
-      </View>
-    </View>
+    <li className={styles.container}>
+      <span className={styles.amount}>{amount}</span>
+      <div className={styles.nameDescription}>
+        <span className={styles.text}>{name}</span>
+        <span className={styles.description}>{description}</span>
+      </div>
+    </li>
   );
 };
 
 export default Product;
-
-const normalText = {
-  fontFamily: "Barlow",
-  fontSize: 15,
-};
-
-const textStyles = {
-  normalBoldText: {
-    ...normalText,
-    fontWeight: "bold",
-  },
-  normalSemiBoldText: {
-    ...normalText,
-    fontWeight: 500,
-  },
-};
-
-const styles = StyleSheet.create({
-  amount: {
-    ...textStyles.normalBoldText,
-    color: colors.brown,
-    marginRight: 9,
-  },
-  container: {
-    // alignItems: "center",
-    flexDirection: "row",
-    marginBottom: 9,
-  },
-  description: {
-    color: colors.lightGrey,
-    fontSize: 13,
-    fotiFamily: "Roboto Slab",
-    lineHeight: 17,
-  },
-  nameDescription: {
-    color: colors.brown,
-    flex: 1,
-    ...textStyles.normalSemiBoldText,
-  },
-});

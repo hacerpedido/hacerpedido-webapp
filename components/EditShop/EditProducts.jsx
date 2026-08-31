@@ -1,6 +1,7 @@
+/* eslint-disable react-native/no-raw-text */
+/* global Handsontable */
 import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { StyleSheet, Text, View } from "react-native";
 import dynamic from "next/dynamic";
 
 import "handsontable/dist/handsontable.full.css";
@@ -8,8 +9,8 @@ import "handsontable/dist/handsontable.full.css";
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { sanitizePrice } from "../../lib/utils/utils";
 import { setTempProducts } from "../../lib/reducers/shopEditSlice";
-import theme from "../../assets/theme";
 import useWidth from "../../lib/hooks/use_width";
+import styles from "./EditProducts.module.css";
 
 const HotTable = dynamic(
   async () => {
@@ -27,7 +28,7 @@ const HotTable = dynamic(
 const EditProducts = ({ products, shopId }) => {
   const dispatch = useDispatch();
   const grid = useRef(null);
-  const resizedWidth = useWidth();
+  useWidth();
 
   let gridData = useMemo(() => productForGrid(products), [products]);
 
@@ -76,6 +77,7 @@ const EditProducts = ({ products, shopId }) => {
   ];
 
   function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
+    void cellProperties;
     Handsontable?.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
@@ -126,8 +128,8 @@ const EditProducts = ({ products, shopId }) => {
   const spareRows = 10;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tu menú o listado de precios</Text>
+    <section className={styles.container}>
+      <h2 className={styles.title}>Tu menú o listado de precios</h2>
       <HotTable
         forwardedRef={grid}
         data={gridData}
@@ -149,25 +151,15 @@ const EditProducts = ({ products, shopId }) => {
             case 3:
               return 90;
             default:
-              const otherElementsWidth = width > 1000 ? 644 : 244;
-              return (width - otherElementsWidth) / 2;
+              {
+                const otherElementsWidth = width > 1000 ? 644 : 244;
+                return (width - otherElementsWidth) / 2;
+              }
           }
         }}
       />
-    </View>
+    </section>
   );
 };
 
 export default EditProducts;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.lightBackground,
-  },
-  title: {
-    ...theme.text.title,
-    lineHeight: "2em",
-    marginTop: 30,
-    marginVertical: 10,
-  },
-});

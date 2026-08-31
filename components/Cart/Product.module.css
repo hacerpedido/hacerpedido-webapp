@@ -1,0 +1,43 @@
+.amount {
+  color: #4d360f;
+  font-family: Barlow, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-right: 9px;
+}
+
+.container {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 9px;
+}
+
+.description {
+  color: #8f9bb3;
+  display: block;
+  font-family: "Roboto Slab", serif;
+  font-size: 13px;
+  line-height: 17px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.nameDescription {
+  color: #4d360f;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-family: Barlow, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  min-width: 0;
+}
+
+.text {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

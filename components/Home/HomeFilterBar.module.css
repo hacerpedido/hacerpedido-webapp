@@ -2,15 +2,38 @@
   background-color: #ffffff;
   border-bottom: 1px solid #f3f0eb;
   display: flex;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 0 4px;
+}
+
+.list {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  margin: 0;
+  min-width: max-content;
+  padding: 0;
 }
 
 .item {
   background-color: #ffffff;
   border: 1px solid #e6a02e;
   border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
   margin: 8px 4px;
   padding: 10px 15px;
+  white-space: nowrap;
+}
+
+.item:active {
+  background-color: #fafafa;
+}
+
+.itemSelected {
+  background-color: #ffb233;
 }
 
 .title {
@@ -18,4 +41,8 @@
   font-family: Barlow, sans-serif;
   font-size: 16px;
   font-weight: 600;
+}
+
+.titleSelected {
+  color: #ffffff;
 }

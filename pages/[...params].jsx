@@ -1,6 +1,6 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Image, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Head from "next/head";
@@ -13,10 +13,9 @@ import ShopView from "../components/Shop/ShopView";
 import Loading from "../components/Loading";
 import Form from "../components/Form";
 import MessageBox from "../components/MessageBox";
-import theme from "../assets/theme";
 import { trimObject } from "../lib/utils/utils";
-import useWidth from "../lib/hooks/use_width";
 import { saveShopWithProducts } from "../lib/api/shops";
+import styles from "./[...params].module.css";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -26,7 +25,6 @@ import { saveShopWithProducts } from "../lib/api/shops";
 export default function EditShopPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  // const resizedWidth = useWidth();
 
   const [shopState, setShopState] = useState({ shop: null, loading: true });
   const [showMessage, setShowMessage] = useState(false);
@@ -126,11 +124,11 @@ export default function EditShopPage() {
   }
 
   if (token == null) {
-    return <Text>Error cargando el comercio.</Text>;
+    return <p>Error cargando el comercio.</p>;
   }
 
   if (shopState.shop == null) {
-    return <Text>No hay un comercio en la base de datos para el token {token}</Text>;
+    return <p>No hay un comercio en la base de datos para el token {token}</p>;
   }
 
   const tempValues = watch();
@@ -144,20 +142,14 @@ export default function EditShopPage() {
 
   const isError = Object.keys(errors).length > 0;
 
-  const openProductionLink = {
-    paddingBottom: 30,
-    textAlign: "center",
-    textDecoration: "none",
-  };
-
   return (
     <>
       <Head>
         <title>{tempShop.name} | Hacer Pedido</title>
       </Head>
 
-      <View style={styles.container}>
-        <View style={styles.leftContainer}>
+      <main className={styles.container}>
+        <section className={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
             <EditShopForm
               shop={shopState.shop}
@@ -170,19 +162,19 @@ export default function EditShopPage() {
             />
             <EditProductsForm products={products} shopId={shopState.shop.id} />
           </Form>
-        </View>
+        </section>
         {showPreview && (
-          <View style={styles.rightContainer}>
-            <a href={`/${shopState.shop.slug}`} style={openProductionLink} rel="noopener noreferrer" target="_blank">
-              <Text style={styles.openProductionLink}>
+          <aside className={styles.rightContainer}>
+            <a className={styles.productionLink} href={`/${shopState.shop.slug}`} rel="noopener noreferrer" target="_blank">
+              <span className={styles.openProductionLink}>
                 Ir a mi Sitio
-                <Image source={"/images/external-link-alt.png"} style={styles.openProductionLinkIcon} />
-              </Text>
+                <img alt="" className={styles.openProductionLinkIcon} src="/images/external-link-alt.png" />
+              </span>
             </a>
             <ShopView previewProducts={previewProducts} shop={tempShop} isPreview={true} />
-          </View>
+          </aside>
         )}
-      </View>
+      </main>
 
       {showMessage && (
         <MessageBox
@@ -196,35 +188,3 @@ export default function EditShopPage() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.lightGrey2,
-    flexDirection: "row",
-    height: "100vh",
-  },
-  leftContainer: {
-    backgroundColor: theme.colors.lightBackground,
-    flex: 1,
-    overflowY: "scroll",
-    padding: 40,
-  },
-  openProductionLink: {
-    color: theme.colors.button1,
-    fontFamily: "Barlow",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "600",
-  },
-  openProductionLinkIcon: {
-    height: 16,
-    margin: 3,
-    top: 4,
-    width: 18,
-  },
-  rightContainer: {
-    backgroundColor: theme.colors.lightGrey2,
-    padding: 30,
-    width: 400,
-  },
-});

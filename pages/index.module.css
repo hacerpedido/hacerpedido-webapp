@@ -1,0 +1,54 @@
+.body {
+  background-color: #fbfbfb;
+  flex: 1;
+  margin-top: 0;
+  padding: 132px 10px 10px;
+}
+
+.count {
+  color: #8f9bb3;
+  font-family: Barlow, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 15px 0;
+}
+
+.header {
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.list {
+  width: 100%;
+}
+
+.shopList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shopItem {
+  margin: 0;
+}
+
+.shopButton {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+  width: 100%;
+}
+
+.shopButton:hover,
+.shopButton:focus,
+.shopButton:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lastView {
+  height: 250px;
+}

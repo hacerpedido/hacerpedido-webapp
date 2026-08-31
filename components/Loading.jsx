@@ -1,8 +1,13 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
 import styles from "./Loading.module.css";
-import colors from "../assets/colors";
 
 export default function Loading() {
-  return <ActivityIndicator size="large" color={colors.orangeHP} classList={[styles.default]} />;
+  return (
+    <span className={styles.default} role="progressbar" aria-label="Cargando" aria-valuemin="0" aria-valuemax="1">
+      <svg className={styles.spinner} viewBox="0 0 32 32" aria-hidden="true">
+        <circle className={styles.spinnerTrack} cx="16" cy="16" r="14" />
+        <circle className={styles.spinnerProgress} cx="16" cy="16" r="14" />
+      </svg>
+    </span>
+  );
 }

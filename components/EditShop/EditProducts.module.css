@@ -1,0 +1,13 @@
+.container {
+  background-color: #fafafa;
+}
+
+.title {
+  color: #000000;
+  font-family: Barlow, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 2em;
+  margin: 30px 0 10px;
+}

@@ -1,11 +1,21 @@
+.container {
+  background-color: var(--shop-background-color);
+  background-image: var(--shop-background-image);
+  background-size: var(--shop-background-size);
+}
+
 .buttonBack {
+  background: transparent;
+  border: 0;
   color: #fff;
+  cursor: pointer;
   padding: 24px;
   position: absolute;
   z-index: 2;
 }
 
 .buttonCall {
+  align-items: center;
   border: 1px solid #fff;
   border-radius: 4px;
   color: #fff;
@@ -14,7 +24,15 @@
   justify-content: center;
   opacity: 0.7;
   padding: 8px 9px 0 9px;
+  text-decoration: none;
   z-index: 2;
+}
+
+.buttonCall:hover,
+.buttonCall:focus,
+.buttonCall:visited {
+  color: #fff;
+  text-decoration: none;
 }
 
 .buttonCallContainer {
@@ -59,10 +77,30 @@
   z-index: 2;
 }
 
+.logoPlaceholder {
+  background-color: #fff;
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoInitials {
+  color: #fff;
+  font-family: 'Barlow';
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
 .logo {
   background-color: #fff;
   border-radius: 50%;
   height: 100px;
+  object-fit: cover;
   width: 100px;
 }
 

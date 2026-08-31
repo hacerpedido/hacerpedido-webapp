@@ -1,6 +1,6 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useLayoutEffect } from "react";
 import Head from "next/head";
-import { Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -10,13 +10,13 @@ import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
 import { loading } from "../lib/reducers/appSlice";
 import { setShop } from "../lib/reducers/shopSlice";
+import styles from "./[slug].module.css";
 
 export default function Shop() {
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.app.loading);
   const shop = useSelector((state) => state.shop.shop);
-
   const { slug } = router.query;
 
   useLayoutEffect(() => {
@@ -25,7 +25,6 @@ export default function Shop() {
 
       try {
         const shopData = await axios.get(`${window.location.origin}/api/shop/${slug}`);
-
         dispatch(setShop(shopData.data));
       } catch (error) {
         console.log(JSON.stringify(error, null, 2));
@@ -40,15 +39,15 @@ export default function Shop() {
   }, [dispatch, shop, slug]);
 
   if (!slug || shop?.slug !== slug) {
-    return isLoading ? <Loading /> : <Text>Sin comercios en la base de datos para {slug}.</Text>;
+    return isLoading ? <Loading /> : <p className={styles.message}>Sin comercios en la base de datos para {slug}.</p>;
   }
 
   if (!shop) {
-    return <Text>Sin comercios en la base de datos para {slug}</Text>;
+    return <p className={styles.message}>Sin comercios en la base de datos para {slug}</p>;
   }
 
   return (
-    <View>
+    <main className={styles.page}>
       <Head>
         <title>{shop.name} | Hacer Pedido</title>
         <meta property="og:image" content="/logo512.png" />
@@ -56,45 +55,15 @@ export default function Shop() {
         <meta property="og:type" content="article" />
         <meta property="og:site_name" content="Hacer Pedido" />
         <meta property="og:title" content={shop.name} />
-        <meta property="og:url" content={"https://hacerpedido.com/" + shop.slug} />
+        <meta property="og:url" content={`https://hacerpedido.com/${shop.slug}`} />
         <meta property="twitter:card" content="summary" />
         <meta property="twitter:title" content={shop.name} />
         <meta property="twitter:description" content={shop.name} />
-        <meta property="twitter:url" content={"https://hacerpedido.com/" + shop.slug} />
+        <meta property="twitter:url" content={`https://hacerpedido.com/${shop.slug}`} />
       </Head>
 
       <ShopView shop={shop} />
-
       <ShopFooter shop={shop} />
-    </View>
+    </main>
   );
 }
-
-//
-//  Implementación inicial de SSR para esta página. El problema es que depende de setShop para el carrito
-//
-// export async function getServerSideProps(context) {
-//   const slug = context.params.slug;
-//
-//   try {
-//     const client = useApolloClient();
-//     const shop = await client.query({
-//       query: getShopWithDetails,
-//       variables: { slug },
-//     });
-//
-//     console.log({ shop, slug });
-//
-//     return {
-//       props: { shop, slug },
-//     };
-//   } catch (error) {
-//     console.log(JSON.stringify(error, null, 2));
-//   }
-//
-//   console.log("slug:" + slug);
-//
-//   return {
-//     props: { slug },
-//   };
-// }

@@ -1,8 +1,8 @@
+/* eslint-disable react-native/no-raw-text */
 import React, { useEffect, useState, useRef } from "react";
-import { TouchableHighlight, Text, View } from "react-native";
 
-import ProductAmountPopup from "./ProductAmountPopup";
 import { sanitizePrice } from "../../lib/utils/utils";
+import ProductAmountPopup from "./ProductAmountPopup";
 import styles from "./Product.module.css";
 
 const Product = ({ product, promo = false, isCartEnabled = false }) => {
@@ -23,45 +23,56 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
     };
   }, [ref, setPopupVisible]);
 
-  return (
-    <div ref={ref}>
-      <TouchableHighlight
-        accessibilityLabel={name}
-        accessibilityRole="button"
-        onPress={() => setPopupVisible(!popupVisible)}
-        testID={`product-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-        underlayColor={"none"}
-      >
-        <View classList={[styles.container, containerStyle]}>
-          <View classList={[styles.nameDescription]}>
-            <Text classList={[styles.name]}>
-              {name}
+  const productContent = (
+    <div className={`${styles.container} ${containerStyle}`}>
+      <div className={styles.nameDescription}>
+        <div className={styles.name}>
+          {name}
 
-              {amount > 0 && (
-                <View classList={[styles.amountContainer]}>
-                  <Text classList={[styles.amountText]}>{amount}</Text>
-                </View>
-              )}
-            </Text>
-            <Text classList={[styles.description]}>{description}</Text>
-          </View>
-
-          <Text classList={[styles.price]}>{displayPrice && `$${displayPrice}`}</Text>
-
-          {isCartEnabled && (
-            <View classList={[styles.buttonQty]}>
-              <Text classList={[styles.buttonQtyText]}>+</Text>
-
-              <ProductAmountPopup
-                product={product}
-                amount={amount}
-                visible={popupVisible}
-                handleClose={() => setPopupVisible(false)}
-              />
-            </View>
+          {amount > 0 && (
+            <span className={styles.amountContainer}>
+              <span className={styles.amountText}>{amount}</span>
+            </span>
           )}
-        </View>
-      </TouchableHighlight>
+        </div>
+        <div className={styles.description}>{description}</div>
+      </div>
+
+      <div className={styles.price}>{displayPrice && `$${displayPrice}`}</div>
+
+      {isCartEnabled && (
+        <div className={styles.buttonQty}>
+          <span className={styles.buttonQtyText}>+</span>
+        </div>
+      )}
+    </div>
+  );
+  const productId = `product-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+
+  return (
+    <div className={styles.productRoot} data-testid={productId} ref={ref}>
+      {isCartEnabled ? (
+        <button
+          aria-expanded={popupVisible}
+          aria-label={name}
+          className={styles.productButton}
+          onClick={() => setPopupVisible(!popupVisible)}
+          type="button"
+        >
+          {productContent}
+        </button>
+      ) : (
+        <div>{productContent}</div>
+      )}
+
+      {isCartEnabled && (
+        <ProductAmountPopup
+          product={product}
+          amount={amount}
+          visible={popupVisible}
+          handleClose={() => setPopupVisible(false)}
+        />
+      )}
     </div>
   );
 };

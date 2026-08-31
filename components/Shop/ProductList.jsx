@@ -1,8 +1,8 @@
+/* eslint-disable react-native/no-raw-text */
 import React from "react";
-import { Text } from "react-native";
 
-import Product from "./Product";
 import Divider from "../Divider";
+import Product from "./Product";
 import styles from "./ProductList.module.css";
 
 // TODO: Merge with cart/productList.jsx
@@ -23,10 +23,9 @@ export default function ProductList({ products, isCartEnabled = false }) {
       }
 
       listItems.push(
-        <Text key={item++} classList={[styles.category]}>
-          {" "}
-          {category}{" "}
-        </Text>
+        <div key={item++} className={styles.category}>
+          {category}
+        </div>
       );
 
       lastCategory = category;
