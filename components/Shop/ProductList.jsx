@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 
 import Product from "./Product";
 import Divider from "../Divider";
-import colors from "../../assets/colors";
+import styles from "./ProductList.module.css";
 
 // TODO: Merge with cart/productList.jsx
 export default function ProductList({ products, isCartEnabled = false }) {
@@ -23,7 +23,7 @@ export default function ProductList({ products, isCartEnabled = false }) {
       }
 
       listItems.push(
-        <Text key={item++} style={styles.category}>
+        <Text key={item++} classList={[styles.category]}>
           {" "}
           {category}{" "}
         </Text>
@@ -39,16 +39,3 @@ export default function ProductList({ products, isCartEnabled = false }) {
 
   return <>{listItems}</>;
 }
-
-const styles = StyleSheet.create({
-  category: {
-    color: colors.brown,
-    fontFamily: "Barlow",
-    fontSize: 17,
-    fontWeight: "700",
-    marginBottom: 2,
-    marginLeft: 16,
-    marginRight: 16,
-    marginTop: 16,
-  },
-});

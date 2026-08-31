@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import Link from "next/link";
 import * as Icons from "../../assets/icons";
 import colors from "../../assets/colors";
+import styles from "./HomeHeader.module.css";
 
 export default function HomeHeader() {
   const [show, setShow] = useState(false);
@@ -18,7 +19,7 @@ export default function HomeHeader() {
   const version = process.env.DEPLOYED_GIT_COMMIT_SHA || ""
 
   return (
-    <View style={styles.container}>
+    <View classList={[styles.container]}>
       <Link href="/">
         <a>
           <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
@@ -28,7 +29,7 @@ export default function HomeHeader() {
 
       <TouchableOpacity onPress={handleShow}>
         <View>
-          <Text style={styles.addShopButton}>¡Sumá tu comercio!</Text>
+          <Text classList={[styles.addShopButton]}>¡Sumá tu comercio!</Text>
         </View>
       </TouchableOpacity>
 
@@ -56,39 +57,4 @@ export default function HomeHeader() {
   );
 }
 
-const styles = StyleSheet.create({
-  addShopButton: {
-    backgroundColor: colors.lightGreen,
-    borderColor: colors.button1,
-    borderRadius: 3,
-    borderWidth: 1,
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: "500",
-    padding: 7,
-  },
-  container: {
-    alignItems: "center",
-    backgroundColor: colors.orangeHP,
-    borderBottomWidth: 1,
-    borderColor: colors.filterButtonBorder,
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16,
-  },
-  modalText: {
-    fontSize: 18,
-    fontWeight: "500",
-    padding: 32,
-  },
-  modalView: {
-    alignContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    display: "flex",
-    flex: 1,
-    flexFlow: "column",
-    justifyContent: "center",
-  },
-});
+// Styles moved to HomeHeader.module.css

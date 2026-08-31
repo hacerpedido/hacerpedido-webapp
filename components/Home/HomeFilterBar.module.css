@@ -1,0 +1,21 @@
+.container {
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f0eb;
+  display: flex;
+  padding: 0 4px;
+}
+
+.item {
+  background-color: #ffffff;
+  border: 1px solid #e6a02e;
+  border-radius: 4px;
+  margin: 8px 4px;
+  padding: 10px 15px;
+}
+
+.title {
+  color: #e5a130;
+  font-family: Barlow, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}

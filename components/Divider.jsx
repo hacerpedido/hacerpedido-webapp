@@ -3,5 +3,5 @@ import { View } from "react-native";
 import styles from "./Divider.module.css";
 
 export default function Divider() {
-  return <View className={styles.divider} />;
+  return <View classList={[styles.divider]} />;
 }

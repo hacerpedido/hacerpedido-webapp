@@ -1,0 +1,77 @@
+.buttonBack {
+  color: #fff;
+  padding: 24px;
+  position: absolute;
+  z-index: 2;
+}
+
+.buttonCall {
+  border: 1px solid #fff;
+  border-radius: 4px;
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  opacity: 0.7;
+  padding: 8px 9px 0 9px;
+  z-index: 2;
+}
+
+.buttonCallContainer {
+  position: absolute;
+  right: 24px;
+  top: 16px;
+  z-index: 1;
+}
+
+.buttonText {
+  color: #fff;
+  font-family: 'Barlow';
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-left: 9px;
+}
+
+.containerData {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 26px;
+  margin-top: -24px;
+  z-index: 0;
+}
+
+.containerLogo {
+  align-items: center;
+  height: 100px;
+  width: 100px;
+}
+
+.containerNavigator {
+  background-color: transparent;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  min-height: 4em;
+  z-index: 2;
+}
+
+.logo {
+  background-color: #fff;
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+}
+
+.shopName {
+  color: #fff;
+  font-family: 'Barlow';
+  font-size: 19px;
+  font-weight: 700;
+  margin: 5px 0;
+  padding: 6px;
+  text-transform: capitalize;
+}

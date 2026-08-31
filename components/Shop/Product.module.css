@@ -1,0 +1,97 @@
+.amountContainer {
+  align-items: center;
+  background-color: #ffb233;
+  display: flex;
+  border-radius: 3px;
+  height: 20px;
+  justify-content: center;
+  margin-left: 11px;
+  width: 20px;
+}
+
+.amountText {
+  color: #ffffff;
+  font-family: "Barlow";
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.buttonQty {
+  border: 1px solid #3ecb7d;
+  display: flex;
+  border-radius: 2px;
+  height: 20px;
+  justify-content: center;
+  margin-left: 11px;
+  text-align: center;
+  width: 20px;
+}
+
+.buttonQtyText {
+  color: #3ecb7d;
+  font-family: "Barlow";
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  padding-bottom: 2px;
+}
+
+.card {
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  min-height: 52px;
+}
+
+.description {
+  flex: 1;
+  flex-wrap: wrap;
+  color: #8f9bb3;
+  font-family: "Roboto Slab";
+  font-size: 13px;
+  line-height: 17px;
+}
+
+.name {
+  flex: 1;
+  flex-wrap: wrap;
+  font-family: "Barlow";
+  font-weight: 600;
+  color: #4d360f;
+  font-size: 15px;
+  line-height: 18px;
+  margin-bottom: 5px;
+}
+
+.nameDescription {
+  flex: 1;
+}
+
+.price {
+  color: #2f995e;
+  font-family: "Barlow";
+  font-size: 15px;
+  font-weight: 600;
+  margin-left: 12px;
+}
+
+.product {
+  border-bottom: 1px solid #edf1f7;
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-top: 15px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}

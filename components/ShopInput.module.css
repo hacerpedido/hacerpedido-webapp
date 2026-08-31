@@ -1,0 +1,22 @@
+.container {
+  margin-bottom: 0.25em;
+  margin-top: 0.25em;
+}
+
+.label {
+  color: #8f9bb3;
+  font-size: 0.75em;
+  padding: 0.25em 0;
+}
+
+.input {
+  border: 1px solid;
+  border-radius: 3px;
+  font-size: 1em;
+  padding: 0.25em 0.5em;
+}
+
+.textError {
+  color: #fc6d47;
+  font-size: 0.75em;
+}

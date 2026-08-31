@@ -1,0 +1,19 @@
+.container {
+  align-items: center;
+  background-color: #ffb233;
+  border-bottom: 1px solid #e6a02e;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.addShopButton {
+  background-color: #3ecb7d;
+  border: 1px solid #37b26e;
+  border-radius: 3px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px;
+}

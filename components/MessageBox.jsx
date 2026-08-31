@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
-
-import theme from "../assets/theme";
+import { Text, TouchableHighlight, View } from "react-native";
+import styles from "./MessageBox.module.css";
 
 const MessageBox = ({ message, onMessagePress }) => {
   useEffect(() => {
@@ -12,11 +11,11 @@ const MessageBox = ({ message, onMessagePress }) => {
   }, [onMessagePress]);
 
   return (
-    <View style={styles.container}>
-      <TouchableHighlight onPress={onMessagePress} style={styles.touchable}>
+    <View classList={[styles.container]}>
+      <TouchableHighlight onPress={onMessagePress} classList={[styles.touchable]}>
         <>
-          <Text style={styles.text}>{message}</Text>
-          <Text style={styles.textClose}>x</Text>
+          <Text classList={[styles.text]}>{message}</Text>
+          <Text classList={[styles.textClose]}>x</Text>
         </>
       </TouchableHighlight>
     </View>
@@ -24,34 +23,3 @@ const MessageBox = ({ message, onMessagePress }) => {
 };
 
 export default MessageBox;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.black,
-    height: "5em",
-    left: 0,
-    opacity: 0.8,
-    position: "absolute",
-    right: 0,
-    top: 0,
-  },
-  text: {
-    alignSelf: "center",
-    color: theme.colors.white,
-    flex: 1,
-    fontSize: "1.2em",
-    textAlign: "center",
-    textAlignVertical: "center",
-  },
-  textClose: {
-    color: theme.colors.white,
-    fontSize: "1.5em",
-    textAlign: "center",
-    width: 60,
-  },
-  touchable: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});

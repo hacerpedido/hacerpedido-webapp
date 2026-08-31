@@ -19,11 +19,11 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
   }
 
   return (
-    <View className={styles.container} style={{ marginBottom: marginBottom ?? 0 }}>
+    <View classList={[styles.container]} style={{ marginBottom: marginBottom ?? 0 }}>
       {displayText && (
         <>
           <View>{icons[iconName]}</View>
-          <Text className={styles.text} style={{ color: textColor, fontSize: fontSize ?? 12 }}>
+          <Text classList={[styles.text]} style={{ color: textColor, fontSize: fontSize ?? 12 }}>
             {displayText}
           </Text>
         </>

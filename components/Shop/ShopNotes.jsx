@@ -5,9 +5,9 @@ import styles from "./ShopNotes.module.css";
 const ShopNotes = ({ shop }) => {
   if (shop.notes) {
     return (
-      <View className={styles.container}>
-        <Text className={styles.category}>Notas</Text>
-        <Text className={styles.notes}>{shop.notes}</Text>
+      <View classList={[styles.container]}>
+        <Text classList={[styles.category]}>Notas</Text>
+        <Text classList={[styles.notes]}>{shop.notes}</Text>
       </View>
     );
   }

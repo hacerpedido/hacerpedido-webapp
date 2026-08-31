@@ -16,10 +16,10 @@ const ProductList = ({ products, shop }) => {
   };
 
   return (
-    <View className={styles.container}>
+    <View classList={[styles.container]}>
       {products.map((category, index) => (
         <View key={index}>
-          <Text className={styles.category}>{category.name}</Text>
+          <Text classList={[styles.category]}>{category.name}</Text>
           <Products categoryProducts={category.products} />
         </View>
       ))}
