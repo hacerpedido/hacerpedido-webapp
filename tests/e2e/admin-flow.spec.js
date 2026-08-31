@@ -15,6 +15,17 @@ if (process.env.JEST_WORKER_ID) {
     await expect(page.getByTestId('edit-shop-opentimes')).toHaveValue('E2E hours');
   });
 
+  test('loads the Handsontable product editor without a ReferenceError', async ({ page }) => {
+    const pageErrors = [];
+    page.on('pageerror', (error) => pageErrors.push(error));
+
+    await page.goto('/e2e-fixture-token/edit');
+
+    await expect(page.getByRole('heading', { name: 'Tu menú o listado de precios' })).toBeVisible();
+    await expect(page.locator('.handsontable').first()).toBeVisible();
+    expect(pageErrors.filter((error) => error.name === 'ReferenceError')).toEqual([]);
+  });
+
   // Characterizes the save round-trip: POST /api/shop/by-token updates the
   // shop, the page shows the confirmation box, and the change survives a
   // reload (persisted in Postgres).
