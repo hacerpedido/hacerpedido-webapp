@@ -1,13 +1,8 @@
 import React from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native";
+import styles from "./Loading.module.css";
 import colors from "../assets/colors";
 
 export default function Loading() {
-  return <ActivityIndicator size="large" color={colors.orangeHP} style={styles.default} />;
+  return <ActivityIndicator size="large" color={colors.orangeHP} className={styles.default} />;
 }
-
-const styles = StyleSheet.create({
-  default: {
-    margin: 30,
-  },
-});
