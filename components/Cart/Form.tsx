@@ -44,9 +44,8 @@ const Form = ({ onSubmit }) => {
       className={styles.container}
       onSubmit={(event) => {
         event.preventDefault();
-        handleSubmit(() => formAction(new FormData(event.currentTarget)))(
-          event,
-        );
+        const form = event.currentTarget;
+        handleSubmit(() => formAction(new FormData(form)))(event);
       }}
     >
       <Switch toggle={toggleTakeAway} value={takeaway} />
