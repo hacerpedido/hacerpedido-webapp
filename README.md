@@ -21,7 +21,7 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 
 - La aplicación está migrada a TypeScript: las páginas, rutas API y componentes usan `.ts`/`.tsx`; los tests E2E migrados también usan `.ts`.
 - **Páginas SSR** en `pages/`: home (`index.tsx`, locales por categoría), shop público (`[slug].tsx`), checkout (`cart.tsx` → WhatsApp), página de gestión para comercios (`by-token.ts` + `components/EditShop/`).
-- **API routes** en `pages/api/`: `shop/home`, `shop/[slug]`, `shop/by-token`, `image-upload`, `image-delete`.
+- **API routes** en `app/api/` y `pages/api/`: `shop/editor`, `images`, `shop/home`, `shop/[slug]`, `shop/by-token`.
 - **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.ts`).
 - **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.tsx` + `Component.module.css`).
 
@@ -37,7 +37,7 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 
 ```
 pages/            Páginas SSR y API routes
-  api/            shop/home, shop/[slug], shop/by-token, image-upload, image-delete
+  api/            shop/home, shop/[slug], shop/by-token
   [slug].tsx      Página pública del local
   cart.tsx        Checkout → WhatsApp
 components/       UI (CSS Modules + Bootstrap)
@@ -175,7 +175,7 @@ Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se 
 
 ## Troubleshooting
 
-- **Node.js**: usá Node 22, tal como declara `.tool-versions` y el workflow de CI. Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
+- **Node.js**: usá Node 22, tal como declara `.tool-versions` y el workflow de CI.
 - **`npm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.ts` y `compose.e2e.yaml`.
 - **PostgreSQL local**: `pg_stat_statements` debe estar en `shared_preload_libraries` (como en `compose.e2e.yaml`).
 
