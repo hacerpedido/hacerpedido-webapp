@@ -84,6 +84,7 @@ docs/superpowers/           Documentación
 | `npm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
 | `npm run format` | Biome format sobre los archivos soportados |
 | `npm run format:check` | Verifica el formato con Biome |
+| `npm run typecheck` | Verifica los tipos con TypeScript |
 | `npm run check` | Verifica formato, lint e imports con Biome |
 
 Notas de entorno:
