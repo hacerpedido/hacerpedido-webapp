@@ -10,9 +10,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const shop = await getPublicShop(params.slug);
+  const { slug } = await params;
+  const shop = await getPublicShop(slug);
   if (!shop) return {};
 
   return {
@@ -37,9 +38,10 @@ export async function generateMetadata({
 export default async function PublicShopPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const shop = await getPublicShop(params.slug);
+  const { slug } = await params;
+  const shop = await getPublicShop(slug);
   if (!shop) notFound();
 
   return (
