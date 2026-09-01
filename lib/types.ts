@@ -18,7 +18,7 @@ export interface Shop {
   notes?: string;
   opentimes?: string;
   deliverycost?: string | number;
-  visibility?: boolean;
+  visibility?: boolean | string;
   logo?: string | null;
   background?: string | null;
   category?: string;
