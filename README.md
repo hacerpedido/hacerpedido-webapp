@@ -146,7 +146,7 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 
 ## CI
 
-`.github/workflows/node.js.yml` corre en cada push: `npm ci` + `npx biome ci .` + `npm test -- --runInBand` + `npm run test:e2e` (con Playwright instalado), y sube el reporte como artefacto.
+`.github/workflows/ci.yml` corre en cada push y pull request: instala con pnpm, ejecuta los checks de calidad y los tests E2E en jobs separados, y sube el reporte de Playwright si falla.
 
 ## Scripts disponibles
 

@@ -56,6 +56,6 @@ await navigation;
 - **Docker down** → global-setup fails fast (`docker compose up --wait`). Start Docker first.
 - **Port 54329 busy** → change both `compose.e2e.yaml` ports and the connection string in `tests/e2e/fixtures/database.js`.
 - **Don't let wa.me navigate for real** — always `page.route('https://wa.me/**')` + `waitForURL`.
-- CI (`node.js.yml`) runs `npx playwright install --with-deps chromium` then `npm run test:e2e` with `CI=1` (retries: 1, workers: 1).
+- CI (`ci.yml`) runs `pnpm exec playwright install --with-deps chromium` then `pnpm test:e2e` with `CI=1` (retries: 1, workers: 1).
 - `--pass-with-no-tests` is set: a run finding zero specs passes silently — make sure your spec path is right.
 - Test data lives in the E2E DB only; `npm run db:seed:e2e` reseeds it manually.
