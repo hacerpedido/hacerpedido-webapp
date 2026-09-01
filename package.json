@@ -31,7 +31,7 @@
     "db:check": "docker compose -f compose.dev.yaml exec postgres pg_isready -U dev_user -d hacerpedido_dev",
     "lint": "biome lint .",
     "typecheck": "tsc --noEmit",
-    "deps:check": "depcheck --skip-missing --ignores='pg,lefthook'",
+    "deps:check": "depcheck --skip-missing --ignores='pg,lefthook,typescript,@types/node,@types/react,@types/react-dom'",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "biome check ."
