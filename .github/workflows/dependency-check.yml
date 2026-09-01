@@ -14,15 +14,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dependency-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-
+  # Dependency Review requires GitHub Advanced Security, which is unavailable
+  # while this repository is private on its current plan. Re-enable this job
+  # when the repository becomes public or Advanced Security is licensed.
   depcheck:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
