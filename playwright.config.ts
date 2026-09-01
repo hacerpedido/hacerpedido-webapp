@@ -42,7 +42,10 @@ module.exports = defineConfig({
     : {
         webServer: {
           command: "pnpm build && pnpm start -p 3001",
-          url: baseURL,
+          // The home page queries PostgreSQL during SSR. Probe the client-only
+          // cart route instead so the server is considered ready without
+          // racing database startup.
+          url: `${baseURL}/cart`,
           reuseExistingServer: !process.env.CI,
           timeout: 180000,
           env: {
