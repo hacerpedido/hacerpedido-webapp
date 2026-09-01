@@ -13,6 +13,7 @@
     "build": "NODE_OPTIONS='--openssl-legacy-provider' next build",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' next start",
     "test": "jest",
+    "test:coverage": "jest --coverage --runInBand",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",
     "db:migrate": "knex --knexfile knexfile.js migrate:latest",

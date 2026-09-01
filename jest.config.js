@@ -2,6 +2,7 @@
 module.exports = {
   testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
   moduleNameMapper: {
+    "^.+\\.module\\.css$": "<rootDir>/tests/styleMock.js",
     "^#assets/(.*)$": "<rootDir>/assets/$1",
     "^#components/(.*)$": "<rootDir>/components/$1",
     "^#db/(.*)$": "<rootDir>/db/$1",
@@ -11,5 +12,13 @@ module.exports = {
   },
   transform: {
     "^.+\\.[jt]sx?$": ["babel-jest", { presets: ["next/babel"] }],
+  },
+  coverageThreshold: {
+    global: {
+      branches: 60,
+      functions: 60,
+      lines: 60,
+      statements: 60,
+    },
   },
 };

@@ -1,12 +1,25 @@
 import { expect, type Page, type Route } from "@playwright/test";
 
+export const FIXTURE = {
+  category: "Comida",
+  phoneNumber: "5491100000000",
+  productTestIds: ["product-e2e-product", "product-e2e-second-product"],
+  shopSlug: "e2e-fixture-shop",
+} as const;
+
+export type CustomerForm = {
+  name: string;
+  address?: string;
+  notes?: string;
+};
+
 /**
  * Navigate from home to a specific shop by selecting its category then card.
  */
 async function navigateToShop(
   page: Page,
-  shopSlug = "e2e-fixture-shop",
-  category = "Comida",
+  shopSlug = FIXTURE.shopSlug,
+  category = FIXTURE.category,
 ) {
   await page.goto("/");
   await page.getByTestId(`category-${category}`).click();
@@ -34,9 +47,31 @@ async function addProduct(page: Page, productTestId: string, quantity = 1) {
 /**
  * Click "review order" and wait for the cart form to be ready.
  */
-async function goToCart(page: Page) {
+async function reviewCart(page: Page) {
   await page.getByTestId("review-order").click();
   await expect(page.getByTestId("customer-name")).toBeVisible();
+}
+
+/** Fill the customer fields used by the cart form. */
+async function fillCustomerForm(page: Page, form: CustomerForm) {
+  await page.getByTestId("customer-name").fill(form.name);
+  if (form.address !== undefined) {
+    await page.getByTestId("customer-address").fill(form.address);
+  }
+  if (form.notes !== undefined) {
+    await page.getByTestId("order-notes").fill(form.notes);
+  }
+}
+
+/** Clear persisted cart state before a journey starts. */
+async function clearCartStorage(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      window.localStorage.removeItem("hacerpedido_cart_state");
+    } catch {
+      // about:blank has no storage origin during page creation.
+    }
+  });
 }
 
 /**
@@ -45,8 +80,8 @@ async function goToCart(page: Page) {
  */
 async function reachCart(page: Page, quantity = 1) {
   await navigateToShop(page);
-  await addProduct(page, "product-e2e-product", quantity);
-  await goToCart(page);
+  await addProduct(page, FIXTURE.productTestIds[0], quantity);
+  await reviewCart(page);
 }
 
 /**
@@ -62,9 +97,12 @@ async function interceptWhatsApp(page: Page) {
  * Submit the WhatsApp order, wait for wa.me navigation, and return the
  * parsed outgoing URL for further assertion.
  */
-async function submitAndParseWhatsApp(page: Page): Promise<URL> {
+async function submitAndParseWhatsApp(
+  page: Page,
+  phoneNumber = FIXTURE.phoneNumber,
+): Promise<URL> {
   const whatsappNavigation = page.waitForURL(
-    /^https:\/\/wa\.me\/5491100000000\?text=/,
+    new RegExp(`^https://wa\\.me/${phoneNumber}\\?text=`),
     {
       waitUntil: "commit",
     },
@@ -74,11 +112,13 @@ async function submitAndParseWhatsApp(page: Page): Promise<URL> {
   return new URL(page.url());
 }
 
-module.exports = {
+export {
   addProduct,
-  goToCart,
+  clearCartStorage,
+  fillCustomerForm,
   interceptWhatsApp,
   navigateToShop,
   reachCart,
+  reviewCart,
   submitAndParseWhatsApp,
 };
