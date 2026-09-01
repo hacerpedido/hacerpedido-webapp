@@ -43,7 +43,6 @@
     "aws-sdk": "^2.1693.0",
     "axios": "^0.21.4",
     "bootstrap": "^4.6.2",
-    "formidable": "^1.2.6",
     "handsontable": "^8.4.0",
     "knex": "^3.3.0",
     "nested-knex": "^0.1.2",

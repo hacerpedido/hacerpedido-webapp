@@ -29,9 +29,9 @@ Convenciones de idioma:
 
 - **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales.
 - **Estado**: CartContext con `useReducer` + persistencia en localStorage (`CartProvider` en `pages/_app.tsx`, `useCart` hook). No hay Redux.
-- **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
+- **API**: axios con baseURL al backend REST externo; rutas internas en `app/api/` y `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.
-- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.ts`, endpoints en `pages/api/image-upload.ts` y `image-delete.ts`.
+- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.ts`, endpoint en `app/api/images/route.ts`.
 
 ## Mapa del repo
 
@@ -44,8 +44,7 @@ pages/
   api/shop/home.ts          Shops por categoría
   api/shop/[slug].ts        Shop por slug
   api/shop/by-token.ts      Gestión del local vía token (EditShop)
-  api/image-upload.ts       Upload S3
-  api/image-delete.ts       Delete S3
+  api/images/route.ts       Upload/delete S3
   _app.tsx                  CartProvider wrapper
   _document.tsx, _error.tsx
 components/
@@ -89,7 +88,7 @@ docs/superpowers/           Documentación
 | `npm run check` | Verifica formato, lint e imports con Biome |
 
 Notas de entorno:
-- Usar **Node 22** (declarado en `.tool-versions` y en CI). Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
+- Usar **Node 22** (declarado en `.tool-versions` y en CI).
 - E2E: overrides `PLAYWRIGHT_TEST_BASE_URL` (app desplegada, saltea compose) y `PG_CONNECTION_STRING` (base externa).
 
 ## Variables de entorno
