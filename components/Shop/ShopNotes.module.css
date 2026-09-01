@@ -1,9 +1,9 @@
 .category {
-  color: #4d360f;
+  margin: 16px 16px 2px;
   font-family: Barlow, sans-serif;
   font-size: 17px;
   font-weight: 800;
-  margin: 16px 16px 2px;
+  color: #4d360f;
 }
 
 .container {
@@ -14,10 +14,10 @@
 }
 
 .notes {
-  color: #8f9bb3;
+  margin: 8px 16px 2px;
   font-family: "Roboto Slab";
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
-  margin: 8px 16px 2px;
+  color: #8f9bb3;
 }

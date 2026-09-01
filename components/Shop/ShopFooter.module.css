@@ -1,13 +1,13 @@
 .container {
-  align-items: center;
-  background-color: #fafafa;
-  bottom: 0;
-  display: flex;
-  height: 100px;
-  left: 0;
   position: fixed;
-  width: 100%;
+  bottom: 0;
+  left: 0;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+  background-color: #fafafa;
 }
 
 .buttonContainer {
@@ -15,25 +15,25 @@
 }
 
 .button {
-  align-items: center;
-  border-radius: 4px;
-  border-style: solid;
-  border-width: 1px;
+  position: relative;
   display: flex;
   flex-direction: row;
-  height: 50px;
+  align-items: center;
   justify-content: center;
+  height: 50px;
   margin: 12px 18px 0;
-  position: relative;
   text-align: center;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
 }
 
 button.buttonContainer {
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   background: transparent;
   border: 0;
-  cursor: pointer;
-  font: inherit;
-  padding: 0;
 }
 
 button.buttonContainer:disabled {
@@ -46,10 +46,10 @@ button.buttonContainer:disabled {
 }
 
 .buttonCall {
-  background-color: #ffb233;
-  border-color: #e6a02e;
   color: #fff;
   text-decoration: none;
+  background-color: #ffb233;
+  border-color: #e6a02e;
 }
 
 .buttonCall:hover,
@@ -60,12 +60,12 @@ button.buttonContainer:disabled {
 }
 
 .buttonText {
-  color: #fff;
   flex: 1;
+  margin-left: 5px;
   font-family: Barlow, sans-serif;
   font-size: 16px;
   font-weight: 600;
-  margin-left: 5px;
+  color: #fff;
 }
 
 .buttonEnabled {
@@ -77,24 +77,24 @@ button.buttonContainer:disabled {
 }
 
 .totalAmountContainer {
-  align-items: center;
-  border: 1.5px solid #fff;
-  border-radius: 50%;
-  color: #fff;
+  position: absolute;
+  top: 13px;
+  right: 20px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   font-family: Barlow, sans-serif;
   font-size: 14px;
-  height: 24px;
-  justify-content: center;
-  position: absolute;
-  right: 20px;
-  top: 13px;
-  width: 24px;
+  color: #fff;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
 }
 
 .textContainer {
-  align-items: center;
   display: flex;
+  align-items: center;
   width: 100%;
 }
 

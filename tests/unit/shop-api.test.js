@@ -64,7 +64,6 @@ describe("public shop lookup API", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith([]);
   });
-
 });
 
 describe("token shop lookup API", () => {
@@ -78,7 +77,9 @@ describe("token shop lookup API", () => {
   });
 
   test("returns a shop for a valid token, including private shops for the editor", async () => {
-    const data = [{ slug: "private-shop", visibility: "private", products: [] }];
+    const data = [
+      { slug: "private-shop", visibility: "private", products: [] },
+    ];
     mockNestedResult = data;
     const res = response();
 
@@ -92,10 +93,15 @@ describe("token shop lookup API", () => {
     mockNestedResult = [];
     const res = response();
 
-    await shopByToken({ method: "GET", query: { token: "unknown-token" } }, res);
+    await shopByToken(
+      { method: "GET", query: { token: "unknown-token" } },
+      res,
+    );
 
     expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "No hay un comercio para ese token." });
+    expect(res.json).toHaveBeenCalledWith({
+      error: "No hay un comercio para ese token.",
+    });
   });
 
   test("rejects a POST without authorization token", async () => {

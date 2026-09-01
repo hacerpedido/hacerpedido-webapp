@@ -1,23 +1,20 @@
-const { execFileSync } = require('child_process');
+const { execFileSync } = require("child_process");
 
-const {
-  composeFile,
-  composeProject,
-} = require('./fixtures/database');
+const { composeFile, composeProject } = require("./fixtures/database");
 
 module.exports = async function globalTeardown() {
   execFileSync(
-    'docker',
+    "docker",
     [
-      'compose',
-      '--project-name',
+      "compose",
+      "--project-name",
       composeProject,
-      '-f',
+      "-f",
       composeFile,
-      'down',
-      '--volumes',
-      '--remove-orphans',
+      "down",
+      "--volumes",
+      "--remove-orphans",
     ],
-    { stdio: 'inherit' }
+    { stdio: "inherit" },
   );
 };

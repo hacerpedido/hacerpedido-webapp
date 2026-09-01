@@ -56,8 +56,16 @@ function createDevData() {
     "Otros",
   ];
   const neighborhoods = [
-    "Palermo", "Caballito", "Belgrano", "Almagro", "Villa Crespo",
-    "San Telmo", "Flores", "Recoleta", "Villa Devoto", "Boedo",
+    "Palermo",
+    "Caballito",
+    "Belgrano",
+    "Almagro",
+    "Villa Crespo",
+    "San Telmo",
+    "Flores",
+    "Recoleta",
+    "Villa Devoto",
+    "Boedo",
   ];
   const regions = ["CABA", "Buenos Aires", "Córdoba", "Santa Fe", "Mendoza"];
   const logoImages = [
@@ -72,25 +80,88 @@ function createDevData() {
     "/images/backgrounds/otros.jpg",
   ];
   const productNames = {
-    Comida: ["Empanadas salteñas", "Milanesa napolitana", "Tarta de verdura", "Locro criollo", "Ravioles caseros", "Parrillada para dos"],
-    "Cervecerías": ["IPA artesanal", "Golden ale tirada", "Porter ahumada", "Pinta roja", "Picada cervecera", "Lager porteña"],
-    "Helados y Postres": ["Helado de dulce de leche", "Cheesecake casero", "Brownie tibio", "Copa de frutas", "Alfajor artesanal", "Flan con crema"],
-    "Panadería": ["Medialunas de manteca", "Pan de campo", "Chipá casero", "Facturas surtidas", "Focaccia de oliva", "Torta rogel"],
-    Saludable: ["Granola artesanal", "Ensalada fresca", "Jugo prensado", "Bowl de frutas", "Hummus de garbanzo", "Tostada integral"],
-    "Almacén / Kiosko": ["Yerba mate", "Galletitas surtidas", "Lentejas secas", "Chocolate con leche", "Arroz largo fino", "Maní salado"],
-    "Cafetería": ["Café doble", "Cortado", "Tostado de jamón y queso", "Licuado de banana", "Café con leche", "Medialuna rellena"],
-    Bebidas: ["Agua mineral", "Gaseosa cola", "Vino Malbec", "Jugo de naranja", "Fernet con cola", "Cerveza lata"],
-    Otros: ["Alimento para mascotas", "Vela aromática", "Cuaderno artesanal", "Regalo sorpresa", "Planta de interior", "Bolsa reutilizable"],
+    Comida: [
+      "Empanadas salteñas",
+      "Milanesa napolitana",
+      "Tarta de verdura",
+      "Locro criollo",
+      "Ravioles caseros",
+      "Parrillada para dos",
+    ],
+    Cervecerías: [
+      "IPA artesanal",
+      "Golden ale tirada",
+      "Porter ahumada",
+      "Pinta roja",
+      "Picada cervecera",
+      "Lager porteña",
+    ],
+    "Helados y Postres": [
+      "Helado de dulce de leche",
+      "Cheesecake casero",
+      "Brownie tibio",
+      "Copa de frutas",
+      "Alfajor artesanal",
+      "Flan con crema",
+    ],
+    Panadería: [
+      "Medialunas de manteca",
+      "Pan de campo",
+      "Chipá casero",
+      "Facturas surtidas",
+      "Focaccia de oliva",
+      "Torta rogel",
+    ],
+    Saludable: [
+      "Granola artesanal",
+      "Ensalada fresca",
+      "Jugo prensado",
+      "Bowl de frutas",
+      "Hummus de garbanzo",
+      "Tostada integral",
+    ],
+    "Almacén / Kiosko": [
+      "Yerba mate",
+      "Galletitas surtidas",
+      "Lentejas secas",
+      "Chocolate con leche",
+      "Arroz largo fino",
+      "Maní salado",
+    ],
+    Cafetería: [
+      "Café doble",
+      "Cortado",
+      "Tostado de jamón y queso",
+      "Licuado de banana",
+      "Café con leche",
+      "Medialuna rellena",
+    ],
+    Bebidas: [
+      "Agua mineral",
+      "Gaseosa cola",
+      "Vino Malbec",
+      "Jugo de naranja",
+      "Fernet con cola",
+      "Cerveza lata",
+    ],
+    Otros: [
+      "Alimento para mascotas",
+      "Vela aromática",
+      "Cuaderno artesanal",
+      "Regalo sorpresa",
+      "Planta de interior",
+      "Bolsa reutilizable",
+    ],
   };
 
   const categorySlugs = {
     Comida: "comida",
-    "Cervecerías": "cervecerias",
+    Cervecerías: "cervecerias",
     "Helados y Postres": "helados-postres",
-    "Panadería": "panaderia",
+    Panadería: "panaderia",
     Saludable: "saludable",
     "Almacén / Kiosko": "almacen-kiosko",
-    "Cafetería": "cafeteria",
+    Cafetería: "cafeteria",
     Bebidas: "bebidas",
     Otros: "otros",
   };
@@ -101,9 +172,8 @@ function createDevData() {
       const name = `${category} ${shopIndex + 1}`;
       const region = regions[number % regions.length];
       const phone = `+54911 5555 ${String(1000 + number).slice(-4)}`;
-      const logo = shopIndex % 3 === 0
-        ? logoImages[number % logoImages.length]
-        : null;
+      const logo =
+        shopIndex % 3 === 0 ? logoImages[number % logoImages.length] : null;
       return shopFactory({
         id,
         name,
@@ -116,7 +186,7 @@ function createDevData() {
         orderswhatsappnumber: phone,
         logo,
       });
-    })
+    }),
   );
   const products = shops.flatMap((shop, shopIndex) =>
     Array.from({ length: 6 + (shopIndex % 5) }, (_, productIndex) =>
@@ -128,8 +198,8 @@ function createDevData() {
         description: `Elaborado en ${shop.name}, con ingredientes seleccionados.`,
         price: String(900 + ((shopIndex * 137 + productIndex * 251) % 11000)),
         itemnumber: productIndex + 1,
-      })
-    )
+      }),
+    ),
   );
   return { shops, products };
 }

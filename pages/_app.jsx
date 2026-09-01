@@ -1,5 +1,5 @@
-import React from "react";
 import Head from "next/head";
+import React from "react";
 
 import { CartProvider } from "../lib/context/CartContext";
 
@@ -11,25 +11,28 @@ function MyApp({ Component, pageProps }) {
     <CartProvider>
       <Head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta
-          name="description"
           content="Pedí a tu comercio favorito por WhatsApp. Empezá a recibir pedidos de tus clientes hoy mismo, gratis."
+          name="description"
         />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/logo192.png" />
+        <link href="/favicon.ico" rel="icon" />
+        <link href="/logo192.png" rel="apple-touch-icon" />
 
         {/* <!-- OG: 2.7.6 --> */}
-        <meta property="og:image" content="og_image.jpg" />
-        <meta property="og:description" content="Pedí a tu comercio favorito por WhatsApp" />
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content="HacerPedido" />
-        <meta property="og:url" content="https://hacerpedido.com/" />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content="HacerPedido" />
-        <meta property="twitter:description" content="HacerPedido" />
-        <meta property="twitter:url" content="https://hacerpedido.com/" />
+        <meta content="og_image.jpg" property="og:image" />
+        <meta
+          content="Pedí a tu comercio favorito por WhatsApp"
+          property="og:description"
+        />
+        <meta content="article" property="og:type" />
+        <meta content="Hacer Pedido" property="og:site_name" />
+        <meta content="HacerPedido" property="og:title" />
+        <meta content="https://hacerpedido.com/" property="og:url" />
+        <meta content="summary" property="twitter:card" />
+        <meta content="HacerPedido" property="twitter:title" />
+        <meta content="HacerPedido" property="twitter:description" />
+        <meta content="https://hacerpedido.com/" property="twitter:url" />
         {/* <!-- /OG --> */}
       </Head>
       <Component {...pageProps} />

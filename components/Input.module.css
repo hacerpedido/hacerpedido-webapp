@@ -1,14 +1,14 @@
 .input {
+  display: block;
+  width: 100%;
+  padding: 10px 11px;
+  font-family: Barlow, sans-serif;
+  font-size: 15px;
+  color: #4d360f;
   background-color: transparent;
   border: 1px solid;
   border-color: #ececec;
   border-radius: 2px;
-  color: #4d360f;
-  display: block;
-  font-family: Barlow, sans-serif;
-  font-size: 15px;
-  padding: 10px 11px;
-  width: 100%;
 }
 
 .inputError {
@@ -16,8 +16,8 @@
 }
 
 .container {
-  margin-bottom: 10px;
   margin-top: 0.25em;
+  margin-bottom: 10px;
 }
 
 .label {
@@ -25,18 +25,18 @@
 }
 
 .labelText {
-  color: #cccccc;
   display: block;
+  margin-bottom: 8px;
   font-family: Barlow, sans-serif;
   font-size: 10px;
   font-weight: bold;
-  margin-bottom: 8px;
+  color: #cccccc;
   text-transform: uppercase;
 }
 
 .textError {
-  color: #fc6d47;
   font-size: 15px;
+  color: #fc6d47;
 }
 
 .input::placeholder {

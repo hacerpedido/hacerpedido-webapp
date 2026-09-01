@@ -8,7 +8,11 @@ const EditMenuLink = ({ shop }) => {
   }
 
   return (
-    <a aria-label="Editar menú" className={styles.container} href={`/${shop.typeformtoken}/edit`}>
+    <a
+      aria-label="Editar menú"
+      className={styles.container}
+      href={`/${shop.typeformtoken}/edit`}
+    >
       Editar menú
     </a>
   );

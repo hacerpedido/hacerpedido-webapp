@@ -148,13 +148,15 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 | `npm test` | Unit tests (Jest) |
 | `npm run test:e2e` | E2E (Playwright + Docker) |
 | `npm run test:e2e:install` | Instala Chromium |
-| `npm run lint` | ESLint |
+| `npm run lint` | Biome lint |
 | `npm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Migraciones Knex |
 | `npm run db:seed` | Seed de desarrollo |
 | `npm run db:seed:test` / `db:seed:e2e` | Seed E2E |
 | `npm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operar DB local |
 | `npm run db:setup` / `db:reset` | Preparar / recrear DB local |
-| `npm run prettier` | Formatea código |
+| `npm run format` | Formatea código con Biome |
+| `npm run format:check` | Verifica el formato con Biome |
+| `npm run check` | Verifica formato, lint e imports con Biome |
 | `npm run import-data` | ⚠️ Rotto (paths legacy `src/` que ya no existen) |
 | `npm run svg` | ⚠️ Rotto (ídem) |
 

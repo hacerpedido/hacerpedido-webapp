@@ -1,10 +1,10 @@
 .card {
+  box-sizing: border-box;
+  padding: 15px;
+  margin-bottom: 6px;
   background-color: #ffffff;
   border: 1px solid #e8e8e8;
   border-radius: 7px;
-  box-sizing: border-box;
-  margin-bottom: 6px;
-  padding: 15px;
 }
 
 .container {
@@ -18,52 +18,52 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-left: 8px;
   padding-left: 8px;
+  margin-left: 8px;
 }
 
 .containerLogo {
-  align-items: center;
   display: flex;
   flex: 0 0 75px;
-  height: 75px;
+  align-items: center;
   width: 75px;
+  height: 75px;
 }
 
 .logo {
+  display: block;
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
   background-color: #fafafa;
   border-radius: 37.5px;
-  display: block;
-  height: 75px;
-  width: 75px;
-  object-fit: cover;
 }
 
 .logoPlaceholder {
-  align-items: center;
-  background-color: #fafafa;
-  border-radius: 50%;
   display: flex;
-  height: 75px;
+  align-items: center;
   justify-content: center;
   width: 75px;
+  height: 75px;
+  background-color: #fafafa;
+  border-radius: 50%;
 }
 
 .logoInitials {
-  color: #fff;
   font-family: "Barlow";
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
+  color: #fff;
   text-align: center;
 }
 
 .shopName {
-  color: #4d360f;
+  margin-top: 0;
+  margin-bottom: 4px;
   font-family: "Barlow";
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 4px;
-  margin-top: 0;
+  color: #4d360f;
   text-transform: capitalize;
 }

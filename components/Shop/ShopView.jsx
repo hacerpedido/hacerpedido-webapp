@@ -1,14 +1,18 @@
 import React from "react";
-
+import { useCart } from "../../lib/context/CartContext";
 import Loading from "../Loading";
+import EditMenuLink from "./EditMenuLink";
+import ProductList from "./ProductList";
 import ShopHeader from "./ShopHeader";
 import ShopNotes from "./ShopNotes";
-import ProductList from "./ProductList";
-import EditMenuLink from "./EditMenuLink";
-import { useCart } from "../../lib/context/CartContext";
 import styles from "./ShopView.module.css";
 
-export default function ShopView({ isPreview = false, shop, previewProducts = [], isLoading = false }) {
+export default function ShopView({
+  isPreview = false,
+  shop,
+  previewProducts = [],
+  isLoading = false,
+}) {
   const { state } = useCart();
   const storedProducts = state.products;
   const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;
@@ -16,7 +20,11 @@ export default function ShopView({ isPreview = false, shop, previewProducts = []
 
   return (
     <div className={styles.scrollView}>
-      {process.env.NODE_ENV === "development" && !isPreview && shop?.typeformtoken ? <EditMenuLink shop={shop} /> : null}
+      {process.env.NODE_ENV === "development" &&
+      !isPreview &&
+      shop?.typeformtoken ? (
+        <EditMenuLink shop={shop} />
+      ) : null}
       <ShopHeader isPreview={isPreview} shop={shop} />
 
       <div className={styles.container}>
@@ -25,7 +33,7 @@ export default function ShopView({ isPreview = false, shop, previewProducts = []
         ) : (
           products.length > 0 && (
             <>
-              <ProductList products={products} isCartEnabled={isCartEnabled} />
+              <ProductList isCartEnabled={isCartEnabled} products={products} />
               <ShopNotes shop={shop} />
             </>
           )

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
 import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 
 import Form from "../components/Cart/Form";
-import ProductList from "../components/Cart/ProductList";
 import Header from "../components/Cart/Header";
+import ProductList from "../components/Cart/ProductList";
 import { useCart } from "../lib/context/CartContext";
 import { extractSections } from "../lib/utils/products";
 import { generateWhatsappURL } from "../lib/utils/utils";
@@ -29,7 +29,11 @@ export default function Cart() {
 
   const onSubmit = (data) => {
     const { orderswhatsappnumber } = shop;
-    const url = generateWhatsappURL(orderswhatsappnumber, data, productsByCategory);
+    const url = generateWhatsappURL(
+      orderswhatsappnumber,
+      data,
+      productsByCategory,
+    );
     window.location.href = url;
   };
 

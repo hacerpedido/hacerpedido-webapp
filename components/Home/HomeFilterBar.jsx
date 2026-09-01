@@ -14,7 +14,11 @@ function Item({ id, title, selected, onSelect }) {
         onClick={() => onSelect(id)}
         type="button"
       >
-        <span className={`${styles.title} ${selected ? styles.titleSelected : ""}`}>{title}</span>
+        <span
+          className={`${styles.title} ${selected ? styles.titleSelected : ""}`}
+        >
+          {title}
+        </span>
       </button>
     </li>
   );
@@ -28,14 +32,20 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
       setSelected(id);
       onSelectFilter(id);
     },
-    [onSelectFilter]
+    [onSelectFilter],
   );
 
   return (
     <nav aria-label="Categorías" className={styles.container}>
       <ul className={styles.list}>
         {categories.map((item) => (
-          <Item id={item} title={item} selected={selected === item} onSelect={onSelect} key={item} />
+          <Item
+            id={item}
+            key={item}
+            onSelect={onSelect}
+            selected={selected === item}
+            title={item}
+          />
         ))}
       </ul>
     </nav>

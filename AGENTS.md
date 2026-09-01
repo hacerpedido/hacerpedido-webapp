@@ -78,10 +78,12 @@ docs/superpowers/           Documentación
 | `npm test` | Jest (unit: `lib/**/*.test.js`) |
 | `npm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`npm run build && npm run start`), baseURL `http://127.0.0.1:3000` |
 | `npm run test:e2e:install` | Instala Chromium |
-| `npm run lint` | ESLint (`.`) |
+| `npm run lint` | Biome lint (`.`) |
 | `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |
 | `npm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
-| `npm run prettier` | Prettier sobre `**/*.js?` |
+| `npm run format` | Biome format sobre los archivos soportados |
+| `npm run format:check` | Verifica el formato con Biome |
+| `npm run check` | Verifica formato, lint e imports con Biome |
 | `npm run import-data` / `npm run svg` | ⚠️ Rotos: apuntan a paths legacy `src/` que no existen |
 
 Notas de entorno:

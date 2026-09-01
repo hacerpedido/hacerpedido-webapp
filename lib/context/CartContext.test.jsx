@@ -1,6 +1,6 @@
+import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
-import { render, act, cleanup, screen } from "@testing-library/react";
-import { CartProvider, useCart, __CART_STATE_KEY } from "./CartContext";
+import { __CART_STATE_KEY, CartProvider, useCart } from "./CartContext";
 
 // ── Helper: test component that reads from context ──────────────────────────────
 let readState;
@@ -14,7 +14,7 @@ function renderProvider() {
   render(
     <CartProvider>
       <TestConsumer />
-    </CartProvider>
+    </CartProvider>,
   );
 }
 
@@ -63,7 +63,9 @@ describe("SET_SHOP", () => {
 
   test("sets shop and initializes product amounts to 0", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
 
     expect(readState.state.shop).toEqual(firstShop);
     expect(readState.state.products).toEqual([
@@ -75,7 +77,9 @@ describe("SET_SHOP", () => {
 
   test("recalculates total amount after changing a product amount", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -93,7 +97,9 @@ describe("SET_SHOP", () => {
 
   test("keeps the current order when setting the same shop and resets on new shop", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -103,21 +109,29 @@ describe("SET_SHOP", () => {
 
     const afterFirstShop = { ...readState.state };
 
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
 
     // Same shop returns the same state reference (preserves order)
     expect(readState.state.shop).toBe(afterFirstShop.shop);
 
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: secondShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: secondShop });
+    });
 
     expect(readState.state.shop).toEqual(secondShop);
-    expect(readState.state.products).toEqual([{ id: 3, name: "Agua", amount: 0 }]);
+    expect(readState.state.products).toEqual([
+      { id: 3, name: "Agua", amount: 0 },
+    ]);
     expect(readState.state.totalAmount).toBe(0);
   });
 
   test("ignores negative amount in SET_AMOUNT", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -131,7 +145,9 @@ describe("SET_SHOP", () => {
 
   test("accepts zero amount in SET_AMOUNT", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -151,7 +167,12 @@ describe("SET_SHOP", () => {
 
   test("handles shop with no products", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: { slug: "empty-shop", products: [] } }); });
+    act(() => {
+      readState.dispatch({
+        type: "SET_SHOP",
+        payload: { slug: "empty-shop", products: [] },
+      });
+    });
 
     expect(readState.state.products).toEqual([]);
     expect(readState.state.totalAmount).toBe(0);
@@ -159,7 +180,12 @@ describe("SET_SHOP", () => {
 
   test("defaults to empty products when products field is missing", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: { slug: "no-products" } }); });
+    act(() => {
+      readState.dispatch({
+        type: "SET_SHOP",
+        payload: { slug: "no-products" },
+      });
+    });
 
     expect(readState.state.products).toEqual([]);
   });
@@ -178,7 +204,9 @@ describe("SET_SHOP", () => {
 
   test("setAmount with unknown product does not crash", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -192,7 +220,9 @@ describe("SET_SHOP", () => {
 
   test("setAmount with undefined product does not crash", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
     act(() => {
       readState.dispatch({
         type: "SET_AMOUNT",
@@ -205,8 +235,12 @@ describe("SET_SHOP", () => {
 
   test("SET_SHOP with null sets shop to null and clears products", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: null }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: null });
+    });
 
     expect(readState.state.shop).toBe(null);
     expect(readState.state.products).toEqual([]);
@@ -215,8 +249,12 @@ describe("SET_SHOP", () => {
 
   test("SET_SHOP with undefined sets shop to null and clears products", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: firstShop }); });
-    act(() => { readState.dispatch({ type: "SET_SHOP", payload: undefined }); });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: firstShop });
+    });
+    act(() => {
+      readState.dispatch({ type: "SET_SHOP", payload: undefined });
+    });
 
     expect(readState.state.shop).toBe(null);
     expect(readState.state.products).toEqual([]);
@@ -229,21 +267,34 @@ describe("SET_SHOP", () => {
 describe("cart form state", () => {
   test("sets name to empty string when payload is undefined", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME" });
+    });
     expect(readState.state.name).toBe("");
   });
 
   test("sets name to empty string when payload is null", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: null }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: null });
+    });
     expect(readState.state.name).toBe("");
   });
 
   test("sets name, address, notes correctly", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "Ana" }); });
-    act(() => { readState.dispatch({ type: "SET_ADDRESS", payload: "Av. Siempre Viva 123" }); });
-    act(() => { readState.dispatch({ type: "SET_NOTES", payload: "Sin cebolla" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "Ana" });
+    });
+    act(() => {
+      readState.dispatch({
+        type: "SET_ADDRESS",
+        payload: "Av. Siempre Viva 123",
+      });
+    });
+    act(() => {
+      readState.dispatch({ type: "SET_NOTES", payload: "Sin cebolla" });
+    });
 
     expect(readState.state).toEqual({
       shop: null,
@@ -257,20 +308,28 @@ describe("cart form state", () => {
 
   test("overwrites previous name value", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "Ana" }); });
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "Juan" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "Ana" });
+    });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "Juan" });
+    });
     expect(readState.state.name).toBe("Juan");
   });
 
   test("accepts empty string as name", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "" });
+    });
     expect(readState.state.name).toBe("");
   });
 
   test("accepts number as name", () => {
     renderProvider();
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: 123 }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: 123 });
+    });
     expect(readState.state.name).toBe(123);
   });
 });
@@ -286,8 +345,12 @@ describe("CLEAR_CART", () => {
         payload: { slug: "test", products: [{ id: 1, name: "Test" }] },
       });
     });
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "Ana" }); });
-    act(() => { readState.dispatch({ type: "CLEAR_CART" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "Ana" });
+    });
+    act(() => {
+      readState.dispatch({ type: "CLEAR_CART" });
+    });
 
     expect(readState.state).toEqual({
       shop: null,
@@ -321,7 +384,10 @@ describe("HYDRATE", () => {
       });
     });
 
-    expect(readState.state.shop).toEqual({ slug: "restored-shop", name: "Restored" });
+    expect(readState.state.shop).toEqual({
+      slug: "restored-shop",
+      name: "Restored",
+    });
     expect(readState.state.products).toEqual([
       { id: 1, name: "Product A", amount: 3 },
       { id: 2, name: "Product B", amount: 1 },
@@ -388,9 +454,7 @@ describe("HYDRATE", () => {
         type: "HYDRATE",
         payload: {
           shop: { slug: "my-shop", name: "My Shop" },
-          products: [
-            { id: 10, name: "Milanesa", amount: 2 },
-          ],
+          products: [{ id: 10, name: "Milanesa", amount: 2 }],
           name: "",
           address: "",
           notes: "",
@@ -407,9 +471,7 @@ describe("HYDRATE", () => {
         payload: {
           slug: "my-shop",
           name: "My Shop",
-          products: [
-            { id: 10, name: "Milanesa", description: "Clásica" },
-          ],
+          products: [{ id: 10, name: "Milanesa", description: "Clásica" }],
         },
       });
     });
@@ -453,7 +515,11 @@ describe("full state persistence", () => {
     act(() => {
       readState.dispatch({
         type: "SET_SHOP",
-        payload: { slug: "test-shop", name: "Test", products: [{ id: 1, name: "P1" }] },
+        payload: {
+          slug: "test-shop",
+          name: "Test",
+          products: [{ id: 1, name: "P1" }],
+        },
       });
     });
     act(() => {
@@ -462,7 +528,9 @@ describe("full state persistence", () => {
         payload: { product: { id: 1 }, amount: 2 },
       });
     });
-    act(() => { readState.dispatch({ type: "SET_NAME", payload: "Ana" }); });
+    act(() => {
+      readState.dispatch({ type: "SET_NAME", payload: "Ana" });
+    });
 
     const saved = JSON.parse(localStorage.getItem(CART_STATE_KEY));
     expect(saved.shop.slug).toBe("test-shop");
@@ -486,7 +554,9 @@ describe("full state persistence", () => {
         payload: { slug: "s", products: [{ id: 1, name: "P1" }] },
       });
     });
-    act(() => { readState.dispatch({ type: "CLEAR_CART" }); });
+    act(() => {
+      readState.dispatch({ type: "CLEAR_CART" });
+    });
 
     const saved = localStorage.getItem(CART_STATE_KEY);
     expect(saved).toBeNull();
@@ -498,13 +568,17 @@ describe("hydration from localStorage", () => {
     localStorage.setItem(
       CART_STATE_KEY,
       JSON.stringify({
-        shop: { slug: "local-shop", name: "Local Shop", orderswhatsappnumber: "+5491100000000" },
+        shop: {
+          slug: "local-shop",
+          name: "Local Shop",
+          orderswhatsappnumber: "+5491100000000",
+        },
         products: [{ id: 42, name: "Local Product", amount: 3 }],
         totalAmount: 3,
         name: "María",
         address: "Av. Siempre Viva 742",
         notes: "Test notes",
-      })
+      }),
     );
   });
 
@@ -512,7 +586,9 @@ describe("hydration from localStorage", () => {
     renderProvider();
 
     expect(readState.state.shop.slug).toBe("local-shop");
-    expect(readState.state.products).toEqual([{ id: 42, name: "Local Product", amount: 3 }]);
+    expect(readState.state.products).toEqual([
+      { id: 42, name: "Local Product", amount: 3 },
+    ]);
     expect(readState.state.totalAmount).toBe(3);
     expect(readState.state.name).toBe("María");
     expect(readState.state.address).toBe("Av. Siempre Viva 742");
@@ -548,7 +624,7 @@ describe("useCart outside provider", () => {
     // Suppress console.error from React for the expected error
     const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() => render(<TestConsumer />)).toThrow(
-      "useCart must be used within a CartProvider"
+      "useCart must be used within a CartProvider",
     );
     spy.mockRestore();
   });

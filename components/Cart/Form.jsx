@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
-import Switch from "../Switch";
-import Input from "../Input";
-import { useCart } from "../../lib/context/CartContext";
 import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
+import { useCart } from "../../lib/context/CartContext";
+import Input from "../Input";
+import Switch from "../Switch";
 import styles from "./Form.module.css";
 
 const Form = ({ onSubmit }) => {
@@ -15,9 +14,12 @@ const Form = ({ onSubmit }) => {
 
   const { handleSubmit, errors, control } = useForm({ mode: "onBlur" });
 
-  const onNameChange = (value) => dispatch({ type: "SET_NAME", payload: value });
-  const onAddressChange = (value) => dispatch({ type: "SET_ADDRESS", payload: value });
-  const onNotesChange = (value) => dispatch({ type: "SET_NOTES", payload: value });
+  const onNameChange = (value) =>
+    dispatch({ type: "SET_NAME", payload: value });
+  const onAddressChange = (value) =>
+    dispatch({ type: "SET_ADDRESS", payload: value });
+  const onNotesChange = (value) =>
+    dispatch({ type: "SET_NOTES", payload: value });
 
   const toggleTakeAway = () => {
     const value = !takeaway;
@@ -35,45 +37,45 @@ const Form = ({ onSubmit }) => {
 
       <Controller
         as={Input}
-        control={control}
-        autoFocus
-        defaultValue={state.name ?? ""}
-        name="name"
-        label="Tu Nombre"
         autoCompleteType="name"
-        placeholder="¿Cómo te llamás?"
-        testID="customer-name"
+        autoFocus
+        control={control}
+        defaultValue={state.name ?? ""}
+        error={errors.name}
+        label="Tu Nombre"
+        maxLength={50}
+        name="name"
         onChangeText={onNameChange}
+        placeholder="¿Cómo te llamás?"
         rules={{
           required: {
             value: true,
             message: "Necesitamos tu nombre",
           },
         }}
-        error={errors.name}
-        maxLength={50}
+        testID="customer-name"
       />
 
       {/* <AnimatedView style={animatedProps}> */}
       {takeaway || (
         <Controller
           as={Input}
+          autoCompleteType="street-address"
           control={control}
           defaultValue={state.address ?? ""}
-          name="address"
+          error={errors.address}
           label="Tu Dirección"
-          autoCompleteType="street-address"
-          placeholder="¿A dónde lo mandamos?"
-          testID="customer-address"
+          maxLength={50}
+          name="address"
           onChangeText={onAddressChange}
+          placeholder="¿A dónde lo mandamos?"
           rules={{
             required: {
               value: true,
               message: "Necesitamos tu dirección",
             },
           }}
-          error={errors.address}
-          maxLength={50}
+          testID="customer-address"
         />
       )}
       {/* </AnimatedView> */}
@@ -82,14 +84,14 @@ const Form = ({ onSubmit }) => {
         as={Input}
         control={control}
         defaultValue={state.notes ?? ""}
-        name="notes"
         label="Notas"
+        maxLength={500}
+        multiline
+        name="notes"
+        numberOfLines={2}
+        onChangeText={onNotesChange}
         placeholder="¿Querés hacer alguna aclaración?"
         testID="order-notes"
-        onChangeText={onNotesChange}
-        multiline
-        numberOfLines={2}
-        maxLength={500}
       />
 
       <p className={styles.notes}>

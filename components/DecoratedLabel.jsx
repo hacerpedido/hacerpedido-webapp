@@ -5,7 +5,14 @@ import styles from "./DecoratedLabel.module.css";
 // TODO: Este componente tiene una responsabilidad difusa, mucha
 // configuración externa. Repensar.
 
-const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, marginBottom }) => {
+const DecoratedLabel = ({
+  iconName,
+  text,
+  iconColor,
+  textColor,
+  fontSize,
+  marginBottom,
+}) => {
   const icons = {
     car: <Icons.Car color={iconColor} width={18} />,
     clock: <Icons.Clock color={iconColor} width={18} />,
@@ -28,9 +35,7 @@ const DecoratedLabel = ({ iconName, text, iconColor, textColor, fontSize, margin
       {displayText && (
         <>
           <span className={styles.icon}>{icons[iconName]}</span>
-          <span className={styles.text}>
-            {displayText}
-          </span>
+          <span className={styles.text}>{displayText}</span>
         </>
       )}
     </div>

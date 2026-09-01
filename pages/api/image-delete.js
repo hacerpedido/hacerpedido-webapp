@@ -1,7 +1,7 @@
-import { withSentry } from '@sentry/nextjs';
+import { withSentry } from "@sentry/nextjs";
 
 const formidable = require("formidable");
-const validator = require('validator');
+const validator = require("validator");
 const s3utils = require("../../lib/utils/aws-s3");
 
 const handler = async (req, res) => {
@@ -14,10 +14,13 @@ const handler = async (req, res) => {
     connection: process.env.PG_CONNECTION_STRING,
   });
 
-  const data = await new Promise(function (resolve) {
-    const form = new formidable.IncomingForm({ keepExtensions: true, multiples: false });
+  const data = await new Promise((resolve) => {
+    const form = new formidable.IncomingForm({
+      keepExtensions: true,
+      multiples: false,
+    });
 
-    form.parse(req, function (err, fields, files) {
+    form.parse(req, (err, fields, files) => {
       if (err) {
         res.status(400).json({ error: err.message });
 
@@ -43,9 +46,12 @@ const handler = async (req, res) => {
     return;
   }
 
-  const selectData = await pg.select({ oldKey: imageType }).from("shops").where("id", "=", shopID);
+  const selectData = await pg
+    .select({ oldKey: imageType })
+    .from("shops")
+    .where("id", "=", shopID);
 
-  if (!selectData || (!Array.isArray(selectData) || selectData.length === 0)) {
+  if (!selectData || !Array.isArray(selectData) || selectData.length === 0) {
     res.status(400).json({ error: "Wrong parameters (5)." });
 
     return;
@@ -69,7 +75,7 @@ const handler = async (req, res) => {
   //         },
   //     }
   // }
-}
+};
 
 export const config = {
   api: {

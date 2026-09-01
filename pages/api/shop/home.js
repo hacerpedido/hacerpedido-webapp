@@ -1,4 +1,4 @@
-import { withSentry } from '@sentry/nextjs';
+import { withSentry } from "@sentry/nextjs";
 import { categories } from "../../../lib/utils/categories";
 
 const pg = require("knex")({
@@ -30,7 +30,7 @@ const handler = async (req, res) => {
       "logo",
       "background",
       "ordersphonenumber",
-      "orderswhatsappnumber"
+      "orderswhatsappnumber",
     )
     .from("shops")
     .where("visibility", "=", "public")
@@ -39,7 +39,7 @@ const handler = async (req, res) => {
 
   res.status(200).json(shops);
   res.end();
-}
+};
 
 export default withSentry(handler);
 

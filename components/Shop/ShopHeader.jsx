@@ -1,16 +1,28 @@
-import React, { useState } from "react";
-
 import { useRouter } from "next/router";
-import { generateCallUrl } from "../../lib/utils/utils";
-import { getBackgroundColorForCategory } from "../../lib/utils/categoriesHelper";
-import { getLogoForShop, getBackgroundForShop, getShopInitials, getShopInitialsColor } from "../../lib/utils/shops";
+import React, { useState } from "react";
 import colors from "../../assets/colors";
 import * as Icons from "../../assets/icons";
+import { getBackgroundColorForCategory } from "../../lib/utils/categoriesHelper";
+import {
+  getBackgroundForShop,
+  getLogoForShop,
+  getShopInitials,
+  getShopInitialsColor,
+} from "../../lib/utils/shops";
+import { generateCallUrl } from "../../lib/utils/utils";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopHeader.module.css";
 
 const ShopHeader = ({ isPreview = false, shop = {} }) => {
-  const { name, background, category, address, region, ordersphonenumber, orderswhatsappnumber } = shop;
+  const {
+    name,
+    background,
+    category,
+    address,
+    region,
+    ordersphonenumber,
+    orderswhatsappnumber,
+  } = shop;
   const router = useRouter();
   const logo = getLogoForShop(shop);
   const [logoFailed, setLogoFailed] = useState(false);
@@ -18,11 +30,15 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
   const initialsColor = getShopInitialsColor(name);
   const displayAddress = address?.trim() ?? region;
   const opentimes = shop?.opentimes?.trim() !== "" ? shop.opentimes : null;
-  const deliverycost = shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
-  const showButtonCall = ordersphonenumber && orderswhatsappnumber && !isPreview;
+  const deliverycost =
+    shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
+  const showButtonCall =
+    ordersphonenumber && orderswhatsappnumber && !isPreview;
   const backgroundImage = getBackgroundForShop(shop);
 
-  const backgroundImageValue = backgroundImage?.startsWith("url(") ? backgroundImage : `url(${backgroundImage})`;
+  const backgroundImageValue = backgroundImage?.startsWith("url(")
+    ? backgroundImage
+    : `url(${backgroundImage})`;
   const containerStyle = {
     "--shop-background-color": getBackgroundColorForCategory(category),
     "--shop-background-image": backgroundImage ? backgroundImageValue : "none",
@@ -33,14 +49,22 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
     <header className={styles.container} style={containerStyle}>
       <div className={styles.containerNavigator}>
         {!isPreview && (
-          <button type="button" className={styles.buttonBack} onClick={() => router.push("/")} aria-label="Volver">
+          <button
+            aria-label="Volver"
+            className={styles.buttonBack}
+            onClick={() => router.push("/")}
+            type="button"
+          >
             <Icons.ArrowLeft color={colors.white} />
           </button>
         )}
 
         {showButtonCall && (
           <div className={styles.buttonCallContainer}>
-            <a className={styles.buttonCall} href={generateCallUrl(ordersphonenumber)}>
+            <a
+              className={styles.buttonCall}
+              href={generateCallUrl(ordersphonenumber)}
+            >
               <Icons.PhoneCall />
               <span className={styles.buttonText}>Llamar</span>
             </a>
@@ -51,22 +75,52 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
       <div className={styles.containerData}>
         <div className={styles.containerLogo}>
           {logo && !logoFailed ? (
-            <img className={styles.logo} src={logo} alt={name || ""} onError={() => setLogoFailed(true)} />
+            <img
+              alt={name || ""}
+              className={styles.logo}
+              onError={() => setLogoFailed(true)}
+              src={logo}
+            />
           ) : (
-            <div className={styles.logoPlaceholder} style={{ backgroundColor: initialsColor }} aria-label={name || ""}>
+            <div
+              aria-label={name || ""}
+              className={styles.logoPlaceholder}
+              style={{ backgroundColor: initialsColor }}
+            >
               <span className={styles.logoInitials}>{initials}</span>
             </div>
           )}
         </div>
         <h1 className={styles.shopName}>{name?.toLowerCase()}</h1>
         {displayAddress && (
-          <DecoratedLabel iconName="pin" text={displayAddress} iconColor={colors.white} textColor={colors.white} fontSize={13} marginBottom={4} />
+          <DecoratedLabel
+            fontSize={13}
+            iconColor={colors.white}
+            iconName="pin"
+            marginBottom={4}
+            text={displayAddress}
+            textColor={colors.white}
+          />
         )}
         {opentimes && (
-          <DecoratedLabel iconName="clock" text={opentimes} iconColor={colors.white} textColor={colors.white} fontSize={13} marginBottom={4} />
+          <DecoratedLabel
+            fontSize={13}
+            iconColor={colors.white}
+            iconName="clock"
+            marginBottom={4}
+            text={opentimes}
+            textColor={colors.white}
+          />
         )}
         {deliverycost && (
-          <DecoratedLabel iconName="car" text={`Delivery: ${deliverycost}`} iconColor={colors.white} textColor={colors.white} fontSize={13} marginBottom={4} />
+          <DecoratedLabel
+            fontSize={13}
+            iconColor={colors.white}
+            iconName="car"
+            marginBottom={4}
+            text={`Delivery: ${deliverycost}`}
+            textColor={colors.white}
+          />
         )}
       </div>
     </header>

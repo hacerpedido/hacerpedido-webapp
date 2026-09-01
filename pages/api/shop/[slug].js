@@ -1,5 +1,5 @@
+import { withSentry } from "@sentry/nextjs";
 import * as n from "nested-knex";
-import { withSentry } from '@sentry/nextjs';
 
 const pg = require("knex")({
   client: "pg",
@@ -41,7 +41,7 @@ const handler = async (req, res) => {
           price: n.number("products.price"),
           description: n.nullableString("products.description"),
           itemnumber: n.number("products.itemnumber"),
-        })
+        }),
       ),
     })
     .withQuery(
@@ -49,12 +49,12 @@ const handler = async (req, res) => {
         .where("slug", "=", slug)
         .where("shops.visibility", "=", "public")
         .leftJoin("products", "shops.id", "products.shopid")
-        .orderBy("products.itemnumber")
+        .orderBy("products.itemnumber"),
     );
 
   res.status(200).json(data);
   res.end();
-}
+};
 
 export default withSentry(handler);
 

@@ -1,10 +1,14 @@
-const { expect } = require('@playwright/test');
+const { expect } = require("@playwright/test");
 
 /**
  * Navigate from home to a specific shop by selecting its category then card.
  */
-async function navigateToShop(page, shopSlug = 'e2e-fixture-shop', category = 'Comida') {
-  await page.goto('/');
+async function navigateToShop(
+  page,
+  shopSlug = "e2e-fixture-shop",
+  category = "Comida",
+) {
+  await page.goto("/");
   await page.getByTestId(`category-${category}`).click();
   await page.getByTestId(`shop-card-${shopSlug}`).click();
 }
@@ -18,12 +22,12 @@ async function navigateToShop(page, shopSlug = 'e2e-fixture-shop', category = 'C
 async function addProduct(page, productTestId, quantity = 1) {
   const product = page.getByTestId(productTestId);
   await product.click();
-  const popup = product.getByTestId('quantity-popup');
+  const popup = product.getByTestId("quantity-popup");
   await expect(popup).toBeVisible();
   for (let i = 0; i < quantity; i++) {
-    await popup.getByTestId('quantity-increase').click();
+    await popup.getByTestId("quantity-increase").click();
   }
-  await popup.getByTestId('quantity-add').click();
+  await popup.getByTestId("quantity-add").click();
   await expect(popup).not.toBeVisible();
 }
 
@@ -31,8 +35,8 @@ async function addProduct(page, productTestId, quantity = 1) {
  * Click "review order" and wait for the cart form to be ready.
  */
 async function goToCart(page) {
-  await page.getByTestId('review-order').click();
-  await expect(page.getByTestId('customer-name')).toBeVisible();
+  await page.getByTestId("review-order").click();
+  await expect(page.getByTestId("customer-name")).toBeVisible();
 }
 
 /**
@@ -41,7 +45,7 @@ async function goToCart(page) {
  */
 async function reachCart(page, quantity = 1) {
   await navigateToShop(page);
-  await addProduct(page, 'product-e2e-product', quantity);
+  await addProduct(page, "product-e2e-product", quantity);
   await goToCart(page);
 }
 
@@ -49,8 +53,8 @@ async function reachCart(page, quantity = 1) {
  * Intercept WhatsApp navigation so the page never actually leaves the app.
  */
 async function interceptWhatsApp(page) {
-  await page.route('https://wa.me/**', (route) =>
-    route.fulfill({ body: '', contentType: 'text/plain', status: 200 })
+  await page.route("https://wa.me/**", (route) =>
+    route.fulfill({ body: "", contentType: "text/plain", status: 200 }),
   );
 }
 
@@ -59,10 +63,13 @@ async function interceptWhatsApp(page) {
  * parsed outgoing URL for further assertion.
  */
 async function submitAndParseWhatsApp(page) {
-  const whatsappNavigation = page.waitForURL(/^https:\/\/wa\.me\/5491100000000\?text=/, {
-    waitUntil: 'commit',
-  });
-  await page.getByTestId('submit-whatsapp-order').click({ noWaitAfter: true });
+  const whatsappNavigation = page.waitForURL(
+    /^https:\/\/wa\.me\/5491100000000\?text=/,
+    {
+      waitUntil: "commit",
+    },
+  );
+  await page.getByTestId("submit-whatsapp-order").click({ noWaitAfter: true });
   await whatsappNavigation;
   return new URL(page.url());
 }

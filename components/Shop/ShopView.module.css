@@ -1,7 +1,7 @@
 .scrollView {
   height: 100vh;
-  overflow-y: auto;
   padding-bottom: 130px;
+  overflow-y: auto;
 }
 
 .container {

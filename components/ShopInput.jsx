@@ -41,8 +41,14 @@ const ShopInput = React.forwardRef((props, ref) => {
     }
     if (onKeyDown) onKeyDown(event);
   };
-  const heightClassName = numberOfLines === 2 ? styles.inputLines2 : numberOfLines === 3.5 ? styles.inputLines3_5 : "";
-  const controlClassName = `${styles.input} ${error ? styles.inputError : ""} ${heightClassName} ${className || ""}`.trim();
+  const heightClassName =
+    numberOfLines === 2
+      ? styles.inputLines2
+      : numberOfLines === 3.5
+        ? styles.inputLines3_5
+        : "";
+  const controlClassName =
+    `${styles.input} ${error ? styles.inputError : ""} ${heightClassName} ${className || ""}`.trim();
   const controlProps = {
     ...inputProps,
     ref,
@@ -55,14 +61,27 @@ const ShopInput = React.forwardRef((props, ref) => {
     "aria-invalid": error ? "true" : undefined,
     onChange: handleChange,
     onKeyDown: handleKeyDown,
-    style: placeholderTextColor ? { "--placeholder-color": placeholderTextColor } : undefined,
+    style: placeholderTextColor
+      ? { "--placeholder-color": placeholderTextColor }
+      : undefined,
     ...(numberOfLines ? { rows: Math.ceil(numberOfLines) } : {}),
   };
-  const control = multiline ? <textarea {...controlProps} /> : <input {...controlProps} />;
+  const control = multiline ? (
+    <textarea {...controlProps} />
+  ) : (
+    <input {...controlProps} />
+  );
 
   return (
     <div className={styles.container}>
-      {label ? <label className={styles.label}><span className={styles.labelText}>{label}</span>{control}</label> : control}
+      {label ? (
+        <label className={styles.label}>
+          <span className={styles.labelText}>{label}</span>
+          {control}
+        </label>
+      ) : (
+        control
+      )}
       {error && <span className={styles.textError}>{error.message}</span>}
     </div>
   );

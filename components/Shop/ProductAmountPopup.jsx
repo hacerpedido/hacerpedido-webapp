@@ -28,32 +28,64 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
   return transitions.map(
     ({ item, key, props }) =>
       item && (
-        <animated.div style={props} key={key}>
-          <div aria-label="Quantity selector" className={styles.container} data-testid="quantity-popup" role="dialog" onClick={(event) => event.stopPropagation()}>
-            <button aria-label="Decrease quantity" className={styles.buttonQty} onClick={() => updateAmount(popUpAmount - 1)} type="button">
+        <animated.div key={key} style={props}>
+          <div
+            aria-label="Quantity selector"
+            className={styles.container}
+            data-testid="quantity-popup"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <button
+              aria-label="Decrease quantity"
+              className={styles.buttonQty}
+              onClick={() => updateAmount(popUpAmount - 1)}
+              type="button"
+            >
               <span className={styles.buttonQtyText}>-</span>
             </button>
 
             <span className={styles.amountText}>{popUpAmount}</span>
 
-            <button aria-label="Increase quantity" className={`${styles.buttonQty} ${styles.buttonPlus}`} data-testid="quantity-increase" onClick={() => updateAmount(popUpAmount + 1)} type="button">
-              <span className={`${styles.buttonQtyText} ${styles.buttonPlusText}`}>+</span>
+            <button
+              aria-label="Increase quantity"
+              className={`${styles.buttonQty} ${styles.buttonPlus}`}
+              data-testid="quantity-increase"
+              onClick={() => updateAmount(popUpAmount + 1)}
+              type="button"
+            >
+              <span
+                className={`${styles.buttonQtyText} ${styles.buttonPlusText}`}
+              >
+                +
+              </span>
             </button>
 
             <div className={styles.lineBreak} />
 
-            <button aria-label="Add product" className={styles.buttonSubmit} data-testid="quantity-add" onClick={() => updateAmount(popUpAmount, true)} type="button">
+            <button
+              aria-label="Add product"
+              className={styles.buttonSubmit}
+              data-testid="quantity-add"
+              onClick={() => updateAmount(popUpAmount, true)}
+              type="button"
+            >
               <span className={styles.buttonSubmitText}>Agregar</span>
             </button>
 
             <div className={styles.lineBreak} />
 
-            <button aria-label="Close quantity selector" className={styles.closeButton} onClick={handleClose} type="button">
+            <button
+              aria-label="Close quantity selector"
+              className={styles.closeButton}
+              onClick={handleClose}
+              type="button"
+            >
               <span className={styles.closeButtonIcon}>+</span>
             </button>
           </div>
         </animated.div>
-      )
+      ),
   );
 };
 

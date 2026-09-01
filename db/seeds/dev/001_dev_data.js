@@ -6,8 +6,10 @@ exports.seed = async (knex) => {
   // The previous dev seed used the same product IDs but a different shop ID
   // namespace. Include those seed-owned shop IDs in the migration window so a
   // refresh does not leave the old 52 shops behind.
-  const legacyShopIds = Array.from({ length: 52 }, (_, index) =>
-    `00000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`
+  const legacyShopIds = Array.from(
+    { length: 52 },
+    (_, index) =>
+      `00000000-0000-0000-0000-${String(index + 1).padStart(12, "0")}`,
   );
   const managedShopIds = [...shopIds, ...legacyShopIds];
   const productIds = data.products.map(({ id }) => id);

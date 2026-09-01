@@ -6,7 +6,7 @@ import styles from "./ProductList.module.css";
 const ProductList = ({ products, shop }) => (
   <div className={styles.container}>
     {products.map((category, index) => (
-      <section key={index} className={styles.categorySection}>
+      <section className={styles.categorySection} key={index}>
         <h2 className={styles.category}>{category.name}</h2>
         <ul className={styles.products}>
           {category.products.map((product) => (

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 import Loading from "../components/Loading";
-import ShopView from "../components/Shop/ShopView";
 import ShopFooter from "../components/Shop/ShopFooter";
+import ShopView from "../components/Shop/ShopView";
 import { useCart } from "../lib/context/CartContext";
 import styles from "./[slug].module.css";
 
@@ -21,7 +21,9 @@ export default function Shop() {
       setIsLoading(true);
 
       try {
-        const shopData = await axios.get(`${window.location.origin}/api/shop/${slug}`);
+        const shopData = await axios.get(
+          `${window.location.origin}/api/shop/${slug}`,
+        );
         cartDispatch({ type: "SET_SHOP", payload: shopData.data });
       } catch (error) {
         console.log(JSON.stringify(error, null, 2));
@@ -36,30 +38,46 @@ export default function Shop() {
   }, [cartDispatch, slug]);
 
   if (!slug || shop?.slug !== slug) {
-    return isLoading ? <Loading /> : <p className={styles.message}>Sin comercios en la base de datos para {slug}.</p>;
+    return isLoading ? (
+      <Loading />
+    ) : (
+      <p className={styles.message}>
+        Sin comercios en la base de datos para {slug}.
+      </p>
+    );
   }
 
   if (!shop) {
-    return <p className={styles.message}>Sin comercios en la base de datos para {slug}</p>;
+    return (
+      <p className={styles.message}>
+        Sin comercios en la base de datos para {slug}
+      </p>
+    );
   }
 
   return (
     <main className={styles.page}>
       <Head>
         <title>{shop.name} | Hacer Pedido</title>
-        <meta property="og:image" content="/logo512.png" />
-        <meta property="og:description" content={shop.name} />
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="Hacer Pedido" />
-        <meta property="og:title" content={shop.name} />
-        <meta property="og:url" content={`https://hacerpedido.com/${shop.slug}`} />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content={shop.name} />
-        <meta property="twitter:description" content={shop.name} />
-        <meta property="twitter:url" content={`https://hacerpedido.com/${shop.slug}`} />
+        <meta content="/logo512.png" property="og:image" />
+        <meta content={shop.name} property="og:description" />
+        <meta content="article" property="og:type" />
+        <meta content="Hacer Pedido" property="og:site_name" />
+        <meta content={shop.name} property="og:title" />
+        <meta
+          content={`https://hacerpedido.com/${shop.slug}`}
+          property="og:url"
+        />
+        <meta content="summary" property="twitter:card" />
+        <meta content={shop.name} property="twitter:title" />
+        <meta content={shop.name} property="twitter:description" />
+        <meta
+          content={`https://hacerpedido.com/${shop.slug}`}
+          property="twitter:url"
+        />
       </Head>
 
-      <ShopView shop={shop} isLoading={isLoading} />
+      <ShopView isLoading={isLoading} shop={shop} />
       <ShopFooter shop={shop} />
     </main>
   );

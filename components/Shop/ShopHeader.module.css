@@ -5,27 +5,27 @@
 }
 
 .buttonBack {
-  background: transparent;
-  border: 0;
-  color: #fff;
-  cursor: pointer;
-  padding: 24px;
   position: absolute;
   z-index: 2;
+  padding: 24px;
+  color: #fff;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 
 .buttonCall {
-  align-items: center;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  color: #fff;
+  z-index: 2;
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: center;
-  opacity: 0.7;
   padding: 8px 9px 0 9px;
+  color: #fff;
   text-decoration: none;
-  z-index: 2;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  opacity: 0.7;
 }
 
 .buttonCall:hover,
@@ -37,79 +37,79 @@
 
 .buttonCallContainer {
   position: absolute;
-  right: 24px;
   top: 16px;
+  right: 24px;
   z-index: 1;
 }
 
 .buttonText {
-  color: #fff;
-  font-family: 'Barlow';
-  font-size: 14px;
-  font-weight: 600;
   margin-bottom: 8px;
   margin-left: 9px;
+  font-family: "Barlow";
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
 }
 
 .containerData {
-  align-items: center;
+  z-index: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 26px;
   margin-top: -24px;
-  z-index: 0;
+  margin-bottom: 26px;
 }
 
 .containerLogo {
   align-items: center;
-  height: 100px;
   width: 100px;
+  height: 100px;
 }
 
 .containerNavigator {
-  background-color: transparent;
+  z-index: 2;
   display: flex;
   flex: 1;
   flex-direction: row;
   justify-content: space-between;
   min-height: 4em;
-  z-index: 2;
+  background-color: transparent;
 }
 
 .logoPlaceholder {
-  background-color: #fff;
-  border-radius: 50%;
-  height: 100px;
-  width: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100px;
+  height: 100px;
+  background-color: #fff;
+  border-radius: 50%;
 }
 
 .logoInitials {
-  color: #fff;
-  font-family: 'Barlow';
+  font-family: "Barlow";
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
+  color: #fff;
   text-align: center;
 }
 
 .logo {
-  background-color: #fff;
-  border-radius: 50%;
+  width: 100px;
   height: 100px;
   object-fit: cover;
-  width: 100px;
+  background-color: #fff;
+  border-radius: 50%;
 }
 
 .shopName {
-  color: #fff;
-  font-family: 'Barlow';
+  padding: 6px;
+  margin: 5px 0;
+  font-family: "Barlow";
   font-size: 19px;
   font-weight: 700;
-  margin: 5px 0;
-  padding: 6px;
+  color: #fff;
   text-transform: capitalize;
 }

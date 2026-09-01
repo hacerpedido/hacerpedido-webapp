@@ -1,17 +1,17 @@
 .default {
-  align-items: center;
-  color: #ffb233;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin: 30px 0;
   width: 100%;
+  margin: 30px 0;
+  color: #ffb233;
 }
 
 .spinner {
-  animation: spin 0.75s linear infinite;
+  width: 36px;
   height: 36px;
   transform: rotate(-90deg);
-  width: 36px;
+  animation: spin 0.75s linear infinite;
 }
 
 .spinnerTrack,

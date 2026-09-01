@@ -12,7 +12,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run lint
+      - run: npx biome ci .
       - run: npm test -- --runInBand
       # The E2E job starts the same Docker Compose stack used locally,
       # runs Knex migrations + seed, builds and serves the app, then

@@ -22,15 +22,22 @@ export default function ProductList({ products, isCartEnabled = false }) {
       }
 
       listItems.push(
-        <div key={item++} className={styles.category}>
+        <div className={styles.category} key={item++}>
           {category}
-        </div>
+        </div>,
       );
 
       lastCategory = category;
     }
 
-    listItems.push(<Product key={item++} product={product} promo={isPromo} isCartEnabled={isCartEnabled} />);
+    listItems.push(
+      <Product
+        isCartEnabled={isCartEnabled}
+        key={item++}
+        product={product}
+        promo={isPromo}
+      />,
+    );
   });
 
   listItems.push(<Divider key={item++} />);

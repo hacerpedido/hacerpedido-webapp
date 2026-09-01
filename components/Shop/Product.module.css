@@ -1,56 +1,56 @@
 .amountContainer {
-  align-items: center;
-  background-color: #ffb233;
   display: inline-flex;
-  border-radius: 3px;
-  height: 20px;
+  align-items: center;
   justify-content: center;
-  margin-left: 11px;
   width: 20px;
+  height: 20px;
+  margin-left: 11px;
+  background-color: #ffb233;
+  border-radius: 3px;
 }
 
 .amountText {
-  color: #ffffff;
   font-family: "Barlow";
   font-size: 14px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .buttonQty {
-  border: 1px solid #3ecb7d;
   display: flex;
-  border-radius: 2px;
-  height: 20px;
   justify-content: center;
+  width: 20px;
+  height: 20px;
   margin-left: 11px;
   text-align: center;
-  width: 20px;
+  border: 1px solid #3ecb7d;
+  border-radius: 2px;
 }
 
 .buttonQtyText {
-  color: #3ecb7d;
+  padding-bottom: 2px;
   font-family: "Barlow";
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
-  padding-bottom: 2px;
+  color: #3ecb7d;
 }
 
 .card {
+  padding: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
   border: 1px solid #e8e8e8;
   border-radius: 7px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-top: 10px;
-  padding: 10px;
-  padding-left: 15px;
-  padding-right: 15px;
 }
 
 .container {
-  align-items: center;
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: center;
   min-height: 52px;
 }
@@ -58,21 +58,21 @@
 .description {
   flex: 1;
   flex-wrap: wrap;
-  color: #8f9bb3;
   font-family: "Roboto Slab";
   font-size: 13px;
   line-height: 17px;
+  color: #8f9bb3;
 }
 
 .name {
   flex: 1;
   flex-wrap: wrap;
-  font-family: "Barlow";
-  font-weight: 600;
-  color: #4d360f;
-  font-size: 15px;
-  line-height: 18px;
   margin-bottom: 5px;
+  font-family: "Barlow";
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+  color: #4d360f;
 }
 
 .nameDescription {
@@ -80,31 +80,31 @@
 }
 
 .price {
-  color: #2f995e;
+  margin-left: 12px;
   font-family: "Barlow";
   font-size: 15px;
   font-weight: 600;
-  margin-left: 12px;
+  color: #2f995e;
 }
 
 .product {
-  border-bottom: 1px solid #edf1f7;
-  margin-left: 16px;
-  margin-right: 16px;
-  margin-top: 15px;
-  padding-bottom: 10px;
   padding-right: 10px;
+  padding-bottom: 10px;
+  margin-top: 15px;
+  margin-right: 16px;
+  margin-left: 16px;
+  border-bottom: 1px solid #edf1f7;
 }
 
 .productButton {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
   display: block;
+  width: 100%;
   padding: 0;
   text-align: left;
-  width: 100%;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
 }
 
 .productRoot {

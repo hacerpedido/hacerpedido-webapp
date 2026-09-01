@@ -1,35 +1,35 @@
 .container {
-  background-color: #ececec;
   display: flex;
   flex-direction: row;
   height: 100vh;
   min-height: 0;
   overflow: hidden;
+  background-color: #ececec;
 }
 
 .leftContainer {
-  background-color: #fafafa;
   flex: 1;
-  overflow-y: auto;
   padding: 40px;
+  overflow-y: auto;
+  background-color: #fafafa;
 }
 
 .rightContainer {
-  background-color: #ececec;
   display: flex;
   flex: 0 0 400px;
   flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  padding: 30px;
   width: 400px;
+  min-height: 0;
+  padding: 30px;
+  overflow: hidden;
+  background-color: #ececec;
 }
 
 .productionLink {
-  color: #37b26e !important;
   display: block;
   flex: 0 0 auto;
   padding-bottom: 30px;
+  color: #37b26e !important;
   text-align: center;
   text-decoration: none !important;
 }
@@ -42,19 +42,19 @@
 }
 
 .openProductionLink {
-  color: #37b26e;
   font-family: Barlow, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
+  color: #37b26e;
 }
 
 .openProductionLinkIcon {
-  height: 16px;
-  margin: 3px;
   position: relative;
   top: 4px;
   width: 18px;
+  height: 16px;
+  margin: 3px;
 }
 
 .rightContainer > div:last-child {

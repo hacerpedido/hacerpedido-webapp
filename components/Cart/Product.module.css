@@ -1,43 +1,43 @@
 .amount {
-  color: #4d360f;
+  margin-right: 9px;
   font-family: Barlow, sans-serif;
   font-size: 15px;
   font-weight: 700;
-  margin-right: 9px;
+  color: #4d360f;
 }
 
 .container {
-  align-items: flex-start;
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
   margin-bottom: 9px;
 }
 
 .description {
-  color: #8f9bb3;
   display: block;
+  max-width: 100%;
   font-family: "Roboto Slab", serif;
   font-size: 13px;
   line-height: 17px;
-  max-width: 100%;
-  overflow-wrap: anywhere;
+  color: #8f9bb3;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .nameDescription {
-  color: #4d360f;
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   font-family: Barlow, sans-serif;
   font-size: 15px;
   font-weight: 500;
-  min-width: 0;
+  color: #4d360f;
 }
 
 .text {
   display: block;
   max-width: 100%;
-  overflow-wrap: anywhere;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }

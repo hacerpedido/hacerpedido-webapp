@@ -1,5 +1,5 @@
-import React from "react";
 import { useRouter } from "next/router";
+import React from "react";
 
 import { ArrowLeft as ArrowLeftIcon } from "../../assets/icons";
 import { useCart } from "../../lib/context/CartContext";
@@ -13,7 +13,12 @@ export default function CartHeader() {
   return (
     <header className={styles.container}>
       <div className={styles.containerNavigator}>
-        <button type="button" className={styles.buttonBack} onClick={() => router.push(`/${slug}`)} aria-label="Volver">
+        <button
+          aria-label="Volver"
+          className={styles.buttonBack}
+          onClick={() => router.push(`/${slug}`)}
+          type="button"
+        >
           <ArrowLeftIcon />
         </button>
       </div>

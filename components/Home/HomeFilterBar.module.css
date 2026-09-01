@@ -1,31 +1,31 @@
 .container {
-  background-color: #ffffff;
-  border-bottom: 1px solid #f3f0eb;
   display: flex;
   flex: 1;
+  padding: 0 4px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0 4px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f0eb;
 }
 
 .list {
   display: flex;
   flex-direction: row;
-  list-style: none;
-  margin: 0;
   min-width: max-content;
   padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .item {
+  padding: 10px 15px;
+  margin: 8px 4px;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
   background-color: #ffffff;
   border: 1px solid #e6a02e;
   border-radius: 4px;
-  cursor: pointer;
-  font-family: inherit;
-  margin: 8px 4px;
-  padding: 10px 15px;
-  white-space: nowrap;
 }
 
 .item:active {
@@ -37,10 +37,10 @@
 }
 
 .title {
-  color: #e5a130;
   font-family: Barlow, sans-serif;
   font-size: 16px;
   font-weight: 600;
+  color: #e5a130;
 }
 
 .titleSelected {

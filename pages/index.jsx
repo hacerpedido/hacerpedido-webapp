@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import Link from "next/link";
 import axios from "axios";
 import Head from "next/head";
-
-import HomeHeader from "../components/Home/HomeHeader";
+import Link from "next/link";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import HomeFilterBar from "../components/Home/HomeFilterBar";
+import HomeHeader from "../components/Home/HomeHeader";
 import ShopCard from "../components/Home/ShopCard";
 import Loading from "../components/Loading";
 import styles from "./index.module.css";
@@ -29,35 +28,42 @@ export default function App() {
   const firstVisibleItemRef = useRef(firstVisibleItem);
   const visibleItemsRef = useRef(new Map());
 
-  const onSelect = useCallback(
-    (shop) => {
-      const header = document.querySelector(`.${styles.header}`);
-      const viewportTop = header ? header.getBoundingClientRect().bottom : 0;
-      const visibleIndex = listRef.current
-        ? [...listRef.current.querySelectorAll("[data-shop-index]")]
-            .map((item) => {
-              const bounds = item.getBoundingClientRect();
-              const visibleHeight = Math.max(0, Math.min(bounds.bottom, window.innerHeight) - Math.max(bounds.top, viewportTop));
-              return { index: Number(item.dataset.index), ratio: bounds.height ? visibleHeight / bounds.height : 0 };
-            })
-            .filter((item) => item.ratio >= 0.5)
-            .sort((first, second) => first.index - second.index)[0]?.index
-        : undefined;
+  const onSelect = useCallback((shop) => {
+    const header = document.querySelector(`.${styles.header}`);
+    const viewportTop = header ? header.getBoundingClientRect().bottom : 0;
+    const visibleIndex = listRef.current
+      ? [...listRef.current.querySelectorAll("[data-shop-index]")]
+          .map((item) => {
+            const bounds = item.getBoundingClientRect();
+            const visibleHeight = Math.max(
+              0,
+              Math.min(bounds.bottom, window.innerHeight) -
+                Math.max(bounds.top, viewportTop),
+            );
+            return {
+              index: Number(item.dataset.index),
+              ratio: bounds.height ? visibleHeight / bounds.height : 0,
+            };
+          })
+          .filter((item) => item.ratio >= 0.5)
+          .sort((first, second) => first.index - second.index)[0]?.index
+      : undefined;
 
-      if (visibleIndex !== undefined) {
-        firstVisibleItemRef.current = visibleIndex;
-      }
-      setFirstVisibleItem(firstVisibleItemRef.current);
-    },
-    []
-  );
+    if (visibleIndex !== undefined) {
+      firstVisibleItemRef.current = visibleIndex;
+    }
+    setFirstVisibleItem(firstVisibleItemRef.current);
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
     setShops([]);
 
     async function getData() {
-      const shopData = await axios.get(`${window.location.origin}/api/shop/home`, { params: { category } });
+      const shopData = await axios.get(
+        `${window.location.origin}/api/shop/home`,
+        { params: { category } },
+      );
 
       setShops(shopData.data);
       setIsLoading(false);
@@ -69,10 +75,16 @@ export default function App() {
     });
   }, [category]);
 
-  const filteredShops = shops.filter((shop) => shop.visibility === "public" && shop.category === category);
+  const filteredShops = shops.filter(
+    (shop) => shop.visibility === "public" && shop.category === category,
+  );
 
   useEffect(() => {
-    if (isLoading || !listRef.current || typeof IntersectionObserver === "undefined") {
+    if (
+      isLoading ||
+      !listRef.current ||
+      typeof IntersectionObserver === "undefined"
+    ) {
       return undefined;
     }
 
@@ -90,15 +102,19 @@ export default function App() {
           }
         });
 
-        const visibleIndexes = [...visibleItemsRef.current.keys()].sort((first, second) => first - second);
+        const visibleIndexes = [...visibleItemsRef.current.keys()].sort(
+          (first, second) => first - second,
+        );
         if (visibleIndexes.length > 0) {
           firstVisibleItemRef.current = visibleIndexes[0];
         }
       },
-      { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: [0.5] }
+      { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: [0.5] },
     );
 
-    listRef.current.querySelectorAll("[data-shop-index]").forEach((item) => observer.observe(item));
+    listRef.current
+      .querySelectorAll("[data-shop-index]")
+      .forEach((item) => observer.observe(item));
 
     return () => observer.disconnect();
   }, [category, filteredShops.length, isLoading]);
@@ -125,21 +141,22 @@ export default function App() {
 
     const header = document.querySelector(`.${styles.header}`);
     const headerHeight = header ? header.getBoundingClientRect().height : 0;
-    const targetTop = item.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+    const targetTop =
+      item.getBoundingClientRect().top + window.pageYOffset - headerHeight;
     window.scrollTo(0, Math.max(0, targetTop));
   }, [category, filteredShops.length, isLoading]);
 
   const ShopList = () => (
-    <section className={styles.list} ref={listRef} aria-label="Locales">
+    <section aria-label="Locales" className={styles.list} ref={listRef}>
       <ul className={styles.shopList}>
         {filteredShops.map((item, index) => (
-          <li key={item.id} className={styles.shopItem} data-shop-index={index}>
+          <li className={styles.shopItem} data-shop-index={index} key={item.id}>
             <Link href={`/${item.slug}`}>
               <a
                 aria-label={item.name}
                 className={styles.shopButton}
-                onClick={() => onSelect(item)}
                 data-testid={`shop-card-${item.slug}`}
+                onClick={() => onSelect(item)}
               >
                 <ShopCard shop={item} />
               </a>
@@ -147,7 +164,7 @@ export default function App() {
           </li>
         ))}
       </ul>
-      <div className={styles.lastView} aria-hidden="true" />
+      <div aria-hidden="true" className={styles.lastView} />
     </section>
   );
 
@@ -160,12 +177,12 @@ export default function App() {
       <div className={styles.header}>
         <HomeHeader />
         <HomeFilterBar
-          selectedFilter={category}
           onSelectFilter={(selected) => {
             firstVisibleItemRef.current = 0;
             setFirstVisibleItem(0);
             setCategory(selected);
           }}
+          selectedFilter={category}
         />
       </div>
 

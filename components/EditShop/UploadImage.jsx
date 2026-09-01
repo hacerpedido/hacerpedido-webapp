@@ -1,20 +1,24 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import dynamic from "next/dynamic";
 import axios from "axios";
+import dynamic from "next/dynamic";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 import styles from "./UploadImage.module.css";
 
-const DynamicStyledDropZone = dynamic(() => import("react-drop-zone").then((mod) => mod.StyledDropZone), {
-  ssr: false,
-});
+const DynamicStyledDropZone = dynamic(
+  () => import("react-drop-zone").then((mod) => mod.StyledDropZone),
+  {
+    ssr: false,
+  },
+);
 
 // Increase pixel density for crop preview quality on retina screens.
-const pixelRatio = (typeof window !== "undefined" && window.devicePixelRatio) || 1;
+const pixelRatio =
+  (typeof window !== "undefined" && window.devicePixelRatio) || 1;
 
 const UploadImage = ({ shopID, imageType, handleClose }) => {
   const circularCrop = imageType === "logo";
@@ -82,7 +86,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
       0,
       0,
       crop.width,
-      crop.height
+      crop.height,
     );
 
     canvas.toBlob(
@@ -103,7 +107,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           });
       },
       "image/png",
-      1
+      1,
     );
   };
 
@@ -122,38 +126,40 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
             <DynamicStyledDropZone
               accept="image/*"
               children="Haga click o arrastre un archivo aquí"
-              onDrop={onDropFile}
               multiple={false}
+              onDrop={onDropFile}
             />
           )}
           {image && (
             <div className={styles.preview}>
               <ReactCrop
-                src={upImg}
-                onImageLoaded={onLoad}
                 circularCrop={circularCrop}
                 crop={crop}
                 onChange={(nextCrop) => setCrop(nextCrop)}
                 onComplete={(nextCrop) => setCompletedCrop(nextCrop)}
+                onImageLoaded={onLoad}
+                src={upImg}
               />
             </div>
           )}
         </div>
       </Modal.Body>
-      <Modal.Footer className={`${styles.footer} ${!image ? styles.footerEmpty : ""}`}>
+      <Modal.Footer
+        className={`${styles.footer} ${!image ? styles.footerEmpty : ""}`}
+      >
         {isWaiting && (
           <div className={styles.waiting} role="status">
             <span>Por favor, espere... </span>
-            <span className={styles.spinner} aria-label="Cargando" />
+            <span aria-label="Cargando" className={styles.spinner} />
           </div>
         )}
         {!isWaiting && image && (
-          <Button variant="primary" onClick={() => onUpload(completedCrop)}>
+          <Button onClick={() => onUpload(completedCrop)} variant="primary">
             Aceptar
           </Button>
         )}
         {!isWaiting && !image && (
-          <Button variant="primary" onClick={onDelete}>
+          <Button onClick={onDelete} variant="primary">
             Borrar imagen actual
           </Button>
         )}

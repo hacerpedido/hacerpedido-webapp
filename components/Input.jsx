@@ -43,7 +43,8 @@ const Input = React.forwardRef((props, ref) => {
     }
     if (onKeyDown) onKeyDown(event);
   };
-  const controlClassName = `${styles.input} ${error ? styles.inputError : ""} ${className || ""}`.trim();
+  const controlClassName =
+    `${styles.input} ${error ? styles.inputError : ""} ${className || ""}`.trim();
   const controlProps = {
     ...inputProps,
     ref,
@@ -56,14 +57,27 @@ const Input = React.forwardRef((props, ref) => {
     "aria-invalid": error ? "true" : undefined,
     onChange: handleChange,
     onKeyDown: handleKeyDown,
-    style: placeholderTextColor ? { "--placeholder-color": placeholderTextColor } : undefined,
+    style: placeholderTextColor
+      ? { "--placeholder-color": placeholderTextColor }
+      : undefined,
     ...(multiline ? { rows: numberOfLines } : {}),
   };
-  const control = multiline ? <textarea {...controlProps} /> : <input {...controlProps} />;
+  const control = multiline ? (
+    <textarea {...controlProps} />
+  ) : (
+    <input {...controlProps} />
+  );
 
   return (
     <div className={styles.container}>
-      {label ? <label className={styles.label}><span className={styles.labelText}>{label}</span>{control}</label> : control}
+      {label ? (
+        <label className={styles.label}>
+          <span className={styles.labelText}>{label}</span>
+          {control}
+        </label>
+      ) : (
+        control
+      )}
       {error && <span className={styles.textError}>{error.message}</span>}
     </div>
   );

@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
+import React, { useEffect, useMemo, useRef } from "react";
 
 import "handsontable/dist/handsontable.full.css";
 
+import useWidth from "../../lib/hooks/use_width";
 import { productForGrid, productsFromGrid } from "../../lib/utils/products";
 import { sanitizePrice } from "../../lib/utils/utils";
-import useWidth from "../../lib/hooks/use_width";
 import styles from "./EditProducts.module.css";
 
 let handsontableCore;
@@ -21,14 +21,14 @@ const HotTable = dynamic(
   },
   {
     ssr: false,
-  }
+  },
 );
 
 const EditProducts = ({ products, shopId, onTempProductsChange }) => {
   const grid = useRef(null);
   useWidth();
 
-  let gridData = useMemo(() => productForGrid(products), [products]);
+  const gridData = useMemo(() => productForGrid(products), [products]);
 
   useEffect(() => {
     const check = () => {
@@ -49,8 +49,8 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
       return;
     }
 
-    let tempData = grid.current.hotInstance.getData();
-    let tempProducts = productsFromGrid(shopId, tempData);
+    const tempData = grid.current.hotInstance.getData();
+    const tempProducts = productsFromGrid(shopId, tempData);
 
     onTempProductsChange(tempProducts);
   };
@@ -74,7 +74,15 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
     },
   ];
 
-  function categoryRenderer(instance, td, row, col, prop, value, cellProperties) {
+  function categoryRenderer(
+    instance,
+    td,
+    row,
+    col,
+    prop,
+    value,
+    cellProperties,
+  ) {
     void cellProperties;
     handsontableCore.renderers.TextRenderer.apply(this, arguments);
 
@@ -90,7 +98,7 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
   function getCells(row, col) {
     var cellProperties = {};
     if (grid.current != null) {
-      let tempData = grid.current.hotInstance.getDataAtRow(row);
+      const tempData = grid.current.hotInstance.getDataAtRow(row);
 
       if (tempData[0] && col > 0) {
         cellProperties.renderer = categoryRenderer;
@@ -129,32 +137,32 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
     <section className={styles.container}>
       <h2 className={styles.title}>Tu menú o listado de precios</h2>
       <HotTable
-        forwardedRef={grid}
-        data={gridData}
-        licenseKey={"non-commercial-and-evaluation"}
         afterChange={afterChange}
         beforeChange={beforeChanges}
-        minSpareRows={spareRows}
-        language={"es-MX"}
-        preventOverflow={"horizontal"}
-        columns={columns}
         colHeaders={colHeaders}
-        contextMenu={["row_above", "row_below", "remove_row"]}
+        columns={columns}
         colWidths={(index) => {
-          const width = typeof window !== "undefined" ? window.innerWidth : 1001;
+          const width =
+            typeof window !== "undefined" ? window.innerWidth : 1001;
 
           switch (index) {
             case 0:
               return 50;
             case 3:
               return 90;
-            default:
-              {
-                const otherElementsWidth = width > 1000 ? 644 : 244;
-                return (width - otherElementsWidth) / 2;
-              }
+            default: {
+              const otherElementsWidth = width > 1000 ? 644 : 244;
+              return (width - otherElementsWidth) / 2;
+            }
           }
         }}
+        contextMenu={["row_above", "row_below", "remove_row"]}
+        data={gridData}
+        forwardedRef={grid}
+        language={"es-MX"}
+        licenseKey={"non-commercial-and-evaluation"}
+        minSpareRows={spareRows}
+        preventOverflow={"horizontal"}
       />
     </section>
   );

@@ -1,9 +1,9 @@
 .category {
-  color: #4d360f;
+  margin-bottom: 10px;
   font-family: Barlow, sans-serif;
   font-size: 17px;
   font-weight: 700;
-  margin-bottom: 10px;
+  color: #4d360f;
 }
 
 .categorySection {
@@ -15,7 +15,7 @@
 }
 
 .products {
-  list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  list-style: none;
 }

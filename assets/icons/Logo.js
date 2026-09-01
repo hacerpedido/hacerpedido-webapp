@@ -2,15 +2,15 @@ import * as React from "react";
 
 function SvgLogo(props) {
   return (
-    <svg width={54} height={24} {...props}>
+    <svg height={24} width={54} {...props}>
       <defs>
-        <path id="logo_svg__a" d="M.059.134H31.68V24H.06z" />
-        <path id="logo_svg__c" d="M.248.335h21.44V24H.247z" />
-        <path id="logo_svg__e" d="M0 .24h3.692v3.692H0z" />
+        <path d="M.059.134H31.68V24H.06z" id="logo_svg__a" />
+        <path d="M.248.335h21.44V24H.247z" id="logo_svg__c" />
+        <path d="M0 .24h3.692v3.692H0z" id="logo_svg__e" />
       </defs>
       <g fill="none" fillRule="evenodd">
         <g transform="translate(2)">
-          <mask id="logo_svg__b" fill="currentColor">
+          <mask fill="currentColor" id="logo_svg__b">
             <use xlinkHref="#logo_svg__a" />
           </mask>
           <path
@@ -20,7 +20,7 @@ function SvgLogo(props) {
           />
         </g>
         <g transform="translate(32)">
-          <mask id="logo_svg__d" fill="currentColor">
+          <mask fill="currentColor" id="logo_svg__d">
             <use xlinkHref="#logo_svg__c" />
           </mask>
           <path
@@ -30,7 +30,7 @@ function SvgLogo(props) {
           />
         </g>
         <g transform="translate(0 10)">
-          <mask id="logo_svg__f" fill="currentColor">
+          <mask fill="currentColor" id="logo_svg__f">
             <use xlinkHref="#logo_svg__e" />
           </mask>
           <path

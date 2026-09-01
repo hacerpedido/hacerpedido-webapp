@@ -8,8 +8,10 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "RobotoSlab", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "RobotoSlab", "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #fafcff;
@@ -25,8 +27,8 @@ a {
 }
 
 .bounza {
-  animation: horizontal_2843 4.72s ease infinite;
   transform-origin: 50% 50%;
+  animation: horizontal_2843 4.72s ease infinite;
 }
 
 @keyframes horizontal_2843 {

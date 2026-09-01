@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-
 import Link from "next/link";
-import * as Icons from "../../assets/icons";
+import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import colors from "../../assets/colors";
+import * as Icons from "../../assets/icons";
 import styles from "./HomeHeader.module.css";
 
 export default function HomeHeader() {
@@ -20,22 +18,34 @@ export default function HomeHeader() {
     <header className={styles.container}>
       <Link href="/">
         <a>
-          <Icons.LogoHacerpedido width={177} height={19} color={colors.white} />
-          <input name="deployedVersion" value={version} type="hidden" readOnly />
+          <Icons.LogoHacerpedido color={colors.white} height={19} width={177} />
+          <input
+            name="deployedVersion"
+            readOnly
+            type="hidden"
+            value={version}
+          />
         </a>
       </Link>
 
-      <button type="button" className={styles.addShopButton} onClick={handleShow}>
+      <button
+        className={styles.addShopButton}
+        onClick={handleShow}
+        type="button"
+      >
         ¡Sumá tu comercio!
       </button>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal onHide={handleClose} show={show}>
         <Modal.Header closeButton>
           <Modal.Title>Ups...</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Por el momento no estamos haciendo nuevas altas. Próximamente habrá novedades :)</Modal.Body>
+        <Modal.Body>
+          Por el momento no estamos haciendo nuevas altas. Próximamente habrá
+          novedades :)
+        </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button onClick={handleClose} variant="secondary">
             Cerrar
           </Button>
         </Modal.Footer>

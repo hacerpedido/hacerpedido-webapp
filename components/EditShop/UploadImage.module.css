@@ -5,12 +5,12 @@
 }
 
 .preview {
-  align-items: center;
-  background-color: #999;
   display: flex;
+  align-items: center;
   justify-content: center;
   max-height: 75vh;
   overflow: auto;
+  background-color: #999;
 }
 
 .footer {
@@ -22,19 +22,19 @@
 }
 
 .waiting {
-  align-items: center;
   display: flex;
+  align-items: center;
 }
 
 .spinner {
-  animation: spin 0.75s linear infinite;
-  border: 4px solid rgba(255, 178, 51, 0.2);
-  border-radius: 50%;
-  border-top-color: #ffb233;
   display: inline-block;
+  width: 28px;
   height: 28px;
   margin-left: 8px;
-  width: 28px;
+  border: 4px solid rgba(255, 178, 51, 0.2);
+  border-top-color: #ffb233;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
 }
 
 @keyframes spin {

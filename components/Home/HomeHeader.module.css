@@ -1,22 +1,22 @@
 .container {
-  align-items: center;
-  background-color: #ffb233;
-  border-bottom: 1px solid #e6a02e;
   display: flex;
-  flex-direction: row;
   flex: 1;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
   padding: 16px;
+  background-color: #ffb233;
+  border-bottom: 1px solid #e6a02e;
 }
 
 .addShopButton {
+  padding: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
   appearance: none;
+  cursor: pointer;
   background-color: #3ecb7d;
   border: 1px solid #37b26e;
   border-radius: 3px;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 7px;
 }

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 // ── Constants ───────────────────────────────────────────────────────────────────
 const CART_STATE_KEY = "hacerpedido_cart_state";
@@ -40,7 +48,10 @@ function cartReducer(state, action) {
   switch (action.type) {
     case "HYDRATE": {
       const payload = action.payload || {};
-      const products = (payload.products || []).map((p) => ({ ...p, amount: p.amount || 0 }));
+      const products = (payload.products || []).map((p) => ({
+        ...p,
+        amount: p.amount || 0,
+      }));
       const totalAmount = products.reduce((prev, p) => prev + p.amount, 0);
       return {
         shop: payload.shop || null,
@@ -61,7 +72,10 @@ function cartReducer(state, action) {
       }
 
       if (shopHasChanged || !state.products?.length) {
-        const products = (shop.products || []).map((obj) => ({ ...obj, amount: 0 }));
+        const products = (shop.products || []).map((obj) => ({
+          ...obj,
+          amount: 0,
+        }));
         return { ...state, shop, products, totalAmount: 0 };
       }
 
@@ -75,7 +89,9 @@ function cartReducer(state, action) {
       const index = state.products.findIndex((p) => p.id === product.id);
       if (index === -1) return state;
 
-      const products = state.products.map((p, i) => (i === index ? { ...p, amount } : p));
+      const products = state.products.map((p, i) =>
+        i === index ? { ...p, amount } : p,
+      );
       const totalAmount = products.reduce((prev, p) => prev + p.amount, 0);
 
       return { ...state, products, totalAmount };
@@ -146,7 +162,13 @@ export function CartProvider({ children }) {
     };
 
     // Don't persist transient empty state that would look like "no cart" on reload
-    if (!toPersist.shop && !toPersist.products.length && !toPersist.name && !toPersist.address && !toPersist.notes) {
+    if (
+      !toPersist.shop &&
+      !toPersist.products.length &&
+      !toPersist.name &&
+      !toPersist.address &&
+      !toPersist.notes
+    ) {
       try {
         window.localStorage.removeItem(CART_STATE_KEY);
       } catch {
@@ -156,12 +178,21 @@ export function CartProvider({ children }) {
     }
 
     setStorageValue(CART_STATE_KEY, toPersist);
-  }, [state.shop, state.products, state.totalAmount, state.name, state.address, state.notes]);
+  }, [
+    state.shop,
+    state.products,
+    state.totalAmount,
+    state.name,
+    state.address,
+    state.notes,
+  ]);
 
   const stableDispatch = useCallback(dispatch, []);
 
   return (
-    <CartContext.Provider value={{ state, dispatch: stableDispatch, isHydrated }}>
+    <CartContext.Provider
+      value={{ state, dispatch: stableDispatch, isHydrated }}
+    >
       {children}
     </CartContext.Provider>
   );

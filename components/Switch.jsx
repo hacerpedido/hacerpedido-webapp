@@ -8,10 +8,10 @@ const SwitchComponent = ({ toggle, value }) => {
 
       <label className={styles.switch}>
         <input
-          type="checkbox"
           aria-label="Cambiar entre delivery y takeaway"
           checked={value}
           onChange={(event) => toggle(event.target.checked)}
+          type="checkbox"
         />
       </label>
 

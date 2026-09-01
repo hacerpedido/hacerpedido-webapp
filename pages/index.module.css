@@ -1,24 +1,24 @@
 .body {
-  background-color: #fbfbfb;
   flex: 1;
-  margin-top: 0;
   padding: 132px 10px 10px;
+  margin-top: 0;
+  background-color: #fbfbfb;
 }
 
 .count {
-  color: #8f9bb3;
+  margin: 15px 0;
   font-family: Barlow, sans-serif;
   font-size: 14px;
   font-weight: 400;
-  margin: 15px 0;
+  color: #8f9bb3;
 }
 
 .header {
-  left: 0;
   position: fixed;
   top: 0;
-  width: 100%;
+  left: 0;
   z-index: 2;
+  width: 100%;
 }
 
 .list {
@@ -26,9 +26,9 @@
 }
 
 .shopList {
-  list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .shopItem {
@@ -36,10 +36,10 @@
 }
 
 .shopButton {
-  color: inherit;
   display: block;
-  text-decoration: none;
   width: 100%;
+  color: inherit;
+  text-decoration: none;
 }
 
 .shopButton:hover,

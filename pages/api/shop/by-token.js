@@ -1,4 +1,4 @@
-import { withSentry } from '@sentry/nextjs';
+import { withSentry } from "@sentry/nextjs";
 import * as n from "nested-knex";
 
 const pg = require("knex")({
@@ -6,9 +6,8 @@ const pg = require("knex")({
   connection: process.env.PG_CONNECTION_STRING,
 });
 
-const handler = async(req, res) => {
-
-  if (req.method === 'POST') {
+const handler = async (req, res) => {
+  if (req.method === "POST") {
     // console.log("POST:", req.body)
 
     const {
@@ -20,7 +19,9 @@ const handler = async(req, res) => {
       opentimes,
       ordersphonenumber,
       orderswhatsappnumber,
-      token, products } = req.body;
+      token,
+      products,
+    } = req.body;
 
     if (!token || token === "") {
       res.status(400).json({ error: "Wrong parameters (1)." });
@@ -35,17 +36,17 @@ const handler = async(req, res) => {
         notes,
         opentimes,
         ordersphonenumber,
-        orderswhatsappnumber
+        orderswhatsappnumber,
       })
       .where("typeformtoken", "=", token)
-      .then(rows => {
+      .then((rows) => {
         // console.log("update shop")
 
         if (!rows) {
           return res.status(404).json({ success: false });
         }
       })
-      .catch(e => console.error(e));
+      .catch((e) => console.error(e));
 
     if (!products || products.lenght == 0) {
       return res.json({
@@ -54,14 +55,11 @@ const handler = async(req, res) => {
       });
     }
 
-    await pg("products")
-      .where("shopid", "=", id)
-      .delete()
-      // .then(a => console.log("deleted products:", a))
+    await pg("products").where("shopid", "=", id).delete();
+    // .then(a => console.log("deleted products:", a))
 
-    await pg('products')
-      .insert(products)
-      // .then(a => console.log("updated products:", a))
+    await pg("products").insert(products);
+    // .then(a => console.log("updated products:", a))
 
     return res.json({
       success: true,
@@ -103,14 +101,14 @@ const handler = async(req, res) => {
           price: n.number("products.price"),
           description: n.nullableString("products.description"),
           itemnumber: n.number("products.itemnumber"),
-        })
+        }),
       ),
     })
     .withQuery(
       pg("shops")
         .where("typeformtoken", "=", token)
         .leftJoin("products", "shops.id", "products.shopid")
-        .orderBy("products.itemnumber")
+        .orderBy("products.itemnumber"),
     );
 
   // nested-knex devuelve un array vacío (truthy) cuando no hay shop para el
@@ -124,7 +122,7 @@ const handler = async(req, res) => {
 
   res.status(200).json(data);
   res.end();
-}
+};
 
 export default withSentry(handler);
 

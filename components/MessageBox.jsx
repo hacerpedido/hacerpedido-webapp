@@ -12,13 +12,13 @@ const MessageBox = ({ message, onMessagePress }) => {
   return (
     <aside className={styles.container} role="status">
       <button
-        type="button"
-        className={styles.touchable}
         aria-label="Cerrar mensaje"
+        className={styles.touchable}
         onClick={onMessagePress}
+        type="button"
       >
         <span className={styles.text}>{message}</span>
-        <span className={styles.textClose} aria-hidden="true">
+        <span aria-hidden="true" className={styles.textClose}>
           x
         </span>
       </button>

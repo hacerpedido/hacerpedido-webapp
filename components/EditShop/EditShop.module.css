@@ -1,72 +1,72 @@
 .container {
-  background-color: #fafafa;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: #fafafa;
 }
 
 .titleContainer {
-  align-items: center;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
 }
 
 .titleTextContainer {
-  align-items: baseline;
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
 }
 
 .title {
-  color: #000000;
+  margin: 10px 0;
   font-family: Barlow, sans-serif;
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
   line-height: 29px;
-  margin: 10px 0;
+  color: #000000;
 }
 
 .updatedAt {
-  color: #8f9bb3;
+  margin: 0 10px;
   font-family: Barlow, sans-serif;
   font-size: 12px;
   font-weight: 400;
-  margin: 0 10px;
+  color: #8f9bb3;
 }
 
 .buttonsContainer {
-  align-items: baseline;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: baseline;
 }
 
 .uploadImageButton {
-  background: transparent;
-  border: 0;
-  border-radius: 5px;
-  color: #37b26e;
-  cursor: pointer;
+  padding: 0;
+  margin: 10px 15px;
   font-family: Barlow, sans-serif;
   font-size: 16px;
   font-weight: 600;
-  margin: 10px 15px;
-  padding: 0;
+  color: #37b26e;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
 }
 
 .saveButton {
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  padding: 10px;
+  margin: 10px 0 10px 15px;
+  color: #ffffff;
+  cursor: pointer;
   background-color: #37b26e;
   border: 0;
   border-radius: 5px;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  margin: 10px 0 10px 15px;
-  padding: 10px;
 }
 
 .saveButtonSaving {
@@ -74,39 +74,39 @@
 }
 
 .buttonText {
-  font-weight: bold;
   padding: 0 10px;
+  font-weight: bold;
 }
 
 .spinner {
-  animation: spin 0.8s linear infinite;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  border-top-color: #ffffff;
-  height: 16px;
   width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .formContainer {
-  background-color: #ffffff;
-  border: 1px solid #ededed;
-  border-radius: 5px;
   display: flex;
   flex: 1;
   flex-direction: row;
+  background-color: #ffffff;
+  border: 1px solid #ededed;
+  border-radius: 5px;
 }
 
 .formColumnLeft {
-  background-color: #ffffff;
   flex: 0.5;
-  margin-right: 8px;
   padding: 20px 0 20px 20px;
+  margin-right: 8px;
+  background-color: #ffffff;
 }
 
 .formColumnRight {
-  background-color: #ffffff;
   flex: 0.5;
   padding: 20px;
+  background-color: #ffffff;
 }
 
 @keyframes spin {
@@ -122,7 +122,7 @@
 
   .formColumnLeft,
   .formColumnRight {
-    margin-right: 0;
     padding: 20px;
+    margin-right: 0;
   }
 }

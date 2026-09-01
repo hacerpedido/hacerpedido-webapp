@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { sanitizePrice } from "../../lib/utils/utils";
-import ProductAmountPopup from "./ProductAmountPopup";
 import styles from "./Product.module.css";
+import ProductAmountPopup from "./ProductAmountPopup";
 
 const Product = ({ product, promo = false, isCartEnabled = false }) => {
   const ref = useRef(null);
@@ -13,7 +13,8 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
 
   useEffect(() => {
     const listener = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) setPopupVisible(false);
+      if (ref.current && !ref.current.contains(event.target))
+        setPopupVisible(false);
     };
     document.addEventListener("touchend", listener);
 
@@ -66,10 +67,10 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
 
       {isCartEnabled && (
         <ProductAmountPopup
-          product={product}
           amount={amount}
-          visible={popupVisible}
           handleClose={() => setPopupVisible(false)}
+          product={product}
+          visible={popupVisible}
         />
       )}
     </div>
