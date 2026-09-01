@@ -1,4 +1,5 @@
 module.exports = {
+  testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
   moduleNameMapper: {
     "^#assets/(.*)$": "<rootDir>/assets/$1",
     "^#components/(.*)$": "<rootDir>/components/$1",
