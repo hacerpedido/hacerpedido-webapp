@@ -1,5 +1,11 @@
 const { faker } = require("@faker-js/faker");
 
+/** @typedef {Record<string, unknown> & { id?: string, shopId?: string }} FactoryOverrides */
+/** @typedef {Record<string, unknown> & { id: string, category: string, name: string, shopid: string }} ProductRecord */
+/** @typedef {Record<string, unknown> & { id: string, name: string, slug: string, category: string }} ShopRecord */
+
+/** @param {FactoryOverrides} [overrides] @returns {ShopRecord} */
+
 function shopFactory(overrides = {}) {
   return {
     id: faker.string.uuid(),
@@ -29,6 +35,7 @@ function shopFactory(overrides = {}) {
   };
 }
 
+/** @param {FactoryOverrides} [overrides] @returns {ProductRecord} */
 function productFactory(overrides = {}) {
   const { shopId, ...rest } = overrides;
   return {
@@ -43,6 +50,7 @@ function productFactory(overrides = {}) {
   };
 }
 
+/** @returns {{ shops: ShopRecord[], products: ProductRecord[] }} */
 function createDevData() {
   const categories = [
     "Comida",

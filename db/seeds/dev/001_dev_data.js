@@ -1,5 +1,6 @@
 const { createDevData } = require("#db/factories.js");
 
+/** @param {import("knex").Knex} knex */
 exports.seed = async (knex) => {
   const data = createDevData();
   const shopIds = data.shops.map(({ id }) => id);

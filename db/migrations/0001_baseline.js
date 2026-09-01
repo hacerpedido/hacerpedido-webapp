@@ -135,6 +135,7 @@ END;
 $fn$;
 `;
 
+/** @param {import("knex").Knex} knex */
 exports.up = (knex) => knex.raw(SQL);
 
 exports.down = () => {

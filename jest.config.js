@@ -1,3 +1,4 @@
+/** @type {import("@jest/types").Config} */
 module.exports = {
   testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
   moduleNameMapper: {
