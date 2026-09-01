@@ -1,4 +1,4 @@
-const { productFactory, shopFactory } = require("#db/factories");
+const { productFactory, shopFactory } = require("#db/factories.js");
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const seedData = {
