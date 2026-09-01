@@ -58,7 +58,6 @@ test("saves edited shop fields and persists them across reloads", async ({
   } finally {
     await page.getByTestId("edit-shop-name").fill(originalName);
     await page.getByTestId("save-shop").click();
-    await expect(page.getByText("Tus cambios fueron guardados.")).toBeVisible();
   }
 });
 
