@@ -36,7 +36,7 @@ const Form = ({ onSubmit }) => {
       <Controller
         as={Input}
         control={control}
-        autofocus
+        autoFocus
         defaultValue={state.name ?? ""}
         name="name"
         label="Tu Nombre"
