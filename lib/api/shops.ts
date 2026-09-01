@@ -14,6 +14,7 @@ export async function saveShopWithProducts(
   token: string,
   shopPatch: ShopPatch,
   newProducts: Product[],
+  endpoint = "/api/shop/by-token",
 ): Promise<SaveShopResult> {
   const params = {
     id: shopPatch.id,
@@ -31,7 +32,11 @@ export async function saveShopWithProducts(
   // console.log("saveShopWithProducts 2:", params);
 
   try {
-    await axios.post(`${window.location.origin}/api/shop/by-token`, params);
+    const body =
+      endpoint === "/api/shop/editor"
+        ? { shop: { ...shopPatch, token }, products: newProducts }
+        : params;
+    await axios.post(`${window.location.origin}${endpoint}`, body);
   } catch (error: unknown) {
     const responseMessage =
       typeof error === "object" && error !== null && "response" in error

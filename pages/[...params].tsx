@@ -110,6 +110,7 @@ export default function EditShopPage() {
         token,
         dataToSave,
         tempProducts,
+        "/api/shop/editor",
       );
       setMessage(result.message);
 
