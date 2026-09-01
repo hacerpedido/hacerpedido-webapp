@@ -22,32 +22,32 @@ Convenciones de idioma:
 | DB | PostgreSQL 17.6 (Supabase) vía Knex |
 | Files | AWS SDK v2 → S3 |
 | Observabilidad | @sentry/nextjs (deshabilitado en dev) |
-| Tooling | Biome (format/lint), Lefthook (pre-commit) |
+| Tooling | TypeScript (`tsconfig.json`, `typecheck`), Biome (format/lint), Lefthook (pre-commit) |
 | Testing | Jest 26 (unit), Playwright (E2E) |
 
 ## Convenciones críticas
 
 - **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales.
-- **Estado**: CartContext con `useReducer` + persistencia en localStorage (`CartProvider` en `pages/_app.jsx`, `useCart` hook). No hay Redux.
+- **Estado**: CartContext con `useReducer` + persistencia en localStorage (`CartProvider` en `pages/_app.tsx`, `useCart` hook). No hay Redux.
 - **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.
-- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.js`, endpoints en `pages/api/image-upload.js` y `image-delete.js`.
+- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.ts`, endpoints en `pages/api/image-upload.ts` y `image-delete.ts`.
 
 ## Mapa del repo
 
 ```
 pages/
-  index.jsx                 Home: locales por categoría
-  [slug].jsx                Página pública del local
-  [...params].jsx           Catch-all dinámico
-  cart.jsx                  Checkout → genera link wa.me
-  api/shop/home.js          Shops por categoría
-  api/shop/[slug].js        Shop por slug
-  api/shop/by-token.js      Gestión del local vía token (EditShop)
-  api/image-upload.js       Upload S3
-  api/image-delete.js       Delete S3
-  _app.jsx                  CartProvider wrapper
-  _document.jsx, _error.js
+  index.tsx                 Home: locales por categoría
+  [slug].tsx                Página pública del local
+  [...params].tsx           Catch-all dinámico
+  cart.tsx                  Checkout → genera link wa.me
+  api/shop/home.ts          Shops por categoría
+  api/shop/[slug].ts        Shop por slug
+  api/shop/by-token.ts      Gestión del local vía token (EditShop)
+  api/image-upload.ts       Upload S3
+  api/image-delete.ts       Delete S3
+  _app.tsx                  CartProvider wrapper
+  _document.tsx, _error.tsx
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
   Shop/                     ShopView, ShopHeader, ShopFooter, Product, ProductList, ProductAmountPopup, ShopNotes
@@ -55,17 +55,17 @@ components/
   EditShop/                 EditShop, EditProducts, UploadImage
   primitivas                Input, Form, Switch, MessageBox, ShopInput, Loading, Divider, DecoratedLabel
 lib/
-  api/                      index.js (axios baseURL), shops.js
+  api/                      index.ts (axios baseURL), shops.ts
   context/                CartContext (useReducer + localStorage)
-  utils/                    utils.js (toTitleCase, sanitizeWhatsAppNumber, generateWhatsappURL, sanitizePrice, …), products.js, shops.js, categories.js, categoriesHelper.js, aws-s3.js
-  hooks/                    use_width.js
-  graphql/                  shop.js (legacy, Apollo comentado)
+  utils/                    TypeScript helpers (WhatsApp, prices, products, shops, categories, S3)
+  hooks/                    use_width.ts
+  graphql/                  shop.ts (legacy, Apollo comentado)
 db/
   migrations/0001_baseline.js   shops + products, triggers, RLS, extensiones
 tests/
-  unit                      *.test.js junto al código (utils, products, context, API)
-  e2e/                      order-flow, cart-persistence, cart-validation, admin-flow, global setup/teardown, fixtures/
-assets/                     colors.js, theme.js, backgrounds.js
+  unit                      Tests Jest junto al código (algunos aún JS/JSX)
+  e2e/                      Specs TypeScript: order-flow, cart-persistence, cart-validation, admin-flow, fixtures/
+assets/                     colors.ts, theme.ts, backgrounds.ts
 public/                     manifest.json, favicon, logos, og_image.jpg, robots.txt
 docs/superpowers/           Documentación
 ```
@@ -74,6 +74,7 @@ docs/superpowers/           Documentación
 
 | Comando | Qué hace |
 |---|---|
+| `pnpm install` / `pnpm dev` | Instalar dependencias / iniciar el servidor de desarrollo (alternativas a npm) |
 | `npm run dev` | Dev server (puerto 3000; `PORT=3001 npm run dev` para otro) |
 | `npm run build` / `npm run start` | Build / servir producción |
 | `npm test` | Jest (unit: `lib/**/*.test.js`) |
@@ -100,7 +101,7 @@ Solo nombres — nunca imprimas/commitees valores:
 ## Expectativas de testing
 
 - Jest para lógica pura (`lib/utils/`, `lib/context/`) y API (`tests/unit/`) — mantené verdes los tests existentes al tocar helpers.
-- Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.js`).
+- Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.ts`).
 - Biome es el formatter y linter del repositorio; Lefthook ejecuta `biome check --write` sobre archivos staged antes de cada commit.
 - Antes de terminar una tarea con tests: `npm run lint` + `npm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
 

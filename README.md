@@ -10,7 +10,8 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 | **Estado** | CartContext (useReducer + localStorage) |
 | **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
 | **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
-| **Testing** | Jest (unit) + Playwright (E2E) |
+| **Testing** | Jest (unit) + Playwright (E2E), with migrated tests in TypeScript |
+| **Tooling** | TypeScript (`tsconfig.json`) + Biome (format/lint) |
 | **CI** | GitHub Actions (lint, unit, E2E) |
 | **Estado del proyecto** | En desarrollo activo — ver issues abiertos |
 
@@ -18,16 +19,17 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 
 ## Arquitectura
 
-- **Páginas SSR** en `pages/`: home (`index.jsx`, locales por categoría), shop público (`[slug].jsx`), checkout (`cart.jsx` → WhatsApp), página de gestión para comercios (`by-token.js` + `components/EditShop/`).
+- La aplicación está migrada a TypeScript: las páginas, rutas API y componentes usan `.ts`/`.tsx`; los tests E2E migrados también usan `.ts`.
+- **Páginas SSR** en `pages/`: home (`index.tsx`, locales por categoría), shop público (`[slug].tsx`), checkout (`cart.tsx` → WhatsApp), página de gestión para comercios (`by-token.ts` + `components/EditShop/`).
 - **API routes** en `pages/api/`: `shop/home`, `shop/[slug]`, `shop/by-token`, `image-upload`, `image-delete`.
-- **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.js`).
-- **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.jsx` + `Component.module.css`).
+- **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.ts`).
+- **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.tsx` + `Component.module.css`).
 
 ### Flujo de pedido por WhatsApp
 
-1. El cliente agrega productos al carrito en la página del local (`[slug].jsx`).
-2. En `cart.jsx` completa nombre, dirección y notas.
-3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` en `lib/utils/utils.js` normaliza el número (ver `sanitizeWhatsAppNumber`, reglas de Argentina) y arma `https://wa.me/<número>?text=<mensaje codificado>`.
+1. El cliente agrega productos al carrito en la página del local (`[slug].tsx`).
+2. En `cart.tsx` completa nombre, dirección y notas.
+3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` en `lib/utils/utils.ts` normaliza el número (ver `sanitizeWhatsAppNumber`, reglas de Argentina) y arma `https://wa.me/<número>?text=<mensaje codificado>`.
 4. El mensaje incluye introducción, dirección, notas y el pedido agrupado por categoría (`✅ 2 x Ñoquis`).
 5. El comercio recibe el pedido en su WhatsApp.
 
@@ -36,14 +38,14 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 ```
 pages/            Páginas SSR y API routes
   api/            shop/home, shop/[slug], shop/by-token, image-upload, image-delete
-  [slug].jsx      Página pública del local
-  cart.jsx        Checkout → WhatsApp
+  [slug].tsx      Página pública del local
+  cart.tsx        Checkout → WhatsApp
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Lógica de aplicación
-    api/            Cliente axios (backend REST externo)
+    api/            Cliente axios (backend REST externo, TypeScript)
     context/        CartContext (estado del carrito con useReducer + localStorage)
-    utils/          Helpers: WhatsApp, teléfonos, precios, productos, categorías, S3
+    utils/          Helpers TypeScript: WhatsApp, teléfonos, precios, productos, categorías, S3
     hooks/          use_width
 db/               Migraciones Knex (baseline shops/products)
 tests/            Unit (Jest, junto al código) y E2E (Playwright)
@@ -56,7 +58,7 @@ docs/             Documentación
 ### Requisitos
 
 - Node.js 22 (el CI y `.tool-versions` usan 22)
-- npm
+- npm o pnpm
 - **Docker** (para la base local y E2E; levanta PostgreSQL 17.6 con `pg_stat_statements`)
 
 ### Variables de entorno
@@ -81,6 +83,14 @@ el valor de `PG_CONNECTION_STRING` del ejemplo funciona con `compose.dev.yaml`:
 npm install
 npm run db:setup   # Docker + migraciones + datos de desarrollo
 npm run dev        # http://localhost:3000
+```
+
+También podés usar pnpm para instalar dependencias y ejecutar el servidor de
+desarrollo:
+
+```bash
+pnpm install
+pnpm dev            # http://localhost:3000
 ```
 
 ### Base de datos
@@ -126,9 +136,9 @@ npm run test:e2e
 
 Levanta automáticamente (vía `global-setup`) el stack Docker Compose con PostgreSQL 17.6, aplica migraciones + seed, hace build de la app, la sirve y corre los journeys en Chromium:
 
-- `tests/e2e/order-flow.spec.js` — flujo de pedido que intercepta `wa.me` y valida el mensaje
-- `tests/e2e/cart-persistence.spec.js` — carrito persiste entre sesiones (multi-producto)
-- `tests/e2e/admin-flow.spec.js` — gestión del local por token
+- `tests/e2e/order-flow.spec.ts` — flujo de pedido que intercepta `wa.me` y valida el mensaje
+- `tests/e2e/cart-persistence.spec.ts` — carrito persiste entre sesiones (multi-producto)
+- `tests/e2e/admin-flow.spec.ts` — gestión del local por token
 
 Overrides útiles: `PLAYWRIGHT_TEST_BASE_URL` (app ya desplegada, saltea el setup local) y `PG_CONNECTION_STRING` (base externa en vez del compose local).
 
@@ -156,6 +166,7 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 | `npm run db:setup` / `db:reset` | Preparar / recrear DB local |
 | `npm run format` | Formatea código con Biome |
 | `npm run format:check` | Verifica el formato con Biome |
+| `npm run typecheck` | Verifica los tipos con TypeScript |
 | `npm run check` | Verifica formato, lint e imports con Biome |
 
 ## Deploy
@@ -165,7 +176,7 @@ Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se 
 ## Troubleshooting
 
 - **Node.js**: usá Node 22, tal como declara `.tool-versions` y el workflow de CI. Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
-- **`npm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.js` y `compose.e2e.yaml`.
+- **`npm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.ts` y `compose.e2e.yaml`.
 - **PostgreSQL local**: `pg_stat_statements` debe estar en `shared_preload_libraries` (como en `compose.e2e.yaml`).
 
 ## Contribuir
