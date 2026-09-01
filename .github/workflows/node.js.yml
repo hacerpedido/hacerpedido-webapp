@@ -1,27 +1,58 @@
 name: CI
 
-on: [push]
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  quality:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - run: npm ci
       - run: npx biome ci .
       - run: npm run typecheck
-      - run: npm test -- --runInBand
-      # The E2E job starts the same Docker Compose stack used locally,
+      - run: npm test -- --runInBand --coverage
+
+  e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # The E2E command starts the same Docker Compose stack used locally,
       # runs Knex migrations + seed, builds and serves the app, then
       # runs the browser journey against it.
-      - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - name: Upload Playwright report
-        if: ${{ !cancelled() }}
+        if: ${{ always() && (failure() || cancelled()) }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
