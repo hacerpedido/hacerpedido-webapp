@@ -9,9 +9,9 @@
     "#tests/*": "./tests/*"
   },
   "scripts": {
-    "dev": "NODE_OPTIONS='--openssl-legacy-provider' next",
-    "build": "NODE_OPTIONS='--openssl-legacy-provider' next build",
-    "start": "NODE_OPTIONS='--openssl-legacy-provider' next start",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
     "test": "jest",
     "test:coverage": "jest --coverage --runInBand",
     "test:e2e": "playwright test",
@@ -47,7 +47,7 @@
     "handsontable": "^8.4.0",
     "knex": "^3.3.0",
     "nested-knex": "^0.1.2",
-    "next": "^11.1.4",
+    "next": "^12.3.7",
     "pg": "^8.23.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.8",
