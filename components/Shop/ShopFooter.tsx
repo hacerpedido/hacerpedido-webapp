@@ -11,8 +11,8 @@ import styles from "./ShopFooter.module.css";
 
 const ShopFooter = ({ shop }) => {
   const { ordersphonenumber = 1, orderswhatsappnumber = 1 } = shop;
-  const router = useRouter();
   const { state } = useCart();
+  const router = useRouter();
   const totalAmount = state.totalAmount;
   const buttonState = totalAmount
     ? styles.buttonEnabled

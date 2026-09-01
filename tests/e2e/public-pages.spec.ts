@@ -8,9 +8,5 @@ test("shows a not-found message for an unknown public shop", async ({
 
   await page.goto("/shop-that-does-not-exist");
 
-  await expect(
-    page.getByText(
-      "Sin comercios en la base de datos para shop-that-does-not-exist.",
-    ),
-  ).toBeVisible();
+  await expect(page.getByText("La página que buscás no existe.")).toBeVisible();
 });
