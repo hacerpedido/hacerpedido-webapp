@@ -10,7 +10,7 @@ import {
 } from "#lib/utils/shops";
 import { generateCallUrl } from "#lib/utils/utils";
 
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopHeader.module.css";
