@@ -12,7 +12,7 @@ const Form = ({ onSubmit }) => {
   const { name } = shop;
   const [takeaway, setTakeaway] = useState(false);
 
-  const { handleSubmit, errors, control } = useForm({ mode: "onBlur" });
+  const { handleSubmit, errors, control } = useForm({ mode: "onSubmit" });
 
   const onNameChange = (value) =>
     dispatch({ type: "SET_NAME", payload: value });
