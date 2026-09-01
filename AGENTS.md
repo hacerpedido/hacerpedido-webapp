@@ -4,7 +4,7 @@ Contexto para agentes de IA que trabajan en este repositorio (Claude Code, openc
 
 ## Proyecto
 
-HacerPedido: webapp (Next.js + React Native Web) donde clientes arman un pedido desde la vidriera de un local y lo envían por WhatsApp (`wa.me` con mensaje pre-armado). Los comercios gestionan su página vía un token de Typeform.
+HacerPedido: webapp (Next.js + React) donde clientes arman un pedido desde la vidriera de un local y lo envían por WhatsApp (`wa.me` con mensaje pre-armado). Los comercios gestionan su página vía un token de Typeform.
 
 Convenciones de idioma:
 - UI/copy de producto: **español** (Argentina).
@@ -22,6 +22,7 @@ Convenciones de idioma:
 | DB | PostgreSQL 17.6 (Supabase) vía Knex |
 | Files | AWS SDK v2 → S3 |
 | Observabilidad | @sentry/nextjs (deshabilitado en dev) |
+| Tooling | Biome (format/lint), Lefthook (pre-commit) |
 | Testing | Jest 26 (unit), Playwright (E2E) |
 
 ## Convenciones críticas
@@ -62,8 +63,8 @@ lib/
 db/
   migrations/0001_baseline.js   shops + products, triggers, RLS, extensiones
 tests/
-  unit                      *.test.js junto al código (utils, products, reducers)
-  e2e/                      order-flow.spec.js, cart-persistence.spec.js, admin-flow.spec.js, global-setup.js, global-teardown.js, fixtures/
+  unit                      *.test.js junto al código (utils, products, context, API)
+  e2e/                      order-flow, cart-persistence, cart-validation, admin-flow, global setup/teardown, fixtures/
 assets/                     colors.js, theme.js, backgrounds.js
 public/                     manifest.json, favicon, logos, og_image.jpg, robots.txt
 docs/superpowers/           Documentación
@@ -99,8 +100,9 @@ Solo nombres — nunca imprimas/commitees valores:
 
 ## Expectativas de testing
 
-- Jest para lógica pura (`lib/utils/`, `lib/context/`) — mantené verdes los tests existentes al tocar helpers.
+- Jest para lógica pura (`lib/utils/`, `lib/context/`) y API (`tests/unit/`) — mantené verdes los tests existentes al tocar helpers.
 - Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.js`).
+- Biome es el formatter y linter del repositorio; Lefthook ejecuta `biome check --write` sobre archivos staged antes de cada commit.
 - Antes de terminar una tarea con tests: `npm run lint` + `npm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
 
 ## GitHub issues
