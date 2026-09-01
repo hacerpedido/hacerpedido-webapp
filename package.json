@@ -30,7 +30,7 @@
     "db:logs": "docker compose -f compose.dev.yaml logs --follow postgres",
     "db:check": "docker compose -f compose.dev.yaml exec postgres pg_isready -U dev_user -d hacerpedido_dev",
     "lint": "biome lint .",
-    "deps:check": "depcheck --skip-missing --ignores='pg'",
+    "deps:check": "depcheck --skip-missing --ignores='pg,lefthook'",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "biome check ."
