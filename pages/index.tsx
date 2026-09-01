@@ -8,7 +8,13 @@ import { useCart } from "#lib/context/CartContext";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import styles from "./index.module.css";
 
 const renderHeader = (count) => {
@@ -28,6 +34,7 @@ export default function App() {
   const [category, setCategory] = useState("Comida");
   const [shops, setShops] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterPending, startFilterTransition] = useTransition();
   const listRef = useRef(null);
   const firstVisibleItemRef = useRef(firstVisibleItem);
   const visibleItemsRef = useRef(new Map());
@@ -187,10 +194,13 @@ export default function App() {
       <div className={styles.header}>
         <HomeHeader />
         <HomeFilterBar
+          isPending={isFilterPending}
           onSelectFilter={(selected) => {
-            firstVisibleItemRef.current = 0;
-            setFirstVisibleItem(0);
-            setCategory(selected);
+            startFilterTransition(() => {
+              firstVisibleItemRef.current = 0;
+              setFirstVisibleItem(0);
+              setCategory(selected);
+            });
           }}
           selectedFilter={category}
         />
@@ -198,7 +208,11 @@ export default function App() {
 
       <main className={styles.body}>
         {renderHeader(filteredShops.length)}
-        {isLoading ? <Loading /> : filteredShops.length ? <ShopList /> : null}
+        {isLoading || isFilterPending ? (
+          <Loading />
+        ) : filteredShops.length ? (
+          <ShopList />
+        ) : null}
       </main>
     </>
   );

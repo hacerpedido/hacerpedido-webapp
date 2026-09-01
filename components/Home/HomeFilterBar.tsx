@@ -25,7 +25,7 @@ function Item({ id, title, selected, onSelect }) {
   );
 }
 
-const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
+const HomeFilterBar = ({ selectedFilter, onSelectFilter, isPending }) => {
   const [selected, setSelected] = React.useState(selectedFilter || "");
 
   const onSelect = React.useCallback(
@@ -37,7 +37,11 @@ const HomeFilterBar = ({ selectedFilter, onSelectFilter }) => {
   );
 
   return (
-    <nav aria-label="Categorías" className={styles.container}>
+    <nav
+      aria-busy={isPending}
+      aria-label="Categorías"
+      className={`${styles.container} ${isPending ? styles.pending : ""}`}
+    >
       <ul className={styles.list}>
         {categories.map((item) => (
           <Item

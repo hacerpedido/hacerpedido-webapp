@@ -63,7 +63,7 @@
     "@biomejs/biome": "^2.5.11",
     "@faker-js/faker": "^9.9.0",
     "@playwright/test": "^1.62.1",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^13.4.0",
     "@types/node": "^22.20.1",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
