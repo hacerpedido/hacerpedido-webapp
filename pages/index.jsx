@@ -2,6 +2,7 @@ import HomeFilterBar from "#components/Home/HomeFilterBar";
 import HomeHeader from "#components/Home/HomeHeader";
 import ShopCard from "#components/Home/ShopCard";
 import Loading from "#components/Loading";
+import { useCart } from "#lib/context/CartContext";
 
 import axios from "axios";
 import Head from "next/head";
@@ -21,6 +22,7 @@ const renderHeader = (count) => {
 };
 
 export default function App() {
+  const { dispatch, isHydrated } = useCart();
   const [firstVisibleItem, setFirstVisibleItem] = useState(0);
   const [category, setCategory] = useState("Comida");
   const [shops, setShops] = useState([]);
@@ -28,6 +30,12 @@ export default function App() {
   const listRef = useRef(null);
   const firstVisibleItemRef = useRef(firstVisibleItem);
   const visibleItemsRef = useRef(new Map());
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    dispatch({ type: "CLEAR_CART" });
+  }, [dispatch, isHydrated]);
 
   const onSelect = useCallback((shop) => {
     const header = document.querySelector(`.${styles.header}`);
