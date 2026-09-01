@@ -9,7 +9,7 @@ Start by reading [AGENTS.md](../../AGENTS.md) at the repo root for project conte
 
 Then load the project skill `.agents/skills/e2e-playwright/SKILL.md` and follow it. Key rules:
 
-- Suite lives in `tests/e2e/`; run with `npm run test:e2e` (requires Docker — global-setup boots Postgres 17.6 via `compose.e2e.yaml`, runs migrations + seed, then builds and serves the app against `http://127.0.0.1:3000`).
+- Suite lives in `tests/e2e/`; run with `npm run test:e2e` (requires Docker — global-setup boots Postgres 17.6 via `compose.e2e.yaml`, runs migrations + seed, then builds and serves the app against `http://127.0.0.1:3001`).
 - First run needs Chromium: `npm run test:e2e:install`.
 - Always intercept outgoing WhatsApp navigation in specs: `page.route('https://wa.me/**', ...)` + `waitForURL(/^https:\/\/wa\.me\/549/)` — never let a spec open wa.me for real.
 - The order submit button uses `testID="submit-whatsapp-order"` (Cart/Form) — use `getByTestId` for it, accessible/semantic locators elsewhere.

@@ -76,7 +76,7 @@ docs/superpowers/           Documentación
 | `npm run dev` | Dev server (puerto 3000; `PORT=3001 npm run dev` para otro) |
 | `npm run build` / `npm run start` | Build / servir producción |
 | `npm test` | Jest (unit: `lib/**/*.test.js`) |
-| `npm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`npm run build && npm run start`), baseURL `http://127.0.0.1:3000` |
+| `npm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`npm run build && npm run start`), baseURL `http://127.0.0.1:3001` |
 | `npm run test:e2e:install` | Instala Chromium |
 | `npm run lint` | Biome lint (`.`) |
 | `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |

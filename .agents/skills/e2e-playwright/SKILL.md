@@ -29,7 +29,7 @@ Requirements: **Docker** running (Postgres comes from `docker compose`). Node 22
    - `docker compose --project-name hacerpedido-e2e -f compose.e2e.yaml down --volumes --remove-orphans`
    - `docker compose ... up --detach --wait` (Postgres 17.6 on `127.0.0.1:54329`, db `hacerpedido_e2e`, user `e2e_user` / `e2e_password`, `shared_preload_libraries=pg_stat_statements`)
    - `npx knex migrate:latest` + `npx knex seed:run` with `PG_CONNECTION_STRING` overridden to the compose DB (`tests/e2e/fixtures/database.js`)
-2. `playwright.config.js` `webServer`: `npm run build && npm run start` against baseURL `http://127.0.0.1:3000` (180s timeout, no reuse).
+2. `playwright.config.js` `webServer`: `npm run build && npm run start` against baseURL `http://127.0.0.1:3001` (180s timeout, no reuse).
 3. Specs run in project `chromium`; reporters: HTML (`playwright-report/`) + JUnit (`test-results/junit.xml`).
 4. `global-teardown.js` tears the compose stack down.
 
