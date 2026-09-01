@@ -62,4 +62,20 @@ if (process.env.JEST_WORKER_ID) {
     );
     await expect(page.getByTestId("order-notes")).toHaveValue("Navigate Notes");
   });
+
+  test("clears cart when navigating to home", async ({ page }) => {
+    await reachCart(page);
+
+    await page.goto("/");
+    await expect(page.getByTestId("category-Comida")).toBeVisible();
+    await page.waitForFunction(
+      () => !localStorage.getItem("hacerpedido_cart_state"),
+    );
+    await page.getByTestId("category-Comida").click();
+    await page.getByTestId("shop-card-e2e-fixture-shop").click();
+
+    await expect(page.getByTestId("review-order")).toHaveText(
+      "Revisar mi pedido0",
+    );
+  });
 }
