@@ -144,6 +144,13 @@ export default function EditShopPage() {
     formAction(new FormData(form));
   };
 
+  const showSaveMessage = (event) => {
+    event.preventDefault();
+    setMessage("Tus cambios fueron guardados.");
+    setShowMessage(true);
+    formAction(new FormData(event.currentTarget.form));
+  };
+
   function refresh() {
     setShopState({ shop: null, loading: true });
     setReloadCount(reloadCount + 1);
@@ -181,7 +188,7 @@ export default function EditShopPage() {
       <main className={styles.container}>
         <section className={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
-            <form action={formAction} onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <input
                 name="id"
                 readOnly
@@ -201,6 +208,7 @@ export default function EditShopPage() {
                 getValues={getValues}
                 handleSubmit={handleSubmit(onSubmit)}
                 isSaving={isSaving}
+                onSave={showSaveMessage}
                 refresh={refresh}
                 shop={shopState.shop}
               />

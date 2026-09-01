@@ -14,13 +14,14 @@ import UploadImage from "./UploadImage";
 
 const formatter = buildFormatter(spanishStrings);
 
-function SaveButton() {
+function SaveButton({ isSaving, onClick }) {
   const { pending } = useFormStatus();
   return (
     <button
       className={`${styles.saveButton} ${pending ? styles.saveButtonSaving : ""}`}
       data-testid="save-shop"
-      disabled={pending}
+      disabled={pending || isSaving}
+      onClick={onClick}
       type="submit"
     >
       <span className={styles.buttonText}>Guardar</span>
@@ -39,6 +40,7 @@ export default function EditShop({
   getValues,
   isSaving,
   refresh,
+  onSave,
 }) {
   const [imageType, setImageType] = useState(undefined);
 
@@ -92,7 +94,7 @@ export default function EditShop({
             >
               Editar portada
             </button>
-            <SaveButton />
+            <SaveButton isSaving={isSaving} onClick={onSave} />
           </div>
         </header>
         <div className={styles.formContainer}>
