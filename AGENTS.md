@@ -15,7 +15,7 @@ Convenciones de idioma:
 
 | Capa | Tecnología |
 |---|---|
-| Framework | Next.js 10.2.3 (SSR/SSG), React 16.14 |
+| Framework | Next.js 15.5.25 (SSR/SSG), React 19.2.8 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | Estado | CartContext (useReducer + localStorage) |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
@@ -73,22 +73,23 @@ docs/superpowers/           Documentación
 
 | Comando | Qué hace |
 |---|---|
-| `pnpm install` / `pnpm dev` | Instalar dependencias / iniciar el servidor de desarrollo (alternativas a npm) |
-| `npm run dev` | Dev server (puerto 3000; `PORT=3001 npm run dev` para otro) |
-| `npm run build` / `npm run start` | Build / servir producción |
-| `npm test` | Jest (unit: `lib/**/*.test.js`) |
-| `npm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`npm run build && npm run start`), baseURL `http://127.0.0.1:3001` |
-| `npm run test:e2e:install` | Instala Chromium |
-| `npm run lint` | Biome lint (`.`) |
-| `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |
-| `npm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
-| `npm run format` | Biome format sobre los archivos soportados |
-| `npm run format:check` | Verifica el formato con Biome |
-| `npm run typecheck` | Verifica los tipos con TypeScript |
-| `npm run check` | Verifica formato, lint e imports con Biome |
+| `pnpm install` / `pnpm dev` | Instalar dependencias / iniciar el servidor de desarrollo |
+| `pnpm run dev` | Dev server (puerto 3000; `PORT=3001 pnpm run dev` para otro) |
+| `pnpm run build` / `pnpm run start` | Build / servir producción |
+| `pnpm test` | Jest (unit: `lib/**/*.test.js`) |
+| `pnpm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`pnpm run build && pnpm run start`), baseURL `http://127.0.0.1:3001` |
+| `pnpm run test:e2e:install` | Instala Chromium |
+| `pnpm run lint` | Biome lint (`.`) |
+| `pnpm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |
+| `pnpm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
+| `pnpm run format` | Biome format sobre los archivos soportados |
+| `pnpm run format:check` | Verifica el formato con Biome |
+| `pnpm run typecheck` | Verifica los tipos con TypeScript |
+| `pnpm run check` | Verifica formato, lint e imports con Biome |
 
 Notas de entorno:
 - Usar **Node 22** (declarado en `.tool-versions` y en CI).
+- CI usa pnpm 11.25.0 e instala con `pnpm install --frozen-lockfile`.
 - E2E: overrides `PLAYWRIGHT_TEST_BASE_URL` (app desplegada, saltea compose) y `PG_CONNECTION_STRING` (base externa).
 
 ## Variables de entorno
@@ -102,7 +103,7 @@ Solo nombres — nunca imprimas/commitees valores:
 - Jest para lógica pura (`lib/utils/`, `lib/context/`) y API (`tests/unit/`) — mantené verdes los tests existentes al tocar helpers.
 - Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.ts`).
 - Biome es el formatter y linter del repositorio; Lefthook ejecuta `biome check --write` sobre archivos staged antes de cada commit.
-- Antes de terminar una tarea con tests: `npm run lint` + `npm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
+- Antes de terminar una tarea con tests: `pnpm run lint` + `pnpm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
 
 ## GitHub issues
 
