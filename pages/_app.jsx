@@ -1,7 +1,7 @@
+import { CartProvider } from "#lib/context/CartContext";
+
 import Head from "next/head";
 import React from "react";
-
-import { CartProvider } from "../lib/context/CartContext";
 
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";

@@ -15,9 +15,9 @@ jest.mock("nested-knex", () => ({
   })),
 }));
 
-const shopBySlug = require("../../pages/api/shop/[slug]").default;
-const shopByToken = require("../../pages/api/shop/by-token").default;
-const shopHome = require("../../pages/api/shop/home").default;
+const shopBySlug = require("#pages/api/shop/[slug]").default;
+const shopByToken = require("#pages/api/shop/by-token").default;
+const shopHome = require("#pages/api/shop/home").default;
 
 function response() {
   return {

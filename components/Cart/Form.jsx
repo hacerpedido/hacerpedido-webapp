@@ -1,7 +1,8 @@
+import { WhatsappFill as WhatsappFillIcon } from "#assets/icons";
+import { useCart } from "#lib/context/CartContext";
+
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { WhatsappFill as WhatsappFillIcon } from "../../assets/icons";
-import { useCart } from "../../lib/context/CartContext";
 import Input from "../Input";
 import Switch from "../Switch";
 import styles from "./Form.module.css";

@@ -3,9 +3,10 @@ import React, { useEffect, useMemo, useRef } from "react";
 
 import "handsontable/dist/handsontable.full.css";
 
-import useWidth from "../../lib/hooks/use_width";
-import { productForGrid, productsFromGrid } from "../../lib/utils/products";
-import { sanitizePrice } from "../../lib/utils/utils";
+import useWidth from "#lib/hooks/use_width";
+import { productForGrid, productsFromGrid } from "#lib/utils/products";
+import { sanitizePrice } from "#lib/utils/utils";
+
 import styles from "./EditProducts.module.css";
 
 let handsontableCore;

@@ -1,9 +1,10 @@
+import colors from "#assets/colors";
+import * as Icons from "#assets/icons";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import colors from "../../assets/colors";
-import * as Icons from "../../assets/icons";
 import styles from "./HomeHeader.module.css";
 
 export default function HomeHeader() {

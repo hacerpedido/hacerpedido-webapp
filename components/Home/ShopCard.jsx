@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import colors from "../../assets/colors";
+import colors from "#assets/colors";
 import {
   getLogoForShop,
   getShopInitials,
   getShopInitialsColor,
-} from "../../lib/utils/shops";
+} from "#lib/utils/shops";
+
+import React, { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopCard.module.css";
 

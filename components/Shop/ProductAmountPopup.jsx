@@ -1,6 +1,7 @@
+import { useCart } from "#lib/context/CartContext";
+
 import React, { useState } from "react";
 import { animated, config, useTransition } from "react-spring";
-import { useCart } from "../../lib/context/CartContext";
 import styles from "./ProductAmountPopup.module.css";
 
 const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {

@@ -1,5 +1,6 @@
+import { categories } from "#lib/utils/categories";
+
 import { withSentry } from "@sentry/nextjs";
-import { categories } from "../../../lib/utils/categories";
 
 const pg = require("knex")({
   client: "pg",

@@ -2,8 +2,8 @@ import { withSentry } from "@sentry/nextjs";
 
 const formidable = require("formidable");
 const validator = require("validator");
-const utils = require("../../lib/utils/utils");
-const s3utils = require("../../lib/utils/aws-s3");
+const utils = require("#lib/utils/utils");
+const s3utils = require("#lib/utils/aws-s3");
 
 const handler = async (req, res) => {
   if (req.method !== "POST") {

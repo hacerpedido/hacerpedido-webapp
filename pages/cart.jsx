@@ -1,12 +1,12 @@
+import Form from "#components/Cart/Form";
+import Header from "#components/Cart/Header";
+import ProductList from "#components/Cart/ProductList";
+import { useCart } from "#lib/context/CartContext";
+import { extractSections } from "#lib/utils/products";
+import { generateWhatsappURL } from "#lib/utils/utils";
+
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-
-import Form from "../components/Cart/Form";
-import Header from "../components/Cart/Header";
-import ProductList from "../components/Cart/ProductList";
-import { useCart } from "../lib/context/CartContext";
-import { extractSections } from "../lib/utils/products";
-import { generateWhatsappURL } from "../lib/utils/utils";
 import styles from "./cart.module.css";
 
 export default function Cart() {

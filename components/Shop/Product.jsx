@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { sanitizePrice } from "#lib/utils/utils";
 
-import { sanitizePrice } from "../../lib/utils/utils";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Product.module.css";
 import ProductAmountPopup from "./ProductAmountPopup";
 

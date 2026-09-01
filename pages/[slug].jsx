@@ -1,12 +1,12 @@
+import Loading from "#components/Loading";
+import ShopFooter from "#components/Shop/ShopFooter";
+import ShopView from "#components/Shop/ShopView";
+import { useCart } from "#lib/context/CartContext";
+
 import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-
-import Loading from "../components/Loading";
-import ShopFooter from "../components/Shop/ShopFooter";
-import ShopView from "../components/Shop/ShopView";
-import { useCart } from "../lib/context/CartContext";
 import styles from "./[slug].module.css";
 
 export default function Shop() {

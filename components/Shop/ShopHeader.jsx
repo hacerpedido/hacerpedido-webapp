@@ -1,15 +1,16 @@
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import colors from "../../assets/colors";
-import * as Icons from "../../assets/icons";
-import { getBackgroundColorForCategory } from "../../lib/utils/categoriesHelper";
+import colors from "#assets/colors";
+import * as Icons from "#assets/icons";
+import { getBackgroundColorForCategory } from "#lib/utils/categoriesHelper";
 import {
   getBackgroundForShop,
   getLogoForShop,
   getShopInitials,
   getShopInitialsColor,
-} from "../../lib/utils/shops";
-import { generateCallUrl } from "../../lib/utils/utils";
+} from "#lib/utils/shops";
+import { generateCallUrl } from "#lib/utils/utils";
+
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopHeader.module.css";
 

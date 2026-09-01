@@ -56,7 +56,22 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on",
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":BUN:",
+              ":NODE:",
+              "#assets/**",
+              "#components/**",
+              "#db/**",
+              "#lib/**",
+              "#pages/**",
+              "#tests/**",
+              ":BLANK_LINE:"
+            ]
+          }
+        },
         "useSortedAttributes": "on",
         "useSortedProperties": "on"
       }

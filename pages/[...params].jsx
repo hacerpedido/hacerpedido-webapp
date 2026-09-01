@@ -1,18 +1,18 @@
+import EditProductsForm from "#components/EditShop/EditProducts";
+import EditShopForm from "#components/EditShop/EditShop";
+import Form from "#components/Form";
+import Loading from "#components/Loading";
+import MessageBox from "#components/MessageBox";
+import ShopView from "#components/Shop/ShopView";
+import { saveShopWithProducts } from "#lib/api/shops";
+import { trimObject } from "#lib/utils/utils";
+
 import axios from "axios";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import EditProductsForm from "../components/EditShop/EditProducts";
-import EditShopForm from "../components/EditShop/EditShop";
-import Form from "../components/Form";
-import Loading from "../components/Loading";
-import MessageBox from "../components/MessageBox";
-import ShopView from "../components/Shop/ShopView";
-import { saveShopWithProducts } from "../lib/api/shops";
-import { trimObject } from "../lib/utils/utils";
 import styles from "./[...params].module.css";
 
 // Para probar:

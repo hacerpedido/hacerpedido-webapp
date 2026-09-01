@@ -6,7 +6,6 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-
 import styles from "./UploadImage.module.css";
 
 const DynamicStyledDropZone = dynamic(

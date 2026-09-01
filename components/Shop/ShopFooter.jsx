@@ -1,9 +1,10 @@
+import colors from "#assets/colors";
+import { PhoneCall as PhoneCallIcon } from "#assets/icons";
+import { useCart } from "#lib/context/CartContext";
+import { generateCallUrl } from "#lib/utils/utils";
+
 import { useRouter } from "next/router";
 import React from "react";
-import colors from "../../assets/colors";
-import { PhoneCall as PhoneCallIcon } from "../../assets/icons";
-import { useCart } from "../../lib/context/CartContext";
-import { generateCallUrl } from "../../lib/utils/utils";
 import styles from "./ShopFooter.module.css";
 
 const ShopFooter = ({ shop }) => {

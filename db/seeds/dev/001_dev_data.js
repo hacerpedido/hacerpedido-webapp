@@ -1,4 +1,4 @@
-const { createDevData } = require("../../factories");
+const { createDevData } = require("#db/factories");
 
 exports.seed = async (knex) => {
   const data = createDevData();

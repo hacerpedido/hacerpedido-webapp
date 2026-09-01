@@ -1,11 +1,12 @@
+import HomeFilterBar from "#components/Home/HomeFilterBar";
+import HomeHeader from "#components/Home/HomeHeader";
+import ShopCard from "#components/Home/ShopCard";
+import Loading from "#components/Loading";
+
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import HomeFilterBar from "../components/Home/HomeFilterBar";
-import HomeHeader from "../components/Home/HomeHeader";
-import ShopCard from "../components/Home/ShopCard";
-import Loading from "../components/Loading";
 import styles from "./index.module.css";
 
 const renderHeader = (count) => {

@@ -1,5 +1,6 @@
+import { useCart } from "#lib/context/CartContext";
+
 import React from "react";
-import { useCart } from "../../lib/context/CartContext";
 import Loading from "../Loading";
 import EditMenuLink from "./EditMenuLink";
 import ProductList from "./ProductList";

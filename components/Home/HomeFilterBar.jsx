@@ -1,6 +1,6 @@
-import React from "react";
+import { categories } from "#lib/utils/categories";
 
-import { categories } from "../../lib/utils/categories";
+import React from "react";
 import styles from "./HomeFilterBar.module.css";
 
 function Item({ id, title, selected, onSelect }) {

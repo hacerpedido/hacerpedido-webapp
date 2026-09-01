@@ -1,10 +1,11 @@
+import { validatePhoneNumber } from "#lib/utils/utils";
+
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
 import spanishStrings from "react-timeago/lib/language-strings/es";
-import { validatePhoneNumber } from "../../lib/utils/utils";
 import Input from "../ShopInput";
 import styles from "./EditShop.module.css";
 import UploadImage from "./UploadImage";
