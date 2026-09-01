@@ -113,9 +113,11 @@ export default function EditShopPage() {
     // The grid edits are a local optimistic preview. Discard them when the
     // server responds so a rejected save can never remain visible as saved.
     setTempProducts(null);
-    if (actionState.error == null) {
-      refresh();
-    }
+    // Do not refresh the editor immediately after a successful save. Next.js
+    // 16 batches this state update with the refresh, which remounts the page
+    // and clears `showMessage` before the confirmation can be painted. The
+    // submitted values are already in the form; a reload (or an image upload,
+    // which calls refresh explicitly) gets the persisted server state.
   }, [actionState, isSaving]);
 
   if (!params || shopState.loading) {
@@ -133,6 +135,12 @@ export default function EditShopPage() {
     const values = trimObject({ ...data, id: shopState.shop.id, token });
     for (const [key, value] of Object.entries(values))
       form.elements[key].value = value ?? "";
+    // React 19/Next 16 may commit the action state after the form action's
+    // pending transition has already settled. Show the success state
+    // optimistically so the confirmation is not lost between those commits;
+    // the action-state effect replaces it with a validation error if needed.
+    setMessage("Tus cambios fueron guardados.");
+    setShowMessage(true);
     formAction(new FormData(form));
   };
 
