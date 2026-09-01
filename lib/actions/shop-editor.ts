@@ -43,6 +43,10 @@ export interface ShopEditorResult {
   error?: number;
 }
 
+export interface ShopEditorActionState extends ShopEditorResult {
+  values?: Record<string, string>;
+}
+
 export async function saveShopWithProductsAction(
   input: ShopEditorInput,
   products: Product[] | null,
@@ -102,4 +106,35 @@ export async function saveShopWithProductsAction(
   } finally {
     client.release();
   }
+}
+
+/** Adapter for React's useActionState/form action contract. */
+export async function saveShopFormAction(
+  _previous: ShopEditorActionState,
+  formData: FormData,
+): Promise<ShopEditorActionState> {
+  const productsValue = formData.get("products");
+  let products: Product[] | null = null;
+  if (typeof productsValue === "string" && productsValue) {
+    try {
+      products = JSON.parse(productsValue);
+    } catch {
+      return { message: "Productos inválidos.", error: 1 };
+    }
+  }
+
+  const input = Object.fromEntries(
+    formData.entries(),
+  ) as unknown as ShopEditorInput;
+  delete (input as Record<string, unknown>).products;
+  return {
+    ...(await saveShopWithProductsAction(input, products)),
+    values: Object.fromEntries(
+      Array.from(formData.entries())
+        .filter(
+          ([key, value]) => key !== "products" && typeof value === "string",
+        )
+        .map(([key, value]) => [key, value as string]),
+    ),
+  };
 }

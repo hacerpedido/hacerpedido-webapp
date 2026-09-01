@@ -3,6 +3,7 @@ import { validatePhoneNumber } from "#lib/utils/utils";
 
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import { useFormStatus } from "react-dom";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
@@ -12,6 +13,23 @@ import styles from "./EditShop.module.css";
 import UploadImage from "./UploadImage";
 
 const formatter = buildFormatter(spanishStrings);
+
+function SaveButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      className={`${styles.saveButton} ${pending ? styles.saveButtonSaving : ""}`}
+      data-testid="save-shop"
+      disabled={pending}
+      type="submit"
+    >
+      <span className={styles.buttonText}>Guardar</span>
+      {pending && (
+        <span aria-label="Guardando" className={styles.spinner} role="status" />
+      )}
+    </button>
+  );
+}
 
 export default function EditShop({
   shop,
@@ -74,22 +92,7 @@ export default function EditShop({
             >
               Editar portada
             </button>
-            <button
-              className={`${styles.saveButton} ${isSaving ? styles.saveButtonSaving : ""}`}
-              data-testid="save-shop"
-              disabled={isSaving}
-              onClick={handleSubmit}
-              type="button"
-            >
-              <span className={styles.buttonText}>Guardar</span>
-              {isSaving && (
-                <span
-                  aria-label="Guardando"
-                  className={styles.spinner}
-                  role="status"
-                />
-              )}
-            </button>
+            <SaveButton />
           </div>
         </header>
         <div className={styles.formContainer}>

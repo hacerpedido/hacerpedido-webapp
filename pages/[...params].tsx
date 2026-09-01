@@ -5,14 +5,13 @@ import Form from "#components/Form";
 import Loading from "#components/Loading";
 import MessageBox from "#components/MessageBox";
 import ShopView from "#components/Shop/ShopView";
-import { saveShopWithProducts } from "#lib/api/shops";
 import { trimObject } from "#lib/utils/utils";
 
 import axios from "axios";
 import ErrorPage from "next/error";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import styles from "./[...params].module.css";
 
@@ -27,7 +26,29 @@ export default function EditShopPage() {
   const [shopState, setShopState] = useState({ shop: null, loading: true });
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
-  const [isSaving, setSaving] = useState(false);
+  const [actionState, formAction, isSaving] = useActionState(
+    async (_previous, formData) => {
+      const values = Object.fromEntries(formData.entries());
+      try {
+        const response = await axios.post(
+          `${window.location.origin}/api/shop/editor`,
+          {
+            shop: Object.fromEntries(
+              Object.entries(values).filter(([key]) => key !== "products"),
+            ),
+            products: JSON.parse(values.products || "null"),
+          },
+        );
+        return response.data;
+      } catch (error) {
+        return {
+          message: error.response?.data?.message ?? "Datos inválidos.",
+          error: 1,
+        };
+      }
+    },
+    { message: "" },
+  );
   const [reloadCount, setReloadCount] = useState(0);
   const [tempProducts, setTempProducts] = useState(null);
 
@@ -85,6 +106,18 @@ export default function EditShopPage() {
     mode: "onBlur",
   });
 
+  useEffect(() => {
+    if (!actionState.message || isSaving) return;
+    setMessage(actionState.message);
+    setShowMessage(true);
+    // The grid edits are a local optimistic preview. Discard them when the
+    // server responds so a rejected save can never remain visible as saved.
+    setTempProducts(null);
+    if (actionState.error == null) {
+      refresh();
+    }
+  }, [actionState, isSaving]);
+
   if (!params || shopState.loading) {
     return <Loading />;
   }
@@ -94,39 +127,13 @@ export default function EditShopPage() {
     return <ErrorPage statusCode={404} />;
   }
 
-  const onSubmit = (data) => {
-    trimObject(data);
-
-    async function saveData() {
-      setSaving(true);
-      const dataToSave = {
-        ...data,
-        id: shopState.shop.id,
-        slug: shopState.shop.slug,
-        region: shopState.shop.region,
-      };
-
-      const result = await saveShopWithProducts(
-        token,
-        dataToSave,
-        tempProducts,
-        "/api/shop/editor",
-      );
-      setMessage(result.message);
-
-      if (result.error == null) {
-        const editedShop = { ...shopState.shop, ...dataToSave };
-        if (tempProducts != null) {
-          editedShop.products = tempProducts;
-        }
-        setShopState({ shop: editedShop, loading: false });
-      }
-
-      setShowMessage(true);
-      setSaving(false);
-      refresh();
-    }
-    saveData();
+  const onSubmit = (data, event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = trimObject({ ...data, id: shopState.shop.id, token });
+    for (const [key, value] of Object.entries(values))
+      form.elements[key].value = value ?? "";
+    formAction(new FormData(form));
   };
 
   function refresh() {
@@ -166,20 +173,35 @@ export default function EditShopPage() {
       <main className={styles.container}>
         <section className={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
-            <EditShopForm
-              control={control}
-              errors={errors}
-              getValues={getValues}
-              handleSubmit={handleSubmit(onSubmit)}
-              isSaving={isSaving}
-              refresh={refresh}
-              shop={shopState.shop}
-            />
-            <EditProductsForm
-              onTempProductsChange={setTempProducts}
-              products={products}
-              shopId={shopState.shop.id}
-            />
+            <form action={formAction} onSubmit={handleSubmit(onSubmit)}>
+              <input
+                name="id"
+                readOnly
+                type="hidden"
+                value={shopState.shop.id}
+              />
+              <input name="token" readOnly type="hidden" value={token} />
+              <input
+                name="products"
+                readOnly
+                type="hidden"
+                value={JSON.stringify(tempProducts)}
+              />
+              <EditShopForm
+                control={control}
+                errors={errors}
+                getValues={getValues}
+                handleSubmit={handleSubmit(onSubmit)}
+                isSaving={isSaving}
+                refresh={refresh}
+                shop={shopState.shop}
+              />
+              <EditProductsForm
+                onTempProductsChange={setTempProducts}
+                products={products}
+                shopId={shopState.shop.id}
+              />
+            </form>
           </Form>
         </section>
         {showPreview && (
