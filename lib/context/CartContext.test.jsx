@@ -5,8 +5,8 @@ import { __CART_STATE_KEY, CartProvider, useCart } from "./CartContext";
 // ── Helper: test component that reads from context ──────────────────────────────
 let readState;
 function TestConsumer() {
-  const { state, dispatch, isHydrated } = useCart();
-  readState = { state, dispatch, isHydrated };
+  const { state, dispatch, isRestored } = useCart();
+  readState = { state, dispatch, isRestored };
   return null;
 }
 
@@ -42,10 +42,10 @@ describe("CartContext initial state", () => {
     });
   });
 
-  test("isHydrated is true after mount (hydration effect has run)", () => {
+  test("isRestored is true after mount (restore effect has run)", () => {
     renderProvider();
-    // After render + effects, isHydrated reflects the hydration status
-    expect(readState.isHydrated).toBe(true);
+    // After render + effects, isRestored reflects the restore status
+    expect(readState.isRestored).toBe(true);
   });
 });
 
@@ -363,14 +363,14 @@ describe("CLEAR_CART", () => {
   });
 });
 
-// ── HYDRATE ─────────────────────────────────────────────────────────────────────
+// ── RESTORE ─────────────────────────────────────────────────────────────────────
 
-describe("HYDRATE", () => {
+describe("RESTORE", () => {
   test("restores shop, products with amounts, and total", () => {
     renderProvider();
     act(() => {
       readState.dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: {
           shop: { slug: "restored-shop", name: "Restored" },
           products: [
@@ -401,7 +401,7 @@ describe("HYDRATE", () => {
   test("handles empty payload gracefully", () => {
     renderProvider();
     act(() => {
-      readState.dispatch({ type: "HYDRATE", payload: null });
+      readState.dispatch({ type: "RESTORE", payload: null });
     });
 
     expect(readState.state.shop).toBeNull();
@@ -413,7 +413,7 @@ describe("HYDRATE", () => {
     renderProvider();
     act(() => {
       readState.dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: { shop: { slug: "s" }, name: "Test" },
       });
     });
@@ -428,7 +428,7 @@ describe("HYDRATE", () => {
     renderProvider();
     act(() => {
       readState.dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: {
           shop: { slug: "s" },
           products: [
@@ -445,13 +445,13 @@ describe("HYDRATE", () => {
     expect(readState.state.products[2].amount).toBe(0);
   });
 
-  test("SET_SHOP with same slug after HYDRATE preserves restored amounts", () => {
+  test("SET_SHOP with same slug after RESTORE preserves restored amounts", () => {
     renderProvider();
 
     // Simulate hydration from persisted state
     act(() => {
       readState.dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: {
           shop: { slug: "my-shop", name: "My Shop" },
           products: [{ id: 10, name: "Milanesa", amount: 2 }],
@@ -481,12 +481,12 @@ describe("HYDRATE", () => {
     expect(readState.state.totalAmount).toBe(2);
   });
 
-  test("SET_SHOP with different slug after HYDRATE resets amounts", () => {
+  test("SET_SHOP with different slug after RESTORE resets amounts", () => {
     renderProvider();
 
     act(() => {
       readState.dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: {
           shop: { slug: "old-shop" },
           products: [{ id: 1, name: "Item", amount: 5 }],
@@ -582,7 +582,7 @@ describe("hydration from localStorage", () => {
     );
   });
 
-  test("hydrates full state from localStorage on mount", () => {
+  test("restores full state from localStorage on mount", () => {
     renderProvider();
 
     expect(readState.state.shop.slug).toBe("local-shop");
@@ -595,9 +595,9 @@ describe("hydration from localStorage", () => {
     expect(readState.state.notes).toBe("Test notes");
   });
 
-  test("isHydrated is true after hydration from storage", () => {
+  test("isRestored is true after restoring from storage", () => {
     renderProvider();
-    expect(readState.isHydrated).toBe(true);
+    expect(readState.isRestored).toBe(true);
   });
 });
 

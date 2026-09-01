@@ -10,19 +10,19 @@ import React, { useEffect } from "react";
 import styles from "./cart.module.css";
 
 export default function Cart() {
-  const { state, isHydrated } = useCart();
+  const { state, isRestored } = useCart();
   const shop = state.shop;
   const router = useRouter();
 
-  // Redirect to home only after hydration is complete and there is no shop
+  // Redirect to home only after restoring persisted state and finding no shop.
   useEffect(() => {
-    if (isHydrated && !shop) {
+    if (isRestored && !shop) {
       router.push("/");
     }
-  }, [isHydrated, shop, router]);
+  }, [isRestored, shop, router]);
 
-  // Prevent redirect before hydration completes — show a loading state
-  if (!isHydrated || !shop) return null;
+  // Prevent redirect before restoring persisted state.
+  if (!isRestored || !shop) return null;
 
   const products = state.products.filter((product) => product.amount > 0);
   const productsByCategory = extractSections(products);

@@ -22,7 +22,7 @@ const renderHeader = (count) => {
 };
 
 export default function App() {
-  const { dispatch, isHydrated } = useCart();
+  const { dispatch, isRestored } = useCart();
   const [firstVisibleItem, setFirstVisibleItem] = useState(0);
   const [category, setCategory] = useState("Comida");
   const [shops, setShops] = useState([]);
@@ -32,10 +32,10 @@ export default function App() {
   const visibleItemsRef = useRef(new Map());
 
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!isRestored) return;
 
     dispatch({ type: "CLEAR_CART" });
-  }, [dispatch, isHydrated]);
+  }, [dispatch, isRestored]);
 
   const onSelect = useCallback((shop) => {
     const header = document.querySelector(`.${styles.header}`);

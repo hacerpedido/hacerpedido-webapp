@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -46,7 +45,7 @@ const initialState = {
 // ── Reducer ─────────────────────────────────────────────────────────────────────
 function cartReducer(state, action) {
   switch (action.type) {
-    case "HYDRATE": {
+    case "RESTORE": {
       const payload = action.payload || {};
       const products = (payload.products || []).map((p) => ({
         ...p,
@@ -117,16 +116,16 @@ function cartReducer(state, action) {
 // ── Provider ────────────────────────────────────────────────────────────────────
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  const [isHydrated, setIsHydrated] = useState(false);
-  const hydrated = useRef(false);
+  const [isRestored, setIsRestored] = useState(false);
+  const restored = useRef(false);
 
-  // Hydrate persisted full cart state from localStorage on client mount
+  // Restore the persisted cart from localStorage after the client mounts.
   useEffect(() => {
     const saved = getStorageValue(CART_STATE_KEY, null);
 
     if (saved && saved.shop && saved.shop.slug) {
       dispatch({
-        type: "HYDRATE",
+        type: "RESTORE",
         payload: {
           shop: saved.shop,
           products: saved.products || [],
@@ -144,13 +143,13 @@ export function CartProvider({ children }) {
       /* noop */
     }
 
-    hydrated.current = true;
-    setIsHydrated(true);
+    restored.current = true;
+    setIsRestored(true);
   }, []);
 
   // Persist full cart state to localStorage on every meaningful change
   useEffect(() => {
-    if (!hydrated.current) return;
+    if (!restored.current) return;
 
     const toPersist = {
       shop: state.shop,
@@ -187,12 +186,8 @@ export function CartProvider({ children }) {
     state.notes,
   ]);
 
-  const stableDispatch = useCallback(dispatch, []);
-
   return (
-    <CartContext.Provider
-      value={{ state, dispatch: stableDispatch, isHydrated }}
-    >
+    <CartContext.Provider value={{ state, dispatch, isRestored }}>
       {children}
     </CartContext.Provider>
   );
