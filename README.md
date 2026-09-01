@@ -1,12 +1,12 @@
 # HacerPedido WebApp
 
-HacerPedido es una aplicación web (Next.js + React Native Web) que permite a negocios locales recibir pedidos por WhatsApp. Los clientes navegan la vidriera de un local, arman su pedido en un carrito y lo envían como mensaje de WhatsApp pre-armado, sin registrarse.
+HacerPedido es una aplicación web (Next.js + React) que permite a negocios locales recibir pedidos por WhatsApp. Los clientes navegan la vidriera de un local, arman su pedido en un carrito y lo envían como mensaje de WhatsApp pre-armado, sin registrarse.
 
 Este repositorio es la **webapp** (frontend + API routes internas). Los datos se sirven desde un backend REST externo (`https://backend-restapi.hacerpedido.com:5001`) y una base PostgreSQL.
 
 | | |
 |---|---|
-| **Frontend** | Next.js 10 (SSR/SSG), React 16, React Native Web |
+| **Frontend** | Next.js 10 (SSR/SSG), React 16 |
 | **Estado** | CartContext (useReducer + localStorage) |
 | **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
 | **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
@@ -136,7 +136,7 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 
 ## CI
 
-`.github/workflows/node.js.yml` corre en cada push: `npm ci` + `npm run lint` + `npm test -- --runInBand` + `npm run test:e2e` (con Playwright instalado), y sube el reporte como artefacto. `codeql-analysis.yml` hace code scanning de JavaScript.
+`.github/workflows/node.js.yml` corre en cada push: `npm ci` + `npx biome ci .` + `npm test -- --runInBand` + `npm run test:e2e` (con Playwright instalado), y sube el reporte como artefacto.
 
 ## Scripts disponibles
 
@@ -157,8 +157,6 @@ Primera vez: `npm run test:e2e:install` (instala Chromium).
 | `npm run format` | Formatea código con Biome |
 | `npm run format:check` | Verifica el formato con Biome |
 | `npm run check` | Verifica formato, lint e imports con Biome |
-| `npm run import-data` | ⚠️ Rotto (paths legacy `src/` que ya no existen) |
-| `npm run svg` | ⚠️ Rotto (ídem) |
 
 ## Deploy
 

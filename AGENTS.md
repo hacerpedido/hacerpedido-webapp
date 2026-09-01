@@ -85,7 +85,6 @@ docs/superpowers/           Documentación
 | `npm run format` | Biome format sobre los archivos soportados |
 | `npm run format:check` | Verifica el formato con Biome |
 | `npm run check` | Verifica formato, lint e imports con Biome |
-| `npm run import-data` / `npm run svg` | ⚠️ Rotos: apuntan a paths legacy `src/` que no existen |
 
 Notas de entorno:
 - Usar **Node 22** (declarado en `.tool-versions` y en CI). Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
