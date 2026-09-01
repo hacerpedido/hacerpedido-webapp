@@ -19,15 +19,8 @@ export default function HomeHeader() {
   return (
     <header className={styles.container}>
       <Link href="/">
-        <a>
-          <Icons.LogoHacerpedido color={colors.white} height={19} width={177} />
-          <input
-            name="deployedVersion"
-            readOnly
-            type="hidden"
-            value={version}
-          />
-        </a>
+        <Icons.LogoHacerpedido color={colors.white} height={19} width={177} />
+        <input name="deployedVersion" readOnly type="hidden" value={version} />
       </Link>
 
       <button

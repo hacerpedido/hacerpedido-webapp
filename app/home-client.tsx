@@ -69,15 +69,14 @@ export default function HomeClient({ initialShops }: { initialShops: Shop[] }) {
                   data-shop-index={index}
                   key={shop.id}
                 >
-                  <Link href={`/${shop.slug}`}>
-                    <a
-                      aria-label={shop.name}
-                      className={styles.shopButton}
-                      data-testid={`shop-card-${shop.slug}`}
-                      onClick={() => setFirst(index)}
-                    >
-                      <ShopCard shop={shop} />
-                    </a>
+                  <Link
+                    aria-label={shop.name}
+                    className={styles.shopButton}
+                    data-testid={`shop-card-${shop.slug}`}
+                    href={`/${shop.slug}`}
+                    onClick={() => setFirst(index)}
+                  >
+                    <ShopCard shop={shop} />
                   </Link>
                 </li>
               ))}
