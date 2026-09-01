@@ -84,6 +84,7 @@ docs/superpowers/           Documentación
 | `npm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
 | `npm run format` | Biome format sobre los archivos soportados |
 | `npm run format:check` | Verifica el formato con Biome |
+| `npm run typecheck` | Verifica los tipos con TypeScript |
 | `npm run check` | Verifica formato, lint e imports con Biome |
 
 Notas de entorno:
@@ -112,6 +113,8 @@ Solo nombres — nunca imprimas/commitees valores:
 - Modify issues with `gh issue edit <number>`, and close them with `gh issue close <number>` when the work is complete.
 - Use the exact priority labels configured in the repository, such as `priority-low`, `priority-medium`, or `priority-high`.
 - Include the issue number in the implementation context and link the completing pull request or commit before closing the issue.
+- Pull requests must target `master` and link the relevant issue with `Closes #<number>` (or an equivalent GitHub closing keyword).
+- This repository does not require `status:approved` or `type:*` labels for pull requests. Use only labels that exist when labeling issues or pull requests.
 
 ## Skills del proyecto
 

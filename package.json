@@ -30,7 +30,8 @@
     "db:logs": "docker compose -f compose.dev.yaml logs --follow postgres",
     "db:check": "docker compose -f compose.dev.yaml exec postgres pg_isready -U dev_user -d hacerpedido_dev",
     "lint": "biome lint .",
-    "deps:check": "depcheck --skip-missing --ignores='pg,lefthook'",
+    "typecheck": "tsc --noEmit",
+    "deps:check": "depcheck --skip-missing --ignores='pg,lefthook,typescript,@types/node,@types/react,@types/react-dom'",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "biome check ."
@@ -62,9 +63,13 @@
     "@faker-js/faker": "^9.9.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/react": "^12.1.5",
+    "@types/node": "^22.20.1",
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.8",
     "depcheck": "^1.4.7",
     "jest": "^26.6.3",
-    "lefthook": "^2.1.12"
+    "lefthook": "^2.1.12",
+    "typescript": "^5.9.3"
   },
   "license": "MIT"
 }
