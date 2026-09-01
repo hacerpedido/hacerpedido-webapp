@@ -41,7 +41,7 @@ module.exports = defineConfig({
     ? {}
     : {
         webServer: {
-          command: "npm run build && npm run start -- -p 3001",
+          command: "pnpm build && pnpm start -- -p 3001",
           url: baseURL,
           reuseExistingServer: !process.env.CI,
           timeout: 180000,
