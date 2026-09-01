@@ -22,7 +22,7 @@ async function navigateToShop(
   category = FIXTURE.category,
 ) {
   await page.goto("/");
-  await page.getByTestId(`category-${category}`).click();
+  await page.getByTestId(`category-${category}`).first().click();
   await page.getByTestId(`shop-card-${shopSlug}`).click();
 }
 

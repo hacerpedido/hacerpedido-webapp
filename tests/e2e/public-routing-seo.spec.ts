@@ -11,7 +11,7 @@ if (process.env.JEST_WORKER_ID) {
     await expect(page).toHaveTitle(
       "Hacer Pedido | Pedí a tu comercio favorito por WhatsApp.",
     );
-    await expect(page.getByTestId("category-Comida")).toBeVisible();
+    await expect(page.getByTestId("category-Comida").first()).toBeVisible();
   });
 
   test("routes a public shop slug and exposes its share metadata", async ({
