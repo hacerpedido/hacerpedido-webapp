@@ -88,8 +88,7 @@ docs/superpowers/           Documentación
 | `npm run import-data` / `npm run svg` | ⚠️ Rotos: apuntan a paths legacy `src/` que no existen |
 
 Notas de entorno:
-- Node requiere `NODE_OPTIONS=--openssl-legacy-provider` (ya incluido en los scripts) con Node 17+.
-- Usar **Node 22** (CI y `.tool-versions`), ignorar `.nvmrc` (12.4.0, desactualizado).
+- Usar **Node 22** (declarado en `.tool-versions` y en CI). Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
 - E2E: overrides `PLAYWRIGHT_TEST_BASE_URL` (app desplegada, saltea compose) y `PG_CONNECTION_STRING` (base externa).
 
 ## Variables de entorno

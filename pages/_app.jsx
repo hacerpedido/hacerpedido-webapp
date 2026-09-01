@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <CartProvider>
       <Head>
-        <meta charset="utf-8" />
+        <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         <meta
           content="Pedí a tu comercio favorito por WhatsApp. Empezá a recibir pedidos de tus clientes hoy mismo, gratis."

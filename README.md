@@ -55,7 +55,7 @@ docs/             Documentación
 
 ### Requisitos
 
-- Node.js 22 (el CI usa 22; aunque `.nvmrc` diga 12.4.0 — ver Troubleshooting)
+- Node.js 22 (el CI y `.tool-versions` usan 22)
 - npm
 - **Docker** (para la base local y E2E; levanta PostgreSQL 17.6 con `pg_stat_statements`)
 
@@ -166,8 +166,7 @@ Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se 
 
 ## Troubleshooting
 
-- **`ERR_OSSL_EVP_UNSUPPORTED` / falla de build**: Next.js 10 requiere el flag `--openssl-legacy-provider` con Node moderno. Ya está incluido en los scripts de `package.json`; si corrés `next` directo, agregalo.
-- **`.nvmrc` vs Node real**: `.nvmrc` dice 12.4.0 pero CI y `.tool-versions` usan Node 22; seguí Node 22.
+- **Node.js**: usá Node 22, tal como declara `.tool-versions` y el workflow de CI. Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
 - **`npm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.js` y `compose.e2e.yaml`.
 - **PostgreSQL local**: `pg_stat_statements` debe estar en `shared_preload_libraries` (como en `compose.e2e.yaml`).
 
