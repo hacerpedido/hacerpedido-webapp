@@ -1,11 +1,27 @@
-name: Dependency Check
+name: Dependency & Security Check
 
 on:
   pull_request:
   push:
     branches: [master]
 
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: dependency-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
   depcheck:
     runs-on: ubuntu-24.04
     steps:
@@ -20,3 +36,14 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm run deps:check
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high --json > pnpm-audit.json
+        continue-on-error: true
+      - name: Upload audit report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pnpm-audit-report
+          path: pnpm-audit.json
+          retention-days: 7
+          if-no-files-found: ignore
