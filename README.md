@@ -1,122 +1,122 @@
 # HacerPedido WebApp
 
-HacerPedido es una aplicación web (Next.js + React) que permite a negocios locales recibir pedidos por WhatsApp. Los clientes navegan la vidriera de un local, arman su pedido en un carrito y lo envían como mensaje de WhatsApp pre-armado, sin registrarse.
+HacerPedido is a web application (Next.js + React) that enables local businesses to receive orders through WhatsApp. Customers browse a shop's storefront, build their order in a cart, and send it as a pre-built WhatsApp message without registering.
 
-Este repositorio es la **webapp** (frontend + API routes internas). Los datos se sirven desde un backend REST externo (`https://backend-restapi.hacerpedido.com:5001`) y una base PostgreSQL.
+This repository is the **webapp** (frontend + internal API routes). Data is served by an external REST backend (`https://backend-restapi.hacerpedido.com:5001`) and a PostgreSQL database.
 
 | | |
 |---|---|
 | **Frontend** | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
-| **Estado** | CartContext (useReducer + localStorage) |
-| **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
-| **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
+| **State** | CartContext (useReducer + localStorage) |
+| **Data** | PostgreSQL 17.6 (Supabase) via Knex |
+| **Orders** | WhatsApp integration (`wa.me` with a pre-built message) |
 | **Testing** | Jest (unit) + Playwright (E2E), with migrated tests in TypeScript |
 | **Tooling** | TypeScript (`tsconfig.json`) + Biome (format/lint) |
 | **CI** | GitHub Actions (lint, unit, E2E) |
-| **Estado del proyecto** | En desarrollo activo — ver issues abiertos |
+| **Project status** | In active development — see open issues |
 
-> Instrucciones para agentes de IA: ver [AGENTS.md](AGENTS.md).
+> Instructions for AI agents: see [AGENTS.md](AGENTS.md).
 
-## Arquitectura
+## Architecture
 
-- La aplicación está migrada a TypeScript: las páginas, rutas API y componentes usan `.ts`/`.tsx`; los tests E2E también usan `.ts`.
-- **Páginas App Router** en `app/`: home (`page.tsx`), shop público (`[slug]/page.tsx`), checkout (`cart/page.tsx` → WhatsApp) y límites de layout/error/loading.
-- **Rutas Pages Router restantes** en `pages/`: catch-all de gestión (`[...params].tsx`) y rutas API legacy (`pages/api/`).
-- **API routes** en `app/api/` y `pages/api/`: editor (`app/api/shop/editor/route.ts`), imágenes (`app/api/images/route.ts`), home, shop y gestión por token.
-- **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.ts`).
-- **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.tsx` + `Component.module.css`).
+- The application has been migrated to TypeScript: pages, API routes, and components use `.ts`/`.tsx`; E2E tests also use `.ts`.
+- **App Router pages** in `app/`: home (`page.tsx`), public shop (`[slug]/page.tsx`), checkout (`cart/page.tsx` → WhatsApp), and layout/error/loading boundaries.
+- **Remaining Pages Router routes** in `pages/`: management catch-all (`[...params].tsx`) and legacy API routes (`pages/api/`).
+- **API routes** in `app/api/` and `pages/api/`: editor (`app/api/shop/editor/route.ts`), images (`app/api/images/route.ts`), home, shop, and token-based management.
+- **External backend**: axios points to `https://backend-restapi.hacerpedido.com:5001` (configured in `lib/api/index.ts`).
+- **Styles**: web components use CSS Modules placed alongside the component (`Component.tsx` + `Component.module.css`).
 
-### Flujo de pedido por WhatsApp
+### WhatsApp order flow
 
-1. El cliente agrega productos al carrito en la página del local (`app/[slug]/page.tsx`).
-2. En `app/cart/page.tsx` completa nombre, dirección y notas.
-3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` en `lib/utils/utils.ts` normaliza el número (ver `sanitizeWhatsAppNumber`, reglas de Argentina) y arma `https://wa.me/<número>?text=<mensaje codificado>`.
-4. El mensaje incluye introducción, dirección, notas y el pedido agrupado por categoría (`✅ 2 x Ñoquis`).
-5. El comercio recibe el pedido en su WhatsApp.
+1. The customer adds products to the cart on the shop page (`app/[slug]/page.tsx`).
+2. In `app/cart/page.tsx`, they complete their name, address, and notes.
+3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` in `lib/utils/utils.ts` normalizes the number (see `sanitizeWhatsAppNumber`, Argentine rules) and builds `https://wa.me/<número>?text=<mensaje codificado>`.
+4. The message includes an introduction, address, notes, and the order grouped by category (`✅ 2 x Ñoquis`).
+5. The shop receives the order in its WhatsApp.
 
-## Estructura del proyecto
+## Project structure
 
 ```
-app/              App Router: páginas públicas, checkout y API routes
+app/              App Router: public pages, checkout, and API routes
   page.tsx        Home
-  [slug]/page.tsx Página pública del local
+  [slug]/page.tsx Public shop page
   cart/page.tsx   Checkout → WhatsApp
-  api/            editor y images
-pages/            Pages Router restante y API routes legacy
-  [...params].tsx Gestión del local vía token
+  api/            editor and images
+pages/            Remaining Pages Router and legacy API routes
+  [...params].tsx Token-based shop management
   api/            shop/home, shop/[slug], shop/by-token
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
-lib/              Lógica de aplicación
-    api/            Clientes axios (backend REST externo, TypeScript)
-    context/        CartContext.tsx (estado del carrito con useReducer + localStorage)
-    utils/          Helpers TypeScript: WhatsApp, teléfonos, precios, productos, categorías, S3
+lib/              Application logic
+    api/            Axios clients (external REST backend, TypeScript)
+    context/        CartContext.tsx (cart state with useReducer + localStorage)
+    utils/          TypeScript helpers: WhatsApp, phone numbers, prices, products, categories, S3
     hooks/          use_width
-db/               Migraciones Knex (baseline shops/products)
-tests/            Unit (Jest, junto al código) y E2E (Playwright)
-assets/ public/   Colores/tema/fondos; manifest, favicons, OG image
-docs/             Documentación
+db/               Knex migrations (shops/products baseline)
+tests/            Unit (Jest, alongside the code) and E2E (Playwright)
+assets/ public/   Colors/theme/backgrounds; manifest, favicons, OG image
+docs/             Documentation
 ```
 
-## Puesta en marcha
+## Getting started
 
-### Requisitos
+### Requirements
 
-- Node.js 22 (el CI y `.tool-versions` usan 22)
+- Node.js 22 (CI and `.tool-versions` use 22)
 - pnpm 11.25.0
-- **Docker** (para la base local y E2E; levanta PostgreSQL 17.6 con `pg_stat_statements`)
+- **Docker** (for the local database and E2E; starts PostgreSQL 17.6 with `pg_stat_statements`)
 
-### Variables de entorno
+### Environment variables
 
-Copiá `.env.example` a `.env.local` (o crealo) en la raíz. Para desarrollo local,
-el valor de `PG_CONNECTION_STRING` del ejemplo funciona con `compose.dev.yaml`:
+Copy `.env.example` to `.env.local` (or create it) in the repository root. For local development,
+the example's `PG_CONNECTION_STRING` value works with `compose.dev.yaml`:
 
-| Variable | Para qué sirve | ¿Requerida? |
+| Variable | Purpose | Required? |
 |---|---|---|
-| `PG_CONNECTION_STRING` | Conexión PostgreSQL (Knex, migraciones, override E2E) | Sí (db) |
-| `HP_AWS_ACCESS_KEY_ID` | Upload de imágenes a S3 | Solo uploads |
-| `HP_AWS_SECRET_ACCESS_KEY` | Upload de imágenes a S3 | Solo uploads |
-| `HP_AWS_IMAGES_BUCKET` | Bucket S3 de imágenes | Solo uploads |
-| `NEXT_PUBLIC_IMAGE_BUCKET_URL` | URL pública del bucket | Solo imágenes |
-| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Monitoreo de errores (deshabilitado en dev) | No |
+| `PG_CONNECTION_STRING` | PostgreSQL connection (Knex, migrations, E2E override) | Yes (db) |
+| `HP_AWS_ACCESS_KEY_ID` | S3 image upload | Uploads only |
+| `HP_AWS_SECRET_ACCESS_KEY` | S3 image upload | Uploads only |
+| `HP_AWS_IMAGES_BUCKET` | S3 image bucket | Uploads only |
+| `NEXT_PUBLIC_IMAGE_BUCKET_URL` | Public bucket URL | Images only |
+| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Error monitoring (disabled in dev) | No |
 
-> Nunca commitees valores de secretos. `Sentry` se desactiva automáticamente en desarrollo.
+> Never commit secret values. `Sentry` is automatically disabled in development.
 
-### Instalación y dev
+### Installation and development
 
 ```bash
 pnpm install
-pnpm run db:setup   # Docker + migraciones + datos de desarrollo
+pnpm run db:setup   # Docker + migrations + development data
 pnpm run dev        # http://localhost:3000
 ```
 
-`pnpm-lock.yaml` es el lockfile canónico del proyecto; usá pnpm para instalar
-dependencias y ejecutar los scripts.
+`pnpm-lock.yaml` is the project's canonical lockfile; use pnpm to install
+dependencies and run the scripts.
 
-### Base de datos
+### Database
 
 ```bash
-pnpm run db:migrate       # Aplica migraciones (knex migrate:latest)
-pnpm run db:migrate:make -- migration_name # Crea una nueva migración
-pnpm run db:migrate:status # Muestra el estado de las migraciones
-pnpm run db:rollback      # Revierte la última
-pnpm run db:create         # Crea/inicia la base local (idempotente)
-pnpm run db:seed           # Levanta PostgreSQL y carga datos sintéticos
-pnpm run db:seed:test      # Fixtures E2E (base de test)
-pnpm run db:up             # Levanta PostgreSQL local en 54328
-pnpm run db:down           # Detiene PostgreSQL local
-pnpm run db:logs           # Sigue los logs de PostgreSQL
-pnpm run db:check          # Comprueba que PostgreSQL responde
-pnpm run db:reset          # Borra el volumen local y recrea todo
+pnpm run db:migrate       # Apply migrations (knex migrate:latest)
+pnpm run db:migrate:make -- migration_name # Create a new migration
+pnpm run db:migrate:status # Show migration status
+pnpm run db:rollback      # Revert the last migration
+pnpm run db:create         # Create/start the local database (idempotent)
+pnpm run db:seed           # Start PostgreSQL and load synthetic data
+pnpm run db:seed:test      # E2E fixtures (test database)
+pnpm run db:up             # Start local PostgreSQL on 54328
+pnpm run db:down           # Stop local PostgreSQL
+pnpm run db:logs           # Follow PostgreSQL logs
+pnpm run db:check          # Check that PostgreSQL responds
+pnpm run db:reset          # Delete the local volume and recreate everything
 ```
 
-La base de desarrollo usa `compose.dev.yaml` y el puerto **54328**. La base E2E
-usa `compose.e2e.yaml`, el puerto **54329** y fixtures deterministas; son bases
-separadas. `db:reset` elimina permanentemente los datos del volumen local:
-usalo solo cuando quieras empezar de cero. No requiere `psql` instalado en el
-host; los checks se ejecutan dentro del contenedor.
+The development database uses `compose.dev.yaml` and port **54328**. The E2E database
+uses `compose.e2e.yaml`, port **54329**, and deterministic fixtures; they are separate
+databases. `db:reset` permanently deletes data from the local volume:
+use it only when you want to start from scratch. It does not require `psql` to be installed on the
+host; checks run inside the container.
 
-La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (`down()` lanza error a propósito). Requiere extensiones `uuid-ossp`, `pgcrypto` y `pg_stat_statements` (esta última debe estar pre-cargada — ver `compose.e2e.yaml`). Compatible con Postgres 17.6.
+Migration `0001_baseline` creates `shops` and `products` and is **not reversible** (`down()` intentionally throws an error). It requires the `uuid-ossp`, `pgcrypto`, and `pg_stat_statements` extensions (the latter must be preloaded — see `compose.e2e.yaml`). Compatible with Postgres 17.6.
 
 ## Testing
 
@@ -126,8 +126,8 @@ La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (
 pnpm test
 ```
 
-Pruebas junto al código: `lib/utils/*.test.js`, `lib/context/CartContext.test.jsx` y
-tests de componentes en `components/**/*.test.jsx`.
+Tests alongside the code: `lib/utils/*.test.js`, `lib/context/CartContext.test.jsx`, and
+component tests in `components/**/*.test.jsx`.
 
 ### E2E (Playwright)
 
@@ -135,58 +135,58 @@ tests de componentes en `components/**/*.test.jsx`.
 pnpm run test:e2e
 ```
 
-Levanta automáticamente (vía `global-setup`) el stack Docker Compose con PostgreSQL 17.6, aplica migraciones + seed, hace build de la app, la sirve y corre los journeys en Chromium:
+Automatically starts (via `global-setup`) the Docker Compose stack with PostgreSQL 17.6, applies migrations + seed, builds and serves the app, and runs the journeys in Chromium:
 
-- `tests/e2e/order-flow.spec.ts` — flujo de pedido que intercepta `wa.me` y valida el mensaje
-- `tests/e2e/cart-persistence.spec.ts`, `cart-interactions.spec.ts` — persistencia y controles del carrito
-- `tests/e2e/cart-validation.spec.ts` — validación del checkout
-- `tests/e2e/public-pages.spec.ts`, `public-routing-seo.spec.ts` — rutas públicas y metadata SEO
-- `tests/e2e/admin-flow.spec.ts` — gestión del local por token
+- `tests/e2e/order-flow.spec.ts` — order flow that intercepts `wa.me` and validates the message
+- `tests/e2e/cart-persistence.spec.ts`, `cart-interactions.spec.ts` — cart persistence and controls
+- `tests/e2e/cart-validation.spec.ts` — checkout validation
+- `tests/e2e/public-pages.spec.ts`, `public-routing-seo.spec.ts` — public routes and SEO metadata
+- `tests/e2e/admin-flow.spec.ts` — token-based shop management
 
-Overrides útiles: `PLAYWRIGHT_TEST_BASE_URL` (app ya desplegada, saltea el setup local) y `PG_CONNECTION_STRING` (base externa en vez del compose local).
+Useful overrides: `PLAYWRIGHT_TEST_BASE_URL` (already-deployed app, skips local setup) and `PG_CONNECTION_STRING` (external database instead of the local Compose stack).
 
-Primera vez: `pnpm run test:e2e:install` (instala Chromium).
+First time: `pnpm run test:e2e:install` (installs Chromium).
 
 ## CI
 
-`.github/workflows/ci.yml` corre en cada push y pull request: instala con pnpm usando el lockfile congelado, ejecuta los checks de calidad y los tests E2E en jobs separados, y sube el reporte de Playwright si falla.
+`.github/workflows/ci.yml` runs on every push and pull request: installs with pnpm using the frozen lockfile, runs quality checks and E2E tests in separate jobs, and uploads the Playwright report if a job fails.
 
-## Scripts disponibles
+## Available scripts
 
-| Script | Descripción |
+| Script | Description |
 |---|---|
-| `pnpm run dev` | Dev server (puerto 3000; `PORT=3001 pnpm run dev` para otro) |
-| `pnpm run build` | Producción build |
-| `pnpm run start` | Servir build de producción |
+| `pnpm run dev` | Dev server (port 3000; `PORT=3001 pnpm run dev` for another port) |
+| `pnpm run build` | Production build |
+| `pnpm run start` | Serve the production build |
 | `pnpm test` | Unit tests (Jest) |
 | `pnpm run test:e2e` | E2E (Playwright + Docker) |
-| `pnpm run test:e2e:install` | Instala Chromium |
+| `pnpm run test:e2e:install` | Install Chromium |
 | `pnpm run lint` | Biome lint |
-| `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Migraciones Knex |
-| `pnpm run db:seed` | Seed de desarrollo |
-| `pnpm run db:seed:test` / `db:seed:e2e` | Seed E2E |
-| `pnpm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operar DB local |
-| `pnpm run db:setup` / `db:reset` | Preparar / recrear DB local |
-| `pnpm run format` | Formatea código con Biome |
-| `pnpm run format:check` | Verifica el formato con Biome |
-| `pnpm run typecheck` | Verifica los tipos con TypeScript |
-| `pnpm run check` | Verifica formato, lint e imports con Biome |
+| `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations |
+| `pnpm run db:seed` | Development seed |
+| `pnpm run db:seed:test` / `db:seed:e2e` | E2E seed |
+| `pnpm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operate the local DB |
+| `pnpm run db:setup` / `db:reset` | Set up / recreate the local DB |
+| `pnpm run format` | Format code with Biome |
+| `pnpm run format:check` | Check formatting with Biome |
+| `pnpm run typecheck` | Check types with TypeScript |
+| `pnpm run check` | Check formatting, lint, and imports with Biome |
 
 ## Deploy
 
-Apunta a Vercel: configurá las variables de entorno listadas arriba (Sentry se activa en producción). No hay URLs de deploy públicas documentadas en este repo.
+Deploy to Vercel: configure the environment variables listed above (Sentry is enabled in production). No public deployment URLs are documented in this repository.
 
 ## Troubleshooting
 
-- **Node.js**: usá Node 22, tal como declara `.tool-versions` y el workflow de CI.
-- **`pnpm run test:e2e` falla en global-setup**: Docker debe estar corriendo (el setup hace `docker compose down --volumes && up --detach --wait` antes de migrar/seedear). Puerto 54329 ocupado → cambialo en `tests/e2e/fixtures/database.ts` y `compose.e2e.yaml`.
-- **PostgreSQL local**: `pg_stat_statements` debe estar en `shared_preload_libraries` (como en `compose.e2e.yaml`).
+- **Node.js**: use Node 22, as declared by `.tool-versions` and the CI workflow.
+- **`pnpm run test:e2e` fails in global-setup**: Docker must be running (the setup runs `docker compose down --volumes && up --detach --wait` before migrating/seeding). Port 54329 is occupied → change it in `tests/e2e/fixtures/database.ts` and `compose.e2e.yaml`.
+- **Local PostgreSQL**: `pg_stat_statements` must be in `shared_preload_libraries` (as in `compose.e2e.yaml`).
 
-## Contribuir
+## Contributing
 
-- Commits en formato [Conventional Commits](https://www.conventionalcommits.org/).
-- Corré `pnpm run lint` y `pnpm test` antes de abrir un PR (E2E si tocás flujos).
-- Para cada componente visual, colocá los estilos en un archivo `*.module.css` junto al componente e importalos como `styles`.
-- Usá nombres de clase semánticos en kebab-free camelCase (`containerLogo`, `shopName`) y aplicalos con `className={styles.nombre}`.
-- Preferí variables CSS para valores que cambian desde React y mantené los estados visuales (`:hover`, `:focus`) en el módulo.
-- Agentes de IA: leé [AGENTS.md](AGENTS.md) y usá las skills en `.agents/skills/` cuando apliquen.
+- Commits in [Conventional Commits](https://www.conventionalcommits.org/) format.
+- Run `pnpm run lint` and `pnpm test` before opening a PR (E2E when touching flows).
+- For each visual component, place styles in a `*.module.css` file alongside the component and import them as `styles`.
+- Use semantic kebab-free camelCase class names (`containerLogo`, `shopName`) and apply them with `className={styles.nombre}`.
+- Prefer CSS variables for values that change from React and keep visual states (`:hover`, `:focus`) in the module.
+- AI agents: read [AGENTS.md](AGENTS.md) and use the skills in `.agents/skills/` when applicable.
