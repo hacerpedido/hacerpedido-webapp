@@ -170,7 +170,9 @@ describe("images API route", () => {
     });
 
     test("reports the original database error and logs a failed rollback cleanup", async () => {
-      const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockPoolQuery
         .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
         .mockRejectedValueOnce(new Error("database unavailable"));
@@ -190,7 +192,9 @@ describe("images API route", () => {
     });
 
     test("does not fail the request when removing the replaced object fails", async () => {
-      const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockPoolQuery
         .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
         .mockResolvedValueOnce({ rows: [] });
@@ -265,7 +269,9 @@ describe("images API route", () => {
     });
 
     test("does not fail the request when removing the cleared object fails", async () => {
-      const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockPoolQuery
         .mockResolvedValueOnce({ rows: [{ oldKey: "background.jpg" }] })
         .mockResolvedValueOnce({ rows: [] });

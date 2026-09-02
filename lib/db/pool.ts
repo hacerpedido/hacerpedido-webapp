@@ -17,18 +17,12 @@ export interface SharedQueryResult {
 }
 
 export interface SharedPoolClient {
-  query: (
-    text: string,
-    params?: unknown[],
-  ) => Promise<SharedQueryResult>;
+  query: (text: string, params?: unknown[]) => Promise<SharedQueryResult>;
   release: () => void;
 }
 
 export interface SharedPool {
-  query: (
-    text: string,
-    params?: unknown[],
-  ) => Promise<SharedQueryResult>;
+  query: (text: string, params?: unknown[]) => Promise<SharedQueryResult>;
   connect: () => Promise<SharedPoolClient>;
 }
 

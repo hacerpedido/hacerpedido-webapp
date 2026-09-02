@@ -1,5 +1,5 @@
-import type { Product, Shop } from "../types";
 import { getPool } from "../db/pool";
+import type { Product, Shop } from "../types";
 import {
   serializePublicShop,
   serializePublicShops,

@@ -1,8 +1,8 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import * as s3utils from "#lib/utils/aws-s3";
 import { getPool } from "#lib/db/pool";
+import * as s3utils from "#lib/utils/aws-s3";
 import { randomString } from "#lib/utils/utils";
 
 const validator: { isUUID(value: string): boolean } = require("validator");
@@ -118,10 +118,8 @@ export async function POST(request: Request): Promise<Response> {
       throw error;
     }
     if (oldKey) {
-      await cleanupBestEffort(
-        "remove replaced image",
-        oldKey,
-        () => s3utils.deleteFile(oldKey),
+      await cleanupBestEffort("remove replaced image", oldKey, () =>
+        s3utils.deleteFile(oldKey),
       );
     }
     return Response.json({ image: key });
@@ -157,10 +155,8 @@ export async function DELETE(request: Request): Promise<Response> {
     shopID,
   ]);
   if (oldKey) {
-    await cleanupBestEffort(
-      "remove cleared image",
-      oldKey,
-      () => s3utils.deleteFile(oldKey),
+    await cleanupBestEffort("remove cleared image", oldKey, () =>
+      s3utils.deleteFile(oldKey),
     );
   }
   return Response.json({ deleted: oldKey });

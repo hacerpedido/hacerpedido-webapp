@@ -1,7 +1,7 @@
 "use server";
 
-import type { Product } from "../types";
 import { getPool } from "../db/pool";
+import type { Product } from "../types";
 import {
   type ShopEditorInput,
   validateShopEditorInput,
