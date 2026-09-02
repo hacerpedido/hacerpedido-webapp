@@ -22,7 +22,11 @@ const Form = ({ onSubmit }) => {
   const submitLock = useRef(false);
   const [isTransitionPending, startSubmitTransition] = useTransition();
 
-  const { handleSubmit, errors, control } = useForm({ mode: "onSubmit" });
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({ mode: "onSubmit" });
   const [, formAction, isSubmitting] = useActionState(
     async (_state, formData) => {
       await onSubmit(Object.fromEntries(formData.entries()));
@@ -71,62 +75,75 @@ const Form = ({ onSubmit }) => {
       <Switch toggle={toggleTakeAway} value={takeaway} />
 
       <Controller
-        as={Input}
-        autoCompleteType="name"
-        autoFocus
         control={control}
         defaultValue={state.name ?? ""}
-        error={errors.name}
-        label="Tu Nombre"
-        maxLength={50}
         name="name"
-        onChangeText={onNameChange}
-        placeholder="¿Cómo te llamás?"
+        render={({ field }) => (
+          <Input
+            {...field}
+            autoCompleteType="name"
+            autoFocus
+            error={errors.name}
+            label="Tu Nombre"
+            maxLength={50}
+            onChangeText={onNameChange}
+            placeholder="¿Cómo te llamás?"
+            testID="customer-name"
+          />
+        )}
         rules={{
           required: {
             value: true,
             message: "Necesitamos tu nombre",
           },
         }}
-        testID="customer-name"
       />
 
       {/* <AnimatedView style={animatedProps}> */}
       {takeaway || (
         <Controller
-          as={Input}
-          autoCompleteType="street-address"
           control={control}
           defaultValue={state.address ?? ""}
-          error={errors.address}
-          label="Tu Dirección"
-          maxLength={50}
           name="address"
-          onChangeText={onAddressChange}
-          placeholder="¿A dónde lo mandamos?"
+          render={({ field }) => (
+            <Input
+              {...field}
+              autoCompleteType="street-address"
+              error={errors.address}
+              label="Tu Dirección"
+              maxLength={50}
+              onChangeText={onAddressChange}
+              placeholder="¿A dónde lo mandamos?"
+              testID="customer-address"
+            />
+          )}
           rules={{
             required: {
               value: true,
               message: "Necesitamos tu dirección",
             },
           }}
-          testID="customer-address"
         />
       )}
       {/* </AnimatedView> */}
 
       <Controller
-        as={Input}
         control={control}
         defaultValue={state.notes ?? ""}
-        label="Notas"
-        maxLength={500}
-        multiline
         name="notes"
-        numberOfLines={2}
-        onChangeText={onNotesChange}
-        placeholder="¿Querés hacer alguna aclaración?"
-        testID="order-notes"
+        render={({ field }) => (
+          <Input
+            {...field}
+            error={errors.notes}
+            label="Notas"
+            maxLength={500}
+            multiline
+            numberOfLines={2}
+            onChangeText={onNotesChange}
+            placeholder="¿Querés hacer alguna aclaración?"
+            testID="order-notes"
+          />
+        )}
       />
 
       <p className={styles.notes}>

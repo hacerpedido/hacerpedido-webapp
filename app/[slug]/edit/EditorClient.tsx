@@ -26,7 +26,7 @@ import {
   useState,
   useTransition,
 } from "react";
-import { useForm } from "react-hook-form/dist/index.ie11";
+import { useForm } from "react-hook-form";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit
@@ -68,11 +68,14 @@ interface EditorApiError {
 
 type EditorFormMethods = ReturnType<typeof useForm<EditorFormData>>;
 
+type EditorFormErrors = EditorFormMethods["formState"]["errors"];
+
 type FormProps = Pick<
   EditorFormMethods,
-  "control" | "errors" | "register" | "setValue"
+  "control" | "register" | "setValue"
 > & {
   children: React.ReactNode;
+  errors: EditorFormErrors;
 };
 
 type MessageBoxProps = {
@@ -285,10 +288,10 @@ export default function EditShopPage() {
     handleSubmit,
     register,
     setValue,
-    errors,
     control,
     watch,
     getValues,
+    formState: { errors },
   } = useForm<EditorFormData>({
     mode: "onBlur",
   });
