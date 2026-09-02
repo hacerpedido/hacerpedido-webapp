@@ -117,7 +117,7 @@ describe("EditProducts", () => {
         itemnumber: 1,
         name: "Muzzarella",
         price: "1200",
-        shopid: 7,
+        shopid: "7",
       },
     ]);
   });

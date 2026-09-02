@@ -35,9 +35,9 @@ export function extractSections(products: Product[] = []): ProductSection[] {
 
 export type ProductGridRow = [
   boolean,
-  string | number | null | undefined,
-  string | number | null | undefined,
-  string | number | null | undefined,
+  string | null | undefined,
+  string | null | undefined,
+  string | null | undefined,
 ];
 
 export function productForGrid(
@@ -65,7 +65,7 @@ export function productForGrid(
 }
 
 export function productsFromGrid(
-  shopID: string | number,
+  shopID: unknown,
   rows: unknown[][] | null | undefined,
 ): Product[] {
   if (!Array.isArray(rows) || rows.length === 0) {
@@ -75,6 +75,7 @@ export function productsFromGrid(
   const result: Product[] = [];
   let section = "";
   let itemNumber = 0;
+  const normalizedShopID = shopID == null ? "" : String(shopID);
 
   rows.forEach((row) => {
     const isCategory = Boolean(row[0]);
@@ -95,15 +96,15 @@ export function productsFromGrid(
     itemNumber++;
 
     const product: Product = {
-      name: utils.sanitizeProductName(name) as string | number,
+      name: String(utils.sanitizeProductName(name)),
       price: price ? utils.sanitizePrice(price).toString() : "",
       category: section,
-      shopid: shopID,
+      shopid: normalizedShopID,
       itemnumber: itemNumber,
     };
 
     if (description != null && description !== "") {
-      product.description = description as string;
+      product.description = String(description);
     }
 
     result.push(product);

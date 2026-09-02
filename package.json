@@ -37,7 +37,8 @@
     "deps:check": "depcheck --skip-missing --ignores='pg,lefthook,typescript,@types/node,@types/react,@types/react-dom'",
     "format": "biome format --write .",
     "format:check": "biome format .",
-    "check": "biome check ."
+    "check": "biome check .",
+    "test:db": "node scripts/test-db-contracts.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1123.0",
