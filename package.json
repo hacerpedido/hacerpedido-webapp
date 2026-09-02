@@ -1,5 +1,6 @@
 {
   "name": "hacerpedido-webapp",
+  "packageManager": "pnpm@11.25.0",
   "imports": {
     "#assets/*": "./assets/*",
     "#components/*": "./components/*",
