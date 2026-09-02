@@ -32,6 +32,7 @@
     "db:logs": "docker compose -f compose.dev.yaml logs --follow postgres",
     "db:check": "docker compose -f compose.dev.yaml exec postgres pg_isready -U dev_user -d hacerpedido_dev",
     "lint": "biome lint .",
+    "lint:markdown": "markdownlint-cli2",
     "typecheck": "tsc --noEmit",
     "deps:check": "depcheck --skip-missing --ignores='pg,lefthook,typescript,@types/node,@types/react,@types/react-dom'",
     "format": "biome format --write .",
@@ -71,6 +72,7 @@
     "jest": "^30.5.0",
     "jest-environment-jsdom": "^30.5.0",
     "lefthook": "^2.1.12",
+    "markdownlint-cli2": "^0.23.2",
     "typescript": "^7.0.2"
   },
   "license": "MIT"

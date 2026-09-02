@@ -28,6 +28,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec biome ci .
+      - run: pnpm run lint:markdown
       - run: pnpm typecheck
       - run: pnpm exec jest --runInBand --coverage
       - name: Upload coverage
