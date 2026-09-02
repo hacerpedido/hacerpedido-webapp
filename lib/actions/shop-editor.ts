@@ -1,5 +1,6 @@
 "use server";
 
+import { getPool } from "../db/pool";
 import type { Product } from "../types";
 import {
   type ShopEditorInput,
@@ -16,25 +17,6 @@ function revalidateShopPath(path: string) {
   } catch {
     // The editor refreshes explicitly after saving when needed.
   }
-}
-
-type DbResult = { rowCount?: number; rows: Array<{ slug: string }> };
-type DbClient = {
-  connect: () => Promise<{
-    query: (sql: string, params?: unknown[]) => Promise<DbResult>;
-    release: () => void;
-  }>;
-};
-
-let pool: DbClient | undefined;
-
-function getPool() {
-  if (!pool) {
-    const { Pool } = require("pg");
-    pool = new Pool({ connectionString: process.env.PG_CONNECTION_STRING });
-  }
-  if (!pool) throw new Error("Database pool was not initialized.");
-  return pool;
 }
 
 export interface ShopEditorResult {

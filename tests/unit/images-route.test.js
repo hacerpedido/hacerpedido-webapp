@@ -7,8 +7,8 @@ const mockRandomString = jest.fn((length) =>
   length === 10 ? "image-key" : "temporary-file",
 );
 
-jest.mock("pg", () => ({
-  Pool: jest.fn(() => ({ query: mockPoolQuery })),
+jest.mock("#lib/db/pool", () => ({
+  getPool: jest.fn(() => ({ query: mockPoolQuery })),
 }));
 jest.mock("#lib/utils/aws-s3", () => ({
   uploadFile: mockUploadFile,
@@ -149,7 +149,7 @@ describe("images API route", () => {
       expect(mockDeleteFile).not.toHaveBeenCalled();
     });
 
-    test("cleans up the temporary file when the database update fails", async () => {
+    test("removes the just-uploaded object when the database update fails", async () => {
       mockPoolQuery
         .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
         .mockRejectedValueOnce(new Error("database unavailable"));
@@ -159,11 +159,63 @@ describe("images API route", () => {
       );
 
       expect(mockUploadFile).toHaveBeenCalled();
+      // Rollback cleanup of the freshly uploaded object, not the old one.
+      expect(mockDeleteFile).toHaveBeenCalledWith(
+        `${shopID}-logo-image-key.png`,
+      );
       expect(mockRm).toHaveBeenCalledWith(
         expect.stringContaining("hacerpedido-image-temporary-file.png"),
         { force: true },
       );
-      expect(mockDeleteFile).not.toHaveBeenCalled();
+    });
+
+    test("reports the original database error and logs a failed rollback cleanup", async () => {
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      mockPoolQuery
+        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockRejectedValueOnce(new Error("database unavailable"));
+      mockDeleteFile.mockRejectedValue(new Error("cleanup failed"));
+
+      try {
+        await expect(POST(imageRequest())).rejects.toThrow(
+          "database unavailable",
+        );
+        expect(mockDeleteFile).toHaveBeenCalledWith(
+          `${shopID}-logo-image-key.png`,
+        );
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        errorSpy.mockRestore();
+      }
+    });
+
+    test("does not fail the request when removing the replaced object fails", async () => {
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      mockPoolQuery
+        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockResolvedValueOnce({ rows: [] });
+      mockDeleteFile.mockRejectedValueOnce(new Error("S3 delete failed"));
+
+      try {
+        const response = await POST(imageRequest());
+
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({
+          image: `${shopID}-logo-image-key.png`,
+        });
+        expect(mockPoolQuery).toHaveBeenLastCalledWith(
+          'UPDATE shops SET "logo" = $1 WHERE id = $2',
+          [`${shopID}-logo-image-key.png`, shopID],
+        );
+        expect(mockDeleteFile).toHaveBeenCalledWith("old-logo.png");
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        errorSpy.mockRestore();
+      }
     });
   });
 
@@ -214,6 +266,34 @@ describe("images API route", () => {
       ).rejects.toThrow("database unavailable");
 
       expect(mockDeleteFile).not.toHaveBeenCalled();
+    });
+
+    test("does not fail the request when removing the cleared object fails", async () => {
+      const errorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      mockPoolQuery
+        .mockResolvedValueOnce({ rows: [{ oldKey: "background.jpg" }] })
+        .mockResolvedValueOnce({ rows: [] });
+      mockDeleteFile.mockRejectedValueOnce(new Error("S3 delete failed"));
+
+      try {
+        const response = await DELETE(
+          formRequest({ image_type: "background", shop_id: shopID }),
+        );
+
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({ deleted: "background.jpg" });
+        expect(mockPoolQuery).toHaveBeenNthCalledWith(
+          2,
+          'UPDATE shops SET "background" = NULL WHERE id = $1',
+          [shopID],
+        );
+        expect(mockDeleteFile).toHaveBeenCalledWith("background.jpg");
+        expect(errorSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        errorSpy.mockRestore();
+      }
     });
   });
 });
