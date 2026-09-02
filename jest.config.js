@@ -4,9 +4,9 @@ module.exports = {
   // installed environment instead of reporting it as unused in CI.
   testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: ["<rootDir>/tests/e2e/", "<rootDir>/.slim/"],
-  setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
   moduleNameMapper: {
-    "^.+\\.module\\.css$": "<rootDir>/tests/styleMock.js",
+    "^.+\\.module\\.css$": "<rootDir>/tests/styleMock.ts",
     "^#assets/(.*)$": "<rootDir>/assets/$1",
     "^#components/(.*)$": "<rootDir>/components/$1",
     "^#db/(.*)$": "<rootDir>/db/$1",

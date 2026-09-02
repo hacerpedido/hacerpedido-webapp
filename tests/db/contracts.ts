@@ -1,13 +1,13 @@
-const assert = require("node:assert/strict");
-const path = require("node:path");
+import assert from "node:assert/strict";
+import path from "node:path";
 
-const knexFactory = require("knex");
-
-const {
-  BASELINE_MIGRATION,
+import type { Knex } from "knex";
+import knexFactory from "knex";
+import {
   applyBaseline,
+  BASELINE_MIGRATION,
   verifyBaseline,
-} = require("../../scripts/adopt-baseline.js");
+} from "../../scripts/adopt-baseline";
 
 const INDEX_MIGRATION = "0002_add_secondary_indexes.js";
 const PIN_MIGRATION = "0003_pin_trigger_search_path.js";
@@ -17,17 +17,24 @@ const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function fixtureId(suffix) {
+function fixtureId(suffix: number): string {
   return `90000000-0000-4000-8000-${suffix.toString().padStart(12, "0")}`;
 }
 
-async function assertPostgresError(callback, code) {
-  await assert.rejects(callback, (error) => error && error.code === code);
+async function assertPostgresError(
+  callback: () => Promise<unknown>,
+  code: string,
+): Promise<void> {
+  await assert.rejects(callback, (error: unknown) => {
+    return typeof error === "object" && error !== null && "code" in error
+      ? (error as { code: unknown }).code === code
+      : false;
+  });
 }
 
-async function assertDisposableDatabase(knex) {
+async function assertDisposableDatabase(knex: Knex): Promise<void> {
   const { rows } = await knex.raw("SELECT current_database() AS name");
-  const databaseName = rows[0].name;
+  const databaseName: string = rows[0].name;
   assert.match(
     databaseName,
     /^hacerpedido_(e2e|db_contracts)$/,
@@ -35,14 +42,14 @@ async function assertDisposableDatabase(knex) {
   );
 }
 
-async function migrationNames(knex) {
+async function migrationNames(knex: Knex): Promise<string[]> {
   const { rows } = await knex.raw(
     "SELECT name FROM public.knex_migrations ORDER BY name ASC",
   );
-  return rows.map((row) => row.name);
+  return rows.map((row: { name: string }) => row.name);
 }
 
-async function assertSecondaryIndexes(knex) {
+async function assertSecondaryIndexes(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT indexname, indexdef
        FROM pg_indexes
@@ -54,8 +61,13 @@ async function assertSecondaryIndexes(knex) {
         )
       ORDER BY indexname`,
   );
-  const definitions = new Map(rows.map((row) => [row.indexname, row.indexdef]));
-  const expected = new Map([
+  const definitions = new Map<string, string>(
+    rows.map((row: { indexname: string; indexdef: string }) => [
+      row.indexname,
+      row.indexdef,
+    ]),
+  );
+  const expected = new Map<string, RegExp>([
     [
       "idx_products_shopid_itemnumber",
       /CREATE INDEX .* ON public\.products USING btree \(shopid, itemnumber\)/,
@@ -78,7 +90,7 @@ async function assertSecondaryIndexes(knex) {
   }
 }
 
-async function assertPinnedTimestampFunction(knex) {
+async function assertPinnedTimestampFunction(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT procedure.proconfig
        FROM pg_proc procedure
@@ -94,7 +106,7 @@ async function assertPinnedTimestampFunction(knex) {
   );
 }
 
-async function assertUuidAndPriceContract(knex) {
+async function assertUuidAndPriceContract(knex: Knex): Promise<void> {
   const shopId = fixtureId(101);
   const generatedSlug = "db-contract-generated-uuid";
   const productId = fixtureId(102);
@@ -143,7 +155,7 @@ async function assertUuidAndPriceContract(knex) {
   }
 }
 
-async function assertForeignKeyContract(knex) {
+async function assertForeignKeyContract(knex: Knex): Promise<void> {
   const missingShopId = fixtureId(201);
   const orphanProductId = fixtureId(202);
   const shopId = fixtureId(203);
@@ -184,7 +196,7 @@ async function assertForeignKeyContract(knex) {
   }
 }
 
-async function assertBaselineAdoptionContract(knex) {
+async function assertBaselineAdoptionContract(knex: Knex): Promise<void> {
   // On a fully migrated disposable DB, verify the baseline is recognized as
   // adopted even when versioned forward migrations follow it.
   assert.deepEqual(await migrationNames(knex), ALL_MIGRATIONS);
@@ -203,8 +215,10 @@ async function assertBaselineAdoptionContract(knex) {
   assert.equal(again.applied, false);
 }
 
-async function runDatabaseContractTests(connectionString) {
-  const knex = knexFactory({
+export async function runDatabaseContractTests(
+  connectionString: string,
+): Promise<void> {
+  const knex: Knex = knexFactory({
     client: "pg",
     connection: connectionString,
     migrations: {
@@ -231,5 +245,3 @@ async function runDatabaseContractTests(connectionString) {
     await knex.destroy();
   }
 }
-
-module.exports = { runDatabaseContractTests };

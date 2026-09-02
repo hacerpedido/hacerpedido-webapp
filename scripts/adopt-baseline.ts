@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 
-const knexFactory = require("knex");
+import type { Knex } from "knex";
+import knexFactory from "knex";
 
-const BASELINE_MIGRATION = "0001_baseline.js";
+export const BASELINE_MIGRATION = "0001_baseline.js";
 const ADVISORY_LOCK_KEY = "hacerpedido:baseline-adoption:v1";
 const RLS_MODES = new Set(["auto", "production", "e2e"]);
-const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
+export const HARDENED_TIMESTAMP_FUNCTION_CONFIG = [
+  "search_path=pg_catalog, public",
+];
 
-const expectedColumns = [
+type ColumnExpectation = [string, string, string, string, string | null];
+
+const expectedColumns: ColumnExpectation[] = [
   ["shops", "id", "uuid", "NO", "uuid"],
   ["shops", "name", "text", "NO", null],
   ["shops", "slug", "text", "NO", null],
@@ -44,15 +49,15 @@ const expectedColumns = [
   ["products", "updated_at", "timestamp without time zone", "YES", "now"],
 ];
 
-function fail(message) {
+function fail(message: string): never {
   throw new Error(`Baseline adoption refused: ${message}`);
 }
 
-function normalize(value) {
+function normalize(value: unknown): string {
   return String(value).replaceAll(/\s+/g, "").toLowerCase();
 }
 
-function matchesDefault(actual, expected) {
+function matchesDefault(actual: unknown, expected: string | null): boolean {
   if (expected === null) return actual === null;
   if (typeof actual !== "string") return false;
 
@@ -61,7 +66,11 @@ function matchesDefault(actual, expected) {
   return /(?:^|\.)(?:uuid_generate_v1)\(\)$/.test(normalized);
 }
 
-function assertEqual(actual, expected, description) {
+function assertEqual(
+  actual: unknown,
+  expected: unknown,
+  description: string,
+): void {
   if (actual !== expected) {
     fail(
       `${description}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`,
@@ -69,7 +78,7 @@ function assertEqual(actual, expected, description) {
   }
 }
 
-function hasApprovedTimestampFunctionConfig(config) {
+export function hasApprovedTimestampFunctionConfig(config: unknown): boolean {
   if (config === null) return true;
   if (!Array.isArray(config)) return false;
   return (
@@ -80,7 +89,7 @@ function hasApprovedTimestampFunctionConfig(config) {
   );
 }
 
-async function migrationHistory(knex) {
+async function migrationHistory(knex: Knex): Promise<string> {
   const table = await knex.raw(
     "SELECT to_regclass('public.knex_migrations') AS name",
   );
@@ -93,7 +102,7 @@ async function migrationHistory(knex) {
   const { rows } = await knex.raw(
     "SELECT name FROM public.knex_migrations ORDER BY id ASC",
   );
-  const names = rows.map((row) => row.name);
+  const names: unknown[] = rows.map((row: { name: unknown }) => row.name);
 
   if (names.length === 0) return "empty";
   if (names[0] === BASELINE_MIGRATION) return "adopted";
@@ -103,15 +112,18 @@ async function migrationHistory(knex) {
   );
 }
 
-async function verifyColumns(knex) {
+async function verifyColumns(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT table_name, column_name, data_type, is_nullable, column_default
        FROM information_schema.columns
       WHERE table_schema = 'public' AND table_name IN ('shops', 'products')
       ORDER BY table_name, ordinal_position`,
   );
-  const actual = new Map(
-    rows.map((row) => [`${row.table_name}.${row.column_name}`, row]),
+  const actual = new Map<string, Record<string, unknown>>(
+    rows.map((row: Record<string, unknown>) => [
+      `${row.table_name}.${row.column_name}`,
+      row,
+    ]),
   );
 
   assertEqual(
@@ -136,7 +148,7 @@ async function verifyColumns(knex) {
   }
 }
 
-async function verifyConstraints(knex) {
+async function verifyConstraints(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT con.conname, con.contype, source.relname AS table_name,
             target.relname AS target_table, con.confdeltype, con.confupdtype,
@@ -148,8 +160,10 @@ async function verifyConstraints(knex) {
       WHERE schema.nspname = 'public' AND source.relname IN ('shops', 'products')
       ORDER BY source.relname, con.conname`,
   );
-  const actual = new Map(rows.map((row) => [row.conname, row]));
-  const expected = [
+  const actual = new Map<string, Record<string, unknown>>(
+    rows.map((row: Record<string, unknown>) => [row.conname as string, row]),
+  );
+  const expected: Array<[string, string, string]> = [
     ["shops_pkey", "p", "shops"],
     ["shops_slug_key", "u", "shops"],
     ["products_pkey", "p", "products"],
@@ -165,6 +179,7 @@ async function verifyConstraints(knex) {
   }
 
   const foreignKey = actual.get("products_shopid_fkey");
+  if (!foreignKey) fail("missing constraint public.products_shopid_fkey");
   assertEqual(foreignKey.target_table, "shops", "products shop FK target");
   assertEqual(foreignKey.confdeltype, "a", "products shop FK delete action");
   assertEqual(foreignKey.confupdtype, "a", "products shop FK update action");
@@ -185,7 +200,7 @@ async function verifyConstraints(knex) {
   }
 }
 
-async function verifyTriggers(knex) {
+async function verifyTriggers(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT trigger.tgname, target.relname AS table_name, trigger.tgenabled,
             pg_get_triggerdef(trigger.oid) AS definition,
@@ -232,7 +247,7 @@ async function verifyTriggers(knex) {
   }
 }
 
-async function verifyFunctions(knex) {
+async function verifyFunctions(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT procedure.proname, pg_get_function_result(procedure.oid) AS result,
             language.lanname AS language, procedure.prosrc, procedure.proconfig,
@@ -244,7 +259,9 @@ async function verifyFunctions(knex) {
         AND procedure.proname IN ('trigger_set_timestamp', 'rls_auto_enable')
       ORDER BY procedure.proname`,
   );
-  const functions = new Map(rows.map((row) => [row.proname, row]));
+  const functions = new Map<string, Record<string, unknown>>(
+    rows.map((row: Record<string, unknown>) => [row.proname as string, row]),
+  );
   assertEqual(functions.size, 2, "baseline function count");
 
   const timestamp = functions.get("trigger_set_timestamp");
@@ -280,7 +297,7 @@ async function verifyFunctions(knex) {
   }
 }
 
-async function verifyExtensions(knex) {
+async function verifyExtensions(knex: Knex): Promise<void> {
   const { rows } = await knex.raw(
     `SELECT extension.extname, extension.extversion, schema.nspname AS schema_name
        FROM pg_extension extension
@@ -288,7 +305,7 @@ async function verifyExtensions(knex) {
       WHERE extension.extname IN ('uuid-ossp', 'pgcrypto', 'pg_stat_statements')
       ORDER BY extension.extname`,
   );
-  const expected = new Map([
+  const expected = new Map<string, string>([
     ["uuid-ossp", "1.1"],
     ["pgcrypto", "1.3"],
     ["pg_stat_statements", "1.11"],
@@ -308,7 +325,7 @@ async function verifyExtensions(knex) {
   }
 }
 
-async function verifyRls(knex, rlsMode) {
+async function verifyRls(knex: Knex, rlsMode: string): Promise<string> {
   const { rows } = await knex.raw(
     `SELECT relname, relrowsecurity
        FROM pg_class relation
@@ -317,7 +334,9 @@ async function verifyRls(knex, rlsMode) {
       ORDER BY relname`,
   );
   assertEqual(rows.length, 2, "shops/products RLS state count");
-  const values = new Set(rows.map((row) => row.relrowsecurity));
+  const values = new Set(
+    rows.map((row: { relrowsecurity: unknown }) => row.relrowsecurity),
+  );
   if (values.size !== 1)
     fail("shops and products must have the same RLS state");
 
@@ -331,7 +350,16 @@ async function verifyRls(knex, rlsMode) {
   return enabled ? "enabled" : "disabled";
 }
 
-async function verifyBaseline(knex, { rlsMode = "auto" } = {}) {
+export interface BaselineResult {
+  history: string;
+  rls: string;
+  applied?: boolean;
+}
+
+export async function verifyBaseline(
+  knex: Knex,
+  { rlsMode = "auto" }: { rlsMode?: string } = {},
+): Promise<BaselineResult> {
   if (!RLS_MODES.has(rlsMode))
     fail(`unknown RLS mode ${JSON.stringify(rlsMode)}`);
 
@@ -345,7 +373,10 @@ async function verifyBaseline(knex, { rlsMode = "auto" } = {}) {
   return { history, rls };
 }
 
-async function applyBaseline(knex, { rlsMode }) {
+export async function applyBaseline(
+  knex: Knex,
+  { rlsMode }: { rlsMode: string },
+): Promise<BaselineResult> {
   return knex.transaction(async (trx) => {
     await trx.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [
       ADVISORY_LOCK_KEY,
@@ -365,7 +396,13 @@ async function applyBaseline(knex, { rlsMode }) {
   });
 }
 
-function parseArguments(argv) {
+export interface BaselineOptions {
+  apply: boolean;
+  rlsMode: string;
+  help: boolean;
+}
+
+export function parseArguments(argv: string[]): BaselineOptions {
   let apply = false;
   let rlsMode = "auto";
 
@@ -375,7 +412,7 @@ function parseArguments(argv) {
     } else if (arg.startsWith("--rls=")) {
       rlsMode = arg.slice("--rls=".length);
     } else if (arg === "--help") {
-      return { help: true };
+      return { apply: false, rlsMode, help: true };
     } else {
       fail(`unknown argument ${JSON.stringify(arg)}`);
     }
@@ -393,7 +430,7 @@ async function main(argv = process.argv.slice(2), environment = process.env) {
   const options = parseArguments(argv);
   if (options.help) {
     console.log(
-      "Usage: node scripts/adopt-baseline.js [--apply --rls=production|e2e] [--rls=auto|production|e2e]",
+      "Usage: node scripts/adopt-baseline.ts [--apply --rls=production|e2e] [--rls=auto|production|e2e]",
     );
     return;
   }
@@ -401,7 +438,7 @@ async function main(argv = process.argv.slice(2), environment = process.env) {
     fail("PG_CONNECTION_STRING is required");
   }
 
-  const knex = knexFactory({
+  const knex: Knex = knexFactory({
     client: "pg",
     connection: environment.PG_CONNECTION_STRING,
   });
@@ -420,17 +457,17 @@ async function main(argv = process.argv.slice(2), environment = process.env) {
   }
 }
 
-if (require.main === module) {
-  main().catch((error) => {
+// import.meta cannot be used: Jest transforms this file to CommonJS and cannot
+// require modules that reference it. Detect direct CLI invocation instead.
+const invokedAsMain = ((): boolean => {
+  const entry = process.argv[1];
+  if (typeof entry !== "string") return false;
+  return /[\\/]adopt-baseline(?:\.ts)?$/.test(entry.replace(/\\/g, "/"));
+})();
+
+if (invokedAsMain) {
+  main().catch((error: Error) => {
     console.error(error.message);
     process.exitCode = 1;
   });
 }
-
-module.exports = {
-  BASELINE_MIGRATION,
-  applyBaseline,
-  hasApprovedTimestampFunctionConfig,
-  parseArguments,
-  verifyBaseline,
-};

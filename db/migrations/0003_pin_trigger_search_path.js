@@ -8,7 +8,7 @@
 //   SET search_path = pg_catalog, public;
 //
 // The pinned representation (proconfig = {search_path=pg_catalog, public}) is
-// one of the approved fingerprints in scripts/adopt-baseline.js and is asserted
+// one of the approved fingerprints in scripts/adopt-baseline.ts and is asserted
 // by the database contract tests. Verify with:
 //
 //   SELECT p.oid::regprocedure AS function_name, p.proconfig
