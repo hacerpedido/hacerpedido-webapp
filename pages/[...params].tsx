@@ -12,7 +12,14 @@ import ErrorPage from "next/error";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useActionState, useEffect, useState } from "react";
+import React, {
+  useActionState,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import styles from "./[...params].module.css";
 
@@ -27,9 +34,31 @@ export default function EditShopPage() {
   const [shopState, setShopState] = useState({ shop: null, loading: true });
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
+  const submitLock = useRef(false);
+  const [productsRevision, setProductsRevision] = useState(0);
+  const [tempProducts, setTempProducts] = useState(null);
+  const serverProducts = shopState.shop?.products ?? [];
+  const [optimisticProducts, addOptimisticProducts] = useOptimistic(
+    tempProducts ?? serverProducts,
+    (_currentProducts, nextProducts) => nextProducts,
+  );
+  const [, startPreviewTransition] = useTransition();
+  const [isActionPending, startActionTransition] = useTransition();
   const [actionState, formAction, isSaving] = useActionState(
     async (_previous, formData) => {
       const values = Object.fromEntries(formData.entries());
+      let submittedProducts = null;
+
+      try {
+        submittedProducts = JSON.parse(values.products || "null");
+      } catch {
+        return {
+          message: "Productos inválidos.",
+          error: 1,
+          values,
+        };
+      }
+
       try {
         const response = await axios.post(
           `${window.location.origin}/api/shop/editor`,
@@ -37,21 +66,22 @@ export default function EditShopPage() {
             shop: Object.fromEntries(
               Object.entries(values).filter(([key]) => key !== "products"),
             ),
-            products: JSON.parse(values.products || "null"),
+            products: submittedProducts,
           },
         );
-        return response.data;
+        return { ...response.data, products: submittedProducts, values };
       } catch (error) {
         return {
           message: error.response?.data?.message ?? "Datos inválidos.",
           error: 1,
+          products: submittedProducts,
+          values,
         };
       }
     },
     { message: "" },
   );
   const [reloadCount, setReloadCount] = useState(0);
-  const [tempProducts, setTempProducts] = useState(null);
 
   const { params } = router.query;
 
@@ -109,11 +139,32 @@ export default function EditShopPage() {
 
   useEffect(() => {
     if (!actionState.message || isSaving) return;
+
+    submitLock.current = false;
+    if (actionState.values) {
+      for (const [key, value] of Object.entries(actionState.values)) {
+        if (key !== "products") setValue(key, value, true);
+      }
+    }
+
     setMessage(actionState.message);
     setShowMessage(true);
-    // The grid edits are a local optimistic preview. Discard them when the
-    // server responds so a rejected save can never remain visible as saved.
+
+    // Keep the server response as the new base after a successful save. On a
+    // rejected save, restore the server products and remount the grid so its
+    // internal Handsontable state cannot make the failed draft look persisted.
+    if (!actionState.error && Array.isArray(actionState.products)) {
+      setShopState((current) =>
+        current.shop
+          ? {
+              ...current,
+              shop: { ...current.shop, products: actionState.products },
+            }
+          : current,
+      );
+    }
     setTempProducts(null);
+    setProductsRevision((revision) => revision + 1);
     // Do not refresh the editor immediately after a successful save. Next.js
     // 16 batches this state update with the refresh, which remounts the page
     // and clears `showMessage` before the confirmation can be painted. The
@@ -130,26 +181,30 @@ export default function EditShopPage() {
     return <ErrorPage statusCode={404} />;
   }
 
-  const onSubmit = (data, event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
+  const onSubmit = (data, form) => {
+    if (submitLock.current || isSaving || isActionPending) return;
+
+    if (!form) return;
     const values = trimObject({ ...data, id: shopState.shop.id, token });
     for (const [key, value] of Object.entries(values))
       form.elements[key].value = value ?? "";
-    // React 19/Next 16 may commit the action state after the form action's
-    // pending transition has already settled. Show the success state
-    // optimistically so the confirmation is not lost between those commits;
-    // the action-state effect replaces it with a validation error if needed.
-    setMessage("Tus cambios fueron guardados.");
-    setShowMessage(true);
-    formAction(new FormData(form));
+    submitLock.current = true;
+    startActionTransition(() => formAction(new FormData(form)));
   };
 
   const showSaveMessage = (event) => {
+    if (submitLock.current || isSaving || isActionPending) {
+      event.preventDefault();
+      return;
+    }
+
+    // The click handler is used so the existing SaveButton remains keyboard
+    // accessible, but validation and the action are still owned by the form.
+    // Preventing the browser submit here avoids dispatching the same action a
+    // second time through the form's onSubmit handler.
     event.preventDefault();
-    setMessage("Tus cambios fueron guardados.");
-    setShowMessage(true);
-    formAction(new FormData(event.currentTarget.form));
+    const form = event.currentTarget.form;
+    handleSubmit((data) => onSubmit(data, form))(event);
   };
 
   function refresh() {
@@ -172,13 +227,11 @@ export default function EditShopPage() {
   const tempValues = watch();
   const tempShop = trimObject({ ...shopState.shop, ...tempValues });
 
-  const products = shopState.shop?.products ?? [];
-  const previewProducts = tempProducts ?? products;
-
   const width = typeof window !== "undefined" ? window.innerWidth : 1000;
   const showPreview = width > 1000;
 
-  const isError = Object.keys(errors).length > 0;
+  const isClientError = Object.keys(errors).length > 0;
+  const isError = isClientError || Boolean(actionState.error);
 
   return (
     <>
@@ -189,7 +242,13 @@ export default function EditShopPage() {
       <main className={styles.container}>
         <section className={styles.leftContainer}>
           <Form {...{ register, setValue, errors, control }}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                const form = event.currentTarget;
+                handleSubmit((data) => onSubmit(data, form))(event);
+              }}
+            >
               <input
                 name="id"
                 readOnly
@@ -207,15 +266,26 @@ export default function EditShopPage() {
                 control={control}
                 errors={errors}
                 getValues={getValues}
-                handleSubmit={handleSubmit(onSubmit)}
-                isSaving={isSaving}
+                handleSubmit={handleSubmit((data, event) =>
+                  onSubmit(
+                    data,
+                    event?.currentTarget?.form ?? event?.currentTarget,
+                  ),
+                )}
+                isSaving={isSaving || isActionPending}
                 onSave={showSaveMessage}
                 refresh={refresh}
                 shop={shopState.shop}
               />
               <EditProductsForm
-                onTempProductsChange={setTempProducts}
-                products={products}
+                key={productsRevision}
+                onTempProductsChange={(nextProducts) => {
+                  setTempProducts(nextProducts);
+                  startPreviewTransition(() => {
+                    addOptimisticProducts(nextProducts);
+                  });
+                }}
+                products={serverProducts}
                 shopId={shopState.shop.id}
               />
             </form>
@@ -242,7 +312,7 @@ export default function EditShopPage() {
             </a>
             <ShopView
               isPreview={true}
-              previewProducts={previewProducts}
+              previewProducts={optimisticProducts}
               shop={tempShop}
             />
           </aside>
@@ -253,7 +323,7 @@ export default function EditShopPage() {
         <MessageBox
           isError={isError}
           message={
-            isError
+            isClientError
               ? "Hubo errores en los datos que ingresaste. Por favor revisalos y grabá nuevamente."
               : message
           }

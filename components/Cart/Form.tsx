@@ -2,8 +2,13 @@
 import { WhatsappFill as WhatsappFillIcon } from "#assets/icons";
 import { useCart } from "#lib/context/CartContext";
 
-import React, { useActionState, useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import Input from "../Input";
 import Switch from "../Switch";
@@ -14,12 +19,21 @@ const Form = ({ onSubmit }) => {
   const shop = state.shop;
   const { name } = shop;
   const [takeaway, setTakeaway] = useState(false);
+  const submitLock = useRef(false);
+  const [isTransitionPending, startSubmitTransition] = useTransition();
 
   const { handleSubmit, errors, control } = useForm({ mode: "onSubmit" });
-  const [, formAction] = useActionState(async (_state, formData) => {
-    onSubmit(Object.fromEntries(formData.entries()));
-    return null;
-  }, null);
+  const [, formAction, isSubmitting] = useActionState(
+    async (_state, formData) => {
+      await onSubmit(Object.fromEntries(formData.entries()));
+      return null;
+    },
+    null,
+  );
+
+  useEffect(() => {
+    if (!isSubmitting) submitLock.current = false;
+  }, [isSubmitting]);
 
   const onNameChange = (value) =>
     dispatch({ type: "SET_NAME", payload: value });
@@ -45,7 +59,13 @@ const Form = ({ onSubmit }) => {
       onSubmit={(event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        handleSubmit(() => formAction(new FormData(form)))(event);
+        if (submitLock.current || isSubmitting || isTransitionPending) return;
+
+        handleSubmit(() => {
+          if (submitLock.current) return;
+          submitLock.current = true;
+          startSubmitTransition(() => formAction(new FormData(form)));
+        })(event);
       }}
     >
       <Switch toggle={toggleTakeAway} value={takeaway} />
@@ -115,19 +135,22 @@ const Form = ({ onSubmit }) => {
         con el comercio. No somos responsables de modificaciones en el menú.
       </p>
 
-      <SubmitOrderButton name={name} />
+      <SubmitOrderButton
+        isSubmitting={isSubmitting || isTransitionPending}
+        name={name}
+      />
     </form>
   );
 };
 
-const SubmitOrderButton = ({ name }) => {
-  const { pending } = useFormStatus();
+const SubmitOrderButton = ({ isSubmitting, name }) => {
   return (
     <button
+      aria-busy={isSubmitting}
       aria-label="Submit WhatsApp order"
       className={`${styles.button} ${styles.buttonWhatsApp} bounza`}
       data-testid="submit-whatsapp-order"
-      disabled={pending}
+      disabled={isSubmitting}
       type="submit"
     >
       <span className={styles.textContainer}>

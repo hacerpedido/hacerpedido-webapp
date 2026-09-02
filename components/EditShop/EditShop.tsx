@@ -16,16 +16,18 @@ const formatter = buildFormatter(spanishStrings);
 
 function SaveButton({ isSaving, onClick }) {
   const { pending } = useFormStatus();
+  const saving = pending || isSaving;
   return (
     <button
-      className={`${styles.saveButton} ${pending ? styles.saveButtonSaving : ""}`}
+      aria-busy={saving}
+      className={`${styles.saveButton} ${saving ? styles.saveButtonSaving : ""}`}
       data-testid="save-shop"
-      disabled={pending || isSaving}
+      disabled={saving}
       onClick={onClick}
       type="submit"
     >
       <span className={styles.buttonText}>Guardar</span>
-      {pending && (
+      {saving && (
         <span aria-label="Guardando" className={styles.spinner} role="status" />
       )}
     </button>

@@ -35,6 +35,93 @@ test("loads the Handsontable product editor without a ReferenceError", async ({
   );
 });
 
+test("prevents duplicate editor saves while the request is pending", async ({
+  page,
+}) => {
+  let saveRequests = 0;
+  let releaseSave: (() => void) | undefined;
+  const saveReleased = new Promise<void>((resolve) => {
+    releaseSave = resolve;
+  });
+
+  await page.route("**/api/shop/editor", async (route) => {
+    saveRequests += 1;
+    await saveReleased;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ message: "Tus cambios fueron guardados." }),
+    });
+  });
+
+  await page.goto("/e2e-fixture-token/edit");
+  const saveButton = page.getByTestId("save-shop");
+  await saveButton.click();
+  await expect(saveButton).toBeDisabled();
+
+  // Force the second click to exercise the browser guard without waiting for
+  // the first request to settle.
+  await saveButton.click({ force: true });
+  expect(saveRequests).toBe(1);
+  releaseSave?.();
+  await expect(saveButton).toBeEnabled();
+});
+
+test("preserves editor values when the server rejects a valid submission", async ({
+  page,
+}) => {
+  await page.route("**/api/shop/editor", (route) =>
+    route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: 1,
+        message: "El nombre del comercio es requerido.",
+      }),
+    }),
+  );
+
+  await page.goto("/e2e-fixture-token/edit");
+  const name = page.getByTestId("edit-shop-name");
+  const address = page.getByTestId("edit-shop-address");
+  await name.fill("Submitted name");
+  await address.fill("Submitted address");
+  await page.getByTestId("save-shop").click();
+  await expect(
+    page.getByText("El nombre del comercio es requerido."),
+  ).toBeVisible();
+  await expect(name).toHaveValue("Submitted name");
+  await expect(address).toHaveValue("Submitted address");
+});
+
+test("rolls back an optimistic product preview after a rejected save", async ({
+  page,
+}) => {
+  await page.route("**/api/shop/editor", (route) =>
+    route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({ error: 1, message: "No se pudo guardar." }),
+    }),
+  );
+
+  await page.goto("/e2e-fixture-token/edit");
+  const productCell = page
+    .locator(".ht_master .htCore tbody tr")
+    .nth(3)
+    .locator("td")
+    .nth(1);
+  await productCell.dblclick();
+  await page.keyboard.press("Control+A");
+  await page.keyboard.type("Preview Product");
+  await page.keyboard.press("Enter");
+
+  const preview = page.locator("aside");
+  await expect(preview.getByText("Preview Product")).toBeVisible();
+  await page.getByTestId("save-shop").click();
+  await expect(preview.getByText("E2E Product")).toBeVisible();
+  await expect(preview.getByText("Preview Product")).not.toBeVisible();
+});
+
 // This uses its own private seed shop, keeping its POST mutation independent
 // from public-fixture readers when Playwright runs specs in parallel.
 // It characterizes the save round-trip: POST /api/shop/by-token updates the
