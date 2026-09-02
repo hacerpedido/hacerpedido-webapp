@@ -1,39 +1,48 @@
-const fs = require("fs");
-const AWS = require("aws-sdk");
+import { readFileSync } from "node:fs";
+
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+
+function createS3Client(): S3Client {
+  return new S3Client({
+    region: process.env.AWS_REGION ?? "us-east-1",
+    followRegionRedirects: true,
+    credentials: {
+      accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY as string,
+    },
+  });
+}
 
 export async function uploadFile(
   fileName: string,
   key: string,
   mime: string,
 ): Promise<void> {
-  const fileContent = fs.readFileSync(fileName);
-
-  const s3 = new AWS.S3({
-    accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
-  });
+  const fileContent = readFileSync(fileName);
+  const s3 = createS3Client();
 
   const params = {
     Bucket: process.env.HP_AWS_IMAGES_BUCKET,
-    Key: key, // File name
+    Key: key,
     Body: fileContent,
     ContentType: mime,
-    ACL: "public-read",
+    ACL: "public-read" as const,
   };
 
-  await s3.upload(params).promise();
+  await s3.send(new PutObjectCommand(params));
 }
 
 export async function deleteFile(key: string): Promise<void> {
-  const s3 = new AWS.S3({
-    accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
-  });
+  const s3 = createS3Client();
 
   const params = {
     Bucket: process.env.HP_AWS_IMAGES_BUCKET,
-    Key: key, // File name
+    Key: key,
   };
 
-  await s3.deleteObject(params).promise();
+  await s3.send(new DeleteObjectCommand(params));
 }

@@ -39,9 +39,9 @@
     "check": "biome check ."
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1123.0",
     "@handsontable/react": "^4.0.0",
     "@sentry/nextjs": "^7.120.4",
-    "aws-sdk": "^2.1693.0",
     "axios": "^0.21.4",
     "bootstrap": "^4.6.2",
     "handsontable": "^8.4.0",

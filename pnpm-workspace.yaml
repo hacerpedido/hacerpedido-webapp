@@ -4,7 +4,6 @@ allowBuilds:
   # instead of failing installation with an unresolved build policy.
   '@parcel/watcher': false
   '@sentry/cli': true
-  aws-sdk: true
   core-js: true
   lefthook: true
   unrs-resolver: false
