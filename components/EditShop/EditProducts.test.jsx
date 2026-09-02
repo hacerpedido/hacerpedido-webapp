@@ -4,7 +4,6 @@ import EditProducts from "./EditProducts";
 
 jest.mock("handsontable/styles/handsontable.min.css", () => ({}));
 jest.mock("handsontable/styles/ht-theme-main.min.css", () => ({}));
-jest.mock("handsontable/languages/es-MX", () => ({}));
 
 jest.mock("#lib/hooks/use_width", () => jest.fn());
 
@@ -117,7 +116,7 @@ describe("EditProducts", () => {
         itemnumber: 1,
         name: "Muzzarella",
         price: "1200",
-        shopid: 7,
+        shopid: "7",
       },
     ]);
   });

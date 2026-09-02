@@ -7,48 +7,67 @@ import {
 const { Pool } = require("pg");
 const pool = new Pool({ connectionString: process.env.PG_CONNECTION_STRING });
 type ShopRow = Record<string, unknown> & {
-  product_id?: number | string | null;
+  product_id?: unknown;
 };
 
 type ShopWithProductsRow = ShopRow & {
-  product_name?: string | number | null;
-  product_category?: string | null;
-  product_price?: string | number | null;
-  product_description?: string | null;
-  product_itemnumber?: number | null;
+  product_name?: unknown;
+  product_category?: unknown;
+  product_price?: unknown;
+  product_description?: unknown;
+  product_itemnumber?: unknown;
 };
+
+function normalizeString(value: unknown): string | undefined {
+  if (value == null) return undefined;
+  return String(value);
+}
+
+function normalizeNullableString(value: unknown): string | null {
+  return value == null ? null : String(value);
+}
+
+function normalizeNullableInteger(value: unknown): number | null {
+  if (value == null) return null;
+  if (typeof value === "number") {
+    return Number.isInteger(value) ? value : null;
+  }
+  if (typeof value !== "string" || value.trim() === "") return null;
+
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : null;
+}
 
 function productsFromRows(rows: ShopWithProductsRow[]): Product[] {
   return rows
     .filter((row) => row.product_id != null)
     .map((row) => ({
-      id: row.product_id as number | string,
-      name: row.product_name ?? "",
-      category: row.product_category ?? null,
-      price: row.product_price ?? null,
-      description: row.product_description ?? null,
-      itemnumber: row.product_itemnumber ?? null,
+      id: normalizeString(row.product_id) as string,
+      name: normalizeString(row.product_name) ?? "",
+      category: normalizeNullableString(row.product_category),
+      price: normalizeNullableString(row.product_price),
+      description: normalizeNullableString(row.product_description),
+      itemnumber: normalizeNullableInteger(row.product_itemnumber),
     }));
 }
 
 function shopFromRow(first: ShopWithProductsRow, products: Product[]): Shop {
   return {
-    id: first.id as Shop["id"],
-    name: first.name as Shop["name"],
-    slug: first.slug as Shop["slug"],
-    region: first.region as string | undefined,
-    category: first.category as Shop["category"],
-    address: first.address as Shop["address"],
-    notes: first.notes as Shop["notes"],
-    opentimes: first.opentimes as Shop["opentimes"],
-    deliverycost: first.deliverycost as Shop["deliverycost"],
-    visibility: first.visibility as Shop["visibility"],
-    logo: first.logo as Shop["logo"],
-    background: first.background as Shop["background"],
-    ordersphonenumber: first.ordersphonenumber as Shop["ordersphonenumber"],
-    orderswhatsappnumber:
-      first.orderswhatsappnumber as Shop["orderswhatsappnumber"],
-    typeformtoken: first.typeformtoken as string | null | undefined,
+    id: normalizeString(first.id),
+    name: normalizeString(first.name),
+    slug: normalizeString(first.slug) ?? "",
+    region: normalizeString(first.region),
+    category: normalizeString(first.category),
+    address: normalizeString(first.address),
+    notes: normalizeString(first.notes),
+    opentimes: normalizeString(first.opentimes),
+    deliverycost: normalizeNullableString(first.deliverycost),
+    visibility: normalizeNullableString(first.visibility),
+    logo: normalizeNullableString(first.logo),
+    background: normalizeNullableString(first.background),
+    ordersphonenumber: normalizeString(first.ordersphonenumber),
+    orderswhatsappnumber: normalizeString(first.orderswhatsappnumber),
+    typeformtoken: normalizeNullableString(first.typeformtoken),
     products,
   };
 }
@@ -72,7 +91,17 @@ export async function getPublicShops(category: string): Promise<Shop[]> {
       ORDER BY updated_at DESC`,
     [category],
   );
-  return serializePublicShops<Pick<Shop, "slug">>(rows);
+  const normalizedShops = rows.map((row: ShopWithProductsRow) => {
+    const shop = shopFromRow(row as ShopWithProductsRow, []);
+    const {
+      products: _products,
+      typeformtoken: _typeformtoken,
+      ...publicShop
+    } = shop;
+    return publicShop;
+  });
+
+  return serializePublicShops<Pick<Shop, "slug">>(normalizedShops);
 }
 
 export async function getPublicShop(slug: string): Promise<Shop | null> {

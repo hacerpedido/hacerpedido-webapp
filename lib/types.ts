@@ -1,24 +1,24 @@
 export interface Product {
-  id?: number | string;
-  name: string | number;
+  id?: string;
+  name: string;
   description?: string | null;
-  price?: string | number | null;
+  price?: string | null;
   category?: string | null;
-  shopid?: number | string;
+  shopid?: string;
   itemnumber?: number | null;
   amount?: number;
   [key: string]: unknown;
 }
 
 export interface Shop {
-  id?: number | string;
+  id?: string;
   slug: string;
   name?: string;
   address?: string;
   notes?: string;
   opentimes?: string;
-  deliverycost?: string | number;
-  visibility?: boolean | string;
+  deliverycost?: string | null;
+  visibility?: string | null;
   logo?: string | null;
   background?: string | null;
   category?: string;

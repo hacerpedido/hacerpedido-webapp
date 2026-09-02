@@ -151,7 +151,7 @@ describe("token shop lookup API", () => {
 
   test("keeps the legacy POST success response", async () => {
     const body = {
-      id: "shop-id",
+      id: "11111111-1111-4111-8111-111111111111",
       name: "Almacén",
       token: "editor-token",
       orderswhatsappnumber: "5491112345678",
