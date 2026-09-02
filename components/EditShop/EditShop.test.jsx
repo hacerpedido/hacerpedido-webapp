@@ -4,6 +4,11 @@ import EditShop from "./EditShop";
 
 const mockControllers = {};
 
+jest.mock("react-timeago", () => ({
+  __esModule: true,
+  default: ({ date }) => <span data-testid="time-ago">{date}</span>,
+}));
+
 jest.mock("react-hook-form", () => ({
   Controller: ({ as: Component, control, defaultValue, rules, ...props }) => {
     mockControllers[props.name] = { ...props, rules };
@@ -84,6 +89,29 @@ describe("EditShop", () => {
     expect(props.onSave).toHaveBeenCalledTimes(1);
   });
 
+  test.each([
+    ["missing", undefined],
+    ["null", null],
+    ["malformed", "not-a-date"],
+  ])(
+    "does not render relative time for %s updated_at",
+    (_label, updated_at) => {
+      renderEditor({ shop: { ...shop, updated_at } });
+
+      expect(screen.queryByTestId("time-ago")).toBeNull();
+      expect(screen.queryByText(/Actualizado/)).toBeNull();
+    },
+  );
+
+  test("passes a valid updated_at timestamp and preserves Spanish copy", () => {
+    renderEditor();
+
+    expect(screen.getByText(/Actualizado/)).toBeTruthy();
+    expect(screen.getByTestId("time-ago").textContent).toBe(
+      String(Date.parse(shop.updated_at)),
+    );
+  });
+
   test("renders validation errors and exposes phone validation rules", () => {
     const error = { message: "El nombre del comercio es requerido." };
     const { props } = renderEditor({
@@ -99,6 +127,9 @@ describe("EditShop", () => {
       "Al menos un número de teléfono debe ser ingresado.",
     );
     expect(validate("invalid")).toContain("No parece un número de teléfono");
+    expect(validate("+5491155551 001")).toContain(
+      "No parece un número de teléfono",
+    );
     expect(validate("+5492230000000")).toBe(true);
     expect(props.onSave).not.toHaveBeenCalled();
   });

@@ -14,6 +14,21 @@ import UploadImage from "./UploadImage";
 
 const formatter = buildFormatter(spanishStrings);
 
+function getValidUpdatedAtTimestamp(updatedAt) {
+  if (updatedAt === null || updatedAt === undefined) {
+    return null;
+  }
+
+  const timestamp =
+    updatedAt instanceof Date
+      ? updatedAt.getTime()
+      : typeof updatedAt === "string" || typeof updatedAt === "number"
+        ? new Date(updatedAt).getTime()
+        : Number.NaN;
+
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
 function SaveButton({ isSaving, onClick }) {
   const { pending } = useFormStatus();
   const saving = pending || isSaving;
@@ -55,6 +70,7 @@ export default function EditShop({
   const handleShow = (type) => setImageType(type);
 
   const show = typeof imageType !== "undefined";
+  const updatedAtTimestamp = getValidUpdatedAtTimestamp(shop.updated_at);
 
   return (
     <>
@@ -70,14 +86,16 @@ export default function EditShop({
         <header className={styles.titleContainer}>
           <div className={styles.titleTextContainer}>
             <h1 className={styles.title}>Datos de tu Comercio</h1>
-            <p className={styles.updatedAt}>
-              <span>Actualizado </span>
-              <TimeAgo
-                date={shop.updated_at}
-                formatter={formatter}
-                minPeriod={60}
-              />
-            </p>
+            {updatedAtTimestamp !== null && (
+              <p className={styles.updatedAt}>
+                <span>Actualizado </span>
+                <TimeAgo
+                  date={updatedAtTimestamp}
+                  formatter={formatter}
+                  minPeriod={60}
+                />
+              </p>
+            )}
           </div>
           <div className={styles.buttonsContainer}>
             <button
@@ -103,6 +121,7 @@ export default function EditShop({
           <div className={styles.formColumnLeft}>
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.name}
               error={errors.name}
@@ -119,6 +138,7 @@ export default function EditShop({
             />
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.address}
               error={errors.address}
@@ -129,6 +149,7 @@ export default function EditShop({
             />
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.opentimes}
               error={errors.opentimes}
@@ -139,6 +160,7 @@ export default function EditShop({
             />
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.deliverycost}
               error={errors.deliverycost}
@@ -151,6 +173,7 @@ export default function EditShop({
           <div className={styles.formColumnRight}>
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.orderswhatsappnumber}
               error={errors.orderswhatsappnumber}
@@ -158,11 +181,7 @@ export default function EditShop({
               label="WhatsApp del comercio:"
               maxLength={20}
               name="orderswhatsappnumber"
-              onChange={([e]) => {
-                const value = e.target.value ?? "";
-                return value.replace(/[^0-9+]/g, "");
-              }}
-              pattern={"\\+?[0-9]*"}
+              onChange={([e]) => e.target.value ?? ""}
               placeholder={"Escribilo así: +5492234470974"}
               rules={{
                 validate: {
@@ -182,9 +201,11 @@ export default function EditShop({
                   },
                 },
               }}
+              testID="edit-shop-whatsapp"
             />
             <Controller
               as={Input}
+              autoCompleteType="off"
               control={control}
               defaultValue={shop.ordersphonenumber}
               error={errors.ordersphonenumber}
@@ -192,11 +213,7 @@ export default function EditShop({
               label="Teléfono Fijo:"
               maxLength={20}
               name="ordersphonenumber"
-              onChange={([e]) => {
-                const value = e.target.value ?? "";
-                return value.replace(/[^0-9+]/g, "");
-              }}
-              pattern={"\\+?[0-9]*"}
+              onChange={([e]) => e.target.value ?? ""}
               placeholder={"Escribilo así: +5492234470974"}
               rules={{
                 validate: {
@@ -217,6 +234,7 @@ export default function EditShop({
                   },
                 },
               }}
+              testID="edit-shop-phone"
             />
             <Controller
               as={Input}
