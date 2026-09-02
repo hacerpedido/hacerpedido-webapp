@@ -6,10 +6,15 @@ import Form from "#components/Form";
 import Loading from "#components/Loading";
 import MessageBox from "#components/MessageBox";
 import ShopView from "#components/Shop/ShopView";
+import {
+  type ApiRequestError,
+  getApiErrorMessage as extractApiErrorMessage,
+  isApiRequestError,
+  requestJson,
+} from "#lib/api";
 import type { Product, Shop } from "#lib/types";
 import { trimObject } from "#lib/utils/utils";
 
-import axios, { type AxiosError } from "axios";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import type React from "react";
@@ -91,15 +96,9 @@ const TypedMessageBox =
   MessageBox as unknown as React.ComponentType<MessageBoxProps>;
 const TypedShopView = ShopView as unknown as React.ComponentType<ShopViewProps>;
 
-function getApiError(error: unknown): AxiosError<EditorApiError> | null {
-  if (!axios.isAxiosError(error)) return null;
-  return error as AxiosError<EditorApiError>;
-}
-
-function getApiErrorMessage(error: unknown): string | undefined {
-  const axiosError = getApiError(error);
-  const message = axiosError?.response?.data?.message;
-  return typeof message === "string" ? message : undefined;
+function getApiError(error: unknown): ApiRequestError<EditorApiError> | null {
+  if (!isApiRequestError(error)) return null;
+  return error as ApiRequestError<EditorApiError>;
 }
 
 function isProduct(value: unknown): value is Product {
@@ -214,19 +213,22 @@ export default function EditShopPage() {
       }
 
       try {
-        const response = await axios.post<EditorActionState>(
+        const response = await requestJson<EditorActionState>(
           `${window.location.origin}/api/shop/editor`,
           {
-            shop: Object.fromEntries(
-              Object.entries(values).filter(([key]) => key !== "products"),
-            ),
-            products: submittedProducts,
+            method: "POST",
+            body: {
+              shop: Object.fromEntries(
+                Object.entries(values).filter(([key]) => key !== "products"),
+              ),
+              products: submittedProducts,
+            },
           },
         );
-        return { ...response.data, products: submittedProducts, values };
+        return { ...response, products: submittedProducts, values };
       } catch (error) {
         return {
-          message: getApiErrorMessage(error) ?? "Datos inválidos.",
+          message: extractApiErrorMessage(error) ?? "Datos inválidos.",
           error: 1,
           products: submittedProducts,
           values,
@@ -254,22 +256,22 @@ export default function EditShopPage() {
 
     async function getData() {
       try {
-        const shopData = await axios.get<Shop>(
+        const shopData = await requestJson<Shop>(
           `${window.location.origin}/api/shop/by-token`,
           { params: { token } },
         );
 
-        setShopState({ shop: shopData.data, loading: false });
+        setShopState({ shop: shopData, loading: false });
       } catch (error) {
         // Token sin shop: el API responde 404 y la página muestra el estado
         // not-found (renderizado abajo) sin molestar con un alert. (#128)
-        const axiosError = getApiError(error);
-        if (axiosError?.response?.status === 404) {
+        const apiError = getApiError(error);
+        if (apiError?.status === 404) {
           setShopState({ shop: null, loading: false });
           return;
         }
 
-        const message = getApiErrorMessage(error);
+        const message = extractApiErrorMessage(error);
         alert(
           `Error al leer los datos. (${error} Error: ${message ?? "Desconocido"})`,
         );
@@ -371,7 +373,10 @@ export default function EditShopPage() {
     // second time through the form's onSubmit handler.
     event.preventDefault();
     const form = event.currentTarget.form;
-    handleSubmit((data: EditorFormData) => onSubmit(data, form))(event);
+    handleSubmit(
+      (data: EditorFormData) => onSubmit(data, form),
+      () => setShowMessage(true),
+    )(event);
   };
 
   function refresh() {
@@ -408,9 +413,10 @@ export default function EditShopPage() {
               onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                 event.preventDefault();
                 const form = event.currentTarget;
-                handleSubmit((data: EditorFormData) => onSubmit(data, form))(
-                  event,
-                );
+                handleSubmit(
+                  (data: EditorFormData) => onSubmit(data, form),
+                  () => setShowMessage(true),
+                )(event);
               }}
             >
               <input

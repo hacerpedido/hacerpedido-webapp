@@ -3,7 +3,6 @@ import React, { useCallback, useRef, useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
-import axios from "axios";
 import dynamic from "next/dynamic";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -50,12 +49,14 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
 
     setError("");
     setWaiting(true);
-    axios
-      .delete(`${window.location.origin}/api/images`, {
-        data,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    fetch(`${window.location.origin}/api/images`, {
+      method: "DELETE",
+      body: data,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Image deletion failed");
+        }
       })
       .then(() => {
         setWaiting(false);
@@ -111,11 +112,14 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           data.append("shop_id", shopID);
           data.append("image_type", imageType);
 
-          axios
-            .post(`${window.location.origin}/api/images`, data, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
+          fetch(`${window.location.origin}/api/images`, {
+            method: "POST",
+            body: data,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Image upload failed");
+              }
             })
             .then(() => {
               setWaiting(false);

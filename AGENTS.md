@@ -19,7 +19,7 @@ Language conventions:
 | Framework | Next.js 16.3.4 (App Router), React 19.2.8 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | State | CartContext (useReducer + localStorage) |
-| HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
+| HTTP | Native `fetch` request layer → internal App Router API routes |
 | DB | PostgreSQL 17.6 (Supabase) via Knex |
 | Files | AWS SDK v2 → S3 |
 | Observability | @sentry/nextjs (disabled in dev) |
@@ -30,7 +30,7 @@ Language conventions:
 
 - **Web UI with CSS Modules**: every visual component must use a `*.module.css` file alongside the component and import its classes as `styles`. Use `className={styles.nombre}` and CSS variables for dynamic values; do not add global styles.
 - **State**: CartContext with `useReducer` + localStorage persistence (`CartProvider` in `app/providers.tsx`, `useCart` hook). There is no Redux.
-- **API**: axios with the external REST backend's baseURL; internal routes are in `app/api/`.
+- **API**: use native `fetch` for browser requests to internal routes in `app/api/`; route handlers access PostgreSQL.
 - **WhatsApp/phone numbers**: Argentine numbers. **Always** normalize with `sanitizeWhatsAppNumber()` before building a `wa.me` link (54 + 0/9 rules). See the `whatsapp-order` skill.
 - **Images**: S3 upload/delete via `lib/utils/aws-s3.ts`, endpoint in `app/api/images/route.ts`.
 
@@ -55,7 +55,7 @@ components/
   EditShop/                 EditShop, EditProducts, UploadImage
   primitivas                Input, Form, Switch, MessageBox, ShopInput, Loading, Divider, DecoratedLabel
 lib/
-  api/                      index.ts (axios baseURL), server-shops.ts, shops.ts
+  api/                      native fetch request layer, server-shops.ts, shops.ts
   context/                  CartContext.tsx (useReducer + localStorage)
   utils/                    TypeScript helpers (WhatsApp, prices, products, shops, categories, S3)
   hooks/                    use_width.ts

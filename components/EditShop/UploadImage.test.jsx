@@ -1,15 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import axios from "axios";
 import React from "react";
 import UploadImage from "./UploadImage";
-
-jest.mock("axios", () => ({
-  __esModule: true,
-  default: {
-    delete: jest.fn(),
-    post: jest.fn(),
-  },
-}));
 
 jest.mock("react-image-crop/dist/ReactCrop.css", () => ({}));
 jest.mock("react-drop-zone/dist/styles.css", () => ({}));
@@ -98,12 +89,13 @@ jest.mock("react-bootstrap/Button", () => {
 
 describe("UploadImage", () => {
   const handleClose = jest.fn();
+  const fetchMock = jest.fn();
   let context;
 
   beforeEach(() => {
     handleClose.mockClear();
-    axios.delete.mockReset();
-    axios.post.mockReset();
+    fetchMock.mockReset();
+    global.fetch = fetchMock;
     context = {
       drawImage: jest.fn(),
       setTransform: jest.fn(),
@@ -147,7 +139,7 @@ describe("UploadImage", () => {
   });
 
   test("renders a preview, changes the crop, and uploads successfully", async () => {
-    axios.post.mockResolvedValueOnce({ data: { ok: true } });
+    fetchMock.mockResolvedValueOnce({ ok: true });
     renderUploader("background");
     await selectFile();
 
@@ -160,11 +152,18 @@ describe("UploadImage", () => {
     await waitFor(() =>
       expect(handleClose).toHaveBeenCalledWith({ forceRefresh: true }),
     );
-    expect(axios.post).toHaveBeenCalledWith(
-      expect.stringContaining("/api/images"),
-      expect.any(FormData),
-      expect.objectContaining({ headers: expect.any(Object) }),
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${window.location.origin}/api/images`,
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(FormData),
+      }),
     );
+    const uploadRequest = fetchMock.mock.calls[0][1];
+    expect(uploadRequest.headers).toBeUndefined();
+    expect(uploadRequest.body.get("image_type")).toBe("background");
+    expect(uploadRequest.body.get("shop_id")).toBe("7");
+    expect(uploadRequest.body.get("image")).toBeTruthy();
     expect(context.drawImage).toHaveBeenCalled();
   });
 
@@ -175,13 +174,13 @@ describe("UploadImage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Quitar recorte" }));
     fireEvent.click(screen.getByRole("button", { name: "Aceptar" }));
 
-    expect(axios.post).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(screen.getByTestId("cropper")).toBeTruthy();
   });
 
   test("shows upload errors and stops loading", async () => {
     let rejectUpload;
-    axios.post.mockImplementationOnce(
+    fetchMock.mockImplementationOnce(
       () =>
         new Promise((_resolve, reject) => {
           rejectUpload = reject;
@@ -199,8 +198,21 @@ describe("UploadImage", () => {
     expect(screen.getByRole("button", { name: "Aceptar" })).toBeTruthy();
   });
 
+  test("shows upload errors for non-2xx responses", async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 });
+    renderUploader();
+    await selectFile();
+
+    fireEvent.click(screen.getByRole("button", { name: "Aceptar" }));
+
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "No se pudo subir la imagen",
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
   test("deletes the current image successfully", async () => {
-    axios.delete.mockResolvedValueOnce({ data: { ok: true } });
+    fetchMock.mockResolvedValueOnce({ ok: true });
     renderUploader();
 
     fireEvent.click(
@@ -210,15 +222,22 @@ describe("UploadImage", () => {
     await waitFor(() =>
       expect(handleClose).toHaveBeenCalledWith({ forceRefresh: true }),
     );
-    expect(axios.delete).toHaveBeenCalledWith(
-      expect.stringContaining("/api/images"),
-      expect.objectContaining({ data: expect.any(FormData) }),
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${window.location.origin}/api/images`,
+      expect.objectContaining({
+        method: "DELETE",
+        body: expect.any(FormData),
+      }),
     );
+    const deleteRequest = fetchMock.mock.calls[0][1];
+    expect(deleteRequest.headers).toBeUndefined();
+    expect(deleteRequest.body.get("image_type")).toBe("logo");
+    expect(deleteRequest.body.get("shop_id")).toBe("7");
   });
 
   test("shows delete errors and stops loading", async () => {
     let rejectDelete;
-    axios.delete.mockImplementationOnce(
+    fetchMock.mockImplementationOnce(
       () =>
         new Promise((_resolve, reject) => {
           rejectDelete = reject;
@@ -232,6 +251,20 @@ describe("UploadImage", () => {
 
     expect(screen.getByText("Por favor, espere...")).toBeTruthy();
     rejectDelete(new Error("delete failed"));
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "No se pudo borrar la imagen",
+    );
+    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  test("shows delete errors for non-2xx responses", async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 500 });
+    renderUploader();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Borrar imagen actual" }),
+    );
+
     expect((await screen.findByRole("alert")).textContent).toContain(
       "No se pudo borrar la imagen",
     );

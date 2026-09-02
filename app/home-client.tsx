@@ -4,10 +4,10 @@ import HomeFilterBar from "#components/Home/HomeFilterBar";
 import HomeHeader from "#components/Home/HomeHeader";
 import ShopCard from "#components/Home/ShopCard";
 import Loading from "#components/Loading";
+import { requestJson } from "#lib/api";
 import { useCart } from "#lib/context/CartContext";
 import type { Shop } from "#lib/types";
 
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import styles from "./home-client.module.css";
@@ -28,9 +28,8 @@ export default function HomeClient({ initialShops }: { initialShops: Shop[] }) {
   useEffect(() => {
     if (category === "Comida") return;
     setIsLoading(true);
-    axios
-      .get<Shop[]>("/api/shop/home", { params: { category } })
-      .then(({ data }) => setShops(data))
+    requestJson<Shop[]>("/api/shop/home", { params: { category } })
+      .then((data) => setShops(data))
       .catch(() => setShops([]))
       .finally(() => setIsLoading(false));
   }, [category]);

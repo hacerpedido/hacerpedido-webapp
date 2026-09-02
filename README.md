@@ -2,7 +2,7 @@
 
 HacerPedido is a web application (Next.js + React) that enables local businesses to receive orders through WhatsApp. Customers browse a shop's storefront, build their order in a cart, and send it as a pre-built WhatsApp message without registering.
 
-This repository is the **webapp** (frontend + internal API routes). Data is served by an external REST backend (`https://backend-restapi.hacerpedido.com:5001`) and a PostgreSQL database.
+This repository is the **webapp** (frontend + internal API routes). Browser requests use the native `fetch` API against internal App Router routes backed by PostgreSQL.
 
 | | |
 |---|---|
@@ -22,7 +22,7 @@ This repository is the **webapp** (frontend + internal API routes). Data is serv
 - The application has been migrated to TypeScript: App Router pages, API routes, and components use `.ts`/`.tsx`; E2E tests also use `.ts`.
 - **App Router pages** in `app/`: home (`page.tsx`), public shop (`[slug]/page.tsx`), checkout (`cart/page.tsx` → WhatsApp), and layout/error/loading boundaries.
 - **App Router API routes** in `app/api/`: editor, images, home, shop, and token-based management.
-- **External backend**: axios points to `https://backend-restapi.hacerpedido.com:5001` (configured in `lib/api/index.ts`).
+- **HTTP request layer**: native `fetch` requests target the internal App Router routes in `app/api/`, whose server-side data access uses PostgreSQL.
 - **Styles**: web components use CSS Modules placed alongside the component (`Component.tsx` + `Component.module.css`).
 
 ### WhatsApp order flow
@@ -45,7 +45,7 @@ app/              App Router: public pages, checkout, and API routes
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Application logic
-    api/            Axios clients (external REST backend, TypeScript)
+    api/            Native fetch request helpers and server data access (TypeScript)
     context/        CartContext.tsx (cart state with useReducer + localStorage)
     utils/          TypeScript helpers: WhatsApp, phone numbers, prices, products, categories, S3
     hooks/          use_width

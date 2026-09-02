@@ -1,8 +1,8 @@
-import axios from "axios";
 import type { Product, Shop } from "../types";
+import { getApiErrorMessage, requestJson } from "./index";
 
 export interface ShopPatch extends Partial<Shop> {
-  id: string | number;
+  id: string;
 }
 
 export interface SaveShopResult {
@@ -36,13 +36,12 @@ export async function saveShopWithProducts(
       endpoint === "/api/shop/editor"
         ? { shop: { ...shopPatch, token }, products: newProducts }
         : params;
-    await axios.post(`${window.location.origin}${endpoint}`, body);
+    await requestJson(`${window.location.origin}${endpoint}`, {
+      method: "POST",
+      body,
+    });
   } catch (error: unknown) {
-    const responseMessage =
-      typeof error === "object" && error !== null && "response" in error
-        ? (error as { response?: { data?: { message?: string } } }).response
-            ?.data?.message
-        : undefined;
+    const responseMessage = getApiErrorMessage(error);
     return {
       message: `Error al grabar los datos del comercio. (${String(error)} Error: ${responseMessage})`,
       error: 1,
