@@ -1,11 +1,11 @@
 export interface Product {
   id?: number | string;
   name: string | number;
-  description?: string;
-  price?: string | number;
+  description?: string | null;
+  price?: string | number | null;
   category?: string | null;
   shopid?: number | string;
-  itemnumber?: number;
+  itemnumber?: number | null;
   amount?: number;
   [key: string]: unknown;
 }

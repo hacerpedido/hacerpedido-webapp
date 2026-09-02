@@ -29,7 +29,7 @@ export default function HomeClient({ initialShops }: { initialShops: Shop[] }) {
     if (category === "Comida") return;
     setIsLoading(true);
     axios
-      .get("/api/shop/home", { params: { category } })
+      .get<Shop[]>("/api/shop/home", { params: { category } })
       .then(({ data }) => setShops(data))
       .catch(() => setShops([]))
       .finally(() => setIsLoading(false));
