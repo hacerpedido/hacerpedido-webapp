@@ -22,8 +22,16 @@ async function navigateToShop(
   category = FIXTURE.category,
 ) {
   await page.goto("/");
-  await page.getByTestId(`category-${category}`).first().click();
-  await page.getByTestId(`shop-card-${shopSlug}`).click();
+  const categoryButton = page.getByTestId(`category-${category}`).first();
+  await expect(categoryButton).toBeVisible();
+  await categoryButton.click();
+
+  const shopCard = page.getByTestId(`shop-card-${shopSlug}`);
+  await expect(shopCard).toBeVisible();
+  await Promise.all([
+    page.waitForURL(new RegExp(`/${shopSlug}$`)),
+    shopCard.click(),
+  ]);
 }
 
 /**
@@ -34,6 +42,10 @@ async function navigateToShop(
  */
 async function addProduct(page: Page, productTestId: string, quantity = 1) {
   const product = page.getByTestId(productTestId);
+  // The public shop is server-rendered, but its catalog is initialized by the
+  // CartProvider after hydration. Wait for that user-visible ready state before
+  // interacting with the product rather than relying on click auto-waiting.
+  await expect(product).toBeVisible();
   await product.click();
   const popup = product.getByTestId("quantity-popup");
   await expect(popup).toBeVisible();
