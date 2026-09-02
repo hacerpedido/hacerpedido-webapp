@@ -1,9 +1,12 @@
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { getPool } from "#lib/db/pool";
+import { shops } from "#db/schema";
+import { getDb } from "#lib/db/client";
 import * as s3utils from "#lib/utils/aws-s3";
 import { randomString } from "#lib/utils/utils";
+
+import { eq } from "drizzle-orm";
 
 const validator: { isUUID(value: string): boolean } = require("validator");
 
@@ -12,7 +15,7 @@ export const runtime = "nodejs";
 const acceptedImageTypes = ["logo", "background"];
 const acceptedMimeTypes = ["image/png", "image/jpeg"];
 
-const pool = getPool();
+const db = getDb();
 
 function field(form: FormData, name: string): string | undefined {
   const value = form.get(name);
@@ -85,15 +88,15 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const imageColumn = imageType === "logo" ? "logo" : "background";
-  const { rows: selectData } = await pool.query(
-    `SELECT "${imageColumn}" AS "oldKey" FROM shops WHERE id = $1`,
-    [shopID],
-  );
-  if (selectData.length === 0) {
+  const selected = await db
+    .select({ oldKey: imageColumn === "logo" ? shops.logo : shops.background })
+    .from(shops)
+    .where(eq(shops.id, shopID));
+  if (selected.length === 0) {
     return errorResponse("Wrong parameters (5).");
   }
 
-  const oldKey = selectData[0].oldKey;
+  const oldKey = selected[0].oldKey;
   const extension = mime === "image/png" ? "png" : "jpg";
   const key = `${shopID}-${imageType}-${randomString(10)}.${extension}`;
   const temporaryFile = path.join(
@@ -105,10 +108,10 @@ export async function POST(request: Request): Promise<Response> {
     await fs.writeFile(temporaryFile, Buffer.from(await image.arrayBuffer()));
     await s3utils.uploadFile(temporaryFile, key, mime);
     try {
-      await pool.query(`UPDATE shops SET "${imageColumn}" = $1 WHERE id = $2`, [
-        key,
-        shopID,
-      ]);
+      await db
+        .update(shops)
+        .set(imageColumn === "logo" ? { logo: key } : { background: key })
+        .where(eq(shops.id, shopID));
     } catch (error) {
       await cleanupBestEffort(
         "remove uploaded image after database failure",
@@ -142,18 +145,19 @@ export async function DELETE(request: Request): Promise<Response> {
   }
 
   const imageColumn = imageType === "logo" ? "logo" : "background";
-  const { rows: selectData } = await pool.query(
-    `SELECT "${imageColumn}" AS "oldKey" FROM shops WHERE id = $1`,
-    [shopID],
-  );
-  if (selectData.length === 0) {
+  const selected = await db
+    .select({ oldKey: imageColumn === "logo" ? shops.logo : shops.background })
+    .from(shops)
+    .where(eq(shops.id, shopID));
+  if (selected.length === 0) {
     return errorResponse("Wrong parameters (5).");
   }
 
-  const oldKey = selectData[0].oldKey;
-  await pool.query(`UPDATE shops SET "${imageColumn}" = NULL WHERE id = $1`, [
-    shopID,
-  ]);
+  const oldKey = selected[0].oldKey;
+  await db
+    .update(shops)
+    .set(imageColumn === "logo" ? { logo: null } : { background: null })
+    .where(eq(shops.id, shopID));
   if (oldKey) {
     await cleanupBestEffort("remove cleared image", oldKey, () =>
       s3utils.deleteFile(oldKey),

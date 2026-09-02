@@ -1,6 +1,9 @@
 "use server";
 
-import { getPool } from "../db/pool";
+import { products as productsTable, shops } from "#db/schema";
+
+import { and, eq } from "drizzle-orm";
+import { getDb } from "../db/client";
 import type { Product } from "../types";
 import {
   type ShopEditorInput,
@@ -24,6 +27,9 @@ export interface ShopEditorResult {
   error?: number;
 }
 
+/** Signals an authenticated editor that does not own the target shop. */
+class EditorNotAuthorizedError extends Error {}
+
 export interface ShopEditorActionState extends ShopEditorResult {
   values?: Record<string, string>;
 }
@@ -36,56 +42,74 @@ export async function saveShopWithProductsAction(
   const validationError = validateShopEditorInput(payload);
   if (validationError) return { message: validationError, error: 1 };
 
-  const client = await getPool().connect();
+  interface EditorOutcome extends ShopEditorResult {
+    slug?: string;
+  }
+
   try {
-    await client.query("BEGIN");
-    const shop = await client.query(
-      `UPDATE shops SET address=$1, deliverycost=$2, name=$3, notes=$4,
-       opentimes=$5, ordersphonenumber=$6, orderswhatsappnumber=$7,
-       updated_at=NOW() WHERE id=$8 AND typeformtoken=$9 RETURNING slug`,
-      [
-        input.address,
-        input.deliverycost,
-        input.name,
-        input.notes,
-        input.opentimes,
-        input.ordersphonenumber,
-        input.orderswhatsappnumber,
-        input.id,
-        input.token,
-      ],
+    // Drizzle wraps the callback in BEGIN/COMMIT and rolls back on throw.
+    const outcome = await getDb().transaction(
+      async (tx): Promise<EditorOutcome> => {
+        // Validation guarantees the string fields when present; like the old
+        // parameter binding, absent fields are stored as NULL.
+        const optionalText = (value: unknown): string | null =>
+          typeof value === "string" ? value : null;
+
+        const updated = await tx
+          .update(shops)
+          .set({
+            address: optionalText(input.address),
+            deliverycost: optionalText(input.deliverycost),
+            name: typeof input.name === "string" ? input.name : "",
+            notes: optionalText(input.notes),
+            opentimes: optionalText(input.opentimes),
+            ordersphonenumber: optionalText(input.ordersphonenumber),
+            orderswhatsappnumber: optionalText(input.orderswhatsappnumber),
+            updated_at: new Date(),
+          })
+          .where(
+            and(eq(shops.id, input.id), eq(shops.typeformtoken, input.token)),
+          )
+          .returning({ slug: shops.slug });
+
+        if (!updated.length) {
+          throw new EditorNotAuthorizedError();
+        }
+
+        if (products !== null) {
+          await tx
+            .delete(productsTable)
+            .where(eq(productsTable.shopid, input.id));
+          if (products.length > 0) {
+            await tx.insert(productsTable).values(
+              products.map((product) => ({
+                shopid: input.id,
+                name: product.name,
+                category: product.category ?? "",
+                price: product.price ?? null,
+                description: product.description ?? null,
+                itemnumber: product.itemnumber ?? null,
+              })),
+            );
+          }
+        }
+
+        return {
+          message: "Tus cambios fueron guardados.",
+          slug: updated[0].slug,
+        };
+      },
     );
-    if (!shop.rowCount) {
-      await client.query("ROLLBACK");
+
+    if (outcome.error) return outcome;
+    revalidateShopPath(`/${outcome.slug}`);
+    return { message: outcome.message };
+  } catch (error) {
+    if (error instanceof EditorNotAuthorizedError) {
       return { message: "No autorizado para editar este comercio.", error: 1 };
     }
-
-    if (products !== null) {
-      await client.query("DELETE FROM products WHERE shopid=$1", [input.id]);
-      for (const product of products) {
-        await client.query(
-          `INSERT INTO products (shopid, name, category, price, description, itemnumber)
-           VALUES ($1,$2,$3,$4,$5,$6)`,
-          [
-            input.id,
-            product.name,
-            product.category ?? "",
-            product.price ?? null,
-            product.description ?? null,
-            product.itemnumber ?? null,
-          ],
-        );
-      }
-    }
-    await client.query("COMMIT");
-    revalidateShopPath(`/${shop.rows[0].slug}`);
-    return { message: "Tus cambios fueron guardados." };
-  } catch (error) {
-    await client.query("ROLLBACK");
     console.error(error);
     return { message: "Error al grabar los datos del comercio.", error: 1 };
-  } finally {
-    client.release();
   }
 }
 

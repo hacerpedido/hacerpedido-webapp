@@ -72,6 +72,7 @@
     "drizzle-kit": "^0.31.10",
     "jest": "^30.5.0",
     "jest-environment-jsdom": "^30.5.0",
+    "jest-environment-node": "30.5.0",
     "lefthook": "^2.1.12",
     "markdownlint-cli2": "^0.23.2",
     "tsx": "^4.23.13",
