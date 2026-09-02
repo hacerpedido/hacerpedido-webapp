@@ -1,18 +1,26 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 
-import type { Knex } from "knex";
-import knexFactory from "knex";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 import {
   applyBaseline,
-  BASELINE_MIGRATION,
+  type Queryable,
   verifyBaseline,
 } from "../../scripts/adopt-baseline";
 
-const INDEX_MIGRATION = "0002_add_secondary_indexes.js";
-const PIN_MIGRATION = "0003_pin_trigger_search_path.js";
-const ALL_MIGRATIONS = [BASELINE_MIGRATION, INDEX_MIGRATION, PIN_MIGRATION];
+const MIGRATIONS_FOLDER = path.resolve(__dirname, "../../db/drizzle");
+const BOOKKEEPING = "drizzle.__drizzle_migrations";
 const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
+
+interface PoolLike {
+  query: (
+    text: string,
+    params?: unknown[],
+  ) => Promise<{ rows: Record<string, unknown>[] }>;
+  connect: () => Promise<Queryable & { release: () => void }>;
+  end: () => Promise<void>;
+}
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -32,9 +40,9 @@ async function assertPostgresError(
   });
 }
 
-async function assertDisposableDatabase(knex: Knex): Promise<void> {
-  const { rows } = await knex.raw("SELECT current_database() AS name");
-  const databaseName: string = rows[0].name;
+async function assertDisposableDatabase(pool: PoolLike): Promise<void> {
+  const { rows } = await pool.query("SELECT current_database() AS name");
+  const databaseName: string = rows[0].name as string;
   assert.match(
     databaseName,
     /^hacerpedido_(e2e|db_contracts)$/,
@@ -42,15 +50,15 @@ async function assertDisposableDatabase(knex: Knex): Promise<void> {
   );
 }
 
-async function migrationNames(knex: Knex): Promise<string[]> {
-  const { rows } = await knex.raw(
-    "SELECT name FROM public.knex_migrations ORDER BY name ASC",
+async function migrationRows(client: Queryable): Promise<unknown[]> {
+  const { rows } = await client.query(
+    `SELECT hash, created_at FROM ${BOOKKEEPING} ORDER BY id ASC`,
   );
-  return rows.map((row: { name: string }) => row.name);
+  return rows;
 }
 
-async function assertSecondaryIndexes(knex: Knex): Promise<void> {
-  const { rows } = await knex.raw(
+async function assertSecondaryIndexes(client: Queryable): Promise<void> {
+  const { rows } = await client.query(
     `SELECT indexname, indexdef
        FROM pg_indexes
       WHERE schemaname = 'public'
@@ -62,10 +70,7 @@ async function assertSecondaryIndexes(knex: Knex): Promise<void> {
       ORDER BY indexname`,
   );
   const definitions = new Map<string, string>(
-    rows.map((row: { indexname: string; indexdef: string }) => [
-      row.indexname,
-      row.indexdef,
-    ]),
+    rows.map((row) => [String(row.indexname), String(row.indexdef)]),
   );
   const expected = new Map<string, RegExp>([
     [
@@ -90,8 +95,8 @@ async function assertSecondaryIndexes(knex: Knex): Promise<void> {
   }
 }
 
-async function assertPinnedTimestampFunction(knex: Knex): Promise<void> {
-  const { rows } = await knex.raw(
+async function assertPinnedTimestampFunction(client: Queryable): Promise<void> {
+  const { rows } = await client.query(
     `SELECT procedure.proconfig
        FROM pg_proc procedure
        JOIN pg_namespace schema ON schema.oid = procedure.pronamespace
@@ -102,60 +107,54 @@ async function assertPinnedTimestampFunction(knex: Knex): Promise<void> {
   assert.deepEqual(
     rows[0].proconfig,
     HARDENED_TIMESTAMP_FUNCTION_CONFIG,
-    "trigger_set_timestamp search_path must be pinned by 0003_pin_trigger_search_path",
+    "trigger_set_timestamp search_path must be pinned by 0003_pin_search_path",
   );
 }
 
-async function assertUuidAndPriceContract(knex: Knex): Promise<void> {
+async function assertUuidAndPriceContract(client: Queryable): Promise<void> {
   const shopId = fixtureId(101);
   const generatedSlug = "db-contract-generated-uuid";
   const productId = fixtureId(102);
 
   try {
-    const [shop] = await knex("shops")
-      .insert({
-        name: "Database contract shop",
-        slug: generatedSlug,
-        region: "E2E",
-      })
-      .returning(["id"]);
-    assert.equal(typeof shop.id, "string");
-    assert.match(shop.id, UUID_PATTERN);
+    const generated = await client.query(
+      `INSERT INTO shops (name, slug, region)
+       VALUES ('Database contract shop', $1, 'E2E')
+       RETURNING id`,
+      [generatedSlug],
+    );
+    const generatedId = generated.rows[0].id;
+    assert.equal(typeof generatedId, "string");
+    assert.match(generatedId as string, UUID_PATTERN);
 
-    await knex("shops").insert({
-      id: shopId,
-      name: "Database contract explicit shop",
-      slug: "db-contract-explicit-uuid",
-      region: "E2E",
-    });
-    await knex("products").insert({
-      id: productId,
-      shopid: shopId,
-      category: "E2E",
-      name: "Opaque-price product",
-      price: "Consultar precio / 1.500,50",
-    });
+    await client.query(
+      `INSERT INTO shops (id, name, slug, region)
+       VALUES ($1, 'Database contract explicit shop', 'db-contract-explicit-uuid', 'E2E')`,
+      [shopId],
+    );
+    await client.query(
+      `INSERT INTO products (id, shopid, category, name, price)
+       VALUES ($1, $2, 'E2E', 'Opaque-price product', 'Consultar precio / 1.500,50')`,
+      [productId, shopId],
+    );
 
-    const row = await knex("products")
-      .select("id", "shopid", "price")
-      .where("id", productId)
-      .first();
-    assert.deepEqual(row, {
+    const { rows } = await client.query(
+      `SELECT id, shopid, price FROM products WHERE id = $1`,
+      [productId],
+    );
+    assert.deepEqual(rows[0], {
       id: productId,
       shopid: shopId,
       price: "Consultar precio / 1.500,50",
     });
-    assert.equal(typeof row.id, "string");
-    assert.equal(typeof row.shopid, "string");
-    assert.equal(typeof row.price, "string");
   } finally {
-    await knex("products").where("id", productId).del();
-    await knex("shops").whereIn("id", [shopId]).del();
-    await knex("shops").where("slug", generatedSlug).del();
+    await client.query("DELETE FROM products WHERE id = $1", [productId]);
+    await client.query("DELETE FROM shops WHERE id = $1", [shopId]);
+    await client.query("DELETE FROM shops WHERE slug = $1", [generatedSlug]);
   }
 }
 
-async function assertForeignKeyContract(knex: Knex): Promise<void> {
+async function assertForeignKeyContract(client: Queryable): Promise<void> {
   const missingShopId = fixtureId(201);
   const orphanProductId = fixtureId(202);
   const shopId = fixtureId(203);
@@ -163,85 +162,95 @@ async function assertForeignKeyContract(knex: Knex): Promise<void> {
 
   await assertPostgresError(
     () =>
-      knex("products").insert({
-        id: orphanProductId,
-        shopid: missingShopId,
-        category: "E2E",
-        name: "Orphan product",
-      }),
+      client.query(
+        `INSERT INTO products (id, shopid, category, name)
+         VALUES ($1, $2, 'E2E', 'Orphan product')`,
+        [orphanProductId, missingShopId],
+      ),
     "23503",
   );
 
   try {
-    await knex("shops").insert({
-      id: shopId,
-      name: "Database FK shop",
-      slug: "db-contract-fk-shop",
-      region: "E2E",
-    });
-    await knex("products").insert({
-      id: productId,
-      shopid: shopId,
-      category: "E2E",
-      name: "Referenced product",
-    });
+    await client.query(
+      `INSERT INTO shops (id, name, slug, region)
+       VALUES ($1, 'Database FK shop', 'db-contract-fk-shop', 'E2E')`,
+      [shopId],
+    );
+    await client.query(
+      `INSERT INTO products (id, shopid, category, name)
+       VALUES ($1, $2, 'E2E', 'Referenced product')`,
+      [productId, shopId],
+    );
 
     await assertPostgresError(
-      () => knex("shops").where("id", shopId).del(),
+      () => client.query("DELETE FROM shops WHERE id = $1", [shopId]),
       "23503",
     );
   } finally {
-    await knex("products").where("id", productId).del();
-    await knex("shops").where("id", shopId).del();
+    await client.query("DELETE FROM products WHERE id = $1", [productId]);
+    await client.query("DELETE FROM shops WHERE id = $1", [shopId]);
   }
 }
 
-async function assertBaselineAdoptionContract(knex: Knex): Promise<void> {
-  // On a fully migrated disposable DB, verify the baseline is recognized as
-  // adopted even when versioned forward migrations follow it.
-  assert.deepEqual(await migrationNames(knex), ALL_MIGRATIONS);
-  const dryRun = await verifyBaseline(knex, { rlsMode: "e2e" });
+async function assertBaselineAdoptionContract(
+  client: Queryable,
+): Promise<void> {
+  // On a fully migrated disposable DB, the baseline is recognized as adopted.
+  assert.equal(
+    (await migrationRows(client)).length,
+    4,
+    "applied migration rows",
+  );
+  const dryRun = await verifyBaseline(client, { rlsMode: "e2e" });
   assert.equal(dryRun.history, "adopted");
   assert.equal(dryRun.rls, "disabled");
 
   // Simulate the production pre-adoption state (empty history) and re-adopt.
-  await knex.raw("DELETE FROM public.knex_migrations");
-  const result = await applyBaseline(knex, { rlsMode: "e2e" });
+  await client.query(`DELETE FROM ${BOOKKEEPING}`);
+  await client.query("BEGIN");
+  const result = await applyBaseline(client, { rlsMode: "e2e" });
   assert.equal(result.applied, true);
-  assert.deepEqual(await migrationNames(knex), [BASELINE_MIGRATION]);
+  assert.equal((await migrationRows(client)).length, 1);
+  await client.query("COMMIT");
 
   // Re-running adoption after the baseline is recorded is a no-op.
-  const again = await applyBaseline(knex, { rlsMode: "e2e" });
+  await client.query("BEGIN");
+  const again = await applyBaseline(client, { rlsMode: "e2e" });
   assert.equal(again.applied, false);
+  await client.query("COMMIT");
 }
 
 export async function runDatabaseContractTests(
   connectionString: string,
 ): Promise<void> {
-  const knex: Knex = knexFactory({
-    client: "pg",
-    connection: connectionString,
-    migrations: {
-      directory: path.resolve(__dirname, "../../db/migrations"),
-      tableName: "knex_migrations",
-    },
-  });
+  const { Pool } = require("pg") as {
+    Pool: new (config: { connectionString: string }) => PoolLike;
+  };
+  const pool = new Pool({ connectionString });
+  const db = drizzle({ client: pool }) as NodePgDatabase;
 
   try {
-    await assertDisposableDatabase(knex);
+    await assertDisposableDatabase(pool);
 
-    const firstRun = await knex.migrate.latest();
-    assert.deepEqual(firstRun[1], ALL_MIGRATIONS);
+    // First run applies every pending migration; the second is a no-op.
+    await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
+    assert.equal((await migrationRows(pool)).length, 4, "first migrate run");
+    await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
+    assert.equal((await migrationRows(pool)).length, 4, "second migrate run");
 
-    const secondRun = await knex.migrate.latest();
-    assert.deepEqual(secondRun[1], []);
-
-    await assertSecondaryIndexes(knex);
-    await assertPinnedTimestampFunction(knex);
-    await assertUuidAndPriceContract(knex);
-    await assertForeignKeyContract(knex);
-    await assertBaselineAdoptionContract(knex);
+    const client = await pool.connect();
+    try {
+      const verified = await verifyBaseline(client, { rlsMode: "e2e" });
+      assert.equal(verified.history, "adopted");
+      await assertSecondaryIndexes(client);
+      await assertPinnedTimestampFunction(client);
+      await assertUuidAndPriceContract(client);
+      await assertForeignKeyContract(client);
+      await assertBaselineAdoptionContract(client);
+    } finally {
+      client.release();
+    }
   } finally {
-    await knex.destroy();
+    await pool.end();
   }
 }
