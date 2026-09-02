@@ -6,13 +6,13 @@ services:
       POSTGRES_PASSWORD: e2e_password
       POSTGRES_USER: e2e_user
     ports:
-      - "127.0.0.1:54329:5432"
+      - "127.0.0.1:${E2E_PG_PORT:-54329}:5432"
     command:
       - "postgres"
       - "-c"
       - "shared_preload_libraries=pg_stat_statements"
     volumes:
-      - hacerpedido_e2e_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U e2e_user -d hacerpedido_e2e"]
       interval: 2s
@@ -20,4 +20,5 @@ services:
       retries: 15
 
 volumes:
-  hacerpedido_e2e_pgdata:
+  pgdata:
+    name: "${E2E_VOLUME_PREFIX:-hacerpedido_e2e}_pgdata"

@@ -1,14 +1,27 @@
 import { defineConfig } from "@playwright/test";
-import { pgConnectionString } from "./tests/e2e/fixtures/database";
+import {
+  appPort,
+  baseURL as localBaseURL,
+  pgConnectionString,
+  runId,
+} from "./tests/e2e/fixtures/database";
 
-const defaultBaseURL = "http://127.0.0.1:3001";
-const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || defaultBaseURL;
+const baseURL = process.env.PLAYWRIGHT_TEST_BASE_URL || localBaseURL;
 const localHostnames = ["localhost", "127.0.0.1", "::1"];
 const isExternalBaseURL = !localHostnames.includes(new URL(baseURL).hostname);
 
 // Allow an externally provided DB (e.g. preview env) to override the local compose one.
 const dbConnectionString =
   process.env.PG_CONNECTION_STRING || pgConnectionString;
+
+// Keep single-checkout/CI artifact paths stable while isolating lane runs.
+const outputDir = runId === "main" ? "test-results" : `test-results/${runId}`;
+const htmlReportDir =
+  runId === "main" ? "playwright-report" : `playwright-report/${runId}`;
+const junitFile =
+  runId === "main"
+    ? "test-results/junit.xml"
+    : `test-results/${runId}/junit.xml`;
 
 module.exports = defineConfig({
   testDir: "./tests/e2e",
@@ -27,10 +40,10 @@ module.exports = defineConfig({
     timeout: 5000,
   },
   reporter: [
-    ["html", { outputFolder: "playwright-report", open: "never" }],
-    ["junit", { outputFile: "test-results/junit.xml" }],
+    ["html", { outputFolder: htmlReportDir, open: "never" }],
+    ["junit", { outputFile: junitFile }],
   ],
-  outputDir: "test-results",
+  outputDir,
   use: {
     baseURL,
     actionTimeout: process.env.CI ? 5000 : 10000,
@@ -44,12 +57,14 @@ module.exports = defineConfig({
     ? {}
     : {
         webServer: {
-          command: "pnpm build && pnpm start -p 3001",
+          command: `pnpm build && pnpm start -p ${appPort}`,
           // The home page queries PostgreSQL during SSR. Probe the client-only
           // cart route instead so the server is considered ready without
           // racing database startup.
           url: `${baseURL}/cart`,
-          reuseExistingServer: !process.env.CI,
+          // Never attach to a server started by another lane: each worktree
+          // owns its app port. The main checkout may still reuse its own.
+          reuseExistingServer: runId === "main" ? !process.env.CI : false,
           timeout: 180000,
           stderr: "ignore",
           env: {

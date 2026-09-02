@@ -115,6 +115,30 @@ host; checks run inside the container.
 
 Migration `0001_baseline` creates `shops` and `products` and is **not reversible** (`down()` intentionally throws an error). It requires the `uuid-ossp`, `pgcrypto`, and `pg_stat_statements` extensions (the latter must be preloaded — see `compose.e2e.yaml`). Compatible with Postgres 17.6.
 
+### Worktrees and concurrent stacks
+
+Both Compose stacks support running from Git worktrees without colliding with the
+main checkout or with each other:
+
+- **E2E**: when the current checkout is a worktree lane (a path under
+  `.slim/worktrees/<lane>` or any `worktrees/` directory), `pnpm run test:e2e`
+  automatically derives its own Compose project, PostgreSQL port, app port,
+  database volume, and Playwright artifact directories from the checkout path.
+  The main checkout keeps the documented defaults (`hacerpedido-e2e`, port
+  `54329`, app port `3001`, `test-results/` and `playwright-report/`).
+- **Dev database**: `db:*` commands keep using the implicit Compose project of the
+  checkout directory, so containers from different worktrees never clash. For a
+  second dev database on another port, set `DEV_PG_PORT` (default `54328`) and
+  optionally `DEV_VOLUME_PREFIX` to give it a separate volume; point
+  `PG_CONNECTION_STRING` at the port you use.
+
+Run `pnpm run test:e2e:info` in any checkout to print the resolved context.
+Explicit overrides (`E2E_RUN_ID`, `E2E_PROJECT_NAME`, `E2E_PG_PORT`,
+`E2E_APP_PORT`, `E2E_VOLUME_PREFIX`) always win over the derived values.
+
+> Never run two E2E suites from the same checkout at the same time: each run
+> tears down its own Compose stack and database at start and finish.
+
 ## Testing
 
 ### Unit (Jest)
@@ -140,7 +164,7 @@ Automatically starts (via `global-setup`) the Docker Compose stack with PostgreS
 - `tests/e2e/public-pages.spec.ts`, `public-routing-seo.spec.ts` — public routes and SEO metadata
 - `tests/e2e/admin-flow.spec.ts` — App Router token-based shop management
 
-Useful overrides: `PLAYWRIGHT_TEST_BASE_URL` (already-deployed app, skips local setup) and `PG_CONNECTION_STRING` (external database instead of the local Compose stack).
+Useful overrides: `PLAYWRIGHT_TEST_BASE_URL` (already-deployed app, skips local setup) and `PG_CONNECTION_STRING` (external database instead of the local Compose stack). Run `pnpm run test:e2e:info` to see the resolved run context (Compose project, ports, artifact paths) for the current checkout; see [Worktrees and concurrent stacks](#worktrees-and-concurrent-stacks).
 
 First time: `pnpm run test:e2e:install` (installs Chromium).
 
@@ -176,7 +200,7 @@ Deploy to Vercel: configure the environment variables listed above (Sentry is en
 ## Troubleshooting
 
 - **Node.js**: use Node 22, as declared by `.tool-versions` and the CI workflow.
-- **`pnpm run test:e2e` fails in global-setup**: Docker must be running (the setup runs `docker compose down --volumes && up --detach --wait` before migrating/seeding). Port 54329 is occupied → change it in `tests/e2e/fixtures/database.ts` and `compose.e2e.yaml`.
+- **`pnpm run test:e2e` fails in global-setup**: Docker must be running (the setup runs `docker compose down --volumes && up --detach --wait` before migrating/seeding). A busy host port is reported by Docker — each worktree derives its own port, and you can force another with `E2E_PG_PORT`/`E2E_APP_PORT` (see `tests/e2e/fixtures/database.ts` and `compose.e2e.yaml`).
 - **Local PostgreSQL**: `pg_stat_statements` must be in `shared_preload_libraries` (as in `compose.e2e.yaml`).
 
 ## Contributing

@@ -60,21 +60,26 @@ async function runCommand(
 }
 
 async function globalTeardown() {
-  await runCommand(
-    "docker",
-    [
-      "compose",
-      "--project-name",
-      composeProject,
-      "-f",
-      composeFile,
-      "down",
-      "--volumes",
-      "--remove-orphans",
-    ],
-    30_000,
-    { stdio: "inherit" },
-  );
+  try {
+    await runCommand(
+      "docker",
+      [
+        "compose",
+        "--project-name",
+        composeProject,
+        "-f",
+        composeFile,
+        "down",
+        "--volumes",
+        "--remove-orphans",
+      ],
+      30_000,
+      { stdio: "inherit" },
+    );
+  } catch (error) {
+    // Best-effort cleanup: a teardown failure must not mask test results.
+    console.error(`E2E teardown failed: ${String(error)}`);
+  }
 }
 
 export default globalTeardown;
