@@ -78,11 +78,21 @@ The baseline contains:
 - `public.rls_auto_enable()`, which matches production's event-trigger
   function.
 
+`db/migrations/0002_pin_trigger_search_path.js` pins the function
+`search_path` of `public.trigger_set_timestamp()` to `pg_catalog, public`
+with `ALTER FUNCTION ... SET search_path`. This resolves the Supabase Security
+Advisor "role mutable search_path" finding for trigger functions and is
+reversible with `RESET search_path`. The pinned `proconfig` value
+(`search_path=pg_catalog, public`) is one of the approved function
+configurations checked by `scripts/adopt-baseline.js`.
+
 Production has RLS enabled on `shops` and `products`. E2E deliberately does
 not create the Supabase event trigger and leaves RLS disabled because its
 non-superuser test role has no policies. This is an intentional environment
 difference, not a signal to add public RLS policies. Direct browser access is
-not part of the current architecture.
+not part of the current architecture; the Security Advisor "RLS enabled without
+policies" report on `shops`/`products` is the same intentional posture and must
+not be silenced with permissive public policies.
 
 ## Index policy
 
@@ -109,8 +119,10 @@ The guarded tool is `scripts/adopt-baseline.js`:
   configuration or exactly the search path configuration introduced separately
   by #134: `search_path=pg_catalog, public`. Any other function configuration
   is drift.
-- It accepts only an empty history or exactly `["0001_baseline.js"]`; any
-  different history or schema drift fails closed.
+- It accepts an empty history or any history whose first recorded migration is
+  `0001_baseline.js` (an adopted baseline followed by versioned forward
+  migrations such as `0002_pin_trigger_search_path.js`); anything else fails
+  closed as drift.
 - Applying acquires a transaction-scoped advisory lock and locks
   `public.knex_migrations` before rechecking the fingerprint.
 - Applying writes one metadata row for `0001_baseline.js`; it never runs that
@@ -172,9 +184,12 @@ The first and last commands delete the E2E volume. They must never be pointed
 at development or production data. `pnpm run test:e2e` separately exercises the
 same migration path together with browser flows.
 
-The fresh-baseline integration test covers the original `NULL` function
-configuration. The exact hardened #134 catalog representation is covered by a
-unit contract because exercising it here would execute that separate DDL change.
+The disposable database contract tests apply `0001_baseline.js` and
+`0002_pin_trigger_search_path.js` together, then assert the function's
+`proconfig` is exactly `search_path=pg_catalog, public`, so the integration
+path exercises the hardened #134 representation. `tests/db/adopt-baseline.test.js`
+keeps the unit contract for accepted function configurations (the original
+`NULL` or the pinned #134 value) and rejects any other setting.
 
 ## Rollback and drift rules
 

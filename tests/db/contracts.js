@@ -9,6 +9,10 @@ const {
   verifyBaseline,
 } = require("../../scripts/adopt-baseline.js");
 
+const PIN_MIGRATION = "0002_pin_trigger_search_path.js";
+const ALL_MIGRATIONS = [BASELINE_MIGRATION, PIN_MIGRATION];
+const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
+
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -27,6 +31,29 @@ async function assertDisposableDatabase(knex) {
     databaseName,
     /^hacerpedido_(e2e|db_contracts)$/,
     "database contract tests only run against a disposable database",
+  );
+}
+
+async function migrationNames(knex) {
+  const { rows } = await knex.raw(
+    "SELECT name FROM public.knex_migrations ORDER BY name ASC",
+  );
+  return rows.map((row) => row.name);
+}
+
+async function assertPinnedTimestampFunction(knex) {
+  const { rows } = await knex.raw(
+    `SELECT procedure.proconfig
+       FROM pg_proc procedure
+       JOIN pg_namespace schema ON schema.oid = procedure.pronamespace
+      WHERE schema.nspname = 'public'
+        AND procedure.proname = 'trigger_set_timestamp'`,
+  );
+  assert.equal(rows.length, 1, "trigger_set_timestamp function count");
+  assert.deepEqual(
+    rows[0].proconfig,
+    HARDENED_TIMESTAMP_FUNCTION_CONFIG,
+    "trigger_set_timestamp search_path must be pinned by 0002_pin_trigger_search_path",
   );
 }
 
@@ -121,31 +148,22 @@ async function assertForeignKeyContract(knex) {
 }
 
 async function assertBaselineAdoptionContract(knex) {
-  const before = await knex("knex_migrations")
-    .select("name")
-    .orderBy("id", "asc");
-  assert.deepEqual(before, [{ name: BASELINE_MIGRATION }]);
-
+  // On a fully migrated disposable DB, verify the baseline is recognized as
+  // adopted even when versioned forward migrations follow it.
+  assert.deepEqual(await migrationNames(knex), ALL_MIGRATIONS);
   const dryRun = await verifyBaseline(knex, { rlsMode: "e2e" });
   assert.equal(dryRun.history, "adopted");
   assert.equal(dryRun.rls, "disabled");
 
-  await knex("knex_migrations").where("name", BASELINE_MIGRATION).del();
-  try {
-    const result = await applyBaseline(knex, { rlsMode: "e2e" });
-    assert.equal(result.applied, true);
-    const history = await knex("knex_migrations")
-      .select("name")
-      .orderBy("id", "asc");
-    assert.deepEqual(history, [{ name: BASELINE_MIGRATION }]);
-  } catch (error) {
-    await knex("knex_migrations").insert({
-      name: BASELINE_MIGRATION,
-      batch: 1,
-      migration_time: new Date(),
-    });
-    throw error;
-  }
+  // Simulate the production pre-adoption state (empty history) and re-adopt.
+  await knex.raw("DELETE FROM public.knex_migrations");
+  const result = await applyBaseline(knex, { rlsMode: "e2e" });
+  assert.equal(result.applied, true);
+  assert.deepEqual(await migrationNames(knex), [BASELINE_MIGRATION]);
+
+  // Re-running adoption after the baseline is recorded is a no-op.
+  const again = await applyBaseline(knex, { rlsMode: "e2e" });
+  assert.equal(again.applied, false);
 }
 
 async function runDatabaseContractTests(connectionString) {
@@ -162,11 +180,12 @@ async function runDatabaseContractTests(connectionString) {
     await assertDisposableDatabase(knex);
 
     const firstRun = await knex.migrate.latest();
-    assert.deepEqual(firstRun[1], [BASELINE_MIGRATION]);
+    assert.deepEqual(firstRun[1], ALL_MIGRATIONS);
 
     const secondRun = await knex.migrate.latest();
     assert.deepEqual(secondRun[1], []);
 
+    await assertPinnedTimestampFunction(knex);
     await assertUuidAndPriceContract(knex);
     await assertForeignKeyContract(knex);
     await assertBaselineAdoptionContract(knex);
