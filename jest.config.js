@@ -23,6 +23,18 @@ module.exports = {
     ],
   },
   coverageThreshold: {
+    "./app/api/images/route.ts": {
+      branches: 75,
+      functions: 100,
+      lines: 90,
+      statements: 90,
+    },
+    "./app/api/shop/editor/route.ts": {
+      branches: 100,
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
     global: {
       branches: 60,
       functions: 60,

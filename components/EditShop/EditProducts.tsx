@@ -86,7 +86,7 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
     cellProperties,
   ) {
     void cellProperties;
-    handsontableCore.renderers.TextRenderer.apply(this, arguments);
+    handsontableCore?.renderers.TextRenderer.apply(this, arguments);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";

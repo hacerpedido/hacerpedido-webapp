@@ -102,10 +102,15 @@ async function globalSetup() {
     stdio: "inherit",
     env: knexEnv,
   });
-  await runCommand("npx", [...knexArgs("seed:run")], 60_000, {
-    stdio: "inherit",
-    env: knexEnv,
-  });
+  await runCommand(
+    process.execPath,
+    [resolve(__dirname, "./fixtures/setup.js")],
+    60_000,
+    {
+      stdio: "inherit",
+      env: knexEnv,
+    },
+  );
 }
 
 export default globalSetup;
