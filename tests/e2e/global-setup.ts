@@ -17,7 +17,7 @@ const composeArgs = [
   composeFile,
 ];
 
-const knexEnv: NodeJS.ProcessEnv = {
+const dbEnv: NodeJS.ProcessEnv = {
   ...process.env,
   NODE_ENV: "test" as const,
   PG_CONNECTION_STRING: pgConnectionString,
@@ -104,7 +104,7 @@ async function globalSetup() {
     60_000,
     {
       stdio: "inherit",
-      env: knexEnv,
+      env: dbEnv,
     },
   );
   await runCommand(
@@ -113,7 +113,7 @@ async function globalSetup() {
     60_000,
     {
       stdio: "inherit",
-      env: knexEnv,
+      env: dbEnv,
     },
   );
 }
