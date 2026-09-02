@@ -10,7 +10,7 @@ import { generateWhatsappURL } from "#lib/utils/utils";
 
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import styles from "../../pages/cart.module.css";
+import styles from "./page.module.css";
 
 export default function CartPage() {
   const { state, isRestored } = useCart();

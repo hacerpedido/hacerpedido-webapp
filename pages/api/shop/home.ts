@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { categories } from "#lib/utils/categories";
+import { serializePublicShops } from "#lib/utils/public-shop";
 
 import { withSentry } from "@sentry/nextjs";
 
@@ -39,7 +40,7 @@ const handler = async (req, res) => {
     .where("category", "=", category)
     .orderBy("updated_at", "desc");
 
-  res.status(200).json(shops);
+  res.status(200).json(serializePublicShops(shops));
   res.end();
 };
 

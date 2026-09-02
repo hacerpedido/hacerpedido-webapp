@@ -1,6 +1,7 @@
 // @ts-nocheck
 import EditProductsForm from "#components/EditShop/EditProducts";
 import EditShopForm from "#components/EditShop/EditShop";
+import styles from "#components/EditShop/EditShopPage.module.css";
 import Form from "#components/Form";
 import Loading from "#components/Loading";
 import MessageBox from "#components/MessageBox";
@@ -21,7 +22,6 @@ import React, {
   useTransition,
 } from "react";
 import { useForm } from "react-hook-form";
-import styles from "./[...params].module.css";
 
 // Para probar:
 // http://localhost:3000/cfb6d51e87pfxuosysumcfb6d51vpka4/edit

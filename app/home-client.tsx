@@ -10,7 +10,7 @@ import type { Shop } from "#lib/types";
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import styles from "../pages/index.module.css";
+import styles from "./home-client.module.css";
 
 export default function HomeClient({ initialShops }: { initialShops: Shop[] }) {
   const { dispatch, isRestored } = useCart();

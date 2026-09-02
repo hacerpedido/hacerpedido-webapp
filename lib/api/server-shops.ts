@@ -1,4 +1,8 @@
 import type { Product, Shop } from "../types";
+import {
+  serializePublicShop,
+  serializePublicShops,
+} from "../utils/public-shop";
 
 const { Pool } = require("pg");
 const pool = new Pool({ connectionString: process.env.PG_CONNECTION_STRING });
@@ -16,7 +20,7 @@ export async function getPublicShops(category: string): Promise<Shop[]> {
       ORDER BY updated_at DESC`,
     [category],
   );
-  return rows;
+  return serializePublicShops<Pick<Shop, "slug">>(rows);
 }
 
 export async function getPublicShop(slug: string): Promise<Shop | null> {
@@ -47,5 +51,5 @@ export async function getPublicShop(slug: string): Promise<Shop | null> {
       itemnumber: row.product_itemnumber,
     }));
 
-  return { ...first, products };
+  return serializePublicShop<Pick<Shop, "slug">>({ ...first, products });
 }

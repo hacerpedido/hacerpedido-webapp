@@ -1,4 +1,6 @@
 // @ts-nocheck
+import { serializePublicShops } from "#lib/utils/public-shop";
+
 import { withSentry } from "@sentry/nextjs";
 import * as n from "nested-knex";
 
@@ -32,7 +34,6 @@ const handler = async (req, res) => {
       background: n.nullableString("shops.background"),
       ordersphonenumber: n.nullableString("shops.ordersphonenumber"),
       orderswhatsappnumber: n.nullableString("shops.orderswhatsappnumber"),
-      typeformtoken: n.nullableString("shops.typeformtoken"),
 
       products: n.array(
         n.type({
@@ -53,7 +54,7 @@ const handler = async (req, res) => {
         .orderBy("products.itemnumber"),
     );
 
-  res.status(200).json(data);
+  res.status(200).json(serializePublicShops(data));
   res.end();
 };
 

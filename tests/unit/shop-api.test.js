@@ -43,14 +43,24 @@ describe("public shop lookup API", () => {
   });
 
   test("returns the public shop and filters out non-public shops", async () => {
-    const data = [{ slug: "public-shop", visibility: "public", products: [] }];
+    const data = [
+      {
+        slug: "public-shop",
+        visibility: "public",
+        typeformtoken: "editor-secret",
+        products: [],
+      },
+    ];
     mockNestedResult = data;
     const res = response();
 
     await shopBySlug({ query: { slug: "public-shop" } }, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(data);
+    expect(res.json).toHaveBeenCalledWith([
+      { slug: "public-shop", visibility: "public", products: [] },
+    ]);
+    expect(res.json.mock.calls[0][0][0]).not.toHaveProperty("typeformtoken");
     expect(mockNestedQuery.toSQL().sql).toContain('"visibility" = ?');
     expect(mockNestedQuery.toSQL().bindings).toContain("public");
   });

@@ -3,7 +3,7 @@ import ShopView from "#components/Shop/ShopView";
 import { getPublicShop } from "#lib/api/server-shops";
 
 import { notFound } from "next/navigation";
-import styles from "../../pages/[slug].module.css";
+import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
 
