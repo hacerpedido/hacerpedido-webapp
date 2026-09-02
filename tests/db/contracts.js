@@ -10,7 +10,9 @@ const {
 } = require("../../scripts/adopt-baseline.js");
 
 const INDEX_MIGRATION = "0002_add_secondary_indexes.js";
-const ALL_MIGRATIONS = [BASELINE_MIGRATION, INDEX_MIGRATION];
+const PIN_MIGRATION = "0003_pin_trigger_search_path.js";
+const ALL_MIGRATIONS = [BASELINE_MIGRATION, INDEX_MIGRATION, PIN_MIGRATION];
+const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -74,6 +76,22 @@ async function assertSecondaryIndexes(knex) {
     assert.ok(definition, `missing secondary index public.${name}`);
     assert.match(definition, pattern, `definition of public.${name}`);
   }
+}
+
+async function assertPinnedTimestampFunction(knex) {
+  const { rows } = await knex.raw(
+    `SELECT procedure.proconfig
+       FROM pg_proc procedure
+       JOIN pg_namespace schema ON schema.oid = procedure.pronamespace
+      WHERE schema.nspname = 'public'
+        AND procedure.proname = 'trigger_set_timestamp'`,
+  );
+  assert.equal(rows.length, 1, "trigger_set_timestamp function count");
+  assert.deepEqual(
+    rows[0].proconfig,
+    HARDENED_TIMESTAMP_FUNCTION_CONFIG,
+    "trigger_set_timestamp search_path must be pinned by 0003_pin_trigger_search_path",
+  );
 }
 
 async function assertUuidAndPriceContract(knex) {
@@ -205,6 +223,7 @@ async function runDatabaseContractTests(connectionString) {
     assert.deepEqual(secondRun[1], []);
 
     await assertSecondaryIndexes(knex);
+    await assertPinnedTimestampFunction(knex);
     await assertUuidAndPriceContract(knex);
     await assertForeignKeyContract(knex);
     await assertBaselineAdoptionContract(knex);
