@@ -6,7 +6,7 @@ This repository is the **webapp** (frontend + internal API routes). Data is serv
 
 | | |
 |---|---|
-| **Frontend** | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
+| **Frontend** | Next.js 16.3.4 (App Router), React 19.2.8 |
 | **State** | CartContext (useReducer + localStorage) |
 | **Data** | PostgreSQL 17.6 (Supabase) via Knex |
 | **Orders** | WhatsApp integration (`wa.me` with a pre-built message) |
@@ -19,10 +19,9 @@ This repository is the **webapp** (frontend + internal API routes). Data is serv
 
 ## Architecture
 
-- The application has been migrated to TypeScript: pages, API routes, and components use `.ts`/`.tsx`; E2E tests also use `.ts`.
+- The application has been migrated to TypeScript: App Router pages, API routes, and components use `.ts`/`.tsx`; E2E tests also use `.ts`.
 - **App Router pages** in `app/`: home (`page.tsx`), public shop (`[slug]/page.tsx`), checkout (`cart/page.tsx` → WhatsApp), and layout/error/loading boundaries.
-- **Remaining Pages Router routes** in `pages/`: management catch-all (`[...params].tsx`) and legacy API routes (`pages/api/`).
-- **API routes** in `app/api/` and `pages/api/`: editor (`app/api/shop/editor/route.ts`), images (`app/api/images/route.ts`), home, shop, and token-based management.
+- **App Router API routes** in `app/api/`: editor, images, home, shop, and token-based management.
 - **External backend**: axios points to `https://backend-restapi.hacerpedido.com:5001` (configured in `lib/api/index.ts`).
 - **Styles**: web components use CSS Modules placed alongside the component (`Component.tsx` + `Component.module.css`).
 
@@ -41,10 +40,8 @@ app/              App Router: public pages, checkout, and API routes
   page.tsx        Home
   [slug]/page.tsx Public shop page
   cart/page.tsx   Checkout → WhatsApp
-  api/            editor and images
-pages/            Remaining Pages Router and legacy API routes
-  [...params].tsx Token-based shop management
-  api/            shop/home, shop/[slug], shop/by-token
+  [slug]/edit/    Token-based shop management
+  api/            editor, images, home, and shop routes
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Application logic
@@ -141,7 +138,7 @@ Automatically starts (via `global-setup`) the Docker Compose stack with PostgreS
 - `tests/e2e/cart-persistence.spec.ts`, `cart-interactions.spec.ts` — cart persistence and controls
 - `tests/e2e/cart-validation.spec.ts` — checkout validation
 - `tests/e2e/public-pages.spec.ts`, `public-routing-seo.spec.ts` — public routes and SEO metadata
-- `tests/e2e/admin-flow.spec.ts` — token-based shop management
+- `tests/e2e/admin-flow.spec.ts` — App Router token-based shop management
 
 Useful overrides: `PLAYWRIGHT_TEST_BASE_URL` (already-deployed app, skips local setup) and `PG_CONNECTION_STRING` (external database instead of the local Compose stack).
 

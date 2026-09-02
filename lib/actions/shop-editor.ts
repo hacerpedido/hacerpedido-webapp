@@ -6,8 +6,7 @@ import {
   validateShopEditorInput,
 } from "../validation/shop-editor";
 
-// Next 14 exposes revalidatePath, while the legacy Pages deployment used by
-// this repository does not. Keep the mutation usable in both runtimes.
+// Keep the mutation usable when path revalidation is unavailable.
 function revalidateShopPath(path: string) {
   try {
     const { revalidatePath } = require("next/cache") as {
@@ -15,7 +14,7 @@ function revalidateShopPath(path: string) {
     };
     revalidatePath?.(path);
   } catch {
-    // The Pages Router refreshes the editor explicitly after saving.
+    // The editor refreshes explicitly after saving when needed.
   }
 }
 

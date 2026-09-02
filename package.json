@@ -6,7 +6,6 @@
     "#components/*": "./components/*",
     "#db/*": "./db/*",
     "#lib/*": "./lib/*",
-    "#pages/*": "./pages/*",
     "#tests/*": "./tests/*"
   },
   "scripts": {

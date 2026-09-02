@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "./providers";
 
-// The App Router does not use pages/_app.tsx, so its routes need their own
-// global stylesheet imports. Keep the same order used by the Pages Router:
+// Global styles are owned by the App Router. Keep the established order:
 // the app's global rules load before Bootstrap's reset/utilities.
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -32,11 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * App Router root boundary. It intentionally does not define a page route;
- * existing URLs remain owned by the Pages Router during the incremental
- * migration.
- */
+/** App Router root layout for all application routes. */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="es">

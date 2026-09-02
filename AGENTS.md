@@ -16,7 +16,7 @@ Language conventions:
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
+| Framework | Next.js 16.3.4 (App Router), React 19.2.8 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | State | CartContext (useReducer + localStorage) |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
@@ -29,8 +29,8 @@ Language conventions:
 ## Critical conventions
 
 - **Web UI with CSS Modules**: every visual component must use a `*.module.css` file alongside the component and import its classes as `styles`. Use `className={styles.nombre}` and CSS variables for dynamic values; do not add global styles.
-- **State**: CartContext with `useReducer` + localStorage persistence (`CartProvider` in `pages/_app.tsx`, `useCart` hook). There is no Redux.
-- **API**: axios with the external REST backend's baseURL; internal routes in `app/api/` and `pages/api/`.
+- **State**: CartContext with `useReducer` + localStorage persistence (`CartProvider` in `app/providers.tsx`, `useCart` hook). There is no Redux.
+- **API**: axios with the external REST backend's baseURL; internal routes are in `app/api/`.
 - **WhatsApp/phone numbers**: Argentine numbers. **Always** normalize with `sanitizeWhatsAppNumber()` before building a `wa.me` link (54 + 0/9 rules). See the `whatsapp-order` skill.
 - **Images**: S3 upload/delete via `lib/utils/aws-s3.ts`, endpoint in `app/api/images/route.ts`.
 
@@ -40,16 +40,14 @@ Language conventions:
 app/
   page.tsx                  Home: shops by category
   [slug]/page.tsx           Public shop page
+  [slug]/edit/page.tsx      Token-based shop management
   cart/page.tsx             Checkout → generates wa.me link
   api/images/route.ts       Upload/delete S3
+  api/shop/home/route.ts    Shops by category
+  api/shop/[slug]/route.ts  Shop by slug
+  api/shop/by-token/route.ts Management by token
   api/shop/editor/route.ts  Editor mutations
   layout.tsx, providers.tsx, error.tsx, loading.tsx, not-found.tsx
-pages/
-  [...params].tsx           Shop management catch-all
-  api/shop/home.ts          Shops by category (legacy)
-  api/shop/[slug].ts        Shop by slug (legacy)
-  api/shop/by-token.ts      Management by token (legacy)
-  _app.tsx, _document.tsx, _error.tsx
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
   Shop/                     ShopView, ShopHeader, ShopFooter, Product, ProductList, ProductAmountPopup, ShopNotes

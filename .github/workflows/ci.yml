@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'pages/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-
       - name: Cache Playwright browsers
@@ -100,7 +100,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'pages/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-
       - run: pnpm build

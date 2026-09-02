@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-// The editor lives at /{typeformtoken}/edit (pages/[...params].jsx) and is
-// seeded with the fixture token `e2e-fixture-token`.
+// The App Router editor lives at /{typeformtoken}/edit and is seeded with the
+// fixture token `e2e-fixture-token`.
 test("loads the shop editor by token and shows the seeded data", async ({
   page,
 }) => {
