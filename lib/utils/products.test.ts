@@ -1,3 +1,4 @@
+import type { Product } from "../types";
 import * as products from "./products";
 
 const basicList = [
@@ -49,7 +50,9 @@ describe("extractSections", () => {
 
   // Invalid input is rejected because the function expects an array.
   test("throws for null input", () => {
-    expect(() => products.extractSections(null)).toThrow();
+    expect(() =>
+      products.extractSections(null as unknown as Product[]),
+    ).toThrow();
   });
 
   // Edge: empty array
@@ -164,7 +167,8 @@ describe("productForGrid", () => {
 
   // Edge: products without all fields
   test("handles products with missing fields", () => {
-    const input = [{ category: "a" }];
+    // Out-of-contract input: product rows are expected to carry a name.
+    const input = [{ category: "a" }] as Product[];
     const result = products.productForGrid(input);
     // The product row will be [false, undefined, undefined, undefined]
     expect(result[3]).toEqual([false, undefined, undefined, undefined]);

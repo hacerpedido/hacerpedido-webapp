@@ -2,27 +2,58 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import EditProducts from "./EditProducts";
 
+type ChangeRow = [number, number, unknown, unknown];
+
+type HotCell = {
+  renderer?: (...args: unknown[]) => void;
+};
+
+type HotSettings = {
+  cells?: (row: number, col: number) => HotCell;
+};
+
+type HotTableInstance = {
+  getData: () => unknown;
+  getDataAtRow: (row: number) => unknown;
+  updateSettings: (settings: unknown) => void;
+};
+
 jest.mock("handsontable/styles/handsontable.min.css", () => ({}));
 jest.mock("handsontable/styles/ht-theme-main.min.css", () => ({}));
 
 jest.mock("#lib/hooks/use_width", () => jest.fn());
 
 jest.mock("next/dynamic", () => {
-  const React = require("react");
+  const React = require("react") as typeof import("react");
 
   return {
     __esModule: true,
     default: () =>
-      function MockHotTable({ afterChange, beforeChange, data, forwardedRef }) {
-        const [pastedChanges, setPastedChanges] = React.useState(null);
-        const [renderedStyle, setRenderedStyle] = React.useState(null);
-        const settings = React.useRef({});
+      function MockHotTable({
+        afterChange,
+        beforeChange,
+        data,
+        forwardedRef,
+      }: {
+        afterChange: (changes: ChangeRow[]) => void;
+        beforeChange: (changes: ChangeRow[], source: string) => void;
+        data: unknown;
+        forwardedRef: { current: { hotInstance: HotTableInstance } | null };
+      }) {
+        const [pastedChanges, setPastedChanges] = React.useState<
+          ChangeRow[] | null
+        >(null);
+        const [renderedStyle, setRenderedStyle] = React.useState<Record<
+          string,
+          string
+        > | null>(null);
+        const settings = React.useRef<HotSettings>({});
         const dataRef = React.useRef(data);
-        const hotInstance = {
+        const hotInstance: HotTableInstance = {
           getData: () => dataRef.current,
-          getDataAtRow: (row) => dataRef.current[row],
+          getDataAtRow: (row) => (dataRef.current as unknown[])[row],
           updateSettings: (nextSettings) => {
-            settings.current = nextSettings;
+            settings.current = nextSettings as HotSettings;
           },
         };
         forwardedRef.current = { hotInstance };
@@ -38,7 +69,7 @@ jest.mock("next/dynamic", () => {
             </output>
             <button
               onClick={() => {
-                const changes = [
+                const changes: ChangeRow[] = [
                   [1, 0, false, "TRUE"],
                   [3, 3, "old", "$1.234"],
                 ];
@@ -52,10 +83,20 @@ jest.mock("next/dynamic", () => {
             </button>
             <button
               onClick={() => {
-                const cell = settings.current.cells(1, 1);
-                const td = { style: {} };
-                cell.renderer({}, td, 1, 1, "name", "Pizzas", cell);
-                setRenderedStyle(td.style);
+                const cell = settings.current.cells?.(1, 1);
+                const td = { style: {} as Record<string, string> };
+                if (cell) {
+                  cell.renderer?.(
+                    {} as object,
+                    td,
+                    1,
+                    1,
+                    "name",
+                    "Pizzas",
+                    cell,
+                  );
+                  setRenderedStyle(td.style);
+                }
               }}
               type="button"
             >

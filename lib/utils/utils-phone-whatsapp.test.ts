@@ -131,10 +131,16 @@ describe("generateWhatsappURL", () => {
       { name: "Ana", address: null, notes: undefined },
       "https://wa.me/549223000000?text=%C2%A1Hola!%20soy%20*Ana*%20y%20quiero%20hacer%20un%20pedido%20via%20HacerPedido%20%F0%9F%92%AA%0A%0A%0A*Mi%20pedido%3A*%0A*Comida*%0A%E2%9C%85%202%20x%20%C3%91oquis%0A*Bebidas*%0A%E2%9C%85%201%20x%20Caf%C3%A9%20%E2%98%95%0A%E2%9C%85%203%20x%20Agua",
     ],
+    // Out-of-contract shape: CartFormData requires plain strings, but these
+    // cases exercise the runtime tolerance for null/undefined address/notes.
   ])("handles optional address/notes: %j", (userData, expected) => {
-    expect(utils.generateWhatsappURL("+54223000000", userData, products)).toBe(
-      expected,
-    );
+    expect(
+      utils.generateWhatsappURL(
+        "+54223000000",
+        userData as unknown as Parameters<typeof utils.generateWhatsappURL>[1],
+        products,
+      ),
+    ).toBe(expected);
   });
 
   test("encodes Unicode and newlines while preserving order", () => {

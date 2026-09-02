@@ -1,12 +1,20 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import React from "react";
+import type React from "react";
 import UploadImage from "./UploadImage";
+
+type CropShape = { x: number; y: number; width: number; height: number };
+type LoadedImage = {
+  naturalWidth: number;
+  naturalHeight: number;
+  width: number;
+  height: number;
+};
 
 jest.mock("react-image-crop/dist/ReactCrop.css", () => ({}));
 jest.mock("react-drop-zone/dist/styles.css", () => ({}));
 
 jest.mock("react-image-crop", () => {
-  const React = require("react");
+  const React = require("react") as typeof import("react");
 
   return function MockReactCrop({
     crop,
@@ -14,6 +22,12 @@ jest.mock("react-image-crop", () => {
     onComplete,
     onImageLoaded,
     src,
+  }: {
+    crop: CropShape | null;
+    onChange: (crop: CropShape) => void;
+    onComplete: (crop: CropShape | null) => void;
+    onImageLoaded: (image: LoadedImage) => void;
+    src: string;
   }) {
     React.useEffect(() => {
       onImageLoaded({
@@ -50,11 +64,11 @@ jest.mock("react-image-crop", () => {
 
 jest.mock("react-drop-zone", () => {
   return {
-    StyledDropZone: ({ onDrop }) => (
+    StyledDropZone: ({ onDrop }: { onDrop: (file: File | null) => void }) => (
       <div>
         <input
           aria-label="Seleccionar imagen"
-          onChange={(event) => onDrop(event.target.files?.[0])}
+          onChange={(event) => onDrop(event.target.files?.[0] ?? null)}
           type="file"
         />
         <button onClick={() => onDrop(null)} type="button">
@@ -67,30 +81,52 @@ jest.mock("react-drop-zone", () => {
 
 jest.mock("next/dynamic", () => ({
   __esModule: true,
-  default: (loader) => {
-    const DropZone = require("react-drop-zone").StyledDropZone;
+  default: (loader: unknown) => {
+    const DropZone = (
+      require("react-drop-zone") as {
+        StyledDropZone: React.ComponentType<Record<string, unknown>>;
+      }
+    ).StyledDropZone;
     void loader;
-    return (props) => <DropZone {...props} />;
+    return (props: Record<string, unknown>) => <DropZone {...props} />;
   },
 }));
 
 jest.mock("react-bootstrap/Modal", () => {
-  const Modal = ({ children }) => <div role="dialog">{children}</div>;
-  Modal.Header = ({ children }) => <div>{children}</div>;
-  Modal.Title = ({ children }) => <h2>{children}</h2>;
-  Modal.Body = ({ children }) => <div>{children}</div>;
-  Modal.Footer = ({ children }) => <div>{children}</div>;
-  return Modal;
+  const Modal = ({ children }: { children?: React.ReactNode }) => (
+    <div role="dialog">{children}</div>
+  );
+
+  return Object.assign(Modal, {
+    Header: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    Title: ({ children }: { children?: React.ReactNode }) => (
+      <h2>{children}</h2>
+    ),
+    Body: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    Footer: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+  });
 });
 
 jest.mock("react-bootstrap/Button", () => {
-  return ({ children, ...props }) => <button {...props}>{children}</button>;
+  return ({
+    children,
+    ...props
+  }: {
+    children?: React.ReactNode;
+    [key: string]: unknown;
+  }) => <button {...props}>{children}</button>;
 });
 
 describe("UploadImage", () => {
   const handleClose = jest.fn();
   const fetchMock = jest.fn();
-  let context;
+  let context: { drawImage: jest.Mock; setTransform: jest.Mock };
 
   beforeEach(() => {
     handleClose.mockClear();
@@ -102,7 +138,7 @@ describe("UploadImage", () => {
     };
     jest
       .spyOn(HTMLCanvasElement.prototype, "getContext")
-      .mockReturnValue(context);
+      .mockReturnValue(context as unknown as CanvasRenderingContext2D | null);
     jest
       .spyOn(HTMLCanvasElement.prototype, "toBlob")
       .mockImplementation((callback) => callback(new Blob(["image"])));
@@ -179,7 +215,7 @@ describe("UploadImage", () => {
   });
 
   test("shows upload errors and stops loading", async () => {
-    let rejectUpload;
+    let rejectUpload!: (reason?: unknown) => void;
     fetchMock.mockImplementationOnce(
       () =>
         new Promise((_resolve, reject) => {
@@ -236,7 +272,7 @@ describe("UploadImage", () => {
   });
 
   test("shows delete errors and stops loading", async () => {
-    let rejectDelete;
+    let rejectDelete!: (reason?: unknown) => void;
     fetchMock.mockImplementationOnce(
       () =>
         new Promise((_resolve, reject) => {

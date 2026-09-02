@@ -11,7 +11,10 @@ jest.mock("@aws-sdk/client-s3", () => ({
   S3Client: mockS3Client,
 }));
 
-const { deleteFile, uploadFile } = require("./aws-s3");
+// Deferred require: an ESM import would be hoisted above the shared mock
+// handles, making the node:fs mock factory run before they initialize.
+const { deleteFile, uploadFile } =
+  require("./aws-s3") as typeof import("./aws-s3");
 
 describe("S3 image utilities", () => {
   const originalEnvironment = {

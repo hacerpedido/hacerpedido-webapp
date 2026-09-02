@@ -1,6 +1,7 @@
-const {
-  hasApprovedTimestampFunctionConfig,
-} = require("../../scripts/adopt-baseline.js");
+const { hasApprovedTimestampFunctionConfig } =
+  require("../../scripts/adopt-baseline.js") as {
+    hasApprovedTimestampFunctionConfig: (config: unknown) => boolean;
+  };
 
 describe("trigger_set_timestamp function configuration", () => {
   it("accepts the original baseline configuration", () => {

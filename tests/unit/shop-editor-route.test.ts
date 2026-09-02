@@ -1,39 +1,57 @@
+import { saveShopWithProductsAction } from "#lib/actions/shop-editor";
+
+import * as editorRouteModule from "../../app/api/shop/editor/route";
+
 jest.mock("#lib/actions/shop-editor", () => ({
   saveShopWithProductsAction: jest.fn(),
 }));
 
-if (!global.Response) {
-  global.Response = class TestResponse {
-    constructor(body, init = {}) {
-      this.body = body;
-      this.status = init.status ?? 200;
-    }
+const mockSaveShop = jest.mocked(saveShopWithProductsAction);
 
-    static json(body, init) {
-      return new TestResponse(body, init);
-    }
+class TestResponse {
+  body: unknown;
+  status: number;
 
-    async json() {
-      return this.body;
-    }
-  };
+  constructor(body: unknown, init: { status?: number } = {}) {
+    this.body = body;
+    this.status = init.status ?? 200;
+  }
+
+  static json(body: unknown, init?: { status?: number }): TestResponse {
+    return new TestResponse(body, init);
+  }
+
+  async json(): Promise<unknown> {
+    return this.body;
+  }
 }
 
-const { POST } = require("../../app/api/shop/editor/route");
-const { saveShopWithProductsAction } = require("#lib/actions/shop-editor");
+if (!global.Response) {
+  global.Response = TestResponse as unknown as typeof Response;
+}
 
-function requestWithJson(value) {
+interface EditorRequest {
+  json: () => Promise<unknown>;
+}
+
+// Route handlers are typed against the real Request/Response; the tests drive
+// them with lightweight fakes, so the boundary is cast once.
+const POST = editorRouteModule.POST as unknown as (
+  request: EditorRequest,
+) => Promise<TestResponse>;
+
+function requestWithJson(value: unknown): EditorRequest {
   return { json: jest.fn().mockResolvedValue(value) };
 }
 
 describe("shop editor API route", () => {
   beforeEach(() => {
-    saveShopWithProductsAction.mockReset();
+    mockSaveShop.mockReset();
   });
 
   test("returns validation errors from the editor action", async () => {
     const shop = { id: "shop-id", name: "", token: "editor-token" };
-    saveShopWithProductsAction.mockResolvedValue({
+    mockSaveShop.mockResolvedValue({
       message: "El nombre del comercio es requerido.",
       error: 1,
     });
@@ -47,9 +65,7 @@ describe("shop editor API route", () => {
       message: "El nombre del comercio es requerido.",
       error: 1,
     });
-    expect(saveShopWithProductsAction).toHaveBeenCalledWith(shop, [
-      { name: "Pan" },
-    ]);
+    expect(mockSaveShop).toHaveBeenCalledWith(shop, [{ name: "Pan" }]);
   });
 
   test("saves a valid shop and returns the action result", async () => {
@@ -60,17 +76,17 @@ describe("shop editor API route", () => {
       orderswhatsappnumber: "5491112345678",
     };
     const result = { message: "Tus cambios fueron guardados." };
-    saveShopWithProductsAction.mockResolvedValue(result);
+    mockSaveShop.mockResolvedValue(result);
 
     const response = await POST(requestWithJson({ shop }));
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(result);
-    expect(saveShopWithProductsAction).toHaveBeenCalledWith(shop, null);
+    expect(mockSaveShop).toHaveBeenCalledWith(shop, null);
   });
 
   test("converts action/database failures into an invalid-data response", async () => {
-    saveShopWithProductsAction.mockRejectedValue(new Error("database down"));
+    mockSaveShop.mockRejectedValue(new Error("database down"));
 
     const response = await POST(requestWithJson({ shop: {} }));
 
@@ -79,7 +95,7 @@ describe("shop editor API route", () => {
       message: "Datos inválidos.",
       error: 1,
     });
-    console.error.mockClear();
+    (console.error as jest.Mock).mockClear();
   });
 
   test("returns an invalid-data response when the request body is malformed", async () => {
@@ -94,6 +110,6 @@ describe("shop editor API route", () => {
       message: "Datos inválidos.",
       error: 1,
     });
-    console.error.mockClear();
+    (console.error as jest.Mock).mockClear();
   });
 });

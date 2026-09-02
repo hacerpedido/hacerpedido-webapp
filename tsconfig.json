@@ -20,6 +20,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2015",
+    "types": ["jest", "node", "react", "react-dom"],
     "incremental": true,
     "plugins": [
       {
