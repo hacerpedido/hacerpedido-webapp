@@ -3,6 +3,7 @@ import { validatePhoneNumber } from "#lib/utils/utils";
 
 import React, { useState } from "react";
 import Modal from "react-bootstrap/Modal";
+import { useFormStatus } from "react-dom";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
 import buildFormatter from "react-timeago/lib/formatters/buildFormatter";
@@ -13,6 +14,24 @@ import UploadImage from "./UploadImage";
 
 const formatter = buildFormatter(spanishStrings);
 
+function SaveButton({ isSaving, onClick }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      className={`${styles.saveButton} ${pending ? styles.saveButtonSaving : ""}`}
+      data-testid="save-shop"
+      disabled={pending || isSaving}
+      onClick={onClick}
+      type="submit"
+    >
+      <span className={styles.buttonText}>Guardar</span>
+      {pending && (
+        <span aria-label="Guardando" className={styles.spinner} role="status" />
+      )}
+    </button>
+  );
+}
+
 export default function EditShop({
   shop,
   control,
@@ -21,6 +40,7 @@ export default function EditShop({
   getValues,
   isSaving,
   refresh,
+  onSave,
 }) {
   const [imageType, setImageType] = useState(undefined);
 
@@ -74,22 +94,7 @@ export default function EditShop({
             >
               Editar portada
             </button>
-            <button
-              className={`${styles.saveButton} ${isSaving ? styles.saveButtonSaving : ""}`}
-              data-testid="save-shop"
-              disabled={isSaving}
-              onClick={handleSubmit}
-              type="button"
-            >
-              <span className={styles.buttonText}>Guardar</span>
-              {isSaving && (
-                <span
-                  aria-label="Guardando"
-                  className={styles.spinner}
-                  role="status"
-                />
-              )}
-            </button>
+            <SaveButton isSaving={isSaving} onClick={onSave} />
           </div>
         </header>
         <div className={styles.formContainer}>

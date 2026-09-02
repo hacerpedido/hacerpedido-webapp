@@ -17,7 +17,7 @@ const composeArgs = [
 
 const knexEnv: NodeJS.ProcessEnv = {
   ...process.env,
-  NODE_ENV: "test",
+  NODE_ENV: "test" as const,
   PG_CONNECTION_STRING: pgConnectionString,
 };
 

@@ -6,7 +6,7 @@ const MessageBox = ({ message, onMessagePress }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onMessagePress();
-    }, 5000);
+    }, 10000);
     return () => clearTimeout(timer);
   }, [onMessagePress]);
 

@@ -1,7 +1,8 @@
 // @ts-nocheck
+"use client";
 import { useCart } from "#lib/context/CartContext";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Loading from "../Loading";
 import EditMenuLink from "./EditMenuLink";
 import ProductList from "./ProductList";
@@ -15,7 +16,10 @@ export default function ShopView({
   previewProducts = [],
   isLoading = false,
 }) {
-  const { state } = useCart();
+  const { state, dispatch } = useCart();
+  useEffect(() => {
+    if (!isPreview && shop) dispatch({ type: "SET_SHOP", payload: shop });
+  }, [dispatch, isPreview, shop]);
   const storedProducts = state.products;
   const isCartEnabled = !isPreview && shop && shop.orderswhatsappnumber;
   const products = isPreview ? previewProducts : storedProducts;

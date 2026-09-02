@@ -10,17 +10,17 @@ Customers build a cart on a shop page and checkout sends a pre-filled WhatsApp m
 ## When to use
 
 - Anything touching `generateWhatsappURL`, `sanitizeWhatsAppNumber`, `generateCallUrl`
-- The cart/checkout page (`pages/cart.jsx`) or the order message format
+- The cart/checkout page (`app/cart/page.tsx`) or the order message format
 - Argentine phone number handling or `wa.me` links
 
 ## The flow
 
 1. Shop page: customer adds products (quantities per product). `ShopView` enables the cart when `shop.orderswhatsappnumber` exists (`!isPreview && shop && shop.orderswhatsappnumber`).
-2. `pages/cart.jsx` collects form data (name, address, notes) and calls:
+2. `app/cart/page.tsx` collects form data (name, address, notes) and calls:
    `generateWhatsappURL(shop.orderswhatsappnumber, formData, productsByCategory)`.
-3. `lib/utils/utils.js` builds the URL and the WhatsApp goes to `https://wa.me/<sanitized>?text=<encoded message>`.
+3. `lib/utils/utils.ts` builds the URL and the WhatsApp goes to `https://wa.me/<sanitized>?text=<encoded message>`.
 
-## Key functions (`lib/utils/utils.js`)
+## Key functions (`lib/utils/utils.ts`)
 
 - `sanitizeWhatsAppNumber(phone)` — strips `+`; for Argentine numbers starting `54`:
   - `54 0 xxx` → `549 xxx` (drops the 0)
@@ -53,17 +53,17 @@ With user data (name/address/notes):
 ✅ AMOUNT x PRODUCTNAME
 ```
 
-- Lines are built by `categoryProducts` (`✅ amount x name`) and `productListForMessage` (per-category `*Category*` headers). See `references/message-format.md` for the exact template and a real encoded example.
+- Lines are built by `categoryProducts` (`✅ amount x name`) and `productListForMessage` (per-category `*Category*` headers). See `references/message-format.md` for the exact template and a real encoded URL example from `lib/utils/utils-phone-whatsapp.test.js`.
 
 ## Rules
 
 - **Always** sanitize Argentine numbers before building `wa.me` links (no `+`, no `0`/`9` mishaps). Target format: `549` + area code + number.
 - **Keep message copy in Spanish** — it's user-facing product copy (Argentine market).
 - The merchant's order number comes from `shop.orderswhatsappnumber`; `ShopFooter` falls back to a call button (`ButtonCall`) when it's missing.
-- **Tests**: `lib/utils/utils.test.js` covers these helpers — keep them green when editing (message templates change → update expected URLs).
+- **Tests**: `lib/utils/utils-phone-whatsapp.test.js` covers these helpers — keep them green when editing (message templates change → update expected URLs).
 - E2E asserts the resulting URL (e.g. `wa.me/5491100000000?text=...` from the fixture seed).
 
 ## References
 
 - `references/message-format.md` — exact template + real encoded URL examples from `utils.test.js`.
-- Repo: `pages/cart.jsx`, `lib/utils/utils.js`, `tests/e2e/order-flow.spec.js`.
+- Repo: `app/cart/page.tsx`, `lib/utils/utils.ts`, `tests/e2e/order-flow.spec.ts`.

@@ -48,7 +48,8 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
 
     setWaiting(true);
     axios
-      .post(`${window.location.origin}/api/image-delete`, data, {
+      .delete(`${window.location.origin}/api/images`, {
+        data,
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -96,7 +97,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         data.append("image_type", imageType);
 
         axios
-          .post(`${window.location.origin}/api/image-upload`, data, {
+          .post(`${window.location.origin}/api/images`, data, {
             headers: {
               "Content-Type": "multipart/form-data",
             },

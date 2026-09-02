@@ -115,7 +115,7 @@ export function trimObject<T extends Record<string, unknown>>(obj: T): T {
 
 function categoryProducts(products: Product[]): string {
   return products
-    .map(({ amount, name }) => `✅ ${amount} x ${name}`)
+    .map(({ amount, name }) => `\u2705 ${amount} x ${name}`)
     .join("\n");
 }
 
@@ -129,7 +129,7 @@ function productListForMessage(productsByCategory: ProductSection[]): string {
 }
 
 function generateSimpleWhatsappMessage() {
-  return "¡Hola! Quiero hacer un pedido via HacerPedido 💪";
+  return "¡Hola! Quiero hacer un pedido via HacerPedido \uD83D\uDCAA";
 }
 
 function generateWhatsappMessage(
@@ -138,9 +138,11 @@ function generateWhatsappMessage(
 ): string {
   const { name, address, notes } = formData;
 
-  const intro = `¡Hola! soy *${name}* y quiero hacer un pedido via HacerPedido 💪\n\n`;
-  const addressStr = address && `📍 *Mi dirección:* ${address}\n`;
-  const notesStr = notes && `📝 *Notas:* ${notes}\n`;
+  // Keep emoji as Unicode escapes so source/file encoding cannot turn them into
+  // replacement characters before the message is URL-encoded.
+  const intro = `¡Hola! soy *${name}* y quiero hacer un pedido via HacerPedido \uD83D\uDCAA\n\n`;
+  const addressStr = address && `\uD83D\uDCCD *Mi dirección:* ${address}\n`;
+  const notesStr = notes && `\uD83D\uDCDD *Notas:* ${notes}\n`;
   const order = "\n*Mi pedido:*\n" + productListForMessage(products);
 
   return [intro, addressStr, notesStr, order].join("");

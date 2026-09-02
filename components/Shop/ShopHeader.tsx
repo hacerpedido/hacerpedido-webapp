@@ -10,7 +10,8 @@ import {
 } from "#lib/utils/shops";
 import { generateCallUrl } from "#lib/utils/utils";
 
-import { useRouter } from "next/router";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopHeader.module.css";
@@ -77,11 +78,14 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
       <div className={styles.containerData}>
         <div className={styles.containerLogo}>
           {logo && !logoFailed ? (
-            <img
+            <Image
               alt={name || ""}
               className={styles.logo}
+              height={100}
               onError={() => setLogoFailed(true)}
               src={logo}
+              unoptimized
+              width={100}
             />
           ) : (
             <div

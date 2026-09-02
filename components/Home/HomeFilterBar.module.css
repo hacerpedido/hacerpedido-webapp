@@ -8,6 +8,10 @@
   border-bottom: 1px solid #f3f0eb;
 }
 
+.pending {
+  cursor: progress;
+}
+
 .list {
   display: flex;
   flex-direction: row;

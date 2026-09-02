@@ -1,6 +1,6 @@
 ---
 name: s3-images
-description: Upload and delete shop images on AWS S3 for HacerPedido, including the image-upload/image-delete API routes, the UploadImage editor component, and S3 env vars. Use when working with shop/logo/background images, image uploads or deletes, AWS S3, or the image-* API routes.
+description: Upload and delete shop images on AWS S3 for HacerPedido, including the images route, the UploadImage editor component, and S3 env vars. Use when working with shop/logo/background images, image uploads or deletes, AWS S3, or the images API route.
 ---
 
 # S3 image uploads
@@ -9,17 +9,17 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 ## When to use
 
-- Adding/editing the upload or delete image endpoints (`pages/api/image-upload.js`, `pages/api/image-delete.js`)
-- Working with `components/EditShop/UploadImage.jsx` (crop + upload UI)
+- Adding/editing the upload or delete image endpoint (`app/api/images/route.ts`)
+- Working with `components/EditShop/UploadImage.tsx` (crop + upload UI)
 - Troubleshooting image uploads/deletes or S3 env configuration
 
 ## How it works
 
-- `lib/utils/aws-s3.js` uses **AWS SDK v2** and exports:
+- `lib/utils/aws-s3.ts` uses **AWS SDK v2** and exports:
   - `uploadFile(fileName, key, mime)` — reads the local file, `s3.upload({ Bucket, Key, Body, ContentType, ACL: "public-read" })`.
   - `deleteFile(key)` — `s3.deleteObject({ Bucket, Key })`.
-- API routes `pages/api/image-upload.js` / `pages/api/image-delete.js` wrap these for the browser flow.
-- UI: `components/EditShop/UploadImage.jsx` drives crop + upload on the editor.
+- API route `app/api/images/route.ts` wraps these for the browser flow.
+- UI: `components/EditShop/UploadImage.tsx` drives crop + upload on the editor.
 
 ## Env vars (names only — never commit values)
 
@@ -29,11 +29,11 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 **Upload a file:**
 1. Confirm the four env vars are set in `.env.local` (upload fails without credentials).
-2. Call `uploadFile(fileName, key, mime)` from `lib/utils/aws-s3.js` (or hit `POST /api/image-upload`).
+2. Call `uploadFile(fileName, key, mime)` from `lib/utils/aws-s3.ts` (or hit `POST /api/images`).
 3. Key should be a sensible path (e.g. `shops/<shopid>/<image>.jpg`); ACL is `public-read` so the object is publicly fetchable via `NEXT_PUBLIC_IMAGE_BUCKET_URL`.
 
 **Delete a file:**
-1. Call `deleteFile(key)` (or `DELETE /api/image-delete`) with the object key.
+1. Call `deleteFile(key)` (or `DELETE /api/images`) with the object key.
 2. Clean up any URL references in the shop record afterwards.
 
 ## Gotchas
@@ -45,4 +45,4 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 ## References
 
-- Repo: `lib/utils/aws-s3.js`, `pages/api/image-upload.js`, `pages/api/image-delete.js`, `components/EditShop/UploadImage.jsx`.
+- Repo: `lib/utils/aws-s3.ts`, `app/api/images/route.ts`, `components/EditShop/UploadImage.tsx`.

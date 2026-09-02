@@ -2,7 +2,8 @@
 import { WhatsappFill as WhatsappFillIcon } from "#assets/icons";
 import { useCart } from "#lib/context/CartContext";
 
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { Controller, useForm } from "react-hook-form";
 import Input from "../Input";
 import Switch from "../Switch";
@@ -15,6 +16,10 @@ const Form = ({ onSubmit }) => {
   const [takeaway, setTakeaway] = useState(false);
 
   const { handleSubmit, errors, control } = useForm({ mode: "onSubmit" });
+  const [, formAction] = useActionState(async (_state, formData) => {
+    onSubmit(Object.fromEntries(formData.entries()));
+    return null;
+  }, null);
 
   const onNameChange = (value) =>
     dispatch({ type: "SET_NAME", payload: value });
@@ -34,7 +39,15 @@ const Form = ({ onSubmit }) => {
   // })
 
   return (
-    <form className={styles.container} onSubmit={handleSubmit(onSubmit)}>
+    <form
+      action={formAction}
+      className={styles.container}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        handleSubmit(() => formAction(new FormData(form)))(event);
+      }}
+    >
       <Switch toggle={toggleTakeAway} value={takeaway} />
 
       <Controller
@@ -102,20 +115,28 @@ const Form = ({ onSubmit }) => {
         con el comercio. No somos responsables de modificaciones en el menú.
       </p>
 
-      <button
-        aria-label="Submit WhatsApp order"
-        className={`${styles.button} ${styles.buttonWhatsApp} bounza`}
-        data-testid="submit-whatsapp-order"
-        type="submit"
-      >
-        <span className={styles.textContainer}>
-          <span className={styles.icon}>
-            <WhatsappFillIcon color="#ffffff" />
-          </span>
-          <span className={styles.buttonText}> Pedir a {name} </span>
-        </span>
-      </button>
+      <SubmitOrderButton name={name} />
     </form>
+  );
+};
+
+const SubmitOrderButton = ({ name }) => {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      aria-label="Submit WhatsApp order"
+      className={`${styles.button} ${styles.buttonWhatsApp} bounza`}
+      data-testid="submit-whatsapp-order"
+      disabled={pending}
+      type="submit"
+    >
+      <span className={styles.textContainer}>
+        <span className={styles.icon}>
+          <WhatsappFillIcon color="#ffffff" />
+        </span>
+        <span className={styles.buttonText}> Pedir a {name} </span>
+      </span>
+    </button>
   );
 };
 

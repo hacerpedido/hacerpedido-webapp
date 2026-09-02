@@ -4,6 +4,10 @@
 **Status:** Approved (pending user spec review)
 **Owner:** Sergio Marquez
 
+> Superseded note: This design describes the planned migration and its original
+> Next 15-era target. The implementation now uses Next.js 16.3.4 and React
+> 19.2.8; current operational guidance lives in `README.md` and `AGENTS.md`.
+
 ## Goals
 
 Migrate the HacerPedido webapp from its current ~5-year-old stack to a modern Next.js foundation, eliminating accumulated tech debt (RNW, Bootstrap 4, Redux+persist boilerplate, the `--openssl-legacy-provider` hack, CDN-loaded Handsontable) and adopting current ecosystem conventions (App Router, RSC, Tailwind, shadcn/ui, server actions, TypeScript).

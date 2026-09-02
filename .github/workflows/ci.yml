@@ -2,6 +2,7 @@ name: HacerPedido CI
 
 on:
   push:
+    branches: [master]
   pull_request:
 
 concurrency:
@@ -16,11 +17,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -31,7 +32,7 @@ jobs:
       - run: pnpm exec jest --runInBand --coverage
       - name: Upload coverage
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/
@@ -42,29 +43,36 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Cache Next.js build
+        uses: actions/cache@v5
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'pages/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
       - name: Cache Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
       # The E2E command starts the same Docker Compose stack used locally,
       # runs Knex migrations + seed, builds and serves the app, then
       # runs the browser journey against it.
       - run: pnpm test:e2e
       - name: Upload Playwright report
         if: ${{ always() && (failure() || cancelled()) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
@@ -77,14 +85,21 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
           version: 11.25.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
+      - name: Cache Next.js build
+        uses: actions/cache@v5
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml', 'package.json', 'next.config.*', 'tsconfig.json', 'app/**/*', 'pages/**/*', 'components/**/*', 'lib/**/*', 'assets/**/*', 'styles/**/*', 'public/**/*', 'sentry.*.config.js') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-
       - run: pnpm build

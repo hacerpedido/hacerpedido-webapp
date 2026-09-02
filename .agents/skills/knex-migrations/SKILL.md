@@ -10,18 +10,18 @@ The project uses Knex with PostgreSQL 17.6. All DB work goes through migrations;
 ## When to use
 
 - Creating or editing migrations (`db/migrations/`)
-- Applying / rolling back (`npm run db:migrate`, `npm run db:rollback`)
-- Seeding the E2E database (`npm run db:seed:e2e`)
+- Applying / rolling back (`pnpm run db:migrate`, `pnpm run db:rollback`)
+- Seeding the E2E database (`pnpm run db:seed:e2e`)
 - Any task named after `db:` or touching `shops` / `products` schema
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `npm run db:migrate:make <name>` | Create a new migration file |
-| `npm run db:migrate` | Apply pending migrations (`migrate:latest`) |
-| `npm run db:rollback` | Roll back the last batch |
-| `npm run db:seed:e2e` | Run seeds (`tests/e2e/fixtures/seeds`) |
+| `pnpm run db:migrate:make -- <name>` | Create a new migration file |
+| `pnpm run db:migrate` | Apply pending migrations (`migrate:latest`) |
+| `pnpm run db:rollback` | Roll back the last batch |
+| `pnpm run db:seed:e2e` | Run seeds (`tests/e2e/fixtures/seeds`) |
 
 ## Key facts
 
@@ -34,7 +34,7 @@ The project uses Knex with PostgreSQL 17.6. All DB work goes through migrations;
 
 ## Adding a column (recipe)
 
-1. `npm run db:migrate:make add_<column>_to_shops`
+1. `pnpm run db:migrate:make -- add_<column>_to_shops`
 2. Edit the new file in `db/migrations/` with `exports.up` / `exports.down`:
 
 ```js
@@ -49,8 +49,8 @@ exports.down = (knex) =>
   });
 ```
 
-3. Apply: `npm run db:migrate`
-4. Verify against the E2E stack if relevant: `npm run test:e2e` (global-setup runs `migrate:latest` + `seed:run` automatically).
+3. Apply: `pnpm run db:migrate`
+4. Verify against the E2E stack if relevant: `pnpm run test:e2e` (global setup runs `migrate:latest` + `seed:run` automatically).
 
 ## Gotchas
 
@@ -58,7 +58,7 @@ exports.down = (knex) =>
 - **Baseline is not reversible** — never try to roll back past it; use corrective forward migrations.
 - **RLS parity**: prod has RLS enabled, E2E DB does not. Don't assume policies behave the same in both.
 - **Seed data** lives in `tests/e2e/fixtures/seeds/` and must keep the E2E specs working (e.g. fixture shop uses `+5491100000000`).
-- Migration changes that alter what the app writes into Redux state can interact with `redux-persist` and stale persisted state — consider a reset/version bump when the persisted shape changes.
+- Migration changes that alter the persisted cart shape can interact with stale localStorage state — consider a reset/version bump when the persisted shape changes.
 
 ## References
 

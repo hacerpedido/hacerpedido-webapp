@@ -1,4 +1,8 @@
 // @ts-nocheck
+
+import { saveShopWithProductsAction } from "#lib/actions/shop-editor";
+import { validateShopEditorInput } from "#lib/validation/shop-editor";
+
 import { withSentry } from "@sentry/nextjs";
 import * as n from "nested-knex";
 
@@ -11,61 +15,22 @@ const handler = async (req, res) => {
   if (req.method === "POST") {
     // console.log("POST:", req.body)
 
-    const {
-      id,
-      address,
-      deliverycost,
-      name,
-      notes,
-      opentimes,
-      ordersphonenumber,
-      orderswhatsappnumber,
-      token,
-      products,
-    } = req.body;
+    const { token, products } = req.body;
 
     if (!token || token === "") {
       res.status(400).json({ error: "Wrong parameters (1)." });
       return;
     }
 
-    pg("shops")
-      .update({
-        address,
-        deliverycost,
-        name,
-        notes,
-        opentimes,
-        ordersphonenumber,
-        orderswhatsappnumber,
-      })
-      .where("typeformtoken", "=", token)
-      .then((rows) => {
-        // console.log("update shop")
+    const validationError = validateShopEditorInput(req.body);
+    if (validationError)
+      return res.status(400).json({ error: validationError });
 
-        if (!rows) {
-          return res.status(404).json({ success: false });
-        }
-      })
-      .catch((e) => console.error(e));
-
-    if (!products || products.lenght == 0) {
-      return res.json({
-        success: true,
-        message: "Tus cambios fueron guardados.",
-      });
-    }
-
-    await pg("products").where("shopid", "=", id).delete();
-    // .then(a => console.log("deleted products:", a))
-
-    await pg("products").insert(products);
-    // .then(a => console.log("updated products:", a))
-
-    return res.json({
-      success: true,
-      message: "Tus cambios fueron guardados..",
-    });
+    // Keep this Pages API endpoint for existing editor clients, while routing
+    // writes through the transactional mutation boundary.
+    const result = await saveShopWithProductsAction(req.body, products ?? null);
+    if (result.error) return res.status(400).json({ error: result.message });
+    return res.json({ success: true, message: result.message });
   }
 
   const { token } = req.query;

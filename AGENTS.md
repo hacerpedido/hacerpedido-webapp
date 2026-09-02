@@ -15,7 +15,7 @@ Convenciones de idioma:
 
 | Capa | Tecnología |
 |---|---|
-| Framework | Next.js 10.2.3 (SSR/SSG), React 16.14 |
+| Framework | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | Estado | CartContext (useReducer + localStorage) |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
@@ -29,25 +29,26 @@ Convenciones de idioma:
 
 - **UI web con CSS Modules**: cada componente visual debe usar un archivo `*.module.css` junto al componente e importar sus clases como `styles`. Usá `className={styles.nombre}` y variables CSS para valores dinámicos; no agregues estilos globales.
 - **Estado**: CartContext con `useReducer` + persistencia en localStorage (`CartProvider` en `pages/_app.tsx`, `useCart` hook). No hay Redux.
-- **API**: axios con baseURL al backend REST externo; rutas internas en `pages/api/`.
+- **API**: axios con baseURL al backend REST externo; rutas internas en `app/api/` y `pages/api/`.
 - **WhatsApp/teléfonos**: números argentinos. **Siempre** normalizá con `sanitizeWhatsAppNumber()` antes de armar un link `wa.me` (reglas 54 + 0/9). Ver skill `whatsapp-order`.
-- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.ts`, endpoints en `pages/api/image-upload.ts` y `image-delete.ts`.
+- **Imágenes**: upload/delete S3 vía `lib/utils/aws-s3.ts`, endpoint en `app/api/images/route.ts`.
 
 ## Mapa del repo
 
 ```
+app/
+  page.tsx                  Home: locales por categoría
+  [slug]/page.tsx           Página pública del local
+  cart/page.tsx             Checkout → genera link wa.me
+  api/images/route.ts       Upload/delete S3
+  api/shop/editor/route.ts  Mutaciones del editor
+  layout.tsx, providers.tsx, error.tsx, loading.tsx, not-found.tsx
 pages/
-  index.tsx                 Home: locales por categoría
-  [slug].tsx                Página pública del local
-  [...params].tsx           Catch-all dinámico
-  cart.tsx                  Checkout → genera link wa.me
-  api/shop/home.ts          Shops por categoría
-  api/shop/[slug].ts        Shop por slug
-  api/shop/by-token.ts      Gestión del local vía token (EditShop)
-  api/image-upload.ts       Upload S3
-  api/image-delete.ts       Delete S3
-  _app.tsx                  CartProvider wrapper
-  _document.tsx, _error.tsx
+  [...params].tsx           Catch-all de gestión del local
+  api/shop/home.ts          Shops por categoría (legacy)
+  api/shop/[slug].ts        Shop por slug (legacy)
+  api/shop/by-token.ts      Gestión por token (legacy)
+  _app.tsx, _document.tsx, _error.tsx
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
   Shop/                     ShopView, ShopHeader, ShopFooter, Product, ProductList, ProductAmountPopup, ShopNotes
@@ -55,8 +56,8 @@ components/
   EditShop/                 EditShop, EditProducts, UploadImage
   primitivas                Input, Form, Switch, MessageBox, ShopInput, Loading, Divider, DecoratedLabel
 lib/
-  api/                      index.ts (axios baseURL), shops.ts
-  context/                CartContext (useReducer + localStorage)
+  api/                      index.ts (axios baseURL), server-shops.ts, shops.ts
+  context/                  CartContext.tsx (useReducer + localStorage)
   utils/                    TypeScript helpers (WhatsApp, prices, products, shops, categories, S3)
   hooks/                    use_width.ts
   graphql/                  shop.ts (legacy, Apollo comentado)
@@ -74,22 +75,23 @@ docs/superpowers/           Documentación
 
 | Comando | Qué hace |
 |---|---|
-| `pnpm install` / `pnpm dev` | Instalar dependencias / iniciar el servidor de desarrollo (alternativas a npm) |
-| `npm run dev` | Dev server (puerto 3000; `PORT=3001 npm run dev` para otro) |
-| `npm run build` / `npm run start` | Build / servir producción |
-| `npm test` | Jest (unit: `lib/**/*.test.js`) |
-| `npm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`npm run build && npm run start`), baseURL `http://127.0.0.1:3001` |
-| `npm run test:e2e:install` | Instala Chromium |
-| `npm run lint` | Biome lint (`.`) |
-| `npm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |
-| `npm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
-| `npm run format` | Biome format sobre los archivos soportados |
-| `npm run format:check` | Verifica el formato con Biome |
-| `npm run typecheck` | Verifica los tipos con TypeScript |
-| `npm run check` | Verifica formato, lint e imports con Biome |
+| `pnpm install` / `pnpm dev` | Instalar dependencias / iniciar el servidor de desarrollo |
+| `pnpm run dev` | Dev server (puerto 3000; `PORT=3001 pnpm run dev` para otro) |
+| `pnpm run build` / `pnpm run start` | Build / servir producción |
+| `pnpm test` | Jest (unit: `lib/**/*.test.js`) |
+| `pnpm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`pnpm run build && pnpm run start`), baseURL `http://127.0.0.1:3001` |
+| `pnpm run test:e2e:install` | Instala Chromium |
+| `pnpm run lint` | Biome lint (`.`) |
+| `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations (`./db/migrations`) |
+| `pnpm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
+| `pnpm run format` | Biome format sobre los archivos soportados |
+| `pnpm run format:check` | Verifica el formato con Biome |
+| `pnpm run typecheck` | Verifica los tipos con TypeScript |
+| `pnpm run check` | Verifica formato, lint e imports con Biome |
 
 Notas de entorno:
-- Usar **Node 22** (declarado en `.tool-versions` y en CI). Next.js 10 requiere `NODE_OPTIONS=--openssl-legacy-provider`, ya incluido en los scripts.
+- Usar **Node 22** (declarado en `.tool-versions` y en CI).
+- CI usa pnpm 11.25.0 e instala con `pnpm install --frozen-lockfile`.
 - E2E: overrides `PLAYWRIGHT_TEST_BASE_URL` (app desplegada, saltea compose) y `PG_CONNECTION_STRING` (base externa).
 
 ## Variables de entorno
@@ -103,7 +105,7 @@ Solo nombres — nunca imprimas/commitees valores:
 - Jest para lógica pura (`lib/utils/`, `lib/context/`) y API (`tests/unit/`) — mantené verdes los tests existentes al tocar helpers.
 - Playwright E2E para journeys: el flujo de pedido **intercepta `wa.me`** (`page.route('https://wa.me/**')` + `waitForURL`, ver `order-flow.spec.ts`).
 - Biome es el formatter y linter del repositorio; Lefthook ejecuta `biome check --write` sobre archivos staged antes de cada commit.
-- Antes de terminar una tarea con tests: `npm run lint` + `npm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
+- Antes de terminar una tarea con tests: `pnpm run lint` + `pnpm test`. E2E requiere Docker; si no está disponible, avisá que no se corrió.
 
 ## GitHub issues
 
@@ -121,8 +123,10 @@ Solo nombres — nunca imprimas/commitees valores:
 
 Cargá la skill relevante cuando la tarea matchee su descripción (progressive disclosure — solo cargás lo necesario):
 
+- `checkout` — checkout, persistencia del carrito, validación y handoff por WhatsApp
 - `knex-migrations` — migraciones, seed, schema shops/products
 - `e2e-playwright` — correr/armar E2E, stack compose
+- `shop-cart-debugging` — diagnóstico de listados, detalle del local y estado del carrito
 - `whatsapp-order` — flujo de pedido, números, links wa.me, cart
 - `s3-images` — upload/delete de imágenes, AWS
 
