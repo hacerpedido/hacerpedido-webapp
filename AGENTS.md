@@ -123,8 +123,10 @@ Solo nombres — nunca imprimas/commitees valores:
 
 Cargá la skill relevante cuando la tarea matchee su descripción (progressive disclosure — solo cargás lo necesario):
 
+- `checkout` — checkout, persistencia del carrito, validación y handoff por WhatsApp
 - `knex-migrations` — migraciones, seed, schema shops/products
 - `e2e-playwright` — correr/armar E2E, stack compose
+- `shop-cart-debugging` — diagnóstico de listados, detalle del local y estado del carrito
 - `whatsapp-order` — flujo de pedido, números, links wa.me, cart
 - `s3-images` — upload/delete de imágenes, AWS
 

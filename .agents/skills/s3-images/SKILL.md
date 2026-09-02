@@ -15,7 +15,7 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 ## How it works
 
-- `lib/utils/aws-s3.js` uses **AWS SDK v2** and exports:
+- `lib/utils/aws-s3.ts` uses **AWS SDK v2** and exports:
   - `uploadFile(fileName, key, mime)` — reads the local file, `s3.upload({ Bucket, Key, Body, ContentType, ACL: "public-read" })`.
   - `deleteFile(key)` — `s3.deleteObject({ Bucket, Key })`.
 - API route `app/api/images/route.ts` wraps these for the browser flow.
