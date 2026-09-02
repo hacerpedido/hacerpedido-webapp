@@ -35,16 +35,18 @@ test("loads the Handsontable product editor without a ReferenceError", async ({
   );
 });
 
-// Characterizes the save round-trip: POST /api/shop/by-token updates the
+// This uses its own private seed shop, keeping its POST mutation independent
+// from public-fixture readers when Playwright runs specs in parallel.
+// It characterizes the save round-trip: POST /api/shop/by-token updates the
 // shop, the page shows the confirmation box, and the change survives a
 // reload (persisted in Postgres).
 test("saves edited shop fields and persists them across reloads", async ({
   page,
 }) => {
-  const originalName = "E2E Fixture Shop";
-  const editedName = "E2E Fixture Shop (edited)";
+  const originalName = "E2E Admin Save Shop";
+  const editedName = "E2E Admin Save Shop (edited)";
   try {
-    await page.goto("/e2e-fixture-token/edit");
+    await page.goto("/e2e-admin-save-token/edit");
     await expect(page.getByTestId("edit-shop-name")).toHaveValue(originalName);
 
     await page.getByTestId("edit-shop-name").fill(editedName);
@@ -58,6 +60,7 @@ test("saves edited shop fields and persists them across reloads", async ({
   } finally {
     await page.getByTestId("edit-shop-name").fill(originalName);
     await page.getByTestId("save-shop").click();
+    await expect(page.getByText("Tus cambios fueron guardados.")).toBeVisible();
   }
 });
 

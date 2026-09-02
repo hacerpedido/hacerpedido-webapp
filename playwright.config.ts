@@ -18,7 +18,10 @@ module.exports = defineConfig({
     : "./tests/e2e/global-teardown.ts",
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // The admin mutation uses a dedicated fixture; the rest of the suite only
+  // reads shared seed data, so two CI workers can run safely.
+  workers: process.env.CI ? 2 : undefined,
+  fullyParallel: false,
   timeout: 30000,
   expect: {
     timeout: 5000,
@@ -30,7 +33,7 @@ module.exports = defineConfig({
   outputDir: "test-results",
   use: {
     baseURL,
-    actionTimeout: 10000,
+    actionTimeout: process.env.CI ? 5000 : 10000,
     navigationTimeout: 30000,
     screenshot: "only-on-failure",
     trace: "on-first-retry",
