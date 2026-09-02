@@ -64,6 +64,42 @@ test("saves edited shop fields and persists them across reloads", async ({
   }
 });
 
+// The public App Router route is explicitly dynamic. Prime its original
+// response, save through the supported editor, then make a new document
+// request to ensure the public catalog does not serve stale shop data.
+test("serves editor changes on a fresh public catalog request", async ({
+  page,
+}) => {
+  const originalName = "E2E Public Freshness Shop";
+  const editedName = "E2E Public Freshness Shop (edited)";
+  const editorPath = "/e2e-public-freshness-token/edit";
+  const publicPath = "/e2e-public-freshness-shop";
+
+  try {
+    await page.goto(publicPath);
+    await expect(page).toHaveTitle(`${originalName} | Hacer Pedido`);
+
+    await page.goto(editorPath);
+    await expect(page.getByTestId("edit-shop-name")).toHaveValue(originalName);
+    await page.getByTestId("edit-shop-name").fill(editedName);
+    await page.getByTestId("save-shop").click();
+    await expect(page.getByText("Tus cambios fueron guardados.")).toBeVisible();
+
+    const publicResponse = await page.goto(publicPath);
+    expect(publicResponse?.ok()).toBe(true);
+    await expect(page).toHaveTitle(`${editedName} | Hacer Pedido`);
+    await expect(
+      page.getByRole("heading", { name: editedName.toLowerCase() }),
+    ).toBeVisible();
+  } finally {
+    await page.goto(editorPath);
+    await expect(page.getByTestId("edit-shop-name")).toBeVisible();
+    await page.getByTestId("edit-shop-name").fill(originalName);
+    await page.getByTestId("save-shop").click();
+    await expect(page.getByText("Tus cambios fueron guardados.")).toBeVisible();
+  }
+});
+
 // Regression for #128: an unknown token must NOT render an empty editor.
 // The by-token API answers 404 and the page shows the not-found state.
 test("shows a not-found state for an unknown token", async ({ page }) => {
