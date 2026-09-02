@@ -51,6 +51,7 @@ module.exports = defineConfig({
           url: `${baseURL}/cart`,
           reuseExistingServer: !process.env.CI,
           timeout: 180000,
+          stderr: "ignore",
           env: {
             PG_CONNECTION_STRING: dbConnectionString,
           },
