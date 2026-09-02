@@ -17,6 +17,7 @@
     "test:db": "node scripts/test-db-contracts.js",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",
+    "test:e2e:info": "node scripts/e2e-info.js",
     "db:migrate": "knex --knexfile knexfile.js migrate:latest",
     "db:migrate:make": "knex --knexfile knexfile.js migrate:make",
     "db:migrate:status": "knex --knexfile knexfile.js migrate:status",

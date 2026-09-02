@@ -26,12 +26,12 @@ Requirements: **Docker** running (Postgres comes from `docker compose`). Node 22
 ## What happens under the hood
 
 1. `tests/e2e/global-setup.ts`:
-   - `docker compose --project-name hacerpedido-e2e -f compose.e2e.yaml down --volumes --remove-orphans`
-   - `docker compose ... up --detach --wait` (Postgres 17.6 on `127.0.0.1:54329`, db `hacerpedido_e2e`, user `e2e_user` / `e2e_password`, `shared_preload_libraries=pg_stat_statements`)
+   - `docker compose --project-name <derived> -f compose.e2e.yaml down --volumes --remove-orphans`
+   - `docker compose ... up --detach --wait` (Postgres 17.6; on `127.0.0.1:54329` for the main checkout or on a derived port in a worktree lane, db `hacerpedido_e2e`, user `e2e_user` / `e2e_password`, `shared_preload_libraries=pg_stat_statements`)
    - `pnpm exec knex migrate:latest` + `pnpm exec knex seed:run` with `PG_CONNECTION_STRING` overridden to the compose DB (`tests/e2e/fixtures/database.ts`)
-2. `playwright.config.ts` `webServer`: `pnpm build && pnpm start -p 3001` against baseURL `http://127.0.0.1:3001` (180s timeout; reuses a local server outside CI).
-3. Specs run in project `chromium`; reporters: HTML (`playwright-report/`) + JUnit (`test-results/junit.xml`).
-4. `tests/e2e/global-teardown.ts` tears the compose stack down.
+2. `playwright.config.ts` `webServer`: `pnpm build && pnpm start -p <appPort>` against the matching baseURL (default `http://127.0.0.1:3001`; derived per worktree lane). Runs in the main checkout may reuse an existing local server; lane runs never reuse another lane's server.
+3. Specs run in project `chromium`; reporters: HTML (`playwright-report/`, or `playwright-report/<run>/` in lanes) + JUnit (`test-results/junit.xml`, or `test-results/<run>/`).
+4. `tests/e2e/global-teardown.ts` tears the compose stack down (best-effort).
 
 **External overrides** (preview/deployed envs): `PLAYWRIGHT_TEST_BASE_URL` + `PG_CONNECTION_STRING` — when the base URL host is not localhost, global setup/teardown and the local webServer are skipped entirely.
 
@@ -54,7 +54,7 @@ await navigation;
 ## Gotchas
 
 - **Docker down** → global-setup fails fast (`docker compose up --wait`). Start Docker first.
-- **Port 54329 busy** → change both `compose.e2e.yaml` ports and the connection string in `tests/e2e/fixtures/database.ts`.
+- **Run context / busy ports** → worktree lanes derive their own project, ports, and volume automatically; the main checkout keeps `hacerpedido-e2e`, `54329`, and `3001`. Print the resolved values with `pnpm run test:e2e:info`; override with `E2E_RUN_ID`, `E2E_PROJECT_NAME`, `E2E_PG_PORT`, `E2E_APP_PORT`, `E2E_VOLUME_PREFIX`.
 - **Don't let wa.me navigate for real** — always `page.route('https://wa.me/**')` + `waitForURL`.
 - CI (`ci.yml`) runs `pnpm exec playwright install --with-deps chromium` then `pnpm test:e2e` with `CI=1` (retries: 1, workers: 1).
 - `--pass-with-no-tests` is set: a run finding zero specs passes silently — make sure your spec path is right.

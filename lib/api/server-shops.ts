@@ -91,7 +91,17 @@ export async function getPublicShops(category: string): Promise<Shop[]> {
       ORDER BY updated_at DESC`,
     [category],
   );
-  return serializePublicShops<Pick<Shop, "slug">>(rows);
+  const normalizedShops = rows.map((row: ShopWithProductsRow) => {
+    const shop = shopFromRow(row as ShopWithProductsRow, []);
+    const {
+      products: _products,
+      typeformtoken: _typeformtoken,
+      ...publicShop
+    } = shop;
+    return publicShop;
+  });
+
+  return serializePublicShops<Pick<Shop, "slug">>(normalizedShops);
 }
 
 export async function getPublicShop(slug: string): Promise<Shop | null> {
