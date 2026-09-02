@@ -15,7 +15,7 @@ Convenciones de idioma:
 
 | Capa | Tecnología |
 |---|---|
-| Framework | Next.js 15.5.25 (SSR/SSG), React 19.2.8 |
+| Framework | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | Estado | CartContext (useReducer + localStorage) |
 | HTTP | axios (baseURL `https://backend-restapi.hacerpedido.com:5001`) |
@@ -36,17 +36,19 @@ Convenciones de idioma:
 ## Mapa del repo
 
 ```
-pages/
-  index.tsx                 Home: locales por categoría
-  [slug].tsx                Página pública del local
-  [...params].tsx           Catch-all dinámico
-  cart.tsx                  Checkout → genera link wa.me
-  api/shop/home.ts          Shops por categoría
-  api/shop/[slug].ts        Shop por slug
-  api/shop/by-token.ts      Gestión del local vía token (EditShop)
+app/
+  page.tsx                  Home: locales por categoría
+  [slug]/page.tsx           Página pública del local
+  cart/page.tsx             Checkout → genera link wa.me
   api/images/route.ts       Upload/delete S3
-  _app.tsx                  CartProvider wrapper
-  _document.tsx, _error.tsx
+  api/shop/editor/route.ts  Mutaciones del editor
+  layout.tsx, providers.tsx, error.tsx, loading.tsx, not-found.tsx
+pages/
+  [...params].tsx           Catch-all de gestión del local
+  api/shop/home.ts          Shops por categoría (legacy)
+  api/shop/[slug].ts        Shop por slug (legacy)
+  api/shop/by-token.ts      Gestión por token (legacy)
+  _app.tsx, _document.tsx, _error.tsx
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
   Shop/                     ShopView, ShopHeader, ShopFooter, Product, ProductList, ProductAmountPopup, ShopNotes
@@ -54,8 +56,8 @@ components/
   EditShop/                 EditShop, EditProducts, UploadImage
   primitivas                Input, Form, Switch, MessageBox, ShopInput, Loading, Divider, DecoratedLabel
 lib/
-  api/                      index.ts (axios baseURL), shops.ts
-  context/                CartContext (useReducer + localStorage)
+  api/                      index.ts (axios baseURL), server-shops.ts, shops.ts
+  context/                  CartContext.tsx (useReducer + localStorage)
   utils/                    TypeScript helpers (WhatsApp, prices, products, shops, categories, S3)
   hooks/                    use_width.ts
   graphql/                  shop.ts (legacy, Apollo comentado)
@@ -80,7 +82,7 @@ docs/superpowers/           Documentación
 | `pnpm run test:e2e` | Playwright E2E. Bootea `docker compose` (Postgres 17.6, puerto 54329), corre migraciones + seed, build & sirve la app (`pnpm run build && pnpm run start`), baseURL `http://127.0.0.1:3001` |
 | `pnpm run test:e2e:install` | Instala Chromium |
 | `pnpm run lint` | Biome lint (`.`) |
-| `pnpm run db:migrate` / `db:migrate:make` / `db:rollback` | Knex migrations (`./db/migrations`) |
+| `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations (`./db/migrations`) |
 | `pnpm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
 | `pnpm run format` | Biome format sobre los archivos soportados |
 | `pnpm run format:check` | Verifica el formato con Biome |

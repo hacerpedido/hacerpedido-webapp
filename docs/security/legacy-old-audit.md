@@ -3,6 +3,10 @@
 **Date:** 2026-09-01
 **Status:** Complete
 
+> Archival note: This audit records the historical removal and verification of
+> `old/`; the commands under Verification are retained as executed evidence.
+> Use the current pnpm commands for new checks.
+
 ## Scope
 
 The legacy `old/` directory was removed in commit `f4676e4`. The deleted files were:

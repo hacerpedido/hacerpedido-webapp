@@ -1,6 +1,6 @@
 # WhatsApp message format
 
-Built in `lib/utils/utils.js` by `generateWhatsappMessage(formData, products)`.
+Built in `lib/utils/utils.ts` by `generateWhatsappMessage(formData, products)`.
 
 ## Template (with user data)
 
@@ -29,7 +29,7 @@ Notes:
 - `productListForMessage`: `*{category.name}*\n{categoryProducts}` joined by `\n`.
 - Final piece assembled as `[intro, addressStr, notesStr, order].join("")`, then `encodeURIComponent` into `https://wa.me/<number>?text=<encoded>`.
 
-## Real encoded example (from `lib/utils/utils.test.js`)
+## Real encoded example (from `lib/utils/utils-phone-whatsapp.test.js`)
 
 Message: `¡Hola! soy *Ana* y quiero hacer un pedido via HacerPedido 💪 📍 *Mi dirección:* Av. Siempre Viva 123 *Mi pedido:* *Comida* ✅ 2 x Ñoquis *Bebidas* ✅ 1 x Café ☕ ✅ 3 x Agua`
 

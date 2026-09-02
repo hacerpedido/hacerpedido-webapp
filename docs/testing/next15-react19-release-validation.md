@@ -1,7 +1,9 @@
-# Next 15 / React 19 release validation
+# Next 16 / React 19 release validation
+
+Validated stack: Next.js 16.3.4 and React 19.2.8.
 
 This checklist is the acceptance evidence for the framework rollout. Run it on
-the integrated branch containing the Next 15, React 19, and React 19 actions
+the integrated branch containing the Next 16, React 19, and React 19 actions
 changes; the framework validation branch may be used only as a pre-integration
 baseline. Results must be recorded from the exact commit being considered for
 release.
@@ -11,12 +13,12 @@ release.
 Use Node 22 and a clean dependency install before running the matrix:
 
 ```sh
-npm ci
-npm run typecheck
-npm run lint
-npm test -- --runInBand
-npm run build
-npm run test:e2e
+pnpm install --frozen-lockfile
+pnpm run typecheck
+pnpm run lint
+pnpm test --runInBand
+pnpm run build
+pnpm run test:e2e
 ```
 
 The E2E command uses the configured Playwright web server and test database
@@ -64,7 +66,7 @@ generic application rollback.
 
 Record the following with the release review:
 
-- candidate commit and Node/npm versions;
+- candidate commit and Node/pnpm versions;
 - result of each local matrix command;
 - Playwright browser, environment, and report location;
 - any skipped or blocked workflow and its reason;

@@ -1,5 +1,9 @@
 # Next/React migration characterization baseline (#179)
 
+> Archival note: This document records the pre-upgrade characterization run.
+> Its commands, paths, and framework warning are historical; use the current
+> release-validation checklist for the Next.js 16 workflow.
+
 The existing unit and Playwright fixtures provide a behavior baseline before
 changing the Next/React implementation. The covered contracts are:
 

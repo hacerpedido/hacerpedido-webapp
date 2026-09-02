@@ -14,7 +14,7 @@ Then load the project skill `.agents/skills/knex-migrations/SKILL.md` and follow
 - Keep PostgreSQL 17.6 compatibility (no pgjwt/timescaledb/plv8).
 - Baseline `0001_baseline.js` is NOT reversible — use forward corrective migrations, never roll back past it.
 - `pg_stat_statements` must be preloaded (see `compose.e2e.yaml`); RLS is enabled in prod but disabled on the E2E DB — do not assume RLS parity.
-- Verify your work: `npm run db:migrate` (and `npm run db:seed:e2e` when seeds are involved). Remember NODE_OPTIONS/legacy-provider is handled by the npm scripts.
+- Verify your work: `pnpm run db:migrate` (and `pnpm run db:seed:e2e` when seeds are involved).
 - Report the schema impact of changes concisely when you finish.
 
 Do not modify code outside the scope of the migration task.

@@ -6,7 +6,7 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 
 | | |
 |---|---|
-| **Frontend** | Next.js 15.5.25 (SSR/SSG), React 19.2.8 |
+| **Frontend** | Next.js 16.3.4 (App Router + Pages Router), React 19.2.8 |
 | **Estado** | CartContext (useReducer + localStorage) |
 | **Datos** | PostgreSQL 17.6 (Supabase) vía Knex |
 | **Pedidos** | Integración WhatsApp (`wa.me` con mensaje pre-armado) |
@@ -19,16 +19,17 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 
 ## Arquitectura
 
-- La aplicación está migrada a TypeScript: las páginas, rutas API y componentes usan `.ts`/`.tsx`; los tests E2E migrados también usan `.ts`.
-- **Páginas SSR** en `pages/`: home (`index.tsx`, locales por categoría), shop público (`[slug].tsx`), checkout (`cart.tsx` → WhatsApp), página de gestión para comercios (`by-token.ts` + `components/EditShop/`).
-- **API routes** en `app/api/` y `pages/api/`: `shop/editor`, `images`, `shop/home`, `shop/[slug]`, `shop/by-token`.
+- La aplicación está migrada a TypeScript: las páginas, rutas API y componentes usan `.ts`/`.tsx`; los tests E2E también usan `.ts`.
+- **Páginas App Router** en `app/`: home (`page.tsx`), shop público (`[slug]/page.tsx`), checkout (`cart/page.tsx` → WhatsApp) y límites de layout/error/loading.
+- **Rutas Pages Router restantes** en `pages/`: catch-all de gestión (`[...params].tsx`) y rutas API legacy (`pages/api/`).
+- **API routes** en `app/api/` y `pages/api/`: editor (`app/api/shop/editor/route.ts`), imágenes (`app/api/images/route.ts`), home, shop y gestión por token.
 - **Backend externo**: axios apunta a `https://backend-restapi.hacerpedido.com:5001` (config en `lib/api/index.ts`).
 - **Estilos**: componentes web con CSS Modules colocados junto al componente (`Component.tsx` + `Component.module.css`).
 
 ### Flujo de pedido por WhatsApp
 
-1. El cliente agrega productos al carrito en la página del local (`[slug].tsx`).
-2. En `cart.tsx` completa nombre, dirección y notas.
+1. El cliente agrega productos al carrito en la página del local (`app/[slug]/page.tsx`).
+2. En `app/cart/page.tsx` completa nombre, dirección y notas.
 3. `generateWhatsappURL(orderswhatsappnumber, formData, productsByCategory)` en `lib/utils/utils.ts` normaliza el número (ver `sanitizeWhatsAppNumber`, reglas de Argentina) y arma `https://wa.me/<número>?text=<mensaje codificado>`.
 4. El mensaje incluye introducción, dirección, notas y el pedido agrupado por categoría (`✅ 2 x Ñoquis`).
 5. El comercio recibe el pedido en su WhatsApp.
@@ -36,15 +37,19 @@ Este repositorio es la **webapp** (frontend + API routes internas). Los datos se
 ## Estructura del proyecto
 
 ```
-pages/            Páginas SSR y API routes
+app/              App Router: páginas públicas, checkout y API routes
+  page.tsx        Home
+  [slug]/page.tsx Página pública del local
+  cart/page.tsx   Checkout → WhatsApp
+  api/            editor y images
+pages/            Pages Router restante y API routes legacy
+  [...params].tsx Gestión del local vía token
   api/            shop/home, shop/[slug], shop/by-token
-  [slug].tsx      Página pública del local
-  cart.tsx        Checkout → WhatsApp
 components/       UI (CSS Modules + Bootstrap)
   Home/ Shop/ Cart/ EditShop/   + primitivas (Input, Form, Switch, MessageBox…)
 lib/              Lógica de aplicación
-    api/            Cliente axios (backend REST externo, TypeScript)
-    context/        CartContext (estado del carrito con useReducer + localStorage)
+    api/            Clientes axios (backend REST externo, TypeScript)
+    context/        CartContext.tsx (estado del carrito con useReducer + localStorage)
     utils/          Helpers TypeScript: WhatsApp, teléfonos, precios, productos, categorías, S3
     hooks/          use_width
 db/               Migraciones Knex (baseline shops/products)
@@ -92,7 +97,7 @@ dependencias y ejecutar los scripts.
 
 ```bash
 pnpm run db:migrate       # Aplica migraciones (knex migrate:latest)
-pnpm run db:migrate:make  # Crea una nueva migración
+pnpm run db:migrate:make -- migration_name # Crea una nueva migración
 pnpm run db:migrate:status # Muestra el estado de las migraciones
 pnpm run db:rollback      # Revierte la última
 pnpm run db:create         # Crea/inicia la base local (idempotente)
@@ -121,7 +126,8 @@ La migración `0001_baseline` crea `shops` y `products` y **no es reversible** (
 pnpm test
 ```
 
-Pruebas junto al código: `lib/utils/*.test.js`, `lib/context/*.test.jsx`.
+Pruebas junto al código: `lib/utils/*.test.js`, `lib/context/CartContext.test.jsx` y
+tests de componentes en `components/**/*.test.jsx`.
 
 ### E2E (Playwright)
 
@@ -132,7 +138,9 @@ pnpm run test:e2e
 Levanta automáticamente (vía `global-setup`) el stack Docker Compose con PostgreSQL 17.6, aplica migraciones + seed, hace build de la app, la sirve y corre los journeys en Chromium:
 
 - `tests/e2e/order-flow.spec.ts` — flujo de pedido que intercepta `wa.me` y valida el mensaje
-- `tests/e2e/cart-persistence.spec.ts` — carrito persiste entre sesiones (multi-producto)
+- `tests/e2e/cart-persistence.spec.ts`, `cart-interactions.spec.ts` — persistencia y controles del carrito
+- `tests/e2e/cart-validation.spec.ts` — validación del checkout
+- `tests/e2e/public-pages.spec.ts`, `public-routing-seo.spec.ts` — rutas públicas y metadata SEO
 - `tests/e2e/admin-flow.spec.ts` — gestión del local por token
 
 Overrides útiles: `PLAYWRIGHT_TEST_BASE_URL` (app ya desplegada, saltea el setup local) y `PG_CONNECTION_STRING` (base externa en vez del compose local).
