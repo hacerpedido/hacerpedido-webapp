@@ -1,4 +1,4 @@
-// 0002_pin_trigger_search_path.js
+// 0003_pin_trigger_search_path.js
 // Pins the search_path used by public.trigger_set_timestamp() so trigger
 // executions cannot resolve relations/functions through a caller-controlled
 // search_path. Supabase Security Advisor reports this function with a "role

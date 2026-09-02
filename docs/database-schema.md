@@ -78,7 +78,7 @@ The baseline contains:
 - `public.rls_auto_enable()`, which matches production's event-trigger
   function.
 
-`db/migrations/0002_pin_trigger_search_path.js` pins the function
+`db/migrations/0003_pin_trigger_search_path.js` pins the function
 `search_path` of `public.trigger_set_timestamp()` to `pg_catalog, public`
 with `ALTER FUNCTION ... SET search_path`. This resolves the Supabase Security
 Advisor "role mutable search_path" finding for trigger functions and is
@@ -97,10 +97,29 @@ not be silenced with permissive public policies.
 ## Index policy
 
 The baseline has only implicit primary-key indexes and the unique index on
-`shops.slug`. Do not add secondary indexes based on assumptions. In particular,
-`products.shopid`, public catalog filtering, and editor-token lookup need real
-`EXPLAIN (ANALYZE, BUFFERS)` evidence using representative cardinality before a
-dedicated index migration is proposed.
+`shops.slug`. Secondary indexes are added only with measured evidence.
+
+`db/migrations/0002_add_secondary_indexes.js` adds three secondary indexes,
+justified by `EXPLAIN (ANALYZE, BUFFERS)` runs against the real production
+database (Supabase project `xpnthjdzqrnpgwzquszb`, 2026-09-02; 800 shops,
+11 882 products, 13 public shops):
+
+- `idx_products_shopid_itemnumber` on `products (shopid, itemnumber)` — the two
+  shop-detail/editor queries used to seq-scan all products to join by `shopid`;
+  with the index, public shop by slug dropped from 3.56 ms / 355 buffers to
+  0.57 ms / 79 and editor by token from 3.54 ms / 351 to 0.46 ms / 71 (~6-8x).
+- `idx_shops_public_category_updated_at` on `shops (category, updated_at DESC)`
+  where `visibility = 'public'` — the public catalog is currently a 0.37 ms seq
+  scan over 800 rows; the partial index is added proactively because the public
+  catalog is expected to grow (see #222) and it only contains public rows.
+- `idx_shops_typeformtoken` on `shops (typeformtoken)` — the editor lookup
+  currently seq-scans `shops`; this keeps it an index scan as shops grow.
+
+The three indexes are additive: no query text changes. Catalog tie-breaking
+(`ORDER BY updated_at DESC, id DESC`), pagination/LIMIT, and any further query
+rewrites are tracked in #222 and deliberately not part of this migration.
+
+Do not add further secondary indexes without measured evidence.
 
 ## Baseline adoption
 
@@ -121,8 +140,8 @@ The guarded tool is `scripts/adopt-baseline.js`:
   is drift.
 - It accepts an empty history or any history whose first recorded migration is
   `0001_baseline.js` (an adopted baseline followed by versioned forward
-  migrations such as `0002_pin_trigger_search_path.js`); anything else fails
-  closed as drift.
+  migrations such as `0002_add_secondary_indexes.js` or
+  `0003_pin_trigger_search_path.js`); anything else fails closed as drift.
 - Applying acquires a transaction-scoped advisory lock and locks
   `public.knex_migrations` before rechecking the fingerprint.
 - Applying writes one metadata row for `0001_baseline.js`; it never runs that
@@ -184,12 +203,13 @@ The first and last commands delete the E2E volume. They must never be pointed
 at development or production data. `pnpm run test:e2e` separately exercises the
 same migration path together with browser flows.
 
-The disposable database contract tests apply `0001_baseline.js` and
-`0002_pin_trigger_search_path.js` together, then assert the function's
-`proconfig` is exactly `search_path=pg_catalog, public`, so the integration
-path exercises the hardened #134 representation. `tests/db/adopt-baseline.test.js`
-keeps the unit contract for accepted function configurations (the original
-`NULL` or the pinned #134 value) and rejects any other setting.
+The disposable database contract tests apply `0001_baseline.js`,
+`0002_add_secondary_indexes.js`, and `0003_pin_trigger_search_path.js`
+together, then assert the function's `proconfig` is exactly
+`search_path=pg_catalog, public`, so the integration path exercises the
+hardened #134 representation. `tests/db/adopt-baseline.test.js` keeps the unit
+contract for accepted function configurations (the original `NULL` or the
+pinned #134 value) and rejects any other setting.
 
 ## Rollback and drift rules
 

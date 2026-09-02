@@ -9,8 +9,9 @@ const {
   verifyBaseline,
 } = require("../../scripts/adopt-baseline.js");
 
-const PIN_MIGRATION = "0002_pin_trigger_search_path.js";
-const ALL_MIGRATIONS = [BASELINE_MIGRATION, PIN_MIGRATION];
+const INDEX_MIGRATION = "0002_add_secondary_indexes.js";
+const PIN_MIGRATION = "0003_pin_trigger_search_path.js";
+const ALL_MIGRATIONS = [BASELINE_MIGRATION, INDEX_MIGRATION, PIN_MIGRATION];
 const HARDENED_TIMESTAMP_FUNCTION_CONFIG = ["search_path=pg_catalog, public"];
 
 const UUID_PATTERN =
@@ -41,6 +42,42 @@ async function migrationNames(knex) {
   return rows.map((row) => row.name);
 }
 
+async function assertSecondaryIndexes(knex) {
+  const { rows } = await knex.raw(
+    `SELECT indexname, indexdef
+       FROM pg_indexes
+      WHERE schemaname = 'public'
+        AND indexname IN (
+          'idx_products_shopid_itemnumber',
+          'idx_shops_public_category_updated_at',
+          'idx_shops_typeformtoken'
+        )
+      ORDER BY indexname`,
+  );
+  const definitions = new Map(rows.map((row) => [row.indexname, row.indexdef]));
+  const expected = new Map([
+    [
+      "idx_products_shopid_itemnumber",
+      /CREATE INDEX .* ON public\.products USING btree \(shopid, itemnumber\)/,
+    ],
+    [
+      "idx_shops_public_category_updated_at",
+      /CREATE INDEX .* ON public\.shops USING btree \(category, updated_at DESC\) WHERE \(visibility = 'public'::text\)/,
+    ],
+    [
+      "idx_shops_typeformtoken",
+      /CREATE INDEX .* ON public\.shops USING btree \(typeformtoken\)/,
+    ],
+  ]);
+
+  assert.equal(definitions.size, expected.size, "secondary index count");
+  for (const [name, pattern] of expected) {
+    const definition = definitions.get(name);
+    assert.ok(definition, `missing secondary index public.${name}`);
+    assert.match(definition, pattern, `definition of public.${name}`);
+  }
+}
+
 async function assertPinnedTimestampFunction(knex) {
   const { rows } = await knex.raw(
     `SELECT procedure.proconfig
@@ -53,7 +90,7 @@ async function assertPinnedTimestampFunction(knex) {
   assert.deepEqual(
     rows[0].proconfig,
     HARDENED_TIMESTAMP_FUNCTION_CONFIG,
-    "trigger_set_timestamp search_path must be pinned by 0002_pin_trigger_search_path",
+    "trigger_set_timestamp search_path must be pinned by 0003_pin_trigger_search_path",
   );
 }
 
@@ -185,6 +222,7 @@ async function runDatabaseContractTests(connectionString) {
     const secondRun = await knex.migrate.latest();
     assert.deepEqual(secondRun[1], []);
 
+    await assertSecondaryIndexes(knex);
     await assertPinnedTimestampFunction(knex);
     await assertUuidAndPriceContract(knex);
     await assertForeignKeyContract(knex);
