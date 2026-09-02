@@ -18,21 +18,36 @@ test("loads the shop editor by token and shows the seeded data", async ({
   );
 });
 
-test("loads the Handsontable product editor without a ReferenceError", async ({
+test("loads the Handsontable product editor without legacy lifecycle warnings or ReferenceErrors", async ({
   page,
 }) => {
   const pageErrors: Error[] = [];
+  const legacyLifecycleWarnings: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error));
+  page.on("console", (message) => {
+    const text = message.text();
+    if (/UNSAFE_componentWill(?:Mount|Update)/.test(text)) {
+      legacyLifecycleWarnings.push(text);
+    }
+  });
 
-  await page.goto("/e2e-fixture-token/edit");
+  try {
+    await page.goto("/e2e-fixture-token/edit");
 
-  await expect(
-    page.getByRole("heading", { name: "Tu menú o listado de precios" }),
-  ).toBeVisible();
-  await expect(page.locator(".handsontable").first()).toBeVisible();
-  expect(pageErrors.filter((error) => error.name === "ReferenceError")).toEqual(
-    [],
-  );
+    await expect(
+      page.getByRole("heading", { name: "Tu menú o listado de precios" }),
+    ).toBeVisible();
+    const productGrid = page.getByRole("treegrid");
+    await expect(productGrid).toBeVisible();
+    await expect(
+      productGrid.getByRole("gridcell", { name: "E2E Product" }),
+    ).toBeVisible();
+  } finally {
+    expect(
+      pageErrors.filter((error) => error.name === "ReferenceError"),
+    ).toEqual([]);
+    expect(legacyLifecycleWarnings).toEqual([]);
+  }
 });
 
 test("prevents duplicate editor saves while the request is pending", async ({
@@ -93,6 +108,25 @@ test("preserves editor values when the server rejects a valid submission", async
   await expect(address).toHaveValue("Submitted address");
 });
 
+test("shows client validation feedback for invalid phone numbers without submitting", async ({
+  page,
+}) => {
+  let editorPosts = 0;
+  await page.route("**/api/shop/editor", (route) => {
+    editorPosts += 1;
+    route.continue();
+  });
+
+  await page.goto("/e2e-fixture-token/edit");
+  const whatsapp = page.getByTestId("edit-shop-whatsapp");
+  await whatsapp.fill("+5491155551 001");
+  await page.getByTestId("save-shop").click();
+
+  await expect(page.getByText(/Sin espacios ni guiones/)).toBeVisible();
+  await expect(page.getByText(/Hubo errores en los datos/)).toBeVisible();
+  expect(editorPosts).toBe(0);
+});
+
 test("rolls back an optimistic product preview after a rejected save", async ({
   page,
 }) => {
@@ -137,8 +171,14 @@ test("saves edited shop fields and persists them across reloads", async ({
     await expect(page.getByTestId("edit-shop-name")).toHaveValue(originalName);
 
     await page.getByTestId("edit-shop-name").fill(editedName);
+    const saveResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes("/api/shop/editor") &&
+        response.request().method() === "POST",
+    );
     await page.getByTestId("save-shop").click();
 
+    expect((await saveResponse).ok()).toBe(true);
     await expect(page.getByText("Tus cambios fueron guardados.")).toBeVisible();
 
     // The save handler refreshes the shop data; a full reload must keep it.

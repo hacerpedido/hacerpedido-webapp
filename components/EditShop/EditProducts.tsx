@@ -1,8 +1,11 @@
 // @ts-nocheck
+
+import type { HotTableRef } from "@handsontable/react-wrapper";
 import dynamic from "next/dynamic";
 import React, { useEffect, useMemo, useRef } from "react";
 
-import "handsontable/dist/handsontable.full.css";
+import "handsontable/styles/handsontable.min.css";
+import "handsontable/styles/ht-theme-main.min.css";
 
 import useWidth from "#lib/hooks/use_width";
 import { productForGrid, productsFromGrid } from "#lib/utils/products";
@@ -14,9 +17,22 @@ let handsontableCore = null;
 
 const HotTable = dynamic(
   async () => {
-    const { default: Handsontable } = await import("handsontable");
-    await import("handsontable/languages/es-MX");
-    const { default: HT } = await import("@handsontable/react");
+    const [
+      { default: Handsontable },
+      { registerAllModules },
+      { registerLanguageDictionary },
+      { default: esMX },
+      { HotTable: HT },
+    ] = await Promise.all([
+      import("handsontable"),
+      import("handsontable/registry"),
+      import("handsontable/i18n"),
+      import("handsontable/i18n/languages/es-MX"),
+      import("@handsontable/react-wrapper"),
+    ]);
+
+    registerAllModules();
+    registerLanguageDictionary(esMX);
     handsontableCore = Handsontable;
 
     return ({ forwardedRef, ...props }) => <HT ref={forwardedRef} {...props} />;
@@ -27,15 +43,16 @@ const HotTable = dynamic(
 );
 
 const EditProducts = ({ products, shopId, onTempProductsChange }) => {
-  const grid = useRef(null);
+  const grid = useRef<HotTableRef | null>(null);
   useWidth();
 
   const gridData = useMemo(() => productForGrid(products), [products]);
 
   useEffect(() => {
     const check = () => {
-      if (grid.current) {
-        grid.current.hotInstance.updateSettings({
+      const hotInstance = grid.current?.hotInstance;
+      if (hotInstance) {
+        hotInstance.updateSettings({
           cells: getCells,
         });
 
@@ -47,11 +64,12 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
   }, [grid]);
 
   const afterChange = (changes) => {
-    if (changes == null || grid.current == null) {
+    const hotInstance = grid.current?.hotInstance;
+    if (changes == null || hotInstance == null) {
       return;
     }
 
-    const tempData = grid.current.hotInstance.getData();
+    const tempData = hotInstance.getData();
     const tempProducts = productsFromGrid(shopId, tempData);
 
     onTempProductsChange(tempProducts);
@@ -99,8 +117,9 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
 
   function getCells(row, col) {
     var cellProperties = {};
-    if (grid.current != null) {
-      const tempData = grid.current.hotInstance.getDataAtRow(row);
+    const hotInstance = grid.current?.hotInstance;
+    if (hotInstance) {
+      const tempData = hotInstance.getDataAtRow(row);
 
       if (tempData[0] && col > 0) {
         cellProperties.renderer = categoryRenderer;
@@ -160,6 +179,7 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
         contextMenu={["row_above", "row_below", "remove_row"]}
         data={gridData}
         forwardedRef={grid}
+        height="auto"
         language={"es-MX"}
         licenseKey={"non-commercial-and-evaluation"}
         minSpareRows={spareRows}

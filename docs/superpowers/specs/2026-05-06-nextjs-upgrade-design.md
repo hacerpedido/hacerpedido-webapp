@@ -32,10 +32,10 @@ The rewrite is bounded by user-visible parity: every feature the current product
 | Views | React Native Web 0.13 | **Plain React + JSX** |
 | Styling | StyleSheet + Bootstrap 4 + react-bootstrap | **Tailwind CSS + shadcn/ui** (TSX mode) |
 | Client state | Redux Toolkit + redux-persist (5 slices) | **Zustand (cart only)** with `persist` middleware → localStorage; URL state via `useSearchParams` for filters; `useState` elsewhere |
-| Server data | axios → `pages/api/*` → knex | **Server components query knex directly**; mutations via **server actions** |
+| Server data | native `fetch` request layer → `app/api/*` → knex | **Server components query knex directly**; mutations via **server actions** |
 | Image upload | `pages/api/image-upload.js` (formidable + AWS SDK v2) | **Route handler** `app/api/images/route.ts` (native `Request.formData()` + AWS SDK v3) |
 | Forms | react-hook-form 6 | **react-hook-form 7 + zod** + `@hookform/resolvers` |
-| Spreadsheet UI | Handsontable 8.2 (CDN `<script>`) | **Handsontable current + `@handsontable/react`**, properly bundled |
+| Spreadsheet UI | Handsontable 8.2 (CDN `<script>`) | **Handsontable current + `@handsontable/react-wrapper`**, properly bundled |
 | Error monitoring | @sentry/nextjs 7 | **@sentry/nextjs 8+** with `instrumentation.ts` |
 | Package manager | npm | **bun** (with bun lockfile) |
 | Node | 22 | 22 |
@@ -47,7 +47,7 @@ The rewrite is bounded by user-visible parity: every feature the current product
 
 ### Dependencies to keep
 
-`knex`, `pg`, `nested-knex`, `slugify`, `validator`, `react-gtm-module`. `axios` only retained if outbound HTTP to the external `backend-restapi.hacerpedido.com:5001` is still needed; otherwise removed.
+`knex`, `pg`, `nested-knex`, `slugify`, `validator`, `react-gtm-module`. Browser-to-server requests use the native `fetch` request layer and internal App Router routes.
 
 ### Build/runtime cleanups (free wins)
 
@@ -136,7 +136,7 @@ Single long-lived branch: `next15-rewrite` off `master`. Production stays on Nex
 3. Delete: `pages/`, `components/`, `lib/reducers/`, `babel.config.js`, `styles/`, `next.config.js`, `app.json`, `sentry.*.config.js`. Keep `lib/utils/` and `lib/api/` temporarily for reference; delete at end of Phase 4.
 4. `bun create next-app` over the top: TS, Tailwind, App Router, ESLint. Resolve any merge conflicts.
 5. `bunx shadcn@latest init` — TSX mode, default theme baseline.
-6. Install runtime deps: `zustand`, `react-hook-form`, `zod`, `@hookform/resolvers`, `knex`, `pg`, `@sentry/nextjs@^8`, `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `slugify`, `validator`, `react-gtm-module`, `@handsontable/react`, `handsontable`.
+6. Install runtime deps: `zustand`, `react-hook-form`, `zod`, `@hookform/resolvers`, `knex`, `pg`, `@sentry/nextjs@^8`, `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `slugify`, `validator`, `react-gtm-module`, `@handsontable/react-wrapper`, `handsontable`.
 7. Install dev deps: `@types/pg`, `@types/validator`, `playwright`, `@playwright/test`.
 8. Set up `lib/db/client.ts` with the `server-only` import guard.
 9. Port `lib/utils/categories.ts`, `lib/utils/whatsapp.ts`, `lib/utils/slug.ts` to TS with types.
@@ -180,7 +180,7 @@ The golden oracle is checked into the rewrite branch and consumed by Phase 1+ te
 3. Server actions in `lib/actions/`: `saveShop(token, formData)`, `saveProduct`, `deleteProduct`. Each validates with the shared zod schema, calls knex, calls `revalidatePath`.
 4. `app/api/images/route.ts` — POST (upload) and DELETE handlers using `@aws-sdk/client-s3`. Replaces `pages/api/image-upload.js` + `pages/api/image-delete.js`.
 5. `components/edit/UploadImage.tsx` — uses current `react-image-crop` API.
-6. `app/edit/[token]/products/page.tsx` + `components/edit/EditProductsGrid.tsx` — Handsontable via `@handsontable/react`, properly bundled (not CDN).
+6. `app/edit/[token]/products/page.tsx` + `components/edit/EditProductsGrid.tsx` — Handsontable via `@handsontable/react-wrapper`, properly bundled (not CDN).
 7. **Gate:** end-to-end edit a real shop on a staging environment — change name, upload an image, edit products grid, verify changes persist and shop page reflects them.
 
 ### Phase 4 — Cleanup + cutover (1–2 days)
@@ -230,4 +230,3 @@ None. All major decisions resolved during brainstorming.
 - Comprehensive test suite buildout.
 - AWS SDK v3 modular optimizations / bundle-size review.
 - Lighthouse/perf audit and image optimization via `next/image` for product images.
-- Possible removal of `axios` if external API calls have other replacements.

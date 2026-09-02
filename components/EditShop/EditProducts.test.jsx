@@ -2,7 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import EditProducts from "./EditProducts";
 
-jest.mock("handsontable/dist/handsontable.full.css", () => ({}));
+jest.mock("handsontable/styles/handsontable.min.css", () => ({}));
+jest.mock("handsontable/styles/ht-theme-main.min.css", () => ({}));
 jest.mock("handsontable/languages/es-MX", () => ({}));
 
 jest.mock("#lib/hooks/use_width", () => jest.fn());
