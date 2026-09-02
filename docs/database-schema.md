@@ -87,10 +87,29 @@ not part of the current architecture.
 ## Index policy
 
 The baseline has only implicit primary-key indexes and the unique index on
-`shops.slug`. Do not add secondary indexes based on assumptions. In particular,
-`products.shopid`, public catalog filtering, and editor-token lookup need real
-`EXPLAIN (ANALYZE, BUFFERS)` evidence using representative cardinality before a
-dedicated index migration is proposed.
+`shops.slug`. Secondary indexes are added only with measured evidence.
+
+`db/migrations/0002_add_secondary_indexes.js` adds three secondary indexes,
+justified by `EXPLAIN (ANALYZE, BUFFERS)` runs against the real production
+database (Supabase project `xpnthjdzqrnpgwzquszb`, 2026-09-02; 800 shops,
+11 882 products, 13 public shops):
+
+- `idx_products_shopid_itemnumber` on `products (shopid, itemnumber)` — the two
+  shop-detail/editor queries used to seq-scan all products to join by `shopid`;
+  with the index, public shop by slug dropped from 3.56 ms / 355 buffers to
+  0.57 ms / 79 and editor by token from 3.54 ms / 351 to 0.46 ms / 71 (~6-8x).
+- `idx_shops_public_category_updated_at` on `shops (category, updated_at DESC)`
+  where `visibility = 'public'` — the public catalog is currently a 0.37 ms seq
+  scan over 800 rows; the partial index is added proactively because the public
+  catalog is expected to grow (see #222) and it only contains public rows.
+- `idx_shops_typeformtoken` on `shops (typeformtoken)` — the editor lookup
+  currently seq-scans `shops`; this keeps it an index scan as shops grow.
+
+The three indexes are additive: no query text changes. Catalog tie-breaking
+(`ORDER BY updated_at DESC, id DESC`), pagination/LIMIT, and any further query
+rewrites are tracked in #222 and deliberately not part of this migration.
+
+Do not add further secondary indexes without measured evidence.
 
 ## Baseline adoption
 
@@ -109,8 +128,10 @@ The guarded tool is `scripts/adopt-baseline.js`:
   configuration or exactly the search path configuration introduced separately
   by #134: `search_path=pg_catalog, public`. Any other function configuration
   is drift.
-- It accepts only an empty history or exactly `["0001_baseline.js"]`; any
-  different history or schema drift fails closed.
+- It accepts an empty history or any history whose first recorded migration is
+  `0001_baseline.js` (an adopted baseline followed by versioned forward
+  migrations such as `0002_add_secondary_indexes.js`); anything else fails
+  closed as drift.
 - Applying acquires a transaction-scoped advisory lock and locks
   `public.knex_migrations` before rechecking the fingerprint.
 - Applying writes one metadata row for `0001_baseline.js`; it never runs that
