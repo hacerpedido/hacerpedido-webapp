@@ -1,6 +1,9 @@
 import ShopFooter from "#components/Shop/ShopFooter";
 import ShopView from "#components/Shop/ShopView";
-import { getPublicShop } from "#lib/api/server-shops";
+import {
+  getDevelopmentShopEditToken,
+  getPublicShop,
+} from "#lib/api/server-shops";
 
 import { notFound } from "next/navigation";
 import styles from "./page.module.css";
@@ -44,9 +47,14 @@ export default async function PublicShopPage({
   const shop = await getPublicShop(slug);
   if (!shop) notFound();
 
+  const editToken =
+    process.env.NODE_ENV === "development"
+      ? await getDevelopmentShopEditToken(slug)
+      : null;
+
   return (
     <main className={styles.page}>
-      <ShopView shop={shop} />
+      <ShopView shop={shop} {...(editToken ? { editToken } : {})} />
       <ShopFooter shop={shop} />
     </main>
   );

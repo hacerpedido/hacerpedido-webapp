@@ -97,6 +97,29 @@ export async function getPublicShop(slug: string): Promise<Shop | null> {
   return serializePublicShop<Pick<Shop, "slug">>(shopFromRow(first, products));
 }
 
+/**
+ * Load the editor token for the development-only link on a public shop page.
+ *
+ * Keep the environment check here as well as at the call site so this helper
+ * can never become another way of loading editor secrets in production (or in
+ * tests, which exercise the public data path).
+ */
+export async function getDevelopmentShopEditToken(
+  slug: string,
+): Promise<string | null> {
+  if (process.env.NODE_ENV !== "development") return null;
+
+  const { rows } = await pool.query(
+    `SELECT typeformtoken
+       FROM shops
+      WHERE slug = $1 AND visibility = 'public'`,
+    [slug],
+  );
+
+  const token = rows[0]?.typeformtoken;
+  return typeof token === "string" ? token : null;
+}
+
 /** Load a shop for the private editor token, including its products. */
 export async function getShopByToken(token: string): Promise<Shop | null> {
   const { rows } = await pool.query(
