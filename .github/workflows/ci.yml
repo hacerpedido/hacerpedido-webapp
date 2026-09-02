@@ -65,7 +65,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
       # The E2E command starts the same Docker Compose stack used locally,
       # runs Knex migrations + seed, builds and serves the app, then
       # runs the browser journey against it.
