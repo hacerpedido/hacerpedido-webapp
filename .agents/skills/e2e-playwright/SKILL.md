@@ -28,7 +28,7 @@ Requirements: **Docker** running (Postgres comes from `docker compose`). Node 22
 1. `tests/e2e/global-setup.ts`:
    - `docker compose --project-name <derived> -f compose.e2e.yaml down --volumes --remove-orphans`
    - `docker compose ... up --detach --wait` (Postgres 17.6; on `127.0.0.1:54329` for the main checkout or on a derived port in a worktree lane, db `hacerpedido_e2e`, user `e2e_user` / `e2e_password`, `shared_preload_libraries=pg_stat_statements`)
-   - `pnpm exec knex migrate:latest` + `pnpm exec knex seed:run` with `PG_CONNECTION_STRING` overridden to the compose DB (`tests/e2e/fixtures/database.ts`)
+   - `tsx scripts/db-migrate.ts` + `tsx tests/e2e/fixtures/setup.ts` with `PG_CONNECTION_STRING` overridden to the compose DB (`tests/e2e/fixtures/database.ts`)
 2. `playwright.config.ts` `webServer`: `pnpm build && pnpm start -p <appPort>` against the matching baseURL (default `http://127.0.0.1:3001`; derived per worktree lane). Runs in the main checkout may reuse an existing local server; lane runs never reuse another lane's server.
 3. Specs run in project `chromium`; reporters: HTML (`playwright-report/`, or `playwright-report/<run>/` in lanes) + JUnit (`test-results/junit.xml`, or `test-results/<run>/`).
 4. `tests/e2e/global-teardown.ts` tears the compose stack down (best-effort).

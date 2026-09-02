@@ -1,226 +1,72 @@
 # Database schema and baseline operations
 
-This document is the canonical schema contract for the database state represented
-by `db/migrations/0001_baseline.js`. It is intentionally separate from future
-schema work: do not edit that migration after it has been adopted.
+This document is the canonical schema contract for the database state
+represented by the Drizzle migrations. The TypeScript schema in
+`db/schema.ts` is the single authority for table/column shapes and indexes;
+`drizzle-kit` turns it into the versioned SQL migrations under `db/drizzle/`.
 
-## Compatibility and ownership
+## Migration layout
 
-- Database: PostgreSQL 17.6.
-- Schema changes are versioned Knex migrations in `db/migrations/`.
-- The repository's production schema predates Knex migration tracking. Its
-  baseline must be adopted before any pending migration is applied; see
-  [Baseline adoption](#baseline-adoption).
-- E2E uses a disposable PostgreSQL 17.6 Docker volume. It is not production and
-  may be deleted by the test harness.
-- `pgjwt`, `timescaledb`, and `plv8` are not supported.
-
-## Canonical tables
-
-### `public.shops`
-
-| Contract | Value |
+| File | What it contains |
 | --- | --- |
-| Primary key | `id uuid`, default `uuid_generate_v1()` |
-| Required fields | `name text`, `slug text`, `region text` |
-| Uniqueness | `slug` |
-| Timestamps | nullable `created_at` and `updated_at`, both default `now()` |
-| Mutable timestamp | `set_timestamp` invokes `public.trigger_set_timestamp()` before every update |
+| `db/schema.ts` | Typed authority: `shops` and `products` with production constraint names (`shops_slug_key`, `products_shopid_fkey`) and the approved secondary indexes. |
+| `db/drizzle/0000_init.sql` | Generated snapshot of the production schema (tables, constraints, defaults) plus the extensions needed by the `uuid_generate_v1()` default. **Not reversible.** |
+| `db/drizzle/0001_catalog_indexes.sql` | Generated secondary indexes: `products(shopid, itemnumber)`, partial catalog `shops(category, updated_at DESC) WHERE visibility='public'`, `shops(typeformtoken)`. |
+| `db/drizzle/0002_database_objects.sql` | Custom SQL migration: `trigger_set_timestamp()` + `set_timestamp` triggers and `rls_auto_enable()` (objects Drizzle cannot model). Idempotent. |
+| `db/drizzle/0003_pin_search_path.sql` | Custom SQL migration pinning `trigger_set_timestamp()` to `search_path = pg_catalog, public` (issue #134). |
 
-The remaining shop fields are nullable `text` values: `username`, `category`,
-`address`, `notes`, `ordersbyphoneorwhatsapp`, `delivery`, `takeaway`,
-`whatsappnumber`, `phonenumber`, `email`, `submittedat`, `opentimes`,
-`deliverycost`, `visibility`, `logo`, `background`, `typeformtoken`,
-`ordersphonenumber`, and `orderswhatsappnumber`.
-
-### `public.products`
-
-| Contract | Value |
-| --- | --- |
-| Primary key | `id uuid`, default `uuid_generate_v1()` |
-| Required fields | `category text`, `name text`, `shopid uuid` |
-| Parent relationship | `shopid` references `shops.id` |
-| Delete/update behavior | PostgreSQL `NO ACTION`; a shop with products cannot be deleted or have its ID updated |
-| Optional fields | `description text`, `price text`, `itemnumber integer` |
-| Timestamps | nullable `created_at` and `updated_at`, both default `now()` and trigger-maintained |
-
-`products.price` is opaque display text. It is not a numeric, decimal, or money
-contract. Preserve its exact string on reads and writes until a separately
-approved price-model migration is designed.
-
-## Identifier and relationship contracts
-
-- PostgreSQL UUID values are returned by `pg` as strings. Application and API
-  boundaries must treat `shops.id`, `products.id`, and `products.shopid` as
-  opaque UUID strings, never numbers.
-- The current product foreign key intentionally does **not** cascade. Seed and
-  maintenance code must delete product rows before their parent shop rows.
-- Future order/customer migrations must preserve historical snapshots. In
-  particular, do not choose cascading shop/product deletes merely to simplify
-  cleanup.
-
-## Functions, triggers, extensions, and RLS
-
-The baseline requires these extensions at their PostgreSQL 17.6 versions:
-
-- `uuid-ossp` 1.1
-- `pgcrypto` 1.3
-- `pg_stat_statements` 1.11
-
-Local Compose preloads `pg_stat_statements`. Extension objects may live in
-`public` in the local E2E database or in Supabase's `extensions` schema in
-production; UUID defaults are intentionally invoked without a schema qualifier.
-
-The baseline contains:
-
-- `public.trigger_set_timestamp()`, used by `set_timestamp` triggers on both
-  tables;
-- `public.rls_auto_enable()`, which matches production's event-trigger
-  function.
-
-`db/migrations/0003_pin_trigger_search_path.js` pins the function
-`search_path` of `public.trigger_set_timestamp()` to `pg_catalog, public`
-with `ALTER FUNCTION ... SET search_path`. This resolves the Supabase Security
-Advisor "role mutable search_path" finding for trigger functions and is
-reversible with `RESET search_path`. The pinned `proconfig` value
-(`search_path=pg_catalog, public`) is one of the approved function
-configurations checked by `scripts/adopt-baseline.ts`.
-
-Production has RLS enabled on `shops` and `products`. E2E deliberately does
-not create the Supabase event trigger and leaves RLS disabled because its
-non-superuser test role has no policies. This is an intentional environment
-difference, not a signal to add public RLS policies. Direct browser access is
-not part of the current architecture; the Security Advisor "RLS enabled without
-policies" report on `shops`/`products` is the same intentional posture and must
-not be silenced with permissive public policies.
-
-## Index policy
-
-The baseline has only implicit primary-key indexes and the unique index on
-`shops.slug`. Secondary indexes are added only with measured evidence.
-
-`db/migrations/0002_add_secondary_indexes.js` adds three secondary indexes,
-justified by `EXPLAIN (ANALYZE, BUFFERS)` runs against the real production
-database (Supabase project `xpnthjdzqrnpgwzquszb`, 2026-09-02; 800 shops,
-11 882 products, 13 public shops):
-
-- `idx_products_shopid_itemnumber` on `products (shopid, itemnumber)` — the two
-  shop-detail/editor queries used to seq-scan all products to join by `shopid`;
-  with the index, public shop by slug dropped from 3.56 ms / 355 buffers to
-  0.57 ms / 79 and editor by token from 3.54 ms / 351 to 0.46 ms / 71 (~6-8x).
-- `idx_shops_public_category_updated_at` on `shops (category, updated_at DESC)`
-  where `visibility = 'public'` — the public catalog is currently a 0.37 ms seq
-  scan over 800 rows; the partial index is added proactively because the public
-  catalog is expected to grow (see #222) and it only contains public rows.
-- `idx_shops_typeformtoken` on `shops (typeformtoken)` — the editor lookup
-  currently seq-scans `shops`; this keeps it an index scan as shops grow.
-
-The three indexes are additive: no query text changes. Catalog tie-breaking
-(`ORDER BY updated_at DESC, id DESC`), pagination/LIMIT, and any further query
-rewrites are tracked in #222 and deliberately not part of this migration.
-
-Do not add further secondary indexes without measured evidence.
-
-## Baseline adoption
-
-> Full deploy sequence (adoption + applying pending migrations + verification)
-> lives in [docs/deploy-playbook.md](deploy-playbook.md). This section
-> documents the guarded adoption tool itself.
-
-`0001_baseline.js` creates the schema on an empty local database but was never
-run in production. The production `knex_migrations` table is expected to be
-empty before adoption. Running `pnpm run db:migrate` first would attempt to
-create already-existing objects and is unsafe.
-
-The guarded tool is `scripts/adopt-baseline.ts`:
-
-- It defaults to dry-run and never calls Knex's migration APIs.
-- It verifies the complete tracked `shops`/`products` column contract,
-  defaults, constraints, triggers, baseline functions, extension versions, RLS
-  profile, and migration history.
-- `trigger_set_timestamp()` may have either its original `NULL` function
-  configuration or exactly the search path configuration introduced separately
-  by #134: `search_path=pg_catalog, public`. Any other function configuration
-  is drift.
-- It accepts an empty history or any history whose first recorded migration is
-  `0001_baseline.js` (an adopted baseline followed by versioned forward
-  migrations such as `0002_add_secondary_indexes.js` or
-  `0003_pin_trigger_search_path.js`); anything else fails closed as drift.
-- Applying acquires a transaction-scoped advisory lock and locks
-  `public.knex_migrations` before rechecking the fingerprint.
-- Applying writes one metadata row for `0001_baseline.js`; it never runs that
-  file or any later migration.
-
-### Production runbook
-
-Do not run this procedure against production without an approved maintenance
-window, a verified backup, and a maintainer reviewing the dry-run output.
-
-1. Ensure the target `PG_CONNECTION_STRING` selects the intended production
-   database. Do not print or commit its value.
-2. Confirm there is no concurrent deployment or manual migration session.
-3. Run the production-specific dry run:
-
-   ```bash
-   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.ts --rls=production
-   ```
-
-4. If it reports drift, stop. Capture the reported catalog difference and
-   create a forward corrective migration; do not alter `0001_baseline.js` or
-   force an adoption record.
-5. With approval, record only the verified baseline:
-
-   ```bash
-   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.ts --apply --rls=production
-   ```
-
-6. Re-run the same dry run. It must report the already-adopted baseline and no
-   change.
-7. Only after adoption is verified may the normal deployment process use
-   `pnpm run db:migrate` for later migrations.
-
-Use `--rls=e2e` only for the disposable E2E database. `--apply` rejects the
-ambiguous `auto` RLS mode.
-
-## Disposable database contract tests
-
-The contract test reads `PG_CONNECTION_STRING` directly; it does not start
-Docker or derive a connection string. Set it to the disposable E2E PostgreSQL
-connection described by `tests/e2e/fixtures/database.ts`, never a development
-or production connection. The database-name guard only accepts
-`hacerpedido_e2e` or `hacerpedido_db_contracts`.
-
-It starts from an empty volume, applies the baseline, checks that a second
-`migrate:latest` is idempotent, then checks UUID/string serialization, opaque
-text prices, orphan rejection, parent-delete rejection, and guarded baseline
-adoption.
+Applied migrations are recorded in `drizzle.__drizzle_migrations`
+(`hash`, `created_at`) — never edit an already-applied migration. Schema
+changes ship as a new forward migration:
 
 ```bash
-docker compose --project-name hacerpedido-e2e -f compose.e2e.yaml down --volumes --remove-orphans
-docker compose --project-name hacerpedido-e2e -f compose.e2e.yaml up --detach --wait
-# PG_CONNECTION_STRING must already target the disposable E2E PostgreSQL database.
-pnpm run test:db
-docker compose --project-name hacerpedido-e2e -f compose.e2e.yaml down --volumes --remove-orphans
+# Schema-only change: edit db/schema.ts, then
+pnpm exec drizzle-kit generate --name=<what_changes>
+
+# Hand-written SQL (functions, triggers, extensions, data fixes):
+pnpm exec drizzle-kit generate --custom --name=<what_changes>
 ```
 
-The first and last commands delete the E2E volume. They must never be pointed
-at development or production data. `pnpm run test:e2e` separately exercises the
-same migration path together with browser flows.
+## Guarded baseline adoption
 
-The disposable database contract tests apply `0001_baseline.js`,
-`0002_add_secondary_indexes.js`, and `0003_pin_trigger_search_path.js`
-together, then assert the function's `proconfig` is exactly
-`search_path=pg_catalog, public`, so the integration path exercises the
-hardened #134 representation. `tests/db/adopt-baseline.test.ts` keeps the unit
-contract for accepted function configurations (the original `NULL` or the
-pinned #134 value) and rejects any other setting.
+Production (and any pre-existing database) already has the objects that
+`0000_init` describes — running it there would fail or duplicate DDL.
+`scripts/adopt-baseline.ts` therefore verifies the live catalog against the
+baseline fingerprint (columns, constraints, triggers, functions, extension
+versions, RLS profile) and only then **records** `0000_init` as applied,
+without executing it:
 
-## Rollback and drift rules
+```bash
+# Dry run (read-only fingerprint + history check):
+node scripts/adopt-baseline.ts --rls=production
 
-- `0001_baseline.js` is intentionally irreversible. Never roll back past it.
-- For production data, prefer a forward corrective migration over rollback.
-- A reversible future migration must be tested with targeted `migrate:up` and
-  `migrate:down`; do not use batch rollback on a fresh database, because the
-  irreversible baseline can share that batch.
-- When a live schema differs from this document or the adoption fingerprint,
-  stop and reconcile it with an explicit, reviewed forward migration.
+# After the dry run reports a clean fingerprint, record the baseline:
+node scripts/adopt-baseline.ts --apply --rls=production
+```
+
+Fresh databases (dev, E2E, CI) never run adoption: `pnpm run db:migrate`
+applies the full set from an empty history.
+
+## Authoring rules
+
+- The baseline `0000_init.sql` is **not reversible** and is never edited after
+  adoption. If the live schema drifts from this document or the fingerprint,
+  stop and ship a forward corrective migration.
+- Migrations are forward-only: rollbacks are written as forward corrective
+  migrations (Drizzle has no down migrations).
+- Drizzle cannot model functions, triggers, extensions, RLS or search_path
+  pinning — keep those in `--custom` SQL migrations under `db/drizzle/` and
+  update this document when they change.
+- Keep `db/schema.ts` and `docs/database-schema.md` in sync.
+
+## Verification
+
+- `pnpm run db:migrate:status` — applied vs pending migrations.
+- `pnpm run test:db` — disposable PostgreSQL contract suite (migration
+  idempotency, indexes, pinned trigger config, UUID/opaque price and FK
+  contracts, and the guarded adoption flow). Run before any deploy that
+  touches `db/schema.ts`, `db/drizzle/`, `scripts/adopt-baseline.ts`, or
+  `tests/db/`.
+- RLS stays enabled on production (`shops`/`products` have no policies;
+  browser requests go through server-side APIs). E2E deliberately disables
+  RLS — never treat E2E parity as a signal to add policies.

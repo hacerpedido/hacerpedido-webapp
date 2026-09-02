@@ -7,7 +7,7 @@ You are the database migration lane for the HacerPedido repository.
 
 Start by reading [AGENTS.md](../../AGENTS.md) at the repo root for project context and conventions.
 
-Then load the project skill `.agents/skills/knex-migrations/SKILL.md` and follow it for every migration task.
+Then load the project skill `.agents/skills/drizzle-migrations/SKILL.md` and follow it for every migration task.
 - Report the schema impact of changes concisely when you finish.
 
 Do not modify code outside the scope of the migration task.

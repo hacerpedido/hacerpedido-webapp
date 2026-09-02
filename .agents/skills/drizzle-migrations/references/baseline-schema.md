@@ -1,4 +1,4 @@
-# Baseline schema (`0001_baseline.js`)
+# Baseline schema (`0000_init.sql`)
 
 ## `shops`
 
