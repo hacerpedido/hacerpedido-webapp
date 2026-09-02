@@ -1,11 +1,11 @@
 import type { Product, Shop } from "../types";
+import { getPool } from "../db/pool";
 import {
   serializePublicShop,
   serializePublicShops,
 } from "../utils/public-shop";
 
-const { Pool } = require("pg");
-const pool = new Pool({ connectionString: process.env.PG_CONNECTION_STRING });
+const pool = getPool();
 type ShopRow = Record<string, unknown> & {
   product_id?: unknown;
 };
