@@ -1,4 +1,4 @@
-const { categories, sanitizeCategory } = require("./categories");
+import { categories, sanitizeCategory } from "./categories";
 
 describe("sanitizeCategory", () => {
   test("keeps current categories unchanged", () => {

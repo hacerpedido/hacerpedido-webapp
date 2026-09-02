@@ -8,10 +8,12 @@ jest.mock("#lib/context/CartContext", () => ({
   useCart: jest.fn(),
 }));
 
+const mockUseCart = jest.mocked(useCart);
+
 jest.mock("react-spring", () => ({
   animated: { div: "div" },
   config: { stiff: {} },
-  useTransition: (visible) =>
+  useTransition: (visible: boolean) =>
     visible ? [{ item: true, key: "quantity-popup", props: {} }] : [],
 }));
 
@@ -23,7 +25,9 @@ describe("ProductAmountPopup", () => {
   beforeEach(() => {
     dispatch.mockClear();
     handleClose.mockClear();
-    useCart.mockReturnValue({ dispatch });
+    mockUseCart.mockReturnValue({
+      dispatch,
+    } as unknown as ReturnType<typeof useCart>);
   });
 
   test("is not rendered while hidden", () => {

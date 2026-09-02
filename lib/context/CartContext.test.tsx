@@ -1,12 +1,30 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
+import type { CartState } from "../types";
 import { __CART_STATE_KEY, CartProvider, useCart } from "./CartContext";
 
 // ── Helper: test component that reads from context ──────────────────────────────
-let readState;
+// The reducer is intentionally defensive against legacy/malformed persisted
+// data, so several tests dispatch actions whose payloads violate CartAction
+// (numeric legacy ids, null/undefined fields). Keep the test dispatch loose
+// and cast once at the boundary instead of per call.
+type TestDispatch = (action: { type: string; payload?: unknown }) => void;
+
+interface TestCartContext {
+  state: CartState;
+  dispatch: TestDispatch;
+  isRestored: boolean;
+}
+
+let readState: TestCartContext;
+
 function TestConsumer() {
   const { state, dispatch, isRestored } = useCart();
-  readState = { state, dispatch, isRestored };
+  readState = {
+    state,
+    isRestored,
+    dispatch: dispatch as TestDispatch,
+  };
   return null;
 }
 
@@ -21,7 +39,6 @@ function renderProvider() {
 const CART_STATE_KEY = __CART_STATE_KEY;
 
 beforeEach(() => {
-  readState = null;
   cleanup();
   localStorage.removeItem(CART_STATE_KEY);
   localStorage.removeItem("hacerpedido_cart_form");
@@ -501,7 +518,7 @@ describe("RESTORE", () => {
       });
     });
 
-    expect(readState.state.shop.slug).toBe("new-shop");
+    expect(readState.state.shop?.slug).toBe("new-shop");
     expect(readState.state.products[0].amount).toBe(0);
     expect(readState.state.totalAmount).toBe(0);
   });
@@ -532,7 +549,7 @@ describe("full state persistence", () => {
       readState.dispatch({ type: "SET_NAME", payload: "Ana" });
     });
 
-    const saved = JSON.parse(localStorage.getItem(CART_STATE_KEY));
+    const saved = JSON.parse(localStorage.getItem(CART_STATE_KEY) ?? "null");
     expect(saved.shop.slug).toBe("test-shop");
     expect(saved.products).toEqual([{ id: 1, name: "P1", amount: 2 }]);
     expect(saved.totalAmount).toBe(2);
@@ -585,7 +602,7 @@ describe("hydration from localStorage", () => {
   test("restores full state from localStorage on mount", () => {
     renderProvider();
 
-    expect(readState.state.shop.slug).toBe("local-shop");
+    expect(readState.state.shop?.slug).toBe("local-shop");
     expect(readState.state.products).toEqual([
       { id: 42, name: "Local Product", amount: 3 },
     ]);

@@ -8,15 +8,19 @@ jest.mock("#lib/context/CartContext", () => ({
   useCart: jest.fn(),
 }));
 
+const mockUseCart = jest.mocked(useCart);
+
 describe("Cart Form", () => {
   const dispatch = jest.fn();
 
   beforeEach(() => {
     dispatch.mockClear();
-    useCart.mockReturnValue({
+    // The form only reads name/address/notes and the shop name; the rest of
+    // the context value is out of contract for this mock.
+    mockUseCart.mockReturnValue({
       dispatch,
       state: { address: "", name: "", notes: "", shop: { name: "La Esquina" } },
-    });
+    } as unknown as ReturnType<typeof useCart>);
   });
 
   test("renders delivery fields and the shop-specific submit action", () => {

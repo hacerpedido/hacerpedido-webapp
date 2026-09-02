@@ -1,3 +1,14 @@
+import { saveShopWithProductsAction } from "#lib/actions/shop-editor";
+import {
+  getPublicShop,
+  getPublicShops,
+  getShopByToken,
+} from "#lib/api/server-shops";
+
+import * as slugRouteModule from "../../app/api/shop/[slug]/route";
+import * as tokenRouteModule from "../../app/api/shop/by-token/route";
+import * as homeRouteModule from "../../app/api/shop/home/route";
+
 jest.mock("#lib/api/server-shops", () => ({
   getPublicShop: jest.fn(),
   getPublicShops: jest.fn(),
@@ -8,40 +19,73 @@ jest.mock("#lib/actions/shop-editor", () => ({
   saveShopWithProductsAction: jest.fn(),
 }));
 
-if (!global.Response) {
-  global.Response = class TestResponse {
-    constructor(body, init = {}) {
-      this.body = body;
-      this.status = init.status ?? 200;
-      this.headers = new Map(
-        Object.entries(init.headers ?? {}).map(([key, value]) => [
-          key.toLowerCase(),
-          value,
-        ]),
-      );
-    }
+const mockGetPublicShop = jest.mocked(getPublicShop);
+const mockGetPublicShops = jest.mocked(getPublicShops);
+const mockGetShopByToken = jest.mocked(getShopByToken);
+const mockSaveShop = jest.mocked(saveShopWithProductsAction);
 
-    static json(body, init) {
-      return new TestResponse(body, init);
-    }
+class TestResponse {
+  body: unknown;
+  status: number;
+  headers: Map<string, string>;
 
-    async json() {
-      return this.body;
-    }
-  };
+  constructor(
+    body: unknown,
+    init: { status?: number; headers?: Record<string, string> } = {},
+  ) {
+    this.body = body;
+    this.status = init.status ?? 200;
+    this.headers = new Map(
+      Object.entries(init.headers ?? {}).map(([key, value]) => [
+        key.toLowerCase(),
+        value,
+      ]),
+    );
+  }
+
+  static json(
+    body: unknown,
+    init?: { status?: number; headers?: Record<string, string> },
+  ): TestResponse {
+    return new TestResponse(body, init);
+  }
+
+  async json(): Promise<unknown> {
+    return this.body;
+  }
 }
 
-const publicShopRoute = require("../../app/api/shop/[slug]/route");
-const tokenShopRoute = require("../../app/api/shop/by-token/route");
-const homeRoute = require("../../app/api/shop/home/route");
-const {
-  getPublicShop,
-  getPublicShops,
-  getShopByToken,
-} = require("#lib/api/server-shops");
-const { saveShopWithProductsAction } = require("#lib/actions/shop-editor");
+if (!global.Response) {
+  global.Response = TestResponse as unknown as typeof Response;
+}
 
-function request(path, init) {
+interface TestRequest {
+  url: string;
+  json: () => Promise<unknown>;
+}
+
+type RouteHandler = (
+  request: TestRequest,
+  context?: { params?: Promise<Record<string, string>> },
+) => Promise<TestResponse>;
+
+// Route handlers are typed against the real Request/Response; the tests drive
+// them with lightweight fakes, so each boundary is cast once.
+const publicShopRoute = {
+  GET: slugRouteModule.GET as unknown as RouteHandler,
+};
+const tokenShopRoute = {
+  GET: tokenRouteModule.GET as unknown as RouteHandler,
+  POST: tokenRouteModule.POST as unknown as RouteHandler,
+};
+const homeRoute = {
+  GET: homeRouteModule.GET as unknown as RouteHandler,
+};
+
+function request(
+  path: string,
+  init?: { body?: string; headers?: Record<string, string>; method?: string },
+): TestRequest {
   const body = init?.body;
   return {
     url: `http://localhost${path}`,
@@ -61,11 +105,11 @@ describe("public shop lookup API", () => {
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Wrong parameters (1)." });
-    expect(getPublicShop).not.toHaveBeenCalled();
+    expect(mockGetPublicShop).not.toHaveBeenCalled();
   });
 
   test("returns the public shop without editor secrets", async () => {
-    getPublicShop.mockResolvedValue({
+    mockGetPublicShop.mockResolvedValue({
       slug: "public-shop",
       visibility: "public",
       typeformtoken: "editor-secret",
@@ -81,11 +125,11 @@ describe("public shop lookup API", () => {
     expect(await response.json()).toEqual([
       { slug: "public-shop", visibility: "public", products: [] },
     ]);
-    expect(getPublicShop).toHaveBeenCalledWith("public-shop");
+    expect(mockGetPublicShop).toHaveBeenCalledWith("public-shop");
   });
 
   test("returns an empty result for an unknown slug", async () => {
-    getPublicShop.mockResolvedValue(null);
+    mockGetPublicShop.mockResolvedValue(null);
 
     const response = await publicShopRoute.GET(
       request("/api/shop/unknown-shop"),
@@ -112,7 +156,7 @@ describe("token shop lookup API", () => {
       typeformtoken: "valid-token",
       products: [],
     };
-    getShopByToken.mockResolvedValue(data);
+    mockGetShopByToken.mockResolvedValue(data);
 
     const response = await tokenShopRoute.GET(
       request("/api/shop/by-token?token=valid-token"),
@@ -124,7 +168,7 @@ describe("token shop lookup API", () => {
   });
 
   test("returns 404 for an unknown token", async () => {
-    getShopByToken.mockResolvedValue(null);
+    mockGetShopByToken.mockResolvedValue(null);
 
     const response = await tokenShopRoute.GET(
       request("/api/shop/by-token?token=unknown-token"),
@@ -157,7 +201,7 @@ describe("token shop lookup API", () => {
       orderswhatsappnumber: "5491112345678",
       products: [{ name: "Pan" }],
     };
-    saveShopWithProductsAction.mockResolvedValue({
+    mockSaveShop.mockResolvedValue({
       message: "Tus cambios fueron guardados.",
     });
 
@@ -174,10 +218,7 @@ describe("token shop lookup API", () => {
       success: true,
       message: "Tus cambios fueron guardados.",
     });
-    expect(saveShopWithProductsAction).toHaveBeenCalledWith(
-      body,
-      body.products,
-    );
+    expect(mockSaveShop).toHaveBeenCalledWith(body, body.products);
   });
 });
 
@@ -189,11 +230,11 @@ describe("shop home API", () => {
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Wrong parameters (1)." });
-    expect(getPublicShops).not.toHaveBeenCalled();
+    expect(mockGetPublicShops).not.toHaveBeenCalled();
   });
 
   test("returns public shops without editor secrets", async () => {
-    getPublicShops.mockResolvedValue([
+    mockGetPublicShops.mockResolvedValue([
       { slug: "public-shop", category: "Comida", typeformtoken: "secret" },
     ]);
 
@@ -205,6 +246,6 @@ describe("shop home API", () => {
     expect(await response.json()).toEqual([
       { slug: "public-shop", category: "Comida" },
     ]);
-    expect(getPublicShops).toHaveBeenCalledWith("Comida");
+    expect(mockGetPublicShops).toHaveBeenCalledWith("Comida");
   });
 });

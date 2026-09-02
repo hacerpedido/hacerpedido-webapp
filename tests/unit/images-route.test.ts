@@ -3,7 +3,7 @@ const mockUploadFile = jest.fn();
 const mockDeleteFile = jest.fn();
 const mockWriteFile = jest.fn();
 const mockRm = jest.fn();
-const mockRandomString = jest.fn((length) =>
+const mockRandomString = jest.fn((length: number) =>
   length === 10 ? "image-key" : "temporary-file",
 );
 
@@ -22,42 +22,60 @@ jest.mock("node:fs", () => ({
 }));
 jest.mock("#lib/utils/utils", () => ({ randomString: mockRandomString }));
 
-if (!global.Response) {
-  global.Response = class TestResponse {
-    constructor(body, init = {}) {
-      this.body = body;
-      this.status = init.status ?? 200;
-    }
+class TestResponse {
+  body: unknown;
+  status: number;
 
-    static json(body, init) {
-      return new TestResponse(body, init);
-    }
+  constructor(body: unknown, init: { status?: number } = {}) {
+    this.body = body;
+    this.status = init.status ?? 200;
+  }
 
-    async json() {
-      return this.body;
-    }
-  };
+  static json(body: unknown, init?: { status?: number }): TestResponse {
+    return new TestResponse(body, init);
+  }
+
+  async json(): Promise<unknown> {
+    return this.body;
+  }
 }
 
-const { DELETE, POST } = require("../../app/api/images/route");
+if (!global.Response) {
+  global.Response = TestResponse as unknown as typeof Response;
+}
+
+interface ImageRequest {
+  formData: () => Promise<FormData>;
+}
+
+type ImagesHandler = (request: ImageRequest) => Promise<TestResponse>;
+
+// Deferred require: an ESM import would be hoisted above the shared mock
+// handles, making the mocked factories run before they initialize.
+const { DELETE, POST } = require("../../app/api/images/route") as {
+  POST: ImagesHandler;
+  DELETE: ImagesHandler;
+};
 
 const shopID = "550e8400-e29b-41d4-a716-446655440000";
 
-function imageFile(contents, name, type) {
+function imageFile(contents: string, name: string, type: string): File {
   const file = new File([contents], name, { type });
   Object.defineProperty(file, "arrayBuffer", {
-    value: async () => Buffer.from(contents).buffer,
+    value: async (): Promise<ArrayBuffer> => Buffer.from(contents).buffer,
   });
   return file;
 }
 
-function formRequest(values) {
+function formRequest(values: Record<string, unknown>): ImageRequest {
   const form = new FormData();
-  for (const [name, value] of Object.entries(values)) form.append(name, value);
+  for (const [name, value] of Object.entries(values)) {
+    form.append(name, value as string | Blob);
+  }
   return { formData: jest.fn().mockResolvedValue(form) };
 }
 
-function imageRequest(overrides = {}) {
+function imageRequest(overrides: Record<string, unknown> = {}): ImageRequest {
   return formRequest({
     image_type: "logo",
     shop_id: shopID,

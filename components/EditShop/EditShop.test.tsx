@@ -1,23 +1,55 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
+import type React from "react";
 import EditShop from "./EditShop";
 
-const mockControllers = {};
+type PhoneValidator = (value: string) => string | boolean;
+
+interface MockController {
+  name: string;
+  rules?: unknown;
+  [key: string]: unknown;
+}
+
+const mockControllers: Record<string, MockController> = {};
 
 jest.mock("react-timeago", () => ({
   __esModule: true,
-  default: ({ date }) => <span data-testid="time-ago">{date}</span>,
+  default: ({ date }: { date: unknown }) => (
+    <span data-testid="time-ago">{String(date)}</span>
+  ),
 }));
 
 jest.mock("react-hook-form", () => ({
-  Controller: ({ as: Component, control, defaultValue, rules, ...props }) => {
-    mockControllers[props.name] = { ...props, rules };
-    return <Component {...props} value={defaultValue} />;
+  Controller: ({
+    as: Component,
+    control: _control,
+    defaultValue,
+    name,
+    rules,
+    ...props
+  }: {
+    as: React.ComponentType<Record<string, unknown>>;
+    control: unknown;
+    defaultValue: unknown;
+    name: string;
+    rules?: unknown;
+    [key: string]: unknown;
+  }) => {
+    mockControllers[name] = { ...props, name, rules };
+    return <Component {...props} name={name} value={defaultValue} />;
   },
 }));
 
 jest.mock("react-bootstrap/Modal", () => {
-  const Modal = ({ children, onHide, show }) =>
+  const Modal = ({
+    children,
+    onHide,
+    show,
+  }: {
+    children?: React.ReactNode;
+    onHide?: () => void;
+    show?: boolean;
+  }) =>
     show ? (
       <div role="dialog">
         {children}
@@ -26,21 +58,44 @@ jest.mock("react-bootstrap/Modal", () => {
         </button>
       </div>
     ) : null;
-  Modal.Header = ({ children }) => <div>{children}</div>;
-  Modal.Title = ({ children }) => <h2>{children}</h2>;
-  Modal.Body = ({ children }) => <div>{children}</div>;
-  Modal.Footer = ({ children }) => <div>{children}</div>;
-  return Modal;
+
+  return Object.assign(Modal, {
+    Header: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    Title: ({ children }: { children?: React.ReactNode }) => (
+      <h2>{children}</h2>
+    ),
+    Body: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+    Footer: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
+  });
 });
 
-jest.mock("./UploadImage", () => ({ handleClose, imageType }) => (
-  <div data-testid="upload-image">
-    Editando {imageType}
-    <button onClick={() => handleClose({ forceRefresh: true })} type="button">
-      Confirmar imagen
-    </button>
-  </div>
-));
+jest.mock(
+  "./UploadImage",
+  () =>
+    ({
+      handleClose,
+      imageType,
+    }: {
+      handleClose: (options: { forceRefresh: boolean }) => void;
+      imageType: string;
+    }) => (
+      <div data-testid="upload-image">
+        Editando {imageType}
+        <button
+          onClick={() => handleClose({ forceRefresh: true })}
+          type="button"
+        >
+          Confirmar imagen
+        </button>
+      </div>
+    ),
+);
 
 describe("EditShop", () => {
   const shop = {
@@ -55,7 +110,7 @@ describe("EditShop", () => {
     updated_at: "2024-01-01T00:00:00.000Z",
   };
 
-  const renderEditor = (overrides = {}) => {
+  const renderEditor = (overrides: Record<string, unknown> = {}) => {
     const props = {
       control: {},
       errors: {},
@@ -81,8 +136,12 @@ describe("EditShop", () => {
   test("renders current shop values and saves successfully", () => {
     const { props } = renderEditor();
 
-    expect(screen.getByTestId("edit-shop-name").value).toBe("La Esquina");
-    expect(screen.getByTestId("edit-shop-address").value).toBe("Calle 123");
+    expect(
+      (screen.getByTestId("edit-shop-name") as HTMLInputElement).value,
+    ).toBe("La Esquina");
+    expect(
+      (screen.getByTestId("edit-shop-address") as HTMLInputElement).value,
+    ).toBe("Calle 123");
 
     fireEvent.click(screen.getByTestId("save-shop"));
 
@@ -120,8 +179,10 @@ describe("EditShop", () => {
     });
 
     expect(screen.getByText(error.message)).toBeTruthy();
-    const validate =
-      mockControllers.orderswhatsappnumber.rules.validate.matchesAtLeastAPhone;
+    const { rules } = mockControllers.orderswhatsappnumber as {
+      rules: { validate: { matchesAtLeastAPhone: PhoneValidator } };
+    };
+    const validate = rules.validate.matchesAtLeastAPhone;
 
     expect(validate("")).toBe(
       "Al menos un número de teléfono debe ser ingresado.",
@@ -137,13 +198,16 @@ describe("EditShop", () => {
   test("disables editing and saving while a save is pending", () => {
     const { props } = renderEditor({ isSaving: true });
 
-    expect(screen.getByRole("button", { name: "Editar logo" }).disabled).toBe(
-      true,
-    );
+    expect(
+      (screen.getByRole("button", { name: "Editar logo" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
     expect(
       screen.getByRole("button", { name: "Editar portada" }),
     ).toHaveProperty("disabled", true);
-    expect(screen.getByTestId("save-shop").disabled).toBe(true);
+    expect(
+      (screen.getByTestId("save-shop") as HTMLButtonElement).disabled,
+    ).toBe(true);
 
     fireEvent.click(screen.getByTestId("save-shop"));
     expect(props.onSave).not.toHaveBeenCalled();
