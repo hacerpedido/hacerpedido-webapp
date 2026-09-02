@@ -10,6 +10,7 @@ import { trimObject } from "#lib/utils/utils";
 import axios from "axios";
 import ErrorPage from "next/error";
 import Head from "next/head";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -230,10 +231,12 @@ export default function EditShopPage() {
             >
               <span className={styles.openProductionLink}>
                 Ir a mi Sitio
-                <img
+                <Image
                   alt=""
                   className={styles.openProductionLinkIcon}
+                  height={16}
                   src="/images/external-link-alt.png"
+                  width={18}
                 />
               </span>
             </a>

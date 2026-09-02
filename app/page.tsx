@@ -10,9 +10,5 @@ export const metadata = {
 
 export default async function HomePage() {
   const shops = await getPublicShops(categories[0]);
-  return (
-    <>
-      <HomeClient initialShops={shops} />
-    </>
-  );
+  return <HomeClient initialShops={shops} />;
 }

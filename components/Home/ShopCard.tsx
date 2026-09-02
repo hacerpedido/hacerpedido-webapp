@@ -6,6 +6,7 @@ import {
   getShopInitialsColor,
 } from "#lib/utils/shops";
 
+import Image from "next/image";
 import React, { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopCard.module.css";
@@ -22,11 +23,14 @@ const ShopCard = ({ shop }) => {
       <div className={styles.container}>
         <div className={styles.containerLogo}>
           {logo && !logoFailed ? (
-            <img
+            <Image
               alt={name}
               className={styles.logo}
+              height={75}
               onError={() => setLogoFailed(true)}
               src={logo}
+              unoptimized
+              width={75}
             />
           ) : (
             <div
