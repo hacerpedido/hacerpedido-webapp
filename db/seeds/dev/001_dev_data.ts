@@ -1,7 +1,8 @@
-const { createDevData } = require("#db/factories.js");
+import { createDevData } from "#db/factories";
 
-/** @param {import("knex").Knex} knex */
-exports.seed = async (knex) => {
+import type { Knex } from "knex";
+
+export const seed = async (knex: Knex) => {
   const data = createDevData();
   const shopIds = data.shops.map(({ id }) => id);
   // The previous dev seed used the same product IDs but a different shop ID

@@ -1,3 +1,6 @@
+// TypeScript loader for Knex migrations/seeds (files loaded via CJS require).
+require("tsx/cjs");
+
 const { loadEnvConfig } = require("@next/env");
 
 /** @typedef {import("knex").Knex.Config} KnexConfig */

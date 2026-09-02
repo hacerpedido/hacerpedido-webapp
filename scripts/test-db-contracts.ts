@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { runDatabaseContractTests } = require("../tests/db/contracts.js");
+import { runDatabaseContractTests } from "../tests/db/contracts";
 
-async function main() {
+async function main(): Promise<void> {
   if (!process.env.PG_CONNECTION_STRING) {
     throw new Error(
       "PG_CONNECTION_STRING is required for database contract tests",
@@ -12,7 +12,7 @@ async function main() {
   console.log("Database contract tests passed.");
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error(error);
   process.exitCode = 1;
 });

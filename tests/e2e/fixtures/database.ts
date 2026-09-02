@@ -1,7 +1,6 @@
 import path from "path";
 
-// CommonJS helper shared with Node scripts; see run-context.js for resolution.
-const { computeE2EContext } = require("./run-context");
+import { computeE2EContext } from "./run-context";
 
 const composeFilePath = path.resolve(__dirname, "../../../compose.e2e.yaml");
 

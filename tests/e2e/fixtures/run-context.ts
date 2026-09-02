@@ -1,4 +1,4 @@
-const crypto = require("node:crypto");
+import { createHash } from "node:crypto";
 
 /**
  * Shared run identity for the E2E and development Compose stacks.
@@ -17,7 +17,7 @@ const crypto = require("node:crypto");
  *     preserving single-checkout/CI behavior exactly.
  */
 
-const E2E_DEFAULTS = {
+export const E2E_DEFAULTS = {
   projectName: "hacerpedido-e2e",
   pgPort: 54329,
   appPort: 3001,
@@ -26,40 +26,60 @@ const E2E_DEFAULTS = {
   dbUser: "e2e_user",
   dbPassword: "e2e_password",
   pgHost: "127.0.0.1",
-};
+} as const;
+
+export interface E2EContext {
+  runId: string;
+  isLane: boolean;
+  projectName: string;
+  volumePrefix: string;
+  pgPort: number;
+  appPort: number;
+  baseURL: string;
+  pgConnectionString: string;
+}
 
 const BASE_LANE_PG_PORT = 54400;
 const BASE_LANE_APP_PORT = 3200;
 const LANE_PORT_RANGE = 100;
 
-function isWorktreePath(cwd) {
+export function isWorktreePath(cwd: string): boolean {
   return /[\\/](?:\.slim[\\/]worktrees|worktrees)[\\/]/.test(cwd);
 }
 
-function sanitizeRunId(value) {
+function sanitizeRunId(value: string): string {
   const sanitized = String(value)
     .toLowerCase()
     .replace(/[^a-z0-9_-]/g, "-");
   return sanitized || "lane";
 }
 
-function deriveLaneId(cwd) {
-  const digest = crypto.createHash("sha1").update(cwd).digest("hex");
+function deriveLaneId(cwd: string): string {
+  const digest = createHash("sha1").update(cwd).digest("hex");
   return `wt-${digest.slice(0, 8)}`;
 }
 
-function lanePortOffset(runId) {
-  const digest = crypto.createHash("sha1").update(runId).digest("hex");
+function lanePortOffset(runId: string): number {
+  const digest = createHash("sha1").update(runId).digest("hex");
   return parseInt(digest.slice(0, 4), 16) % LANE_PORT_RANGE;
 }
 
-function resolvePort(envValue, base, runId) {
+function resolvePort(
+  envValue: string | undefined,
+  base: number,
+  runId: string,
+): number {
   if (envValue) return Number(envValue);
   return base + lanePortOffset(runId);
 }
 
-function computeE2EContext(env = process.env, cwd = process.cwd()) {
-  const explicitRunId = env.E2E_RUN_ID && env.E2E_RUN_ID !== "main";
+export function computeE2EContext(
+  env: NodeJS.ProcessEnv = process.env,
+  cwd = process.cwd(),
+): E2EContext {
+  const runIdOverride = env.E2E_RUN_ID;
+  const explicitRunId =
+    runIdOverride && runIdOverride !== "main" ? runIdOverride : undefined;
   const isLane = Boolean(explicitRunId) || isWorktreePath(cwd);
 
   if (!isLane) {
@@ -98,5 +118,3 @@ function computeE2EContext(env = process.env, cwd = process.cwd()) {
     pgConnectionString: `postgresql://${E2E_DEFAULTS.dbUser}:${E2E_DEFAULTS.dbPassword}@${E2E_DEFAULTS.pgHost}:${pgPort}/${E2E_DEFAULTS.dbName}`,
   };
 }
-
-module.exports = { computeE2EContext, isWorktreePath };

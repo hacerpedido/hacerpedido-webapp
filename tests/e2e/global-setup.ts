@@ -104,7 +104,7 @@ async function globalSetup() {
   });
   await runCommand(
     process.execPath,
-    [resolve(__dirname, "./fixtures/setup.js")],
+    ["--import", "tsx", resolve(__dirname, "./fixtures/setup.ts")],
     60_000,
     {
       stdio: "inherit",

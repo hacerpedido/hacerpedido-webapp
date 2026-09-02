@@ -1,13 +1,6 @@
 #!/usr/bin/env node
 
-/**
- * Prints the resolved E2E run context for the current checkout.
- *
- * Useful to confirm which Compose project, ports, and artifact paths a
- * Playwright run inside this directory will use (especially in worktrees).
- */
-
-const { computeE2EContext } = require("../tests/e2e/fixtures/run-context");
+import { computeE2EContext } from "../tests/e2e/fixtures/run-context";
 
 const context = computeE2EContext();
 

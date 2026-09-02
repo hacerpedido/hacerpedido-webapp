@@ -1,6 +1,7 @@
-const knexFactory = require("knex");
+import { productFactory, shopFactory } from "#db/factories";
 
-const { productFactory, shopFactory } = require("#db/factories.js");
+import type { Knex } from "knex";
+import knexFactory from "knex";
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const ADMIN_SAVE_SHOP_ID = "00000000-0000-0000-0000-000000000004";
@@ -110,7 +111,7 @@ async function setup() {
     throw new Error("PG_CONNECTION_STRING is required for E2E fixture setup");
   }
 
-  const knex = knexFactory({
+  const knex: Knex = knexFactory({
     client: "pg",
     connection: process.env.PG_CONNECTION_STRING,
   });

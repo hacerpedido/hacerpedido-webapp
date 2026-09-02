@@ -84,7 +84,7 @@ with `ALTER FUNCTION ... SET search_path`. This resolves the Supabase Security
 Advisor "role mutable search_path" finding for trigger functions and is
 reversible with `RESET search_path`. The pinned `proconfig` value
 (`search_path=pg_catalog, public`) is one of the approved function
-configurations checked by `scripts/adopt-baseline.js`.
+configurations checked by `scripts/adopt-baseline.ts`.
 
 Production has RLS enabled on `shops` and `products`. E2E deliberately does
 not create the Supabase event trigger and leaves RLS disabled because its
@@ -132,7 +132,7 @@ run in production. The production `knex_migrations` table is expected to be
 empty before adoption. Running `pnpm run db:migrate` first would attempt to
 create already-existing objects and is unsafe.
 
-The guarded tool is `scripts/adopt-baseline.js`:
+The guarded tool is `scripts/adopt-baseline.ts`:
 
 - It defaults to dry-run and never calls Knex's migration APIs.
 - It verifies the complete tracked `shops`/`products` column contract,
@@ -162,7 +162,7 @@ window, a verified backup, and a maintainer reviewing the dry-run output.
 3. Run the production-specific dry run:
 
    ```bash
-   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.js --rls=production
+   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.ts --rls=production
    ```
 
 4. If it reports drift, stop. Capture the reported catalog difference and
@@ -171,7 +171,7 @@ window, a verified backup, and a maintainer reviewing the dry-run output.
 5. With approval, record only the verified baseline:
 
    ```bash
-   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.js --apply --rls=production
+   PG_CONNECTION_STRING="$PG_CONNECTION_STRING" node scripts/adopt-baseline.ts --apply --rls=production
    ```
 
 6. Re-run the same dry run. It must report the already-adopted baseline and no
@@ -211,7 +211,7 @@ The disposable database contract tests apply `0001_baseline.js`,
 `0002_add_secondary_indexes.js`, and `0003_pin_trigger_search_path.js`
 together, then assert the function's `proconfig` is exactly
 `search_path=pg_catalog, public`, so the integration path exercises the
-hardened #134 representation. `tests/db/adopt-baseline.test.js` keeps the unit
+hardened #134 representation. `tests/db/adopt-baseline.test.ts` keeps the unit
 contract for accepted function configurations (the original `NULL` or the
 pinned #134 value) and rejects any other setting.
 

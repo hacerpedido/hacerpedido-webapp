@@ -1,6 +1,6 @@
 const originalConsoleError = console.error;
 
-function formatConsoleErrorCall(args) {
+function formatConsoleErrorCall(args: unknown[]): string {
   return args
     .map((arg) => {
       if (arg instanceof Error) {
@@ -27,7 +27,7 @@ beforeEach(() => {
 
 afterEach(() => {
   const mockedConsoleError = console.error;
-  const calls = mockedConsoleError?.mock?.calls ?? [];
+  const calls = (mockedConsoleError as jest.Mock).mock.calls ?? [];
 
   console.error = originalConsoleError;
 

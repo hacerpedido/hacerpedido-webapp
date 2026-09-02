@@ -1,12 +1,27 @@
-const { faker } = require("@faker-js/faker");
+import { faker } from "@faker-js/faker";
 
-/** @typedef {Record<string, unknown> & { id?: string, shopId?: string }} FactoryOverrides */
-/** @typedef {Record<string, unknown> & { id: string, category: string, name: string, shopid: string }} ProductRecord */
-/** @typedef {Record<string, unknown> & { id: string, name: string, slug: string, category: string }} ShopRecord */
+export interface ShopRecord extends Record<string, unknown> {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  region: string;
+}
 
-/** @param {FactoryOverrides} [overrides] @returns {ShopRecord} */
+export interface ProductRecord extends Record<string, unknown> {
+  id: string;
+  category: string;
+  name: string;
+  description: string;
+  price: string;
+  shopid: string;
+  itemnumber: number;
+}
 
-function shopFactory(overrides = {}) {
+export type FactoryOverrides = Partial<ShopRecord | ProductRecord> &
+  Record<string, unknown> & { shopId?: string };
+
+export function shopFactory(overrides: FactoryOverrides = {}): ShopRecord {
   return {
     id: faker.string.uuid(),
     name: faker.company.name(),
@@ -32,11 +47,12 @@ function shopFactory(overrides = {}) {
     ordersphonenumber: null,
     orderswhatsappnumber: "+54911 5555 0101",
     ...overrides,
-  };
+  } as ShopRecord;
 }
 
-/** @param {FactoryOverrides} [overrides] @returns {ProductRecord} */
-function productFactory(overrides = {}) {
+export function productFactory(
+  overrides: FactoryOverrides = {},
+): ProductRecord {
   const { shopId, ...rest } = overrides;
   return {
     id: faker.string.uuid(),
@@ -47,11 +63,13 @@ function productFactory(overrides = {}) {
     shopid: shopId || faker.string.uuid(),
     itemnumber: faker.number.int({ min: 1, max: 99 }),
     ...rest,
-  };
+  } as ProductRecord;
 }
 
-/** @returns {{ shops: ShopRecord[], products: ProductRecord[] }} */
-function createDevData() {
+export function createDevData(): {
+  shops: ShopRecord[];
+  products: ProductRecord[];
+} {
   const categories = [
     "Comida",
     "Cervecerías",
@@ -87,7 +105,7 @@ function createDevData() {
     "/images/backgrounds/bebida.jpg",
     "/images/backgrounds/otros.jpg",
   ];
-  const productNames = {
+  const productNames: Record<string, string[]> = {
     Comida: [
       "Empanadas salteñas",
       "Milanesa napolitana",
@@ -162,7 +180,7 @@ function createDevData() {
     ],
   };
 
-  const categorySlugs = {
+  const categorySlugs: Record<string, string> = {
     Comida: "comida",
     Cervecerías: "cervecerias",
     "Helados y Postres": "helados-postres",
@@ -211,5 +229,3 @@ function createDevData() {
   );
   return { shops, products };
 }
-
-module.exports = { shopFactory, productFactory, createDevData };

@@ -47,7 +47,7 @@ Run **only while** production has no Knex history (empty or absent
 
    ```bash
    PG_CONNECTION_STRING="$PG_CONNECTION_STRING" \
-     node scripts/adopt-baseline.js --rls=production
+     node scripts/adopt-baseline.ts --rls=production
    ```
 
    The tool verifies tables, columns, defaults, constraints, triggers,
@@ -60,7 +60,7 @@ Run **only while** production has no Knex history (empty or absent
 
    ```bash
    PG_CONNECTION_STRING="$PG_CONNECTION_STRING" \
-     node scripts/adopt-baseline.js --apply --rls=production
+     node scripts/adopt-baseline.ts --apply --rls=production
    ```
 
 4. Re-run the dry run from step 1. It must report `History: adopted` and no
@@ -101,7 +101,7 @@ psql "$PG_CONNECTION_STRING" -c "SELECT p.oid::regprocedure AS function_name, p.
 
 # Guarded adoption dry run is idempotent
 PG_CONNECTION_STRING="$PG_CONNECTION_STRING" \
-  node scripts/adopt-baseline.js --rls=production
+  node scripts/adopt-baseline.ts --rls=production
 ```
 
 Optionally smoke-test that the shop queries now use the new index
@@ -128,6 +128,6 @@ Optionally smoke-test that the shop queries now use the new index
 - The database contract tests (`pnpm run test:db` against disposable
   PostgreSQL) assert migration idempotency, index definitions, the adoption
   flow, and the pinned trigger configuration. Run them before any deploy that
-  touches `db/migrations/`, `scripts/adopt-baseline.js`, or `tests/db/`.
+  touches `db/migrations/`, `scripts/adopt-baseline.ts`, or `tests/db/`.
 - Automated execution on deploy is tracked in #231; broader deployment,
   rollback, and environment documentation is tracked in #150.

@@ -1,4 +1,6 @@
-const { shopFactory } = require("#db/factories.js");
+import { shopFactory } from "#db/factories";
+
+import type { Knex } from "knex";
 
 // This shop is only read by the public-catalog freshness regression. Its
 // separate token and slug keep the editor mutation isolated from shared
@@ -25,7 +27,7 @@ const publicFreshnessShop = shopFactory({
   updated_at: "2020-01-01 00:00:00",
 });
 
-exports.seed = async (knex) => {
+export const seed = async (knex: Knex) => {
   await knex.transaction(async (trx) => {
     await trx("products").where("shopid", PUBLIC_FRESHNESS_SHOP_ID).del();
     await trx("shops").where("id", PUBLIC_FRESHNESS_SHOP_ID).del();

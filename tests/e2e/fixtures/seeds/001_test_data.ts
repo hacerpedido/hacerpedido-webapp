@@ -1,4 +1,6 @@
-const { productFactory, shopFactory } = require("#db/factories.js");
+import { productFactory, shopFactory } from "#db/factories";
+
+import type { Knex } from "knex";
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const seedData = {
@@ -49,7 +51,7 @@ const seedData = {
   ],
 };
 
-exports.seed = async (knex) => {
+export const seed = async (knex: Knex) => {
   await knex.transaction(async (trx) => {
     await trx("products").where("shopid", SHOP_ID).del();
     await trx("shops").whereIn("id", [SHOP_ID]).del();
