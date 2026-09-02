@@ -1,5 +1,7 @@
-// This file configures the initialization of Sentry on the browser.
-// The config you add here will be used whenever a page is visited.
+// This file configures the initialization of Sentry on the Node.js server.
+// It is imported from `instrumentation.ts` (`register()`), per @sentry/nextjs
+// 10 conventions. The config you add here will be used whenever the server
+// handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
@@ -12,7 +14,7 @@ if (!isDevelopmentOrTest && SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
     // Adjust this value in production, or use tracesSampler for greater control
-    tracesSampleRate: 1.0,
+    tracesSampleRate: 0.25,
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so
