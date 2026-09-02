@@ -1,6 +1,8 @@
 /** @type {import("@jest/types").Config} */
 module.exports = {
-  testEnvironment: "jsdom",
+  // Use the package name so depcheck can account for Jest 30's separately
+  // installed environment instead of reporting it as unused in CI.
+  testEnvironment: "jest-environment-jsdom",
   testPathIgnorePatterns: ["<rootDir>/tests/e2e/"],
   setupFilesAfterEnv: ["<rootDir>/tests/setup.js"],
   moduleNameMapper: {

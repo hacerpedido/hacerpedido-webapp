@@ -1,5 +1,10 @@
 allowBuilds:
+  # These are optional native accelerators used by Jest. CI runs neither
+  # watch mode nor a native postinstall, so explicitly deny their scripts
+  # instead of failing installation with an unresolved build policy.
+  '@parcel/watcher': false
   '@sentry/cli': true
   aws-sdk: true
   core-js: true
   lefthook: true
+  unrs-resolver: false
