@@ -123,6 +123,10 @@ Do not add further secondary indexes without measured evidence.
 
 ## Baseline adoption
 
+> Full deploy sequence (adoption + applying pending migrations + verification)
+> lives in [docs/deploy-playbook.md](deploy-playbook.md). This section
+> documents the guarded adoption tool itself.
+
 `0001_baseline.js` creates the schema on an empty local database but was never
 run in production. The production `knex_migrations` table is expected to be
 empty before adoption. Running `pnpm run db:migrate` first would attempt to
