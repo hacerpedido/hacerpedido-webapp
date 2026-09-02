@@ -96,12 +96,10 @@ async function migrationHistory(knex) {
   const names = rows.map((row) => row.name);
 
   if (names.length === 0) return "empty";
-  if (names.length === 1 && names[0] === BASELINE_MIGRATION) {
-    return "adopted";
-  }
+  if (names[0] === BASELINE_MIGRATION) return "adopted";
 
   fail(
-    `unexpected Knex history ${JSON.stringify(names)}; expected [] or [${JSON.stringify(BASELINE_MIGRATION)}]`,
+    `unexpected Knex history ${JSON.stringify(names)}; expected an empty history or one starting with ${JSON.stringify(BASELINE_MIGRATION)}`,
   );
 }
 
