@@ -1,6 +1,8 @@
 import { shopFactory } from "#db/factories";
+import { type NewShopRow, products as productsTable, shops } from "#db/schema";
+import type { Database } from "#lib/db/client";
 
-import type { Knex } from "knex";
+import { inArray } from "drizzle-orm";
 
 // This shop is only read by the public-catalog freshness regression. Its
 // separate token and slug keep the editor mutation isolated from shared
@@ -27,10 +29,14 @@ const publicFreshnessShop = shopFactory({
   updated_at: "2020-01-01 00:00:00",
 });
 
-export const seed = async (knex: Knex) => {
-  await knex.transaction(async (trx) => {
-    await trx("products").where("shopid", PUBLIC_FRESHNESS_SHOP_ID).del();
-    await trx("shops").where("id", PUBLIC_FRESHNESS_SHOP_ID).del();
-    await trx("shops").insert(publicFreshnessShop);
+export const seed = async (db: Database) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(productsTable)
+      .where(inArray(productsTable.shopid, [PUBLIC_FRESHNESS_SHOP_ID]));
+    await tx.delete(shops).where(inArray(shops.id, [PUBLIC_FRESHNESS_SHOP_ID]));
+    await tx
+      .insert(shops)
+      .values([publicFreshnessShop] as unknown as NewShopRow[]);
   });
 };

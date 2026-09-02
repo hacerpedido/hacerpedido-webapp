@@ -18,6 +18,8 @@ import { getPool } from "./pool";
 
 type Database = NodePgDatabase<typeof schemaNamespace>;
 
+export type { Database };
+
 let database: Database | undefined;
 
 export function getDb(): Database {

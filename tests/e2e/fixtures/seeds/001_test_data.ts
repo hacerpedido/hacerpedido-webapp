@@ -1,6 +1,13 @@
 import { productFactory, shopFactory } from "#db/factories";
+import {
+  type NewProductRow,
+  type NewShopRow,
+  products as productsTable,
+  shops,
+} from "#db/schema";
+import type { Database } from "#lib/db/client";
 
-import type { Knex } from "knex";
+import { inArray } from "drizzle-orm";
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const seedData = {
@@ -51,11 +58,15 @@ const seedData = {
   ],
 };
 
-export const seed = async (knex: Knex) => {
-  await knex.transaction(async (trx) => {
-    await trx("products").where("shopid", SHOP_ID).del();
-    await trx("shops").whereIn("id", [SHOP_ID]).del();
-    await trx("shops").insert(seedData.shops);
-    await trx("products").insert(seedData.products);
+export const seed = async (db: Database) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(productsTable)
+      .where(inArray(productsTable.shopid, [SHOP_ID]));
+    await tx.delete(shops).where(inArray(shops.id, [SHOP_ID]));
+    await tx.insert(shops).values(seedData.shops as unknown as NewShopRow[]);
+    await tx
+      .insert(productsTable)
+      .values(seedData.products as unknown as NewProductRow[]);
   });
 };

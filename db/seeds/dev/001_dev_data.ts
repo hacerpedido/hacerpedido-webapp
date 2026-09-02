@@ -1,8 +1,15 @@
 import { createDevData } from "#db/factories";
+import {
+  type NewProductRow,
+  type NewShopRow,
+  products as productsTable,
+  shops,
+} from "#db/schema";
+import type { Database } from "#lib/db/client";
 
-import type { Knex } from "knex";
+import { inArray, or } from "drizzle-orm";
 
-export const seed = async (knex: Knex) => {
+export const seed = async (db: Database) => {
   const data = createDevData();
   const shopIds = data.shops.map(({ id }) => id);
   // The previous dev seed used the same product IDs but a different shop ID
@@ -15,14 +22,20 @@ export const seed = async (knex: Knex) => {
   );
   const managedShopIds = [...shopIds, ...legacyShopIds];
   const productIds = data.products.map(({ id }) => id);
-  await knex.transaction(async (trx) => {
+  await db.transaction(async (tx) => {
     // Only remove deterministic IDs owned by this seed; leave other local data intact.
-    await trx("products")
-      .whereIn("id", productIds)
-      .orWhereIn("shopid", managedShopIds)
-      .del();
-    await trx("shops").whereIn("id", managedShopIds).del();
-    await trx("shops").insert(data.shops);
-    await trx("products").insert(data.products);
+    await tx
+      .delete(productsTable)
+      .where(
+        or(
+          inArray(productsTable.id, productIds),
+          inArray(productsTable.shopid, managedShopIds),
+        ),
+      );
+    await tx.delete(shops).where(inArray(shops.id, managedShopIds));
+    await tx.insert(shops).values(data.shops as unknown as NewShopRow[]);
+    await tx
+      .insert(productsTable)
+      .values(data.products as unknown as NewProductRow[]);
   });
 };

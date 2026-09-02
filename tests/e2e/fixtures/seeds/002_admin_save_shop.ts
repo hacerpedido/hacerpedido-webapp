@@ -1,6 +1,8 @@
 import { shopFactory } from "#db/factories";
+import { type NewShopRow, products as productsTable, shops } from "#db/schema";
+import type { Database } from "#lib/db/client";
 
-import type { Knex } from "knex";
+import { inArray } from "drizzle-orm";
 
 // This private shop is exclusively for the admin save E2E. Keeping it outside
 // the public catalog fixture prevents that test's write from racing readers.
@@ -28,10 +30,12 @@ const adminSaveShop = shopFactory({
   updated_at: "2020-01-01 00:00:00",
 });
 
-export const seed = async (knex: Knex) => {
-  await knex.transaction(async (trx) => {
-    await trx("products").where("shopid", ADMIN_SAVE_SHOP_ID).del();
-    await trx("shops").where("id", ADMIN_SAVE_SHOP_ID).del();
-    await trx("shops").insert(adminSaveShop);
+export const seed = async (db: Database) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(productsTable)
+      .where(inArray(productsTable.shopid, [ADMIN_SAVE_SHOP_ID]));
+    await tx.delete(shops).where(inArray(shops.id, [ADMIN_SAVE_SHOP_ID]));
+    await tx.insert(shops).values([adminSaveShop] as unknown as NewShopRow[]);
   });
 };

@@ -52,8 +52,14 @@ export const shops = pgTable(
     typeformtoken: text("typeformtoken"),
     ordersphonenumber: text("ordersphonenumber"),
     orderswhatsappnumber: text("orderswhatsappnumber"),
-    created_at: timestamp("created_at", { withTimezone: false }).defaultNow(),
-    updated_at: timestamp("updated_at", { withTimezone: false }).defaultNow(),
+    created_at: timestamp("created_at", {
+      mode: "string",
+      withTimezone: false,
+    }).defaultNow(),
+    updated_at: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: false,
+    }).defaultNow(),
   },
   (table) => [
     // Constraint names mirror production (0001_baseline).
@@ -77,8 +83,14 @@ export const products = pgTable(
     price: text("price"),
     shopid: uuid("shopid").notNull(),
     itemnumber: integer("itemnumber"),
-    created_at: timestamp("created_at", { withTimezone: false }).defaultNow(),
-    updated_at: timestamp("updated_at", { withTimezone: false }).defaultNow(),
+    created_at: timestamp("created_at", {
+      mode: "string",
+      withTimezone: false,
+    }).defaultNow(),
+    updated_at: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: false,
+    }).defaultNow(),
   },
   (table) => [
     // Constraint name mirrors production (0001_baseline).

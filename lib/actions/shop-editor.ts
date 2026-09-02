@@ -2,7 +2,7 @@
 
 import { products as productsTable, shops } from "#db/schema";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { getDb } from "../db/client";
 import type { Product } from "../types";
 import {
@@ -65,7 +65,7 @@ export async function saveShopWithProductsAction(
             opentimes: optionalText(input.opentimes),
             ordersphonenumber: optionalText(input.ordersphonenumber),
             orderswhatsappnumber: optionalText(input.orderswhatsappnumber),
-            updated_at: new Date(),
+            updated_at: sql`now()`,
           })
           .where(
             and(eq(shops.id, input.id), eq(shops.typeformtoken, input.token)),
