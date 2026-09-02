@@ -46,7 +46,6 @@
     "bootstrap": "^4.6.2",
     "handsontable": "^8.4.0",
     "knex": "^3.3.0",
-    "nested-knex": "^0.1.2",
     "next": "16.3.4",
     "pg": "^8.23.0",
     "react": "^19.2.8",

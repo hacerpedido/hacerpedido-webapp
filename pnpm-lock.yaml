@@ -29,9 +29,6 @@ importers:
       knex:
         specifier: ^3.3.0
         version: 3.3.0(pg@8.23.0)(supports-color@8.1.1)
-      nested-knex:
-        specifier: ^0.1.2
-        version: 0.1.2(knex@3.3.0(pg@8.23.0)(supports-color@8.1.1))
       next:
         specifier: 16.3.4
         version: 16.3.4(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.62.1)(@types/node@26.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -2610,27 +2607,11 @@ packages:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
 
-  lodash.isarray@4.0.0:
-    resolution: {integrity: sha512-V8ViWvoNlXpCrB6Ewaj3ScRXUpmCvqp4tJUxa3dlovuJj/8lp3SND5Kw4v5OeuHgoyw4qJN+gl36qZqp6WYQ6g==}
-    deprecated: This package is deprecated. Use Array.isArray.
-
-  lodash.isfunction@3.0.9:
-    resolution: {integrity: sha512-AirXNj15uRIMMPihnkInB4i3NHeb4iBtNg9WRWuK2o31S+ePwwNmDPaTL3o7dTJ+VXNZim7rFs4rxN4YU1oUJw==}
-
-  lodash.isplainobject@4.0.6:
-    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
-
-  lodash.keys@4.2.0:
-    resolution: {integrity: sha512-J79MkJcp7Df5mizHiVNpjoHXLi4HLjh9VLS/M7lQSGoQ+0oQ+lWEigREkqKyizPB1IawvQLLKY8mzEcm1tkyxQ==}
-
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
   lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
-
-  lodash.values@4.3.0:
-    resolution: {integrity: sha512-r0RwvdCv8id9TUblb/O7rYPwVy6lerCbcawrfdo9iC/1t1wsNMJknO79WNBgwkH0hIeJ08jmvvESbFpNb4jH0Q==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -2834,14 +2815,6 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
-
-  nested-knex@0.1.2:
-    resolution: {integrity: sha512-0TOUkeacPBCPpgPpuWUwYAegSCxXZOJTO/EZm/o1yAQWU845Ifm4g5oo80hxDV6/remsPsucwP6zncrsRF6VdQ==}
-    peerDependencies:
-      knex: ^0.20.2
-
-  nesthydrationjs@1.0.5:
-    resolution: {integrity: sha512-LnqhV0LfczSX5LTp3UP1QIIyP8iEd0tn5ckslsPsnnbFxHWU25VXmR4cj/Ast/4MuEEYC8hxjrTQSHaZYwmBDQ==}
 
   next@16.3.4:
     resolution: {integrity: sha512-/Ztf6CeRH+ejEXUrYtqI4gkS66eFIHuSwqi60RgcpWKodxFZx2/dqVCMKBwILfAHXQ+F1b1vAudgj3mnxqtoIA==}
@@ -6420,19 +6393,9 @@ snapshots:
     dependencies:
       p-locate: 4.1.0
 
-  lodash.isarray@4.0.0: {}
-
-  lodash.isfunction@3.0.9: {}
-
-  lodash.isplainobject@4.0.6: {}
-
-  lodash.keys@4.2.0: {}
-
   lodash.merge@4.6.2: {}
 
   lodash.truncate@4.4.2: {}
-
-  lodash.values@4.3.0: {}
 
   lodash@4.18.1: {}
 
@@ -6737,19 +6700,6 @@ snapshots:
   napi-postinstall@0.3.4: {}
 
   natural-compare@1.4.0: {}
-
-  nested-knex@0.1.2(knex@3.3.0(pg@8.23.0)(supports-color@8.1.1)):
-    dependencies:
-      knex: 3.3.0(pg@8.23.0)(supports-color@8.1.1)
-      nesthydrationjs: 1.0.5
-
-  nesthydrationjs@1.0.5:
-    dependencies:
-      lodash.isarray: 4.0.0
-      lodash.isfunction: 3.0.9
-      lodash.isplainobject: 4.0.6
-      lodash.keys: 4.2.0
-      lodash.values: 4.3.0
 
   next@16.3.4(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.62.1)(@types/node@26.4.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
