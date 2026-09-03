@@ -71,7 +71,7 @@
     "@types/react-dom": "^19.2.5",
     "depcheck": "^1.4.7",
     "drizzle-kit": "^0.31.10",
-"jest": "^30.5.1",
+    "jest": "^30.5.1",
     "jest-axe": "^11.0.0",
     "jest-environment-jsdom": "^30.5.1",
     "jest-environment-node": "30.5.1",

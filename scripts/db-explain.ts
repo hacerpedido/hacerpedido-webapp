@@ -26,8 +26,6 @@
  * CI/local checks catch missing indexes after a migration drift.
  */
 
-import { resolve } from "node:path";
-
 import { loadEnvConfig } from "@next/env";
 
 loadEnvConfig(process.cwd());
