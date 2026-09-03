@@ -21,8 +21,8 @@ Language conventions:
 | State | CartContext (useReducer + localStorage) |
 | HTTP | Native `fetch` request layer → internal App Router API routes |
 | DB | PostgreSQL 17.6 (Supabase) via Drizzle over `pg` |
-| Files | AWS SDK v2 → S3 |
-| Observability | @sentry/nextjs (disabled in dev) |
+| Files | AWS SDK v3 → S3 |
+| Observability | @sentry/nextjs 10 (instrumentation + source maps, disabled in dev) |
 | Tooling | TypeScript (`tsconfig.json`, `typecheck`), Biome (format/lint), Lefthook (pre-commit) |
 | Testing | Jest 30 (unit), Playwright (E2E) |
 
@@ -47,7 +47,7 @@ app/
   api/shop/[slug]/route.ts  Shop by slug
   api/shop/by-token/route.ts Management by token
   api/shop/editor/route.ts  Editor mutations
-  layout.tsx, providers.tsx, error.tsx, loading.tsx, not-found.tsx
+  layout.tsx, providers.tsx, error.tsx, global-error.tsx, loading.tsx, not-found.tsx
 components/
   Home/                     HomeHeader, HomeFilterBar, ShopCard
   Shop/                     ShopView, ShopHeader, ShopFooter, Product, ProductList, ProductAmountPopup, ShopNotes
@@ -70,6 +70,12 @@ tests/
 assets/                     colors.ts, theme.ts, backgrounds.ts
 public/                     manifest.json, favicon, logos, og_image.jpg, robots.txt
 docs/superpowers/           Documentation
+
+Sentry (v10 layout, see the `2026-05-06-nextjs-upgrade-design.md` doc):
+next.config.ts            wraps Next config with `withSentryConfig`
+instrumentation.ts        register() loads sentry.server/edge configs; onRequestError
+instrumentation-client.ts client init + onRouterTransitionStart
+sentry.server.config.ts / sentry.edge.config.ts   SDK init per runtime
 ```
 
 ## Commands
@@ -101,7 +107,7 @@ Environment notes:
 
 Names only — never print or commit values:
 
-`PG_CONNECTION_STRING` (required for db/scripts/E2E), `HP_AWS_ACCESS_KEY_ID`, `HP_AWS_SECRET_ACCESS_KEY`, `HP_AWS_IMAGES_BUCKET`, `NEXT_PUBLIC_IMAGE_BUCKET_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`.
+`PG_CONNECTION_STRING` (required for db/scripts/E2E), `HP_AWS_ACCESS_KEY_ID`, `HP_AWS_SECRET_ACCESS_KEY`, `HP_AWS_IMAGES_BUCKET`, `NEXT_PUBLIC_IMAGE_BUCKET_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_AUTH_TOKEN` (source map upload), `SENTRY_ORG`, `SENTRY_PROJECT`.
 
 ## Testing expectations
 

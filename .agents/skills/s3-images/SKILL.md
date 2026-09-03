@@ -15,9 +15,9 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 ## How it works
 
-- `lib/utils/aws-s3.ts` uses **AWS SDK v2** and exports:
-  - `uploadFile(fileName, key, mime)` — reads the local file, `s3.upload({ Bucket, Key, Body, ContentType, ACL: "public-read" })`.
-  - `deleteFile(key)` — `s3.deleteObject({ Bucket, Key })`.
+- `lib/utils/aws-s3.ts` uses **AWS SDK v3** (`@aws-sdk/client-s3`) and exports:
+  - `uploadFile(fileName, key, mime)` — reads the local file, sends a `PutObjectCommand` with `ACL: "public-read"`.
+  - `deleteFile(key)` — sends a `DeleteObjectCommand`.
 - API route `app/api/images/route.ts` wraps these for the browser flow.
 - UI: `components/EditShop/UploadImage.tsx` drives crop + upload on the editor.
 
@@ -38,7 +38,7 @@ Shop images (logo, background, product uploads) are stored on AWS S3 and uploade
 
 ## Gotchas
 
-- `aws-sdk` is v2 (not v3) — keep using S3 v2 call styles.
+- Uses `@aws-sdk/client-s3` (v3) — keep using v3 command call styles.
 - `uploadFile` reads from a local path (`fs.readFileSync`) — in serverless contexts make sure the file exists on disk first (upload to a temp file, not a stream).
 - Bucket must allow public-read ACL for images to render (`NEXT_PUBLIC_IMAGE_BUCKET_URL` is what the browser uses).
 - Never log or commit AWS credentials.
