@@ -1,11 +1,10 @@
-// @ts-nocheck
 import colors from "#assets/colors";
 import * as Icons from "#assets/icons";
+import Button from "#components/primitivas/Button";
+import Dialog from "#components/primitivas/Dialog";
 
 import Link from "next/link";
 import { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import styles from "./HomeHeader.module.css";
 
 export default function HomeHeader() {
@@ -18,7 +17,7 @@ export default function HomeHeader() {
 
   return (
     <header className={styles.container}>
-      <Link href="/">
+      <Link aria-label="HacerPedido — Inicio" href="/">
         <Icons.LogoHacerpedido color={colors.white} height={19} width={177} />
         <input name="deployedVersion" readOnly type="hidden" value={version} />
       </Link>
@@ -31,20 +30,18 @@ export default function HomeHeader() {
         ¡Sumá tu comercio!
       </button>
 
-      <Modal onHide={handleClose} show={show}>
-        <Modal.Header closeButton>
-          <Modal.Title>Ups...</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog onClose={handleClose} open={show}>
+        <Dialog.Title>Ups...</Dialog.Title>
+        <Dialog.Body>
           Por el momento no estamos haciendo nuevas altas. Próximamente habrá
           novedades :)
-        </Modal.Body>
-        <Modal.Footer>
+        </Dialog.Body>
+        <Dialog.Footer>
           <Button onClick={handleClose} variant="secondary">
             Cerrar
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </Dialog.Footer>
+      </Dialog>
     </header>
   );
 }
