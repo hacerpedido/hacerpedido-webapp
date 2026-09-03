@@ -10,7 +10,7 @@
 }
 
 .amountText {
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: #ffffff;
@@ -29,7 +29,7 @@
 
 .buttonQtyText {
   padding-bottom: 2px;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
@@ -58,7 +58,7 @@
 .description {
   flex: 1;
   flex-wrap: wrap;
-  font-family: "Roboto Slab";
+  font-family: "Roboto Slab", serif;
   font-size: 13px;
   line-height: 17px;
   color: #8f9bb3;
@@ -68,7 +68,7 @@
   flex: 1;
   flex-wrap: wrap;
   margin-bottom: 5px;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 15px;
   font-weight: 600;
   line-height: 18px;
@@ -81,7 +81,7 @@
 
 .price {
   margin-left: 12px;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: #2f995e;

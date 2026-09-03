@@ -2,7 +2,7 @@
 
 import type { HotTableRef } from "@handsontable/react-wrapper";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import "handsontable/styles/handsontable.min.css";
 import "handsontable/styles/ht-theme-main.min.css";
@@ -48,6 +48,7 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
 
   const gridData = useMemo(() => productForGrid(products), [products]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: getCells is defined per render because it closes over the module-level mutable handsontableCore; the grid ref is stable and capturing the latest getCells is intentional.
   useEffect(() => {
     const check = () => {
       const hotInstance = grid.current?.hotInstance;
@@ -95,16 +96,24 @@ const EditProducts = ({ products, shopId, onTempProductsChange }) => {
   ];
 
   function categoryRenderer(
-    instance,
+    _instance,
     td,
-    row,
+    _row,
     col,
-    prop,
+    _prop,
     value,
     cellProperties,
   ) {
     void cellProperties;
-    handsontableCore?.renderers.TextRenderer.apply(this, arguments);
+    handsontableCore?.renderers.TextRenderer.apply(this, [
+      _instance,
+      td,
+      _row,
+      col,
+      _prop,
+      value,
+      cellProperties,
+    ]);
 
     if (col !== 1 && (!value || value === "")) {
       td.style.background = "#EEE";

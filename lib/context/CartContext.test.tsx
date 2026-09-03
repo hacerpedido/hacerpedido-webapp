@@ -1,5 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
-import React from "react";
+import { act, cleanup, render } from "@testing-library/react";
 import type { CartState } from "../types";
 import { __CART_STATE_KEY, CartProvider, useCart } from "./CartContext";
 

@@ -1,5 +1,5 @@
 import type { Dispatch, ReactNode } from "react";
-import React, {
+import {
   createContext,
   useContext,
   useEffect,
@@ -150,7 +150,7 @@ export function CartProvider({ children }: { children?: ReactNode }) {
       null,
     );
 
-    if (saved && saved.shop && saved.shop.slug) {
+    if (saved?.shop?.slug) {
       dispatch({
         type: "RESTORE",
         payload: {

@@ -23,6 +23,8 @@ const Input = React.forwardRef((props, ref) => {
     ...inputProps
   } = props;
   void numberOfLies;
+  const reactId = React.useId();
+  const inputId = inputProps.id ?? reactId;
   const handleChange = (event) => {
     if (onChange) onChange(event);
     if (onChangeText) onChangeText(event.target.value);
@@ -49,6 +51,7 @@ const Input = React.forwardRef((props, ref) => {
   const controlProps = {
     ...inputProps,
     ref,
+    id: inputProps.id ?? inputId,
     value,
     className: controlClassName,
     autoCapitalize: props.autoCapitalize || "none",
@@ -72,7 +75,7 @@ const Input = React.forwardRef((props, ref) => {
   return (
     <div className={styles.container}>
       {label ? (
-        <label className={styles.label}>
+        <label className={styles.label} htmlFor={inputId}>
           <span className={styles.labelText}>{label}</span>
           {control}
         </label>

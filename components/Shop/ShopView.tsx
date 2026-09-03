@@ -3,7 +3,7 @@
 import { useCart } from "#lib/context/CartContext";
 import type { Product, Shop } from "#lib/types";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Loading from "../Loading";
 import EditMenuLink from "./EditMenuLink";
 import ProductList from "./ProductList";

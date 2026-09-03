@@ -12,7 +12,7 @@ import { generateCallUrl } from "#lib/utils/utils";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopHeader.module.css";
 
@@ -104,9 +104,12 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
             <div
               aria-label={name || ""}
               className={styles.logoPlaceholder}
+              role="img"
               style={{ backgroundColor: initialsColor }}
             >
-              <span className={styles.logoInitials}>{initials}</span>
+              <span aria-hidden="true" className={styles.logoInitials}>
+                {initials}
+              </span>
             </div>
           )}
         </div>

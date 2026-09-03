@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useCart } from "#lib/context/CartContext";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { animated, config, useTransition } from "react-spring";
 import styles from "./ProductAmountPopup.module.css";
 
@@ -36,6 +36,7 @@ const ProductAmountPopup = ({ product, amount, visible, handleClose }) => {
             className={styles.container}
             data-testid="quantity-popup"
             onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
             role="dialog"
           >
             <button

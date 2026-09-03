@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import "react-drop-zone/dist/styles.css";
@@ -153,10 +153,11 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
           {!image && typeof window !== "undefined" && (
             <DynamicStyledDropZone
               accept="image/*"
-              children="Haga click o arrastre un archivo aquí"
               multiple={false}
               onDrop={onDropFile}
-            />
+            >
+              Haga click o arrastre un archivo aquí
+            </DynamicStyledDropZone>
           )}
           {image && (
             <div className={styles.preview}>
@@ -178,7 +179,7 @@ const UploadImage = ({ shopID, imageType, handleClose }) => {
         {isWaiting && (
           <div className={styles.waiting} role="status">
             <span>Por favor, espere... </span>
-            <span aria-label="Cargando" className={styles.spinner} />
+            <span aria-hidden="true" className={styles.spinner} />
           </div>
         )}
         {error && <div role="alert">{error}</div>}

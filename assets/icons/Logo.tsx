@@ -3,6 +3,7 @@ import type * as React from "react";
 function SvgLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg height={24} width={54} {...props}>
+      <title>Logo</title>
       <defs>
         <path d="M.059.134H31.68V24H.06z" id="logo_svg__a" />
         <path d="M.248.335h21.44V24H.247z" id="logo_svg__c" />

@@ -50,7 +50,7 @@
 }
 
 .logoInitials {
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
@@ -61,7 +61,7 @@
 .shopName {
   margin-top: 0;
   margin-bottom: 4px;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #4d360f;

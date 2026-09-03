@@ -142,7 +142,9 @@ describe("EditShop", () => {
   };
 
   beforeEach(() => {
-    Object.keys(mockControllers).forEach((key) => delete mockControllers[key]);
+    for (const key of Object.keys(mockControllers)) {
+      delete mockControllers[key];
+    }
   });
 
   test("renders current shop values and saves successfully", () => {

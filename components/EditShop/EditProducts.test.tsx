@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import React from "react";
 import EditProducts from "./EditProducts";
 
 type ChangeRow = [number, number, unknown, unknown];

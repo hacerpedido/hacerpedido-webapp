@@ -56,7 +56,7 @@ export function sanitizeCategory(oldCategory: string): string {
 
     default:
       console.log(
-        "ERROR: " + oldCategory + " no está considerada como una categoría.",
+        `ERROR: ${oldCategory} no está considerada como una categoría.`,
       );
       return oldCategory;
   }
