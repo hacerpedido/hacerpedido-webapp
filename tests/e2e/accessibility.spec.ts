@@ -56,7 +56,9 @@ test.describe("customer flow keyboard accessibility", () => {
     await page.keyboard.press("Enter");
 
     const addButton = product.getByTestId("quantity-add");
-    await expect(addButton).toHaveAccessibleName(/Agregar/);
+    // Accessible name comes from aria-label="Add product" on the button;
+    // surface text on the inner span is the Spanish-default "Agregar".
+    await expect(addButton).toHaveAccessibleName(/Agregar|Add product/i);
     await addButton.focus();
     await page.keyboard.press("Enter");
     await expect(product.getByTestId("quantity-popup")).not.toBeVisible();
@@ -66,8 +68,12 @@ test.describe("customer flow keyboard accessibility", () => {
     page,
   }) => {
     await page.goto("/e2e-fixture-shop");
-    await page.getByTestId("product-e2e-product").click();
-    await page.getByTestId("quantity-add").click();
+    const product = page.getByTestId("product-e2e-product");
+    await product.locator("button").first().click();
+    const popup = product.getByTestId("quantity-popup");
+    await popup.getByTestId("quantity-increase").click();
+    await popup.getByTestId("quantity-add").click();
+    await expect(popup).not.toBeVisible();
 
     await page.getByTestId("review-order").focus();
     await page.keyboard.press("Enter");
