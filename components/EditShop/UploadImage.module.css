@@ -4,6 +4,21 @@
   border-radius: 5px;
 }
 
+.dropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.dropZone p {
+  margin: 0;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
 .preview {
   display: flex;
   align-items: center;

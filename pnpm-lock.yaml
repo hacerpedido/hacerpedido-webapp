@@ -41,15 +41,15 @@ importers:
       react-dom:
         specifier: ^19.2.8
         version: 19.2.8(react@19.2.8)
-      react-drop-zone:
-        specifier: ^4.3.3
-        version: 4.3.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-dropzone:
+        specifier: ^20.1.1
+        version: 20.1.1(@types/react@19.2.18)(react@19.2.8)
       react-hook-form:
         specifier: ^7.87.0
         version: 7.87.0(react@19.2.8)
       react-image-crop:
-        specifier: ^8.6.12
-        version: 8.6.12(react@19.2.8)
+        specifier: ^11.1.2
+        version: 11.1.2(react@19.2.8)
       react-spring:
         specifier: ^8.0.27
         version: 8.0.27(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -2323,6 +2323,10 @@ packages:
     resolution: {integrity: sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==}
     engines: {node: '>=8'}
 
+  attr-accept@4.0.0:
+    resolution: {integrity: sha512-hmCnJClmeKNKlsBHgbM8yLZRiQZ4/20UXbLJb6OUT16eWcM5/xNZerr80a/zCYob768KIGq++aLrQNTuwPsIOQ==}
+    engines: {node: '>= 22'}
+
   axe-core@3.5.6:
     resolution: {integrity: sha512-LEUDjgmdJoA3LqklSTwKYqkjcZ4HKc4ddIYGSAiSkr46NTjzg2L9RNB+lekO9P7Dlpa87+hBtzc2Fzn/+GUWMQ==}
     engines: {node: '>=4'}
@@ -2461,10 +2465,6 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
-
-  clsx@1.2.1:
-    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
-    engines: {node: '>=6'}
 
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
@@ -2826,6 +2826,10 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  file-selector@5.0.1:
+    resolution: {integrity: sha512-v0g/PTeuQgvKCBrVRsfVudvwXlRHSWHEQkVgKawgCGHkEpKA1clp3Om5jvEVhz8G9W/mOYjJH9FhkH4C888PgQ==}
+    engines: {node: '>= 22'}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -3922,11 +3926,15 @@ packages:
     peerDependencies:
       react: ^19.2.8
 
-  react-drop-zone@4.3.3:
-    resolution: {integrity: sha512-kTqNIPBDBOzevYEIZnp6yV1+JZJ6jhl4Eu9nCQ6vS/Mmw+l9lq3zdhHyQRxyvUhcJdvlZlgkoE7SgqEkLZZdxA==}
+  react-dropzone@20.1.1:
+    resolution: {integrity: sha512-2cilRFP8bsjDOHpV0sJ6XY8pzJhmz4/cQ6s9yeckOACWYDR+n4MGGtnJh3Rycq/9SLhDWugqDx1z5mtfmOOZhw==}
+    engines: {node: '>= 22'}
     peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
+      '@types/react': '*'
+      react: '>= 18'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   react-hook-form@7.87.0:
     resolution: {integrity: sha512-zhFzWvLxNHH+8839OnZcUxgMZw88ah2jZWDWvKWgF3Tpbnd0vKL+dlcuU3nZVWESZQjd81EW8K+wU+cYfYAc0w==}
@@ -3934,8 +3942,8 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
-  react-image-crop@8.6.12:
-    resolution: {integrity: sha512-3CNz1xfsRRSH/iH023IDMXxzsb1M6RTHHUVsVcb8uFPcjGiA9WisvQ24G1eRDf2j4NlybupOEEdfK2vT0etN6A==}
+  react-image-crop@11.1.2:
+    resolution: {integrity: sha512-+0Pc2fxpwKL4u4oLmdKBw8XSwUceFbXbKEHvFOlsl/MGB1OVNic4uBlAPmEHGXYgoJIq+b63xHbc/aJMG0AVkA==}
     peerDependencies:
       react: '>=16.13.1'
 
@@ -6418,6 +6426,8 @@ snapshots:
 
   arrify@2.0.1: {}
 
+  attr-accept@4.0.0: {}
+
   axe-core@3.5.6: {}
 
   axe-core@4.12.1: {}
@@ -6562,8 +6572,6 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
-
-  clsx@1.2.1: {}
 
   co@4.6.0: {}
 
@@ -6897,6 +6905,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  file-selector@5.0.1: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -8287,19 +8297,20 @@ snapshots:
       react: 19.2.8
       scheduler: 0.27.0
 
-  react-drop-zone@4.3.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+  react-dropzone@20.1.1(@types/react@19.2.18)(react@19.2.8):
     dependencies:
+      attr-accept: 4.0.0
+      file-selector: 5.0.1
       react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
+    optionalDependencies:
+      '@types/react': 19.2.18
 
   react-hook-form@7.87.0(react@19.2.8):
     dependencies:
       react: 19.2.8
 
-  react-image-crop@8.6.12(react@19.2.8):
+  react-image-crop@11.1.2(react@19.2.8):
     dependencies:
-      clsx: 1.2.1
-      prop-types: 15.8.1
       react: 19.2.8
 
   react-is@16.13.1: {}
