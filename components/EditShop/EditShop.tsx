@@ -120,69 +120,89 @@ export default function EditShop({
         <div className={styles.formContainer}>
           <div className={styles.formColumnLeft}>
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.name}
-              error={errors.name}
-              label="Nombre del Comercio:"
-              maxLength={50}
               name="name"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.name}
+                  label="Nombre del Comercio:"
+                  maxLength={50}
+                  testID="edit-shop-name"
+                />
+              )}
               rules={{
                 required: {
                   value: true,
                   message: "El nombre del comercio es requerido.",
                 },
               }}
-              testID="edit-shop-name"
             />
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.address}
-              error={errors.address}
-              label="Dirección:"
-              maxLength={50}
               name="address"
-              testID="edit-shop-address"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.address}
+                  label="Dirección:"
+                  maxLength={50}
+                  testID="edit-shop-address"
+                />
+              )}
             />
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.opentimes}
-              error={errors.opentimes}
-              label="Horario:"
-              maxLength={50}
               name="opentimes"
-              testID="edit-shop-opentimes"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.opentimes}
+                  label="Horario:"
+                  maxLength={50}
+                  testID="edit-shop-opentimes"
+                />
+              )}
             />
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.deliverycost}
-              error={errors.deliverycost}
-              label="Costo del Delivery:"
-              maxLength={50}
               name="deliverycost"
-              testID="edit-shop-deliverycost"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.deliverycost}
+                  label="Costo del Delivery:"
+                  maxLength={50}
+                  testID="edit-shop-deliverycost"
+                />
+              )}
             />
           </div>
           <div className={styles.formColumnRight}>
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.orderswhatsappnumber}
-              error={errors.orderswhatsappnumber}
-              keyboardType={"phone-pad"}
-              label="WhatsApp del comercio:"
-              maxLength={20}
               name="orderswhatsappnumber"
-              onChange={([e]) => e.target.value ?? ""}
-              placeholder={"Escribilo así: +5492234470974"}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.orderswhatsappnumber}
+                  keyboardType="phone-pad"
+                  label="WhatsApp del comercio:"
+                  maxLength={20}
+                  placeholder="Escribilo así: +5492234470974"
+                  testID="edit-shop-whatsapp"
+                />
+              )}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
@@ -201,20 +221,23 @@ export default function EditShop({
                   },
                 },
               }}
-              testID="edit-shop-whatsapp"
             />
             <Controller
-              as={Input}
-              autoCompleteType="off"
               control={control}
               defaultValue={shop.ordersphonenumber}
-              error={errors.ordersphonenumber}
-              keyboardType={"phone-pad"}
-              label="Teléfono Fijo:"
-              maxLength={20}
               name="ordersphonenumber"
-              onChange={([e]) => e.target.value ?? ""}
-              placeholder={"Escribilo así: +5492234470974"}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoCompleteType="off"
+                  error={errors.ordersphonenumber}
+                  keyboardType="phone-pad"
+                  label="Teléfono Fijo:"
+                  maxLength={20}
+                  placeholder="Escribilo así: +5492234470974"
+                  testID="edit-shop-phone"
+                />
+              )}
               rules={{
                 validate: {
                   matchesAtLeastAPhone: (value) => {
@@ -234,19 +257,22 @@ export default function EditShop({
                   },
                 },
               }}
-              testID="edit-shop-phone"
             />
             <Controller
-              as={Input}
               control={control}
               defaultValue={shop.notes}
-              error={errors.notes}
-              label="Notas:"
-              maxLength={1000}
-              multiline
               name="notes"
-              numberOfLines={3.5}
-              placeholder={"¿Querés hacer alguna aclaración?"}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  error={errors.notes}
+                  label="Notas:"
+                  maxLength={1000}
+                  multiline
+                  numberOfLines={3.5}
+                  placeholder="¿Querés hacer alguna aclaración?"
+                />
+              )}
             />
           </div>
         </div>

@@ -4,11 +4,11 @@ import EditShop from "./EditShop";
 
 type PhoneValidator = (value: string) => string | boolean;
 
-interface MockController {
+type MockController = {
   name: string;
   rules?: unknown;
   [key: string]: unknown;
-}
+};
 
 const mockControllers: Record<string, MockController> = {};
 
@@ -21,22 +21,34 @@ jest.mock("react-timeago", () => ({
 
 jest.mock("react-hook-form", () => ({
   Controller: ({
-    as: Component,
-    control: _control,
     defaultValue,
     name,
+    render,
     rules,
-    ...props
   }: {
-    as: React.ComponentType<Record<string, unknown>>;
-    control: unknown;
     defaultValue: unknown;
     name: string;
+    render: (props: {
+      field: {
+        name: string;
+        onBlur: () => void;
+        onChange: () => void;
+        ref: () => void;
+        value: unknown;
+      };
+    }) => React.ReactNode;
     rules?: unknown;
-    [key: string]: unknown;
   }) => {
-    mockControllers[name] = { ...props, name, rules };
-    return <Component {...props} name={name} value={defaultValue} />;
+    mockControllers[name] = { name, rules };
+    return render({
+      field: {
+        name,
+        onBlur: jest.fn(),
+        onChange: jest.fn(),
+        ref: jest.fn(),
+        value: defaultValue,
+      },
+    });
   },
 }));
 
