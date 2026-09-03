@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 
 import { computeE2EContext } from "./run-context";
 

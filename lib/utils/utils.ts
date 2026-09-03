@@ -33,10 +33,10 @@ export function sanitizeWhatsAppNumber(phone: unknown): unknown {
     if (!matches) return newPhone;
     if (matches[2] === "0") {
       // Verificar que no tenga 0 luego del 54
-      newPhone = "549" + matches[3];
+      newPhone = `549${matches[3]}`;
     } else if (matches[2] !== "9") {
       // Verificar que tenga el 9 luego del 54
-      newPhone = "549" + matches[2] + matches[3];
+      newPhone = `549${matches[2]}${matches[3]}`;
     }
   }
 
@@ -143,7 +143,7 @@ function generateWhatsappMessage(
   const intro = `¡Hola! soy *${name}* y quiero hacer un pedido via HacerPedido \uD83D\uDCAA\n\n`;
   const addressStr = address && `\uD83D\uDCCD *Mi dirección:* ${address}\n`;
   const notesStr = notes && `\uD83D\uDCDD *Notas:* ${notes}\n`;
-  const order = "\n*Mi pedido:*\n" + productListForMessage(products);
+  const order = `\n*Mi pedido:*\n${productListForMessage(products)}`;
 
   return [intro, addressStr, notesStr, order].join("");
 }

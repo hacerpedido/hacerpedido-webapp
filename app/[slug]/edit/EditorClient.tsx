@@ -248,6 +248,7 @@ export default function EditShopPage() {
   // let a = { params, token, shop: shopState.shop, resizedWidth, loading: shopState.loading };
   // console.log("PASS: ", a);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: shopState.shop/loading are intentionally read inside the effect to avoid a re-fetch loop when this effect resets the state. Only token and the manual reloadCount trigger a refetch.
   useEffect(() => {
     if (!token) {
       return;
@@ -330,7 +331,7 @@ export default function EditShopPage() {
     // and clears `showMessage` before the confirmation can be painted. The
     // submitted values are already in the form; a reload (or an image upload,
     // which calls refresh explicitly) gets the persisted server state.
-  }, [actionState, isSaving]);
+  }, [actionState, isSaving, setValue]);
 
   const tempValues = watch();
   const tempShop = trimObject({ ...(shopState.shop ?? {}), ...tempValues });

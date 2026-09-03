@@ -1,5 +1,5 @@
-import { type ExecFileOptions, execFile } from "child_process";
-import { resolve } from "path";
+import { type ExecFileOptions, execFile } from "node:child_process";
+import { resolve } from "node:path";
 
 import {
   composeFile,

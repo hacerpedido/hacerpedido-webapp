@@ -2,7 +2,7 @@
 import { WhatsappFill as WhatsappFillIcon } from "#assets/icons";
 import { useCart } from "#lib/context/CartContext";
 
-import React, {
+import {
   useActionState,
   useEffect,
   useRef,

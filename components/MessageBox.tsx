@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./MessageBox.module.css";
 
 const MessageBox = ({ message, onMessagePress }) => {

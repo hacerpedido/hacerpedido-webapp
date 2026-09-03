@@ -3,7 +3,6 @@ import { ArrowLeft as ArrowLeftIcon } from "#assets/icons";
 import { useCart } from "#lib/context/CartContext";
 
 import { useRouter } from "next/navigation";
-import React from "react";
 import styles from "./Header.module.css";
 
 export default function CartHeader() {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { sanitizePrice } from "#lib/utils/utils";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Product.module.css";
 import ProductAmountPopup from "./ProductAmountPopup";
 
@@ -22,7 +22,7 @@ const Product = ({ product, promo = false, isCartEnabled = false }) => {
     return () => {
       document.removeEventListener("touchend", listener);
     };
-  }, [ref, setPopupVisible]);
+  }, []);
 
   const productContent = (
     <div className={`${styles.container} ${containerStyle}`}>

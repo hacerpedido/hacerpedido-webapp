@@ -9,7 +9,7 @@ import { extractSections } from "#lib/utils/products";
 import { generateWhatsappURL } from "#lib/utils/utils";
 
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./page.module.css";
 
 export default function CartPage() {

@@ -29,16 +29,16 @@
   display: block;
   flex: 0 0 auto;
   padding-bottom: 30px;
-  color: #37b26e !important;
+  color: #37b26e;
   text-align: center;
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 .productionLink:visited,
 .productionLink:hover,
 .productionLink:focus {
-  color: #37b26e !important;
-  text-decoration: none !important;
+  color: #37b26e;
+  text-decoration: none;
 }
 
 .openProductionLink {

@@ -1,5 +1,4 @@
 // @ts-nocheck
-import React from "react";
 import * as Icons from "../assets/icons/";
 import styles from "./DecoratedLabel.module.css";
 

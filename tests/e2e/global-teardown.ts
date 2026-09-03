@@ -1,4 +1,4 @@
-import { type ExecFileOptions, execFile } from "child_process";
+import { type ExecFileOptions, execFile } from "node:child_process";
 
 import { composeFile, composeProject } from "./fixtures/database";
 

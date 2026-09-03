@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { validatePhoneNumber } from "#lib/utils/utils";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useFormStatus } from "react-dom";
 import { Controller } from "react-hook-form";
@@ -53,7 +53,7 @@ export default function EditShop({
   shop,
   control,
   errors,
-  handleSubmit,
+  handleSubmit: _handleSubmit,
   getValues,
   isSaving,
   refresh,

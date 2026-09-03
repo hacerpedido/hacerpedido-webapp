@@ -60,7 +60,7 @@
 .buttonText {
   margin-bottom: 8px;
   margin-left: 9px;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 14px;
   font-weight: 600;
   color: #fff;
@@ -103,7 +103,7 @@
 }
 
 .logoInitials {
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
@@ -122,7 +122,7 @@
 .shopName {
   padding: 6px;
   margin: 5px 0;
-  font-family: "Barlow";
+  font-family: "Barlow", sans-serif;
   font-size: 19px;
   font-weight: 700;
   color: #fff;

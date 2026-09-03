@@ -6,7 +6,6 @@ import { useCart } from "#lib/context/CartContext";
 import { generateCallUrl } from "#lib/utils/utils";
 
 import { useRouter } from "next/navigation";
-import React from "react";
 import styles from "./ShopFooter.module.css";
 
 const ShopFooter = ({ shop }) => {

@@ -21,6 +21,8 @@ const ShopInput = React.forwardRef((props, ref) => {
     value,
     ...inputProps
   } = props;
+  const reactId = React.useId();
+  const inputId = inputProps.id ?? reactId;
   const handleChange = (event) => {
     if (onChange) onChange(event);
     if (onChangeText) onChangeText(event.target.value);
@@ -53,6 +55,7 @@ const ShopInput = React.forwardRef((props, ref) => {
   const controlProps = {
     ...inputProps,
     ref,
+    id: inputProps.id ?? inputId,
     value: value || "",
     className: controlClassName,
     autoCapitalize: props.autoCapitalize || "none",
@@ -76,7 +79,7 @@ const ShopInput = React.forwardRef((props, ref) => {
   return (
     <div className={styles.container}>
       {label ? (
-        <label className={styles.label}>
+        <label className={styles.label} htmlFor={inputId}>
           <span className={styles.labelText}>{label}</span>
           {control}
         </label>

@@ -7,7 +7,7 @@ import {
 } from "#lib/utils/shops";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
 import DecoratedLabel from "../DecoratedLabel";
 import styles from "./ShopCard.module.css";
 
@@ -39,9 +39,12 @@ const ShopCard = ({ shop }) => {
             <div
               aria-label={name || ""}
               className={styles.logoPlaceholder}
+              role="img"
               style={{ backgroundColor: initialsColor }}
             >
-              <span className={styles.logoInitials}>{initials}</span>
+              <span aria-hidden="true" className={styles.logoInitials}>
+                {initials}
+              </span>
             </div>
           )}
         </div>

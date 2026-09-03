@@ -1,7 +1,6 @@
 import { useCart } from "#lib/context/CartContext";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import React from "react";
 import Form from "./Form";
 
 jest.mock("#lib/context/CartContext", () => ({

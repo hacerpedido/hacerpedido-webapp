@@ -1,5 +1,4 @@
 // @ts-nocheck
-import React from "react";
 import styles from "./ShopNotes.module.css";
 
 const ShopNotes = ({ shop }) => {
