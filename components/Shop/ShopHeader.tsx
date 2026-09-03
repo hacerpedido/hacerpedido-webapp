@@ -19,7 +19,6 @@ import styles from "./ShopHeader.module.css";
 const ShopHeader = ({ isPreview = false, shop = {} }) => {
   const {
     name,
-    background,
     category,
     address,
     region,
@@ -37,19 +36,30 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
     shop?.deliverycost?.trim() !== "" ? shop.deliverycost : null;
   const showButtonCall =
     ordersphonenumber && orderswhatsappnumber && !isPreview;
-  const backgroundImage = getBackgroundForShop(shop);
-
-  const backgroundImageValue = backgroundImage?.startsWith("url(")
-    ? backgroundImage
-    : `url(${backgroundImage})`;
-  const containerStyle = {
-    "--shop-background-color": getBackgroundColorForCategory(category),
-    "--shop-background-image": backgroundImage ? backgroundImageValue : "none",
-    "--shop-background-size": background ? "100% auto" : "auto",
-  };
+  // Cover URL: an uploaded key resolves to the bucket, or the static
+  // category fallback under /public. Both are served through next/image
+  // so they get AVIF/WebP and responsive widths (see issue #139).
+  const coverUrl = getBackgroundForShop(shop);
+  const coverAlt = name ? `Portada de ${name}` : "Portada del comercio";
 
   return (
-    <header className={styles.container} style={containerStyle}>
+    <header
+      className={styles.container}
+      style={{
+        backgroundColor:
+          getBackgroundColorForCategory(category) ?? "transparent",
+      }}
+    >
+      <Image
+        alt={coverAlt}
+        aria-hidden="true"
+        className={styles.cover}
+        fill
+        priority
+        quality={80}
+        sizes="100vw"
+        src={coverUrl}
+      />
       <div className={styles.containerNavigator}>
         {!isPreview && (
           <button

@@ -1,7 +1,22 @@
 .container {
-  background-color: var(--shop-background-color);
-  background-image: var(--shop-background-image);
-  background-size: var(--shop-background-size);
+  /* Container becomes the positioning context for the absolute-positioned
+     <Image fill> cover. The category fallback color is applied via inline
+     style; keeping the container relative lets the cover fill it. */
+  position: relative;
+  overflow: visible;
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The image sits behind the navigator (z-index: 2) and data (z-index: 0)
+     so text remains readable. Keep z-index implicit (auto) so the navigator
+     still wins. */
+  pointer-events: none;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .buttonBack {

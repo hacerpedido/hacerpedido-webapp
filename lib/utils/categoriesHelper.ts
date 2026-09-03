@@ -58,16 +58,10 @@ export function getBackgroundForCategory(category: string): string {
     case "Otros":
       background = `otros.jpg`;
       break;
-    // case "Farmacia":
-    //   background = `url(${Backgrounds.Farmacia})`;
-    //   break;
-    // case "Fruta y Verdura":
-    //   background = `verduleria.jpg`;
-    //   break;
 
     default:
       break;
   }
 
-  return `url(/images/backgrounds/${background})`;
+  return `/images/backgrounds/${background}`;
 }
