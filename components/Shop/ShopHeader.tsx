@@ -82,9 +82,12 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
               alt={name || ""}
               className={styles.logo}
               height={100}
+              loading="eager"
               onError={() => setLogoFailed(true)}
+              priority
+              quality={80}
+              sizes="100px"
               src={logo}
-              unoptimized
               width={100}
             />
           ) : (
