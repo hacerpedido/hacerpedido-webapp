@@ -105,8 +105,12 @@ PG_CONNECTION_STRING="$PG_CONNECTION_STRING" \
   node scripts/adopt-baseline.ts --rls=production
 ```
 
-Optionally smoke-test that the shop queries now use the new index
-(`EXPLAIN (ANALYZE, BUFFERS)` on a public shop slug).
+Optionally smoke-test that the shop queries now use the new index.
+The structured harness `pnpm run db:explain` runs `EXPLAIN (ANALYZE, BUFFERS)`
+on the three hot reads (catalog by category, public shop by slug with
+products, editor lookup by token), prints each plan, and asserts the
+secondary index added by `0001_catalog_indexes.sql` is referenced.
+Run it whenever reviewing index drift.
 
 ## 4. Rollback and drift rules
 

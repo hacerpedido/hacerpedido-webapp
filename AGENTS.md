@@ -85,6 +85,7 @@ docs/superpowers/           Documentation
 | `pnpm run lint` | Biome lint (`.`) |
 | `pnpm run db:migrate` / `db:migrate:status` | Drizzle migrations (`db/drizzle`, forward-only) |
 | `pnpm run db:migrate:make` | `drizzle-kit generate` (add `--custom` for hand-written SQL) |
+| `pnpm run db:explain` | `EXPLAIN ANALYZE` harness for the hot shop reads; asserts the secondary indexes added by `0001_catalog_indexes.sql` are referenced |
 | `pnpm run db:seed` | Drizzle dev seed (`db/seeds/dev/001_dev_data.ts`) |
 | `pnpm run db:seed:e2e` / `db:seed:test` | Drizzle seed (`tests/e2e/fixtures/seeds/001_test_data.ts`) |
 | `pnpm run format` | Biome format on supported files |

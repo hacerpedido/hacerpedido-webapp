@@ -1,6 +1,7 @@
 import { products as productsTable, shops } from "#db/schema";
 
 import { and, desc, eq } from "drizzle-orm";
+import { cache } from "react";
 import { getDb } from "../db/client";
 import type { Product, Shop } from "../types";
 import {
@@ -129,76 +130,92 @@ function toLegacyRows(rows: unknown[]): ShopWithProductsRow[] {
   );
 }
 
-export async function getPublicShops(category: string): Promise<Shop[]> {
-  const rows = await db
-    .select(shopPublicColumns)
-    .from(shops)
-    .where(and(eq(shops.visibility, "public"), eq(shops.category, category)))
-    .orderBy(desc(shops.updated_at));
+// Public shop reads are wrapped with React's `cache()` so duplicate calls
+// within a single request (for example `generateMetadata` and the page body
+// on `app/[slug]/page.tsx`) share the same query result instead of hitting
+// the database twice. The keys are plain strings (`Object.is` equality), so
+// the memoization is exact. Outside a React render scope (tests, scripts)
+// `cache()` falls back to a regular function call. (#222)
+export const getPublicShops = cache(
+  async (category: string): Promise<Shop[]> => {
+    const rows = await db
+      .select(shopPublicColumns)
+      .from(shops)
+      .where(and(eq(shops.visibility, "public"), eq(shops.category, category)))
+      .orderBy(desc(shops.updated_at));
 
-  const normalizedShops = rows.map((row) => {
-    const shop = shopFromRow(row as unknown as ShopWithProductsRow, []);
-    const {
-      products: _products,
-      typeformtoken: _typeformtoken,
-      ...publicShop
-    } = shop;
-    return publicShop;
-  });
+    const normalizedShops = rows.map((row) => {
+      const shop = shopFromRow(row as unknown as ShopWithProductsRow, []);
+      const {
+        products: _products,
+        typeformtoken: _typeformtoken,
+        ...publicShop
+      } = shop;
+      return publicShop;
+    });
 
-  return serializePublicShops<Pick<Shop, "slug">>(normalizedShops);
-}
+    return serializePublicShops<Pick<Shop, "slug">>(normalizedShops);
+  },
+);
 
-export async function getPublicShop(slug: string): Promise<Shop | null> {
-  const rows = await db
-    .select({ ...shopPublicColumns, product: productColumns })
-    .from(shops)
-    .leftJoin(productsTable, eq(productsTable.shopid, shops.id))
-    .where(and(eq(shops.slug, slug), eq(shops.visibility, "public")))
-    .orderBy(productsTable.itemnumber);
-  if (!rows.length) return null;
+export const getPublicShop = cache(
+  async (slug: string): Promise<Shop | null> => {
+    const rows = await db
+      .select({ ...shopPublicColumns, product: productColumns })
+      .from(shops)
+      .leftJoin(productsTable, eq(productsTable.shopid, shops.id))
+      .where(and(eq(shops.slug, slug), eq(shops.visibility, "public")))
+      .orderBy(productsTable.itemnumber);
+    if (!rows.length) return null;
 
-  const legacyRows = toLegacyRows(rows);
-  const first = legacyRows[0];
-  const products = productsFromRows(legacyRows);
+    const legacyRows = toLegacyRows(rows);
+    const first = legacyRows[0];
+    const products = productsFromRows(legacyRows);
 
-  return serializePublicShop<Pick<Shop, "slug">>(shopFromRow(first, products));
-}
+    return serializePublicShop<Pick<Shop, "slug">>(
+      shopFromRow(first, products),
+    );
+  },
+);
 
 /**
  * Load the editor token for the development-only link on a public shop page.
  *
  * Keep the environment check here as well as at the call site so this helper
  * can never become another way of loading editor secrets in production (or in
- * tests, which exercise the public data path).
+ * tests, which exercise the public data path). Wrapped in React's `cache()`
+ * so the metadata/render pair on `app/[slug]/page.tsx` reuses the same
+ * lookup result (#222).
  */
-export async function getDevelopmentShopEditToken(
-  slug: string,
-): Promise<string | null> {
-  if (process.env.NODE_ENV !== "development") return null;
+export const getDevelopmentShopEditToken = cache(
+  async (slug: string): Promise<string | null> => {
+    if (process.env.NODE_ENV !== "development") return null;
 
-  const rows = await db
-    .select({ typeformtoken: shops.typeformtoken })
-    .from(shops)
-    .where(and(eq(shops.slug, slug), eq(shops.visibility, "public")))
-    .limit(1);
+    const rows = await db
+      .select({ typeformtoken: shops.typeformtoken })
+      .from(shops)
+      .where(and(eq(shops.slug, slug), eq(shops.visibility, "public")))
+      .limit(1);
 
-  const token = rows[0]?.typeformtoken;
-  return typeof token === "string" ? token : null;
-}
+    const token = rows[0]?.typeformtoken;
+    return typeof token === "string" ? token : null;
+  },
+);
 
 /** Load a shop for the private editor token, including its products. */
-export async function getShopByToken(token: string): Promise<Shop | null> {
-  const rows = await db
-    .select({
-      ...shopPublicColumns,
-      typeformtoken: shops.typeformtoken,
-      product: productColumns,
-    })
-    .from(shops)
-    .leftJoin(productsTable, eq(productsTable.shopid, shops.id))
-    .where(eq(shops.typeformtoken, token))
-    .orderBy(productsTable.itemnumber);
+export const getShopByToken = cache(
+  async (token: string): Promise<Shop | null> => {
+    const rows = await db
+      .select({
+        ...shopPublicColumns,
+        typeformtoken: shops.typeformtoken,
+        product: productColumns,
+      })
+      .from(shops)
+      .leftJoin(productsTable, eq(productsTable.shopid, shops.id))
+      .where(eq(shops.typeformtoken, token))
+      .orderBy(productsTable.itemnumber);
 
-  return shopWithProducts(toLegacyRows(rows));
-}
+    return shopWithProducts(toLegacyRows(rows));
+  },
+);
