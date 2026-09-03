@@ -1,14 +1,21 @@
 import { productFactory, shopFactory } from "#db/factories";
+import * as schemaNamespace from "#db/schema";
+import {
+  type NewProductRow,
+  type NewShopRow,
+  products as productsTable,
+  shops,
+} from "#db/schema";
 
-import type { Knex } from "knex";
-import knexFactory from "knex";
+import { inArray } from "drizzle-orm";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 
 const SHOP_ID = "00000000-0000-0000-0000-000000000001";
 const ADMIN_SAVE_SHOP_ID = "00000000-0000-0000-0000-000000000004";
 const PUBLIC_FRESHNESS_SHOP_ID = "00000000-0000-0000-0000-000000000005";
 const IMAGE_SHOP_ID = "00000000-0000-0000-0000-000000000006";
 
-const shops = [
+const shopsToSeed = [
   shopFactory({
     id: SHOP_ID,
     name: "E2E Fixture Shop",
@@ -81,7 +88,7 @@ const shops = [
   }),
 ];
 
-const products = [
+const productsToSeed = [
   productFactory({
     id: "00000000-0000-0000-0000-000000000002",
     shopId: SHOP_ID,
@@ -106,26 +113,44 @@ const products = [
   }),
 ];
 
-async function setup() {
+type SetupDatabase = NodePgDatabase<typeof schemaNamespace>;
+
+async function setup(): Promise<void> {
   if (!process.env.PG_CONNECTION_STRING) {
     throw new Error("PG_CONNECTION_STRING is required for E2E fixture setup");
   }
 
-  const knex: Knex = knexFactory({
-    client: "pg",
-    connection: process.env.PG_CONNECTION_STRING,
+  const shopIds = shopsToSeed.map((shop) => shop.id);
+
+  const { Pool } = require("pg") as {
+    Pool: new (config: {
+      connectionString: string;
+    }) => {
+      query: (text: string, params?: unknown[]) => Promise<{ rows: unknown[] }>;
+      end: () => Promise<void>;
+    };
+  };
+  const pool = new Pool({
+    connectionString: process.env.PG_CONNECTION_STRING,
   });
-  const shopIds = shops.map((shop) => shop.id);
+  const db = drizzle({
+    client: pool,
+    schema: schemaNamespace,
+  }) as SetupDatabase;
 
   try {
-    await knex.transaction(async (trx) => {
-      await trx("products").whereIn("shopid", shopIds).del();
-      await trx("shops").whereIn("id", shopIds).del();
-      await trx("shops").insert(shops);
-      await trx("products").insert(products);
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(productsTable)
+        .where(inArray(productsTable.shopid, shopIds));
+      await tx.delete(shops).where(inArray(shops.id, shopIds));
+      await tx.insert(shops).values(shopsToSeed as unknown as NewShopRow[]);
+      await tx
+        .insert(productsTable)
+        .values(productsToSeed as unknown as NewProductRow[]);
     });
   } finally {
-    await knex.destroy();
+    await pool.end();
   }
 }
 

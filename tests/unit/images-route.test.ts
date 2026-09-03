@@ -1,3 +1,6 @@
+/** @jest-environment node */
+// The route runs on the Node runtime and loads the `pg` driver through Drizzle,
+// whose crypto helpers require Node globals (TextEncoder) absent in jsdom.
 const mockPoolQuery = jest.fn();
 const mockUploadFile = jest.fn();
 const mockDeleteFile = jest.fn();
@@ -124,7 +127,7 @@ describe("images API route", () => {
 
     test("uploads the image, updates the shop, deletes the replacement, and cleans up", async () => {
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockResolvedValueOnce({ rows: [["old-logo.png"]] })
         .mockResolvedValueOnce({ rows: [] });
 
       const response = await POST(imageRequest());
@@ -143,7 +146,9 @@ describe("images API route", () => {
         "image/png",
       );
       expect(mockPoolQuery).toHaveBeenLastCalledWith(
-        'UPDATE shops SET "logo" = $1 WHERE id = $2',
+        expect.objectContaining({
+          text: 'update "shops" set "logo" = $1 where "shops"."id" = $2',
+        }),
         [`${shopID}-logo-image-key.png`, shopID],
       );
       expect(mockDeleteFile).toHaveBeenCalledWith("old-logo.png");
@@ -154,7 +159,7 @@ describe("images API route", () => {
     });
 
     test("cleans up the temporary file when S3 upload fails", async () => {
-      mockPoolQuery.mockResolvedValue({ rows: [{ oldKey: null }] });
+      mockPoolQuery.mockResolvedValue({ rows: [[null]] });
       mockUploadFile.mockRejectedValue(new Error("S3 unavailable"));
 
       await expect(POST(imageRequest())).rejects.toThrow("S3 unavailable");
@@ -169,11 +174,11 @@ describe("images API route", () => {
 
     test("removes the just-uploaded object when the database update fails", async () => {
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockResolvedValueOnce({ rows: [["old-logo.png"]] })
         .mockRejectedValueOnce(new Error("database unavailable"));
 
       await expect(POST(imageRequest())).rejects.toThrow(
-        "database unavailable",
+        /Failed query: update "shops" set "logo"/,
       );
 
       expect(mockUploadFile).toHaveBeenCalled();
@@ -192,13 +197,13 @@ describe("images API route", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockResolvedValueOnce({ rows: [["old-logo.png"]] })
         .mockRejectedValueOnce(new Error("database unavailable"));
       mockDeleteFile.mockRejectedValue(new Error("cleanup failed"));
 
       try {
         await expect(POST(imageRequest())).rejects.toThrow(
-          "database unavailable",
+          /Failed query: update "shops" set "logo"/,
         );
         expect(mockDeleteFile).toHaveBeenCalledWith(
           `${shopID}-logo-image-key.png`,
@@ -214,7 +219,7 @@ describe("images API route", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "old-logo.png" }] })
+        .mockResolvedValueOnce({ rows: [["old-logo.png"]] })
         .mockResolvedValueOnce({ rows: [] });
       mockDeleteFile.mockRejectedValueOnce(new Error("S3 delete failed"));
 
@@ -226,7 +231,9 @@ describe("images API route", () => {
           image: `${shopID}-logo-image-key.png`,
         });
         expect(mockPoolQuery).toHaveBeenLastCalledWith(
-          'UPDATE shops SET "logo" = $1 WHERE id = $2',
+          expect.objectContaining({
+            text: 'update "shops" set "logo" = $1 where "shops"."id" = $2',
+          }),
           [`${shopID}-logo-image-key.png`, shopID],
         );
         expect(mockDeleteFile).toHaveBeenCalledWith("old-logo.png");
@@ -240,7 +247,7 @@ describe("images API route", () => {
   describe("DELETE", () => {
     test("clears the image column and deletes the stored image", async () => {
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "background.jpg" }] })
+        .mockResolvedValueOnce({ rows: [["background.jpg"]] })
         .mockResolvedValueOnce({ rows: [] });
 
       const response = await DELETE(
@@ -251,20 +258,25 @@ describe("images API route", () => {
       expect(await response.json()).toEqual({ deleted: "background.jpg" });
       expect(mockPoolQuery).toHaveBeenNthCalledWith(
         1,
-        'SELECT "background" AS "oldKey" FROM shops WHERE id = $1',
+        expect.objectContaining({
+          text: 'select "background" from "shops" where "shops"."id" = $1',
+        }),
         [shopID],
       );
+      // Drizzle sends NULL as a parameter.
       expect(mockPoolQuery).toHaveBeenNthCalledWith(
         2,
-        'UPDATE shops SET "background" = NULL WHERE id = $1',
-        [shopID],
+        expect.objectContaining({
+          text: 'update "shops" set "background" = $1 where "shops"."id" = $2',
+        }),
+        [null, shopID],
       );
       expect(mockDeleteFile).toHaveBeenCalledWith("background.jpg");
     });
 
     test("clears a shop image without calling S3 when no stored key exists", async () => {
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: null }] })
+        .mockResolvedValueOnce({ rows: [[null]] })
         .mockResolvedValueOnce({ rows: [] });
 
       const response = await DELETE(
@@ -281,7 +293,7 @@ describe("images API route", () => {
 
       await expect(
         DELETE(formRequest({ image_type: "logo", shop_id: shopID })),
-      ).rejects.toThrow("database unavailable");
+      ).rejects.toThrow(/Failed query: select "logo" from "shops"/);
 
       expect(mockDeleteFile).not.toHaveBeenCalled();
     });
@@ -291,7 +303,7 @@ describe("images API route", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
       mockPoolQuery
-        .mockResolvedValueOnce({ rows: [{ oldKey: "background.jpg" }] })
+        .mockResolvedValueOnce({ rows: [["background.jpg"]] })
         .mockResolvedValueOnce({ rows: [] });
       mockDeleteFile.mockRejectedValueOnce(new Error("S3 delete failed"));
 
@@ -304,8 +316,10 @@ describe("images API route", () => {
         expect(await response.json()).toEqual({ deleted: "background.jpg" });
         expect(mockPoolQuery).toHaveBeenNthCalledWith(
           2,
-          'UPDATE shops SET "background" = NULL WHERE id = $1',
-          [shopID],
+          expect.objectContaining({
+            text: 'update "shops" set "background" = $1 where "shops"."id" = $2',
+          }),
+          [null, shopID],
         );
         expect(mockDeleteFile).toHaveBeenCalledWith("background.jpg");
         expect(errorSpy).toHaveBeenCalledTimes(1);

@@ -20,7 +20,7 @@ Language conventions:
 | UI | CSS Modules + Bootstrap 4.6 (semantic HTML) |
 | State | CartContext (useReducer + localStorage) |
 | HTTP | Native `fetch` request layer → internal App Router API routes |
-| DB | PostgreSQL 17.6 (Supabase) via Knex |
+| DB | PostgreSQL 17.6 (Supabase) via Drizzle over `pg` |
 | Files | AWS SDK v2 → S3 |
 | Observability | @sentry/nextjs (disabled in dev) |
 | Tooling | TypeScript (`tsconfig.json`, `typecheck`), Biome (format/lint), Lefthook (pre-commit) |
@@ -61,7 +61,9 @@ lib/
   hooks/                    use_width.ts
   graphql/                  shop.ts (legacy, Apollo commented out)
 db/
-  migrations/0001_baseline.js   shops + products, triggers, RLS, extensions
+  schema.ts                  shops + products (typed Drizzle authority)
+  drizzle/                   0000_init.sql … versioned migrations + journal
+  factories.ts               typed factories for seeds/tests
 tests/
   unit                      API tests; unit/component tests also in lib/ and components/ (JS/JSX)
   e2e/                      TypeScript specs: order-flow, cart-persistence, cart-validation, admin-flow, fixtures/
@@ -81,8 +83,10 @@ docs/superpowers/           Documentation
 | `pnpm run test:e2e` | Playwright E2E. Boots `docker compose` (Postgres 17.6, port 54329), runs migrations + seed, builds & serves the app (`pnpm run build && pnpm run start`), baseURL `http://127.0.0.1:3001` |
 | `pnpm run test:e2e:install` | Install Chromium |
 | `pnpm run lint` | Biome lint (`.`) |
-| `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations (`./db/migrations`) |
-| `pnpm run db:seed:e2e` | Knex seed (`./tests/e2e/fixtures/seeds`) |
+| `pnpm run db:migrate` / `db:migrate:status` | Drizzle migrations (`db/drizzle`, forward-only) |
+| `pnpm run db:migrate:make` | `drizzle-kit generate` (add `--custom` for hand-written SQL) |
+| `pnpm run db:seed` | Drizzle dev seed (`db/seeds/dev/001_dev_data.ts`) |
+| `pnpm run db:seed:e2e` / `db:seed:test` | Drizzle seed (`tests/e2e/fixtures/seeds/001_test_data.ts`) |
 | `pnpm run format` | Biome format on supported files |
 | `pnpm run format:check` | Check formatting with Biome |
 | `pnpm run typecheck` | Check types with TypeScript |
@@ -97,7 +101,7 @@ Environment notes:
 
 Names only — never print or commit values:
 
-`PG_CONNECTION_STRING` (required for db/migrations/E2E), `HP_AWS_ACCESS_KEY_ID`, `HP_AWS_SECRET_ACCESS_KEY`, `HP_AWS_IMAGES_BUCKET`, `NEXT_PUBLIC_IMAGE_BUCKET_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`.
+`PG_CONNECTION_STRING` (required for db/scripts/E2E), `HP_AWS_ACCESS_KEY_ID`, `HP_AWS_SECRET_ACCESS_KEY`, `HP_AWS_IMAGES_BUCKET`, `NEXT_PUBLIC_IMAGE_BUCKET_URL`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN`.
 
 ## Testing expectations
 
@@ -123,7 +127,7 @@ Names only — never print or commit values:
 Load the relevant skill when the task matches its description (progressive disclosure — load only what is needed):
 
 - `checkout` — checkout, cart persistence, validation, and WhatsApp handoff
-- `knex-migrations` — migrations, seed, shops/products schema
+- `drizzle-migrations` — migrations, seed, shops/products schema
 - `e2e-playwright` — run/build E2E, Compose stack
 - `shop-cart-debugging` — diagnose listings, shop details, and cart state
 - `whatsapp-order` — order flow, phone numbers, wa.me links, cart
@@ -132,5 +136,5 @@ Load the relevant skill when the task matches its description (progressive discl
 ## Guardrails
 
 - Conventional Commits; no AI attribution; no empty commits or force-pushes.
-- Migrations: maintain compatibility with **Postgres 17.6** (without `pgjwt`, `timescaledb`, `plv8`). Baseline 0001 is **not reversible**; `pg_stat_statements` must be preloaded (see `compose.e2e.yaml`). RLS is enabled in prod but **disabled in the E2E database** — do not make RLS decisions assuming full parity.
+- Migrations: maintain compatibility with **Postgres 17.6** (without `pgjwt`, `timescaledb`, `plv8`). Baseline `0000_init` is **not reversible** and migrations are forward-only; `pg_stat_statements` must be preloaded (see `compose.e2e.yaml`). RLS is enabled in prod but **disabled in the E2E database** — do not make RLS decisions assuming full parity.
 - Sensitive data (env, real seed) must never be committed.

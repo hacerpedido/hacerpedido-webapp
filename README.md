@@ -93,7 +93,7 @@ dependencies and run the scripts.
 ### Database
 
 ```bash
-pnpm run db:migrate       # Apply migrations (knex migrate:latest)
+pnpm run db:migrate       # Apply Drizzle migrations (forward-only)
 pnpm run db:migrate:make -- migration_name # Create a new migration
 pnpm run db:migrate:status # Show migration status
 pnpm run db:rollback      # Revert the last migration
@@ -113,7 +113,7 @@ databases. `db:reset` permanently deletes data from the local volume:
 use it only when you want to start from scratch. It does not require `psql` to be installed on the
 host; checks run inside the container.
 
-Migration `0001_baseline` creates `shops` and `products` and is **not reversible** (`down()` intentionally throws an error). It requires the `uuid-ossp`, `pgcrypto`, and `pg_stat_statements` extensions (the latter must be preloaded — see `compose.e2e.yaml`). Compatible with Postgres 17.6.
+Baseline `0000_init` creates `shops` and `products` and is **not reversible** (forward-only migrations). It requires the `uuid-ossp`, `pgcrypto`, and `pg_stat_statements` extensions (the latter must be preloaded — see `compose.e2e.yaml`). Compatible with Postgres 17.6.
 
 ### Worktrees and concurrent stacks
 

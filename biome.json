@@ -9,6 +9,9 @@
     "indentStyle": "space",
     "indentWidth": 2
   },
+  "files": {
+    "includes": ["**", "!db/drizzle"]
+  },
   "linter": {
     "rules": {
       "preset": "recommended",

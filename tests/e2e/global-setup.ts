@@ -17,17 +17,17 @@ const composeArgs = [
   composeFile,
 ];
 
-const knexEnv: NodeJS.ProcessEnv = {
+const dbEnv: NodeJS.ProcessEnv = {
   ...process.env,
   NODE_ENV: "test" as const,
   PG_CONNECTION_STRING: pgConnectionString,
 };
 
-const knexArgs = (command: string) => [
-  "knex",
-  "--knexfile",
-  resolve(__dirname, "../../knexfile.js"),
-  command,
+const drizzleMigrateCommand = [
+  process.execPath,
+  "--import",
+  "tsx",
+  resolve(__dirname, "../../scripts/db-migrate.ts"),
 ];
 
 async function runCommand(
@@ -98,17 +98,22 @@ async function globalSetup() {
     90_000,
     { stdio: "inherit" },
   );
-  await runCommand("npx", [...knexArgs("migrate:latest")], 60_000, {
-    stdio: "inherit",
-    env: knexEnv,
-  });
+  await runCommand(
+    drizzleMigrateCommand[0],
+    [...drizzleMigrateCommand.slice(1), "migrate"],
+    60_000,
+    {
+      stdio: "inherit",
+      env: dbEnv,
+    },
+  );
   await runCommand(
     process.execPath,
     ["--import", "tsx", resolve(__dirname, "./fixtures/setup.ts")],
     60_000,
     {
       stdio: "inherit",
-      env: knexEnv,
+      env: dbEnv,
     },
   );
 }
