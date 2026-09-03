@@ -21,6 +21,7 @@
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:migrate:make": "drizzle-kit generate",
     "db:migrate:status": "tsx scripts/db-migrate.ts status",
+    "db:explain": "tsx scripts/db-explain.ts",
     "db:seed": "pnpm run db:up && tsx scripts/db-seed.ts db/seeds/dev/001_dev_data.ts",
     "db:seed:test": "tsx scripts/db-seed.ts tests/e2e/fixtures/seeds/001_test_data.ts",
     "db:seed:e2e": "pnpm run db:seed:test",

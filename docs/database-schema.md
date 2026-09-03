@@ -62,6 +62,11 @@ applies the full set from an empty history.
 ## Verification
 
 - `pnpm run db:migrate:status` — applied vs pending migrations.
+- `pnpm run db:explain` — `EXPLAIN (ANALYZE, BUFFERS)` harness for the hot
+  shop reads (catalog by category, public shop by slug, editor by token).
+  Asserts each plan references the secondary indexes added by
+  `0001_catalog_indexes.sql`. Use it after significant catalog growth or
+  schema changes to confirm query shape is still index-friendly.
 - `pnpm run test:db` — disposable PostgreSQL contract suite (migration
   idempotency, indexes, pinned trigger config, UUID/opaque price and FK
   contracts, and the guarded adoption flow). Run before any deploy that
