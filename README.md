@@ -76,8 +76,16 @@ the example's `PG_CONNECTION_STRING` value works with `compose.dev.yaml`:
 | `HP_AWS_IMAGES_BUCKET` | S3 image bucket | Uploads only |
 | `NEXT_PUBLIC_IMAGE_BUCKET_URL` | Public bucket URL | Images only |
 | `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Error monitoring (disabled in dev) | No |
+| `SENTRY_AUTH_TOKEN` | Sentry source map upload (CI/deploy) | Uploads only |
+| `SENTRY_ORG` / `SENTRY_PROJECT` | Sentry org/project slugs (default from `sentry.properties`) | Uploads only |
 
 > Never commit secret values. `Sentry` is automatically disabled in development.
+
+Sentry follows the SDK v10 wiring: `next.config.ts` wraps the Next config with
+`withSentryConfig`, `instrumentation.ts` + `instrumentation-client.ts` initialize
+the server/edge/client SDKs, and `app/error.tsx` / `app/global-error.tsx` report
+React render errors. Source maps upload when `SENTRY_AUTH_TOKEN` is set; without a
+token the build skips the upload with a warning instead of failing.
 
 ### Installation and development
 
