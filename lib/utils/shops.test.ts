@@ -68,6 +68,6 @@ describe("getBackgroundForShop", () => {
   test("uses the category background when no custom background exists", () => {
     expect(
       getBackgroundForShop({ background: null, category: "Cafetería" }),
-    ).toBe("url(/images/backgrounds/cafe.jpg)");
+    ).toBe("/images/backgrounds/cafe.jpg");
   });
 });

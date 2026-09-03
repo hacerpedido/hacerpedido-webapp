@@ -30,6 +30,12 @@ export async function uploadFile(
     Key: key,
     Body: fileContent,
     ContentType: mime,
+    // Long-lived, immutable cache: each upload produces a new key
+    // (`${shopId}-${imageType}-${random10}.${ext}` in app/api/images/route.ts),
+    // so a year-long TTL is safe — the next edit gets a brand-new URL.
+    // Pairs with images.minimumCacheTTL in next.config.ts so Vercel's image
+    // optimizer keeps the transformed variants cached at the edge too.
+    CacheControl: "public, max-age=31536000, immutable",
     ACL: "public-read" as const,
   };
 

@@ -27,9 +27,12 @@ const ShopCard = ({ shop }) => {
               alt={name}
               className={styles.logo}
               height={75}
+              loading="eager"
               onError={() => setLogoFailed(true)}
+              priority
+              quality={80}
+              sizes="75px"
               src={logo}
-              unoptimized
               width={75}
             />
           ) : (

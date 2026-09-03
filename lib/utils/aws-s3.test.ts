@@ -71,6 +71,7 @@ describe("S3 image utilities", () => {
       Key: "shops/shop-id/logo.png",
       Body: fileContent,
       ContentType: "image/png",
+      CacheControl: "public, max-age=31536000, immutable",
       ACL: "public-read",
     });
     expect(mockSend).toHaveBeenCalledWith({ input: expect.any(Object) });

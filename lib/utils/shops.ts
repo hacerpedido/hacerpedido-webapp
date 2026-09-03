@@ -67,3 +67,7 @@ export function getBackgroundForShop({
 
   return getBackgroundForCategory(category ?? "");
 }
+
+// Returned to <Image src=...>; callers wrap with `url(...)` if they need the
+// CSS `background-image` form. Keeping the function named like the others
+// (it returns a URL — renderers choose how to use it).
