@@ -55,16 +55,24 @@ jest.mock("react-dropzone", () => {
 // After issue #133's migration (EditShop side), `UploadImage` no longer
 // imports `react-bootstrap` for its modal/buttons. Throw on import if
 // anything regresses so we catch it loudly.
-jest.mock("react-bootstrap/Modal", () => {
-  throw new Error(
-    "react-bootstrap/Modal must no longer be imported from UploadImage (issue #235 migration).",
-  );
-});
-jest.mock("react-bootstrap/Button", () => {
-  throw new Error(
-    "react-bootstrap/Button must no longer be imported from UploadImage (issue #235 migration).",
-  );
-});
+jest.mock(
+  "react-bootstrap/Modal",
+  () => {
+    throw new Error(
+      "react-bootstrap/Modal must no longer be imported from UploadImage (issue #235 migration).",
+    );
+  },
+  { virtual: true },
+);
+jest.mock(
+  "react-bootstrap/Button",
+  () => {
+    throw new Error(
+      "react-bootstrap/Button must no longer be imported from UploadImage (issue #235 migration).",
+    );
+  },
+  { virtual: true },
+);
 
 // `react-image-crop@11`'s `ReactCrop` takes `crop`, `aspect`, and
 // `circularCrop` at the top level, renders the source image via
@@ -221,6 +229,17 @@ describe("UploadImage", () => {
     expect(uploadRequest.body.get("shop_id")).toBe("7");
     expect(uploadRequest.body.get("image")).toBeTruthy();
     expect(context.drawImage).toHaveBeenCalled();
+  });
+
+  test("returns to the picker when changing the selected image", async () => {
+    renderUploader();
+    await selectFile();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cambiar imagen" }));
+
+    expect(screen.getByTestId("drop-zone")).toBeTruthy();
+    expect(screen.getByLabelText("Seleccionar imagen")).toBeTruthy();
+    expect(screen.queryByTestId("cropper")).toBeNull();
   });
 
   test("does not upload when the crop is invalid", async () => {

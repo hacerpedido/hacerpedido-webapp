@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Dialog from "#components/primitivas/Dialog";
+import { getBackgroundForShop, getLogoForShop } from "#lib/utils/shops";
 import { validatePhoneNumber } from "#lib/utils/utils";
 
 import { useState } from "react";
@@ -76,8 +77,14 @@ export default function EditShop({
     <>
       <Dialog onClose={handleClose} open={show}>
         <UploadImage
+          currentUrl={
+            imageType === "logo"
+              ? getLogoForShop(shop)
+              : getBackgroundForShop(shop)
+          }
           handleClose={handleClose}
           imageType={imageType}
+          key={`${imageType ?? "closed"}-${show}`}
           shopID={shop.id}
         />
       </Dialog>

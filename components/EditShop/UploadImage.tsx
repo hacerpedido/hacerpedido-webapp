@@ -20,10 +20,16 @@ type UploadImageType = "logo" | "background";
 type UploadImageProps = {
   shopID: number;
   imageType: UploadImageType;
+  currentUrl?: string | null;
   handleClose: (options?: { forceRefresh?: boolean }) => void;
 };
 
-const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
+const UploadImage = ({
+  shopID,
+  imageType,
+  currentUrl,
+  handleClose,
+}: UploadImageProps) => {
   const circularCrop = imageType === "logo";
   const aspect = imageType === "logo" ? 1 : 1.2014;
 
@@ -34,6 +40,22 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [crop, setCrop] = useState<PercentCrop | undefined>(undefined);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+
+  // Replace a pending file without closing the editor. The current saved
+  // image remains available above the picker while the new selection is
+  // still uncommitted.
+  const changeImage = useCallback(() => {
+    setImage(undefined);
+    setUpImg(undefined);
+    setCompletedCrop(null);
+    setError("");
+    setCrop(undefined);
+  }, []);
+
+  const currentImageAlt =
+    imageType === "logo"
+      ? "Logo actual del comercio"
+      : "Portada actual del comercio";
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -176,6 +198,20 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
       <Dialog.Title>Sube una imagen</Dialog.Title>
       <Dialog.Body>
         <div className={styles.uploaderContainer}>
+          {currentUrl && !image && (
+            <div
+              className={styles.currentPreview}
+              data-testid="current-image-preview"
+            >
+              {/* biome-ignore lint/performance/noImgElement: native <img> matches the existing preview pattern in this dialog and avoids next/image config overhead for a 64px thumbnail. */}
+              <img
+                alt={currentImageAlt}
+                className={styles.currentImage}
+                src={currentUrl}
+              />
+              <span className={styles.currentLabel}>Imagen actual</span>
+            </div>
+          )}
           {!image && (
             <div
               {...getRootProps()}
@@ -217,9 +253,18 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
         )}
         {error && <div role="alert">{error}</div>}
         {!isWaiting && image && (
-          <Button onClick={() => onUpload(completedCrop)} variant="primary">
-            Aceptar
-          </Button>
+          <>
+            <Button onClick={() => onUpload(completedCrop)} variant="primary">
+              Aceptar
+            </Button>
+            <Button
+              data-testid="cancel-selection"
+              onClick={changeImage}
+              variant="secondary"
+            >
+              Cambiar imagen
+            </Button>
+          </>
         )}
         {!isWaiting && !image && (
           <Button onClick={onDelete} variant="primary">

@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
     // upload produces a new URL. Cache transformed variants at the edge for
     // a year to keep Vercel from re-encoding on repeat visits.
     minimumCacheTTL: 60 * 60 * 24 * 365,
+    // Allow-list the quality values requested by the app's images.
+    qualities: [75, 80],
     remotePatterns: [
       {
         protocol: imageBucketUrl.startsWith("https://") ? "https" : "http",
