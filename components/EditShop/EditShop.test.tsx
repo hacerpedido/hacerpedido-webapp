@@ -1,6 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+// @ts-nocheck — see components/primitivas/Button.test.tsx for the same rationale.
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { axe, toHaveNoViolations } from "jest-axe";
 import type React from "react";
 import EditShop from "./EditShop";
+
+expect.extend(toHaveNoViolations);
 
 type PhoneValidator = (value: string) => string | boolean;
 
@@ -53,38 +57,9 @@ jest.mock("react-hook-form", () => ({
 }));
 
 jest.mock("react-bootstrap/Modal", () => {
-  const Modal = ({
-    children,
-    onHide,
-    show,
-  }: {
-    children?: React.ReactNode;
-    onHide?: () => void;
-    show?: boolean;
-  }) =>
-    show ? (
-      <div role="dialog">
-        {children}
-        <button onClick={onHide} type="button">
-          Cerrar modal
-        </button>
-      </div>
-    ) : null;
-
-  return Object.assign(Modal, {
-    Header: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-    Title: ({ children }: { children?: React.ReactNode }) => (
-      <h2>{children}</h2>
-    ),
-    Body: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-    Footer: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-  });
+  throw new Error(
+    "react-bootstrap/Modal must no longer be imported after the EditShop migration to the native Dialog wrapper (issue #133 PR 3).",
+  );
 });
 
 jest.mock(
@@ -231,12 +206,27 @@ describe("EditShop", () => {
     const { props } = renderEditor();
 
     fireEvent.click(screen.getByRole("button", { name: "Editar portada" }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.hasAttribute("open")).toBe(true);
     expect(screen.getByTestId("upload-image").textContent).toContain(
       "Editando background",
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Confirmar imagen" }));
     expect(props.refresh).toHaveBeenCalledTimes(1);
-    expect(screen.queryByTestId("upload-image")).toBeNull();
+    expect(dialog.hasAttribute("open")).toBe(false);
+  });
+
+  test("has no axe accessibility violations in the default state", async () => {
+    const { container } = renderEditor();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  test("has no axe accessibility violations while the image editor is open", async () => {
+    const { container } = renderEditor();
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Editar portada" }));
+    });
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

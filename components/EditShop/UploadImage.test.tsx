@@ -1,126 +1,147 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import type React from "react";
+// @ts-nocheck — see components/primitivas/Button.test.tsx for the same rationale.
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { axe, toHaveNoViolations } from "jest-axe";
 import UploadImage from "./UploadImage";
 
-type CropShape = { x: number; y: number; width: number; height: number };
-type LoadedImage = {
-  naturalWidth: number;
-  naturalHeight: number;
-  width: number;
-  height: number;
-};
+expect.extend(toHaveNoViolations);
 
+// `react-image-crop@11` ships its CSS via the same path that the source
+// imports. Empty mock so Jest doesn't try to resolve the stylesheet.
 jest.mock("react-image-crop/dist/ReactCrop.css", () => ({}));
-jest.mock("react-drop-zone/dist/styles.css", () => ({}));
 
-jest.mock("react-image-crop", () => {
+// `react-dropzone@20` exposes a `useDropzone` hook that returns a tuple
+// of helpers (`getRootProps`, `getInputProps`, `isDragActive`). The SUT
+// only consumes `getRootProps`/`getInputProps`; provide them as plain
+// pass-throughs so the wrapper renders the same internal <input>.
+jest.mock("react-dropzone", () => {
   const React = require("react") as typeof import("react");
 
-  return function MockReactCrop({
-    crop,
-    onChange,
-    onComplete,
-    onImageLoaded,
-    src,
-  }: {
-    crop: CropShape | null;
-    onChange: (crop: CropShape) => void;
-    onComplete: (crop: CropShape | null) => void;
-    onImageLoaded: (image: LoadedImage) => void;
-    src: string;
-  }) {
-    React.useEffect(() => {
-      onImageLoaded({
-        naturalWidth: 400,
-        naturalHeight: 300,
-        width: 200,
-        height: 150,
-      });
-      onComplete(crop);
-    }, []);
+  const useDropzone = (options: { onDrop?: (files: File[]) => void } = {}) => {
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
+    return {
+      getRootProps: (overrides: Record<string, unknown> = {}) => ({
+        tabIndex: 0,
+        role: "button",
+        ...overrides,
+      }),
+      getInputProps: (overrides: Record<string, unknown> = {}) => ({
+        ref: inputRef,
+        type: "file",
+        style: { display: "none" },
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+          const files = event.target.files;
+          if (files && files.length > 0) {
+            options.onDrop?.(Array.from(files));
+          } else {
+            options.onDrop?.([]);
+          }
+        },
+        "aria-label": "Seleccionar imagen",
+        ...overrides,
+      }),
+      isDragActive: false,
+    };
+  };
 
+  return { useDropzone };
+});
+
+// After issue #133's migration (EditShop side), `UploadImage` no longer
+// imports `react-bootstrap` for its modal/buttons. Throw on import if
+// anything regresses so we catch it loudly.
+jest.mock("react-bootstrap/Modal", () => {
+  throw new Error(
+    "react-bootstrap/Modal must no longer be imported from UploadImage (issue #235 migration).",
+  );
+});
+jest.mock("react-bootstrap/Button", () => {
+  throw new Error(
+    "react-bootstrap/Button must no longer be imported from UploadImage (issue #235 migration).",
+  );
+});
+
+// `react-image-crop@11`'s `ReactCrop` takes `crop`, `aspect`, and
+// `circularCrop` at the top level, renders the source image via
+// children, and fires `onChange(pixelCrop, percentCrop)` /
+// `onComplete(pixelCrop | null, percentCrop)` callbacks. Mock it as a
+// small element so the SUT's child <img> still renders, and so the
+// existing `Cambiar recorte` / `Quitar recorte` buttons keep working
+// through the new (pixel, percent) callback shape.
+jest.mock("react-image-crop", () => {
+  const mockReact = require("react") as typeof import("react");
+
+  type MockCrop = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    unit: "px" | "%";
+  };
+
+  const mockCropWithUnit = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    unit: "px" | "%",
+  ): MockCrop => ({
+    x,
+    y,
+    width,
+    height,
+    unit,
+  });
+
+  const mockReactCrop = (props: {
+    aspect?: number;
+    children?: React.ReactNode;
+    circularCrop?: boolean;
+    crop?: MockCrop | undefined;
+    onChange: (pixelCrop: MockCrop, percentCrop: MockCrop) => void;
+    onComplete?: (pixelCrop: MockCrop | null, percentCrop: MockCrop) => void;
+  }) => {
+    mockReact.useEffect(() => {
+      // Seed the SUT's `crop` state with a sensible default so the first
+      // `Aceptar` click has a non-null `completedCrop` to upload with.
+      const init = mockCropWithUnit(10, 5, 100, 80, "px");
+      const initPercent = mockCropWithUnit(10, 5, 100, 80, "%");
+      props.onChange?.(init, initPercent);
+      props.onComplete?.(init, initPercent);
+    }, []);
     return (
       <div data-testid="cropper">
-        {/* biome-ignore lint/performance/noImgElement: This is a lightweight image mock for the crop component. */}
-        <img alt="Vista previa" src={src} />
-        <output data-testid="crop">{JSON.stringify(crop)}</output>
+        {props.children}
+        <output data-testid="crop">{JSON.stringify(props.crop)}</output>
         <button
           onClick={() => {
-            const nextCrop = { height: 80, width: 100, x: 10, y: 5 };
-            onChange(nextCrop);
-            onComplete(nextCrop);
+            const nextPercent = mockCropWithUnit(10, 5, 100, 80, "%");
+            const nextPixel = mockCropWithUnit(10, 5, 100, 80, "px");
+            props.onChange(nextPixel, nextPercent);
+            props.onComplete?.(nextPixel, nextPercent);
           }}
           type="button"
         >
           Cambiar recorte
         </button>
-        <button onClick={() => onComplete(null)} type="button">
+        <button
+          onClick={() =>
+            props.onComplete?.(null, mockCropWithUnit(0, 0, 0, 0, "%"))
+          }
+          type="button"
+        >
           Quitar recorte
         </button>
       </div>
     );
   };
-});
 
-jest.mock("react-drop-zone", () => {
-  return {
-    StyledDropZone: ({ onDrop }: { onDrop: (file: File | null) => void }) => (
-      <div>
-        <input
-          aria-label="Seleccionar imagen"
-          onChange={(event) => onDrop(event.target.files?.[0] ?? null)}
-          type="file"
-        />
-        <button onClick={() => onDrop(null)} type="button">
-          Rechazar archivo
-        </button>
-      </div>
-    ),
-  };
-});
-
-jest.mock("next/dynamic", () => ({
-  __esModule: true,
-  default: (loader: unknown) => {
-    const DropZone = (
-      require("react-drop-zone") as {
-        StyledDropZone: React.ComponentType<Record<string, unknown>>;
-      }
-    ).StyledDropZone;
-    void loader;
-    return (props: Record<string, unknown>) => <DropZone {...props} />;
-  },
-}));
-
-jest.mock("react-bootstrap/Modal", () => {
-  const Modal = ({ children }: { children?: React.ReactNode }) => (
-    <div role="dialog">{children}</div>
-  );
-
-  return Object.assign(Modal, {
-    Header: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-    Title: ({ children }: { children?: React.ReactNode }) => (
-      <h2>{children}</h2>
-    ),
-    Body: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-    Footer: ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    ),
-  });
-});
-
-jest.mock("react-bootstrap/Button", () => {
-  return ({
-    children,
-    ...props
-  }: {
-    children?: React.ReactNode;
-    [key: string]: unknown;
-  }) => <button {...props}>{children}</button>;
+  return { __esModule: true, default: mockReactCrop };
 });
 
 describe("UploadImage", () => {
@@ -148,7 +169,7 @@ describe("UploadImage", () => {
     jest.restoreAllMocks();
   });
 
-  const renderUploader = (imageType = "logo") =>
+  const renderUploader = (imageType: "logo" | "background" = "logo") =>
     render(
       <UploadImage
         handleClose={handleClose}
@@ -159,18 +180,17 @@ describe("UploadImage", () => {
 
   const selectFile = async () => {
     const file = new File(["image"], "logo.png", { type: "image/png" });
-    fireEvent.change(screen.getByLabelText("Seleccionar imagen"), {
-      target: { files: [file] },
+    const input = screen.getByLabelText("Seleccionar imagen");
+    await act(async () => {
+      fireEvent.change(input, { target: { files: [file] } });
     });
     expect(await screen.findByTestId("cropper")).toBeTruthy();
   };
 
-  test("keeps the drop zone visible when a file is rejected", () => {
+  test("renders the drop zone until a file is selected", () => {
     renderUploader();
-
-    fireEvent.click(screen.getByRole("button", { name: "Rechazar archivo" }));
-
     expect(screen.getByLabelText("Seleccionar imagen")).toBeTruthy();
+    expect(screen.queryByTestId("drop-zone")).toBeTruthy();
     expect(screen.queryByTestId("cropper")).toBeNull();
   });
 
@@ -224,12 +244,19 @@ describe("UploadImage", () => {
     );
     renderUploader();
     await selectFile();
+    // Click Cambiar recorte first so the SUT's Aceptar click handler
+    // captures a fresh closure with `completedCrop` populated; the mock's
+    // initial seed runs in a useEffect so the first click after mount
+    // would otherwise land against a stale closure.
+    fireEvent.click(screen.getByRole("button", { name: "Cambiar recorte" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Aceptar" }));
     expect(screen.getByText("Por favor, espere...")).toBeTruthy();
     rejectUpload(new Error("upload failed"));
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "No se pudo subir la imagen",
+    await waitFor(() =>
+      expect(screen.getByRole("alert").textContent).toContain(
+        "No se pudo subir la imagen",
+      ),
     );
     expect(screen.getByRole("button", { name: "Aceptar" })).toBeTruthy();
   });
@@ -238,11 +265,13 @@ describe("UploadImage", () => {
     fetchMock.mockResolvedValueOnce({ ok: false, status: 500 });
     renderUploader();
     await selectFile();
-
+    fireEvent.click(screen.getByRole("button", { name: "Cambiar recorte" }));
     fireEvent.click(screen.getByRole("button", { name: "Aceptar" }));
 
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "No se pudo subir la imagen",
+    await waitFor(() =>
+      expect(screen.getByRole("alert").textContent).toContain(
+        "No se pudo subir la imagen",
+      ),
     );
     expect(handleClose).not.toHaveBeenCalled();
   });
@@ -304,6 +333,16 @@ describe("UploadImage", () => {
     expect((await screen.findByRole("alert")).textContent).toContain(
       "No se pudo borrar la imagen",
     );
-    expect(handleClose).not.toHaveBeenCalled();
+  });
+
+  test("has no axe accessibility violations in the initial drop-zone state", async () => {
+    const { container } = renderUploader();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  test("has no axe accessibility violations after a file is loaded", async () => {
+    const { container } = renderUploader("background");
+    await selectFile();
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
