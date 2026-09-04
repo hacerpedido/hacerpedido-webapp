@@ -1,8 +1,8 @@
 // @ts-nocheck
+import Dialog from "#components/primitivas/Dialog";
 import { validatePhoneNumber } from "#lib/utils/utils";
 
 import { useState } from "react";
-import Modal from "react-bootstrap/Modal";
 import { useFormStatus } from "react-dom";
 import { Controller } from "react-hook-form";
 import TimeAgo from "react-timeago";
@@ -74,13 +74,13 @@ export default function EditShop({
 
   return (
     <>
-      <Modal onHide={handleClose} show={show}>
+      <Dialog onClose={handleClose} open={show}>
         <UploadImage
           handleClose={handleClose}
           imageType={imageType}
           shopID={shop.id}
         />
-      </Modal>
+      </Dialog>
 
       <section className={styles.container}>
         <header className={styles.titleContainer}>
