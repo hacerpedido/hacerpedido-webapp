@@ -56,11 +56,15 @@ jest.mock("react-hook-form", () => ({
   },
 }));
 
-jest.mock("react-bootstrap/Modal", () => {
-  throw new Error(
-    "react-bootstrap/Modal must no longer be imported after the EditShop migration to the native Dialog wrapper (issue #133 PR 3).",
-  );
-});
+jest.mock(
+  "react-bootstrap/Modal",
+  () => {
+    throw new Error(
+      "react-bootstrap/Modal must no longer be imported after the EditShop migration to the native Dialog wrapper (issue #133 PR 3).",
+    );
+  },
+  { virtual: true },
+);
 
 jest.mock(
   "./UploadImage",

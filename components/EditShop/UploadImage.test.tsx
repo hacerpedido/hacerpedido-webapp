@@ -55,16 +55,24 @@ jest.mock("react-dropzone", () => {
 // After issue #133's migration (EditShop side), `UploadImage` no longer
 // imports `react-bootstrap` for its modal/buttons. Throw on import if
 // anything regresses so we catch it loudly.
-jest.mock("react-bootstrap/Modal", () => {
-  throw new Error(
-    "react-bootstrap/Modal must no longer be imported from UploadImage (issue #235 migration).",
-  );
-});
-jest.mock("react-bootstrap/Button", () => {
-  throw new Error(
-    "react-bootstrap/Button must no longer be imported from UploadImage (issue #235 migration).",
-  );
-});
+jest.mock(
+  "react-bootstrap/Modal",
+  () => {
+    throw new Error(
+      "react-bootstrap/Modal must no longer be imported from UploadImage (issue #235 migration).",
+    );
+  },
+  { virtual: true },
+);
+jest.mock(
+  "react-bootstrap/Button",
+  () => {
+    throw new Error(
+      "react-bootstrap/Button must no longer be imported from UploadImage (issue #235 migration).",
+    );
+  },
+  { virtual: true },
+);
 
 // `react-image-crop@11`'s `ReactCrop` takes `crop`, `aspect`, and
 // `circularCrop` at the top level, renders the source image via
