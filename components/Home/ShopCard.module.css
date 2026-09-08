@@ -1,0 +1,69 @@
+.card {
+  box-sizing: border-box;
+  padding: 15px;
+  margin-bottom: 6px;
+  background-color: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+}
+
+.containerLabels {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-left: 8px;
+  margin-left: 8px;
+}
+
+.containerLogo {
+  display: flex;
+  flex: 0 0 75px;
+  align-items: center;
+  width: 75px;
+  height: 75px;
+}
+
+.logo {
+  display: block;
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  background-color: #fafafa;
+  border-radius: 37.5px;
+}
+
+.logoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 75px;
+  height: 75px;
+  background-color: #fafafa;
+  border-radius: 50%;
+}
+
+.logoInitials {
+  font-family: "Barlow", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+}
+
+.shopName {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-family: "Barlow", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4d360f;
+  text-transform: capitalize;
+}

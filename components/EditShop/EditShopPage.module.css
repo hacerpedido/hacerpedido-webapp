@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  background-color: #ececec;
+}
+
+.leftContainer {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  background-color: #fafafa;
+}
+
+.rightContainer {
+  display: flex;
+  flex: 0 0 400px;
+  flex-direction: column;
+  width: 400px;
+  min-height: 0;
+  padding: 30px;
+  overflow: hidden;
+  background-color: #ececec;
+}
+
+.productionLink {
+  display: block;
+  flex: 0 0 auto;
+  padding-bottom: 30px;
+  color: #37b26e;
+  text-align: center;
+  text-decoration: none;
+}
+
+.productionLink:visited,
+.productionLink:hover,
+.productionLink:focus {
+  color: #37b26e;
+  text-decoration: none;
+}
+
+.openProductionLink {
+  font-family: Barlow, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  color: #37b26e;
+}
+
+.openProductionLinkIcon {
+  position: relative;
+  top: 4px;
+  width: 18px;
+  height: 16px;
+  margin: 3px;
+}
+
+.rightContainer > div:last-child {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+@media (max-width: 1000px) {
+  .container {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .leftContainer {
+    min-height: 100vh;
+  }
+
+  .rightContainer {
+    display: none;
+  }
+}

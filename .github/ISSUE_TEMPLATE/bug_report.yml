@@ -1,0 +1,61 @@
+name: Reportar un error
+description: Contanos sobre un problema para que podamos investigarlo.
+title: "[Bug]: "
+labels:
+  - bug
+  - priority-medium
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por ayudarnos a mejorar HacerPedido. Completá los campos con la información necesaria para reproducir el problema.
+  - type: input
+    id: titulo
+    attributes:
+      label: Título breve
+      description: Escribí un título claro y conciso que resuma el problema.
+      placeholder: "Ej.: El carrito se vacía al volver al inicio"
+    validations:
+      required: true
+  - type: checkboxes
+    id: duplicados
+    attributes:
+      label: Búsqueda de duplicados
+      options:
+        - label: Confirmo que busqué reportes existentes y no encontré uno igual.
+          required: true
+  - type: textarea
+    id: comportamiento_esperado
+    attributes:
+      label: Comportamiento esperado
+      description: ¿Qué esperabas que sucediera?
+      placeholder: Describí el resultado esperado.
+    validations:
+      required: true
+  - type: textarea
+    id: comportamiento_actual
+    attributes:
+      label: Comportamiento actual
+      description: ¿Qué sucedió en realidad?
+      placeholder: Describí el resultado que obtuviste.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduccion
+    attributes:
+      label: Pasos para reproducir
+      description: Indicá los pasos mínimos para volver a ver el problema.
+      placeholder: |
+        1. Abrí ...
+        2. Hacé clic en ...
+        3. Observá ...
+    validations:
+      required: true
+  - type: textarea
+    id: entorno
+    attributes:
+      label: Entorno
+      description: Incluí navegador, dispositivo, sistema operativo y cualquier otro dato relevante.
+      placeholder: "Ej.: Chrome 130, Android 14, Samsung Galaxy S23"
+    validations:
+      required: true

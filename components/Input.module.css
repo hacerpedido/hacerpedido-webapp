@@ -1,0 +1,48 @@
+.input {
+  display: block;
+  width: 100%;
+  padding: 10px 11px;
+  font-family: Barlow, sans-serif;
+  font-size: 15px;
+  color: #4d360f;
+  background-color: transparent;
+  border: 1px solid;
+  border-color: #ececec;
+  border-radius: 2px;
+}
+
+.inputError {
+  border-color: #fc6d47;
+}
+
+.container {
+  margin-top: 0.25em;
+  margin-bottom: 10px;
+}
+
+.label {
+  display: block;
+}
+
+.labelText {
+  display: block;
+  margin-bottom: 8px;
+  font-family: Barlow, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #cccccc;
+  text-transform: uppercase;
+}
+
+.textError {
+  font-size: 15px;
+  color: #fc6d47;
+}
+
+.input::placeholder {
+  color: var(--placeholder-color, #99938a);
+}
+
+textarea.input {
+  resize: none;
+}

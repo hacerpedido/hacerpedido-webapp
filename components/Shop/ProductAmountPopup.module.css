@@ -1,0 +1,96 @@
+.amountText {
+  margin-right: 17px;
+  margin-left: 17px;
+  font-family: "Barlow", sans-serif;
+  font-size: 20px;
+}
+
+.buttonPlus {
+  background-color: #ffb233;
+  border-color: #ffb233;
+}
+
+.buttonPlusText {
+  color: #ffffff;
+}
+
+.buttonQty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #999999;
+  border-radius: 50%;
+}
+
+.buttonQtyText {
+  padding-bottom: 2px;
+  font-family: "Barlow", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #999999;
+}
+
+.buttonSubmit {
+  padding: 0;
+  margin-top: 17px;
+  background-color: #ffb233;
+  border: 0;
+  border-radius: 3.4px;
+}
+
+.buttonSubmitText {
+  padding: 4.5px 24px 5.5px;
+  font-family: "Barlow", sans-serif;
+  font-weight: 600;
+  line-height: 18px;
+  color: #ffffff;
+}
+
+.closeButton {
+  position: relative;
+  bottom: -20px;
+  left: 57px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-top: 0;
+  border-radius: 2px;
+}
+
+.closeButtonIcon {
+  display: block;
+  font-family: "Barlow", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3ecb7d;
+  transform: rotate(-45deg);
+}
+
+.container {
+  position: absolute;
+  right: -1px;
+  bottom: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 135px;
+  padding-top: 16px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 5.6px;
+  border-bottom-right-radius: 0;
+  box-shadow: 1.14px 5.55px 10px rgba(0, 0, 0, 0.2);
+}
+
+.lineBreak {
+  width: 100%;
+}

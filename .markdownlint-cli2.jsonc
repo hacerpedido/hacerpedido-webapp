@@ -1,0 +1,22 @@
+{
+  "config": {
+    "default": true,
+    // Keep intentional long URLs, commands, and tables readable without
+    // reflowing the existing documentation as part of the lint rollout.
+    "MD013": false,
+    // Existing project guidance uses compact lists and code fences for mixed
+    // command/configuration snippets; changing those documents is out of scope.
+    "MD032": false,
+    "MD040": false,
+    // Agent manifests use front matter rather than a prose heading.
+    "MD041": false,
+    // Preserve the existing file ending until the documentation baseline is
+    // cleaned up independently.
+    "MD047": false,
+    // Existing tables use padded cells with compact delimiter rows; do not
+    // rewrite their formatting during lint setup.
+    "MD060": false
+  },
+  "globs": ["**/*.md"],
+  "ignores": [".agents/skills/**", "**/node_modules/**"]
+}

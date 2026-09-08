@@ -1,0 +1,16 @@
+import type * as React from "react";
+
+function SvgPhoneCall(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg height={16} width={10} {...props}>
+      <title>PhoneCall</title>
+      <path
+        d="M7.85714 0H2.14286C0.957143 0 0 0.974545 0 2.18182V13.8182C0 15.0255 0.957143 16 2.14286 16H7.85714C9.04286 16 10 15.0255 10 13.8182V2.18182C10 0.974545 9.04286 0 7.85714 0ZM6.42857 14.5455H3.57143V13.8182H6.42857V14.5455ZM8.75 12.3636H1.25V2.18182H8.75V12.3636Z"
+        fill="currentColor"
+        fillRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+export default SvgPhoneCall;
