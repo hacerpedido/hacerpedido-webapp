@@ -15,7 +15,7 @@
     "test": "tsx scripts/ensure-dev-services.ts --check && jest",
     "test:coverage": "tsx scripts/ensure-dev-services.ts --check && jest --coverage --runInBand",
     "test:db": "tsx scripts/test-db-contracts.ts",
-    "test:e2e": "tsx scripts/ensure-dev-services.ts --check && playwright test",
+    "test:e2e": "tsx scripts/ensure-dev-services.ts --check-docker && playwright test",
     "test:e2e:install": "playwright install chromium",
     "test:e2e:info": "tsx scripts/e2e-info.ts",
     "db:migrate": "tsx scripts/db-migrate.ts",

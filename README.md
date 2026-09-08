@@ -124,10 +124,14 @@ services to start at login or globally. Run `pnpm run db:setup` first when setti
 up a new development database; subsequent `pnpm dev` runs ensure the services are
 up and run the test suites before starting Next.js.
 
-Test commands never start Colima. Their preflight first verifies Docker, local
-PostgreSQL, and VersityGW; if anything is unavailable, start Docker (or run
+Manual unit test commands (`pnpm test` and `pnpm run test:coverage`) keep their
+full development-service preflight: Docker, local PostgreSQL, and VersityGW must
+already be available. If anything is unavailable, start Docker (or run
 `colima start` on macOS), then run `pnpm run db:up` and retry the test command.
-The E2E setup may then start its separate test Compose stack.
+`pnpm run test:e2e` only checks that Docker is available; its setup owns a
+separate E2E Compose stack and does not require the development services. The
+E2E check never starts Colima, so start Docker (or run `colima start` on macOS)
+before retrying if it fails.
 
 `pnpm-lock.yaml` is the project's canonical lockfile; use pnpm to install
 dependencies and run the scripts.
@@ -229,7 +233,7 @@ First time: `pnpm run test:e2e:install` (installs Chromium).
 | `pnpm run build` | Production build |
 | `pnpm run start` | Serve the production build |
 | `pnpm test` | Check local services, then run unit tests (Jest) |
-| `pnpm run test:e2e` | Check local services, then run E2E (Playwright + Docker) |
+| `pnpm run test:e2e` | Check Docker, then run E2E (Playwright + its separate Compose stack) |
 | `pnpm run test:e2e:install` | Install Chromium |
 | `pnpm run lint` | Biome lint |
 | `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations |

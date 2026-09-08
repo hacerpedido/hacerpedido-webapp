@@ -6,6 +6,7 @@ type ChildResult = ReturnType<typeof spawnSync>;
 
 const pnpmCommand = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 const checkOnly = process.argv.includes("--check");
+const dockerCheckOnly = process.argv.includes("--check-docker");
 
 function dockerIsAvailable(): boolean {
   const result = spawnSync("docker", ["info"], { stdio: "ignore" });
@@ -56,6 +57,17 @@ function printTestPreflightFailure(reason: string): number {
     `Test preflight failed: ${reason}\nStart Docker (on macOS, run \`colima start\`), then run \`pnpm run db:up\` and retry.`,
   );
   return 1;
+}
+
+function preflightDocker(): number {
+  if (!dockerIsAvailable()) {
+    console.error(
+      "E2E preflight failed: Docker is unavailable. Start Docker Desktop (or run `colima start` on macOS), then run `pnpm run test:e2e` again.",
+    );
+    return 1;
+  }
+
+  return 0;
 }
 
 function preflightTestServices(): number {
@@ -113,4 +125,8 @@ function ensureDevServices(): number {
   return childExitCode(dbUp);
 }
 
-process.exitCode = checkOnly ? preflightTestServices() : ensureDevServices();
+process.exitCode = dockerCheckOnly
+  ? preflightDocker()
+  : checkOnly
+    ? preflightTestServices()
+    : ensureDevServices();
