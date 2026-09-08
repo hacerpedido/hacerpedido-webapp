@@ -24,6 +24,7 @@ export interface SharedPoolClient {
 export interface SharedPool {
   query: (text: string, params?: unknown[]) => Promise<SharedQueryResult>;
   connect: () => Promise<SharedPoolClient>;
+  on: (event: "error", listener: (error: Error) => void) => void;
 }
 
 let pool: SharedPool | undefined;
@@ -36,6 +37,13 @@ export function getPool(): SharedPool {
     pool = new Pool({
       connectionString: process.env.PG_CONNECTION_STRING,
     });
+    // `pg` emits an 'error' on idle clients when the server goes away (for
+    // example when the E2E database is torn down or a database is restarted).
+    // Without a listener Node throws an uncaught exception and crashes the
+    // process. Swallow these transient idle-client errors; the pool replaces
+    // the idle client on the next connect, and active queries surface failures
+    // through their own promises.
+    pool.on("error", () => {});
   }
   return pool;
 }
