@@ -56,7 +56,6 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
         className={styles.cover}
         fill
         priority
-        quality={80}
         sizes="100vw"
         src={coverUrl}
       />
@@ -95,7 +94,6 @@ const ShopHeader = ({ isPreview = false, shop = {} }) => {
               loading="eager"
               onError={() => setLogoFailed(true)}
               priority
-              quality={80}
               sizes="100px"
               src={logo}
               width={100}

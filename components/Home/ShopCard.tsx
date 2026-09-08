@@ -30,7 +30,6 @@ const ShopCard = ({ shop }) => {
               loading="eager"
               onError={() => setLogoFailed(true)}
               priority
-              quality={80}
               sizes="75px"
               src={logo}
               width={75}
