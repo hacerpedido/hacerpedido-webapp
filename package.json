@@ -9,13 +9,13 @@
     "#tests/*": "./tests/*"
   },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "tsx scripts/ensure-dev-services.ts && pnpm test && pnpm run test:e2e && next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "test": "jest",
-    "test:coverage": "jest --coverage --runInBand",
+    "test": "tsx scripts/ensure-dev-services.ts --check && jest",
+    "test:coverage": "tsx scripts/ensure-dev-services.ts --check && jest --coverage --runInBand",
     "test:db": "tsx scripts/test-db-contracts.ts",
-    "test:e2e": "playwright test",
+    "test:e2e": "tsx scripts/ensure-dev-services.ts --check && playwright test",
     "test:e2e:install": "playwright install chromium",
     "test:e2e:info": "tsx scripts/e2e-info.ts",
     "db:migrate": "tsx scripts/db-migrate.ts",

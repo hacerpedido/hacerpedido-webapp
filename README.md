@@ -113,6 +113,22 @@ pnpm run db:setup   # Docker + migrations + development data
 pnpm run dev        # http://localhost:3000
 ```
 
+`pnpm dev` checks that Docker is available, starts the local Compose services with
+`pnpm run db:up`, runs the unit and E2E suites, and then starts Next.js. On macOS,
+if Docker is unavailable and Colima is installed, it starts Colima first. If Docker
+cannot be made available, start Docker Desktop (or run `colima start` on macOS) and
+retry `pnpm dev`.
+
+The startup check runs only when `pnpm dev` is invoked; it does not configure any
+services to start at login or globally. Run `pnpm run db:setup` first when setting
+up a new development database; subsequent `pnpm dev` runs ensure the services are
+up and run the test suites before starting Next.js.
+
+Test commands never start Colima. Their preflight first verifies Docker, local
+PostgreSQL, and VersityGW; if anything is unavailable, start Docker (or run
+`colima start` on macOS), then run `pnpm run db:up` and retry the test command.
+The E2E setup may then start its separate test Compose stack.
+
 `pnpm-lock.yaml` is the project's canonical lockfile; use pnpm to install
 dependencies and run the scripts.
 
@@ -139,10 +155,9 @@ databases. `db:reset` permanently deletes data from the local volume:
 use it only when you want to start from scratch. It does not require `psql` to be installed on the
 host; checks run inside the container.
 
-`db:up` starts PostgreSQL and the local VersityGW service, waits for both health
-checks, and runs the one-shot initializer that creates the image bucket
-idempotently. `db:down` stops the services but keeps the named PostgreSQL, S3
-data, and S3 IAM volumes, so local images and bucket state persist across
+`db:up` starts PostgreSQL and the local VersityGW service, waits for their health
+checks, and prepares the image bucket idempotently. `db:down` stops the services
+but keeps the named PostgreSQL, S3 data, and S3 IAM volumes, so local images and bucket state persist across
 restarts. To inspect S3 logs, run `docker compose -f compose.dev.yaml logs -f s3`.
 Use `db:reset` when you intentionally want to delete all local database and S3
 data and recreate the stack.
@@ -210,11 +225,11 @@ First time: `pnpm run test:e2e:install` (installs Chromium).
 
 | Script | Description |
 |---|---|
-| `pnpm run dev` | Dev server (port 3000; `PORT=3001 pnpm run dev` for another port) |
+| `pnpm run dev` | Ensure local Docker services are up, then start the dev server (port 3000; `PORT=3001 pnpm run dev` for another port) |
 | `pnpm run build` | Production build |
 | `pnpm run start` | Serve the production build |
-| `pnpm test` | Unit tests (Jest) |
-| `pnpm run test:e2e` | E2E (Playwright + Docker) |
+| `pnpm test` | Check local services, then run unit tests (Jest) |
+| `pnpm run test:e2e` | Check local services, then run E2E (Playwright + Docker) |
 | `pnpm run test:e2e:install` | Install Chromium |
 | `pnpm run lint` | Biome lint |
 | `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations |

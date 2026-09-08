@@ -25,7 +25,6 @@ const junitFile =
 
 module.exports = defineConfig({
   testDir: "./tests/e2e",
-  globalSetup: isExternalBaseURL ? undefined : "./tests/e2e/global-setup.ts",
   globalTeardown: isExternalBaseURL
     ? undefined
     : "./tests/e2e/global-teardown.ts",
@@ -57,7 +56,7 @@ module.exports = defineConfig({
     ? {}
     : {
         webServer: {
-          command: `pnpm build && pnpm start -p ${appPort}`,
+          command: `tsx tests/e2e/prepare-local-db.ts && pnpm build && pnpm start -p ${appPort}`,
           // The home page queries PostgreSQL during SSR. Probe the client-only
           // cart route instead so the server is considered ready without
           // racing database startup.
