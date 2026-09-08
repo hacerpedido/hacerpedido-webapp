@@ -1,0 +1,48 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.11/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "files": {
+    "includes": ["**", "!db/drizzle"]
+  },
+  "linter": {
+    "rules": {
+      "preset": "recommended"
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":BUN:",
+              ":NODE:",
+              "#assets/**",
+              "#components/**",
+              "#db/**",
+              "#lib/**",
+              "#tests/**",
+              ":BLANK_LINE:"
+            ]
+          }
+        },
+        "useSortedAttributes": "on",
+        "useSortedProperties": "on"
+      }
+    }
+  }
+}

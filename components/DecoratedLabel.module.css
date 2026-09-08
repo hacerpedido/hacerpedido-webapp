@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  align-items: center;
+  max-width: 92%;
+  margin-bottom: var(--label-margin-bottom);
+  text-align: center;
+}
+
+.text {
+  padding: 3px;
+  font-family: "Roboto Slab", serif;
+  font-size: var(--label-font-size);
+  font-weight: 400;
+  line-height: 14px;
+  color: var(--label-text-color);
+}
+
+.icon {
+  display: inline-flex;
+}

@@ -1,0 +1,128 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #fafafa;
+}
+
+.titleContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleTextContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.title {
+  margin: 10px 0;
+  font-family: Barlow, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 29px;
+  color: #000000;
+}
+
+.updatedAt {
+  margin: 0 10px;
+  font-family: Barlow, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #8f9bb3;
+}
+
+.buttonsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.uploadImageButton {
+  padding: 0;
+  margin: 10px 15px;
+  font-family: Barlow, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #37b26e;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+}
+
+.saveButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 0 10px 15px;
+  color: #ffffff;
+  cursor: pointer;
+  background-color: #37b26e;
+  border: 0;
+  border-radius: 5px;
+}
+
+.saveButtonSaving {
+  background-color: #8f9bb3;
+}
+
+.buttonText {
+  padding: 0 10px;
+  font-weight: bold;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.formContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  background-color: #ffffff;
+  border: 1px solid #ededed;
+  border-radius: 5px;
+}
+
+.formColumnLeft {
+  flex: 0.5;
+  padding: 20px 0 20px 20px;
+  margin-right: 8px;
+  background-color: #ffffff;
+}
+
+.formColumnRight {
+  flex: 0.5;
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 700px) {
+  .formContainer {
+    flex-direction: column;
+  }
+
+  .formColumnLeft,
+  .formColumnRight {
+    padding: 20px;
+    margin-right: 0;
+  }
+}

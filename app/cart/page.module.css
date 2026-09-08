@@ -1,0 +1,8 @@
+.container {
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.bodyContainer {
+  margin: 0 24px;
+}

@@ -1,0 +1,50 @@
+name: Proponer una mejora
+description: Proponé una idea para mejorar HacerPedido.
+title: "[Feature]: "
+labels:
+  - enhancement
+  - priority-medium
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por compartir tu idea. Explicá el problema que resolvería y cómo imaginás la mejora.
+  - type: input
+    id: titulo
+    attributes:
+      label: Título breve
+      description: Escribí un título claro y conciso que resuma la propuesta.
+      placeholder: "Ej.: Permitir guardar productos favoritos"
+    validations:
+      required: true
+  - type: checkboxes
+    id: duplicados
+    attributes:
+      label: Búsqueda de duplicados
+      options:
+        - label: Confirmo que busqué propuestas existentes y no encontré una igual.
+          required: true
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema a resolver
+      description: ¿Qué necesidad o dificultad resolvería esta propuesta?
+      placeholder: Describí el problema y a quién afecta.
+    validations:
+      required: true
+  - type: textarea
+    id: solucion
+    attributes:
+      label: Solución propuesta
+      description: ¿Cómo te gustaría resolverlo?
+      placeholder: Describí tu propuesta con el mayor detalle posible.
+    validations:
+      required: true
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+      description: ¿Qué otras soluciones o alternativas evaluaste?
+      placeholder: Contanos qué opciones consideraste y por qué no alcanzan.
+    validations:
+      required: true

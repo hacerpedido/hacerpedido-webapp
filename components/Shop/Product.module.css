@@ -1,0 +1,112 @@
+.amountContainer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 11px;
+  background-color: #ffb233;
+  border-radius: 3px;
+}
+
+.amountText {
+  font-family: "Barlow", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.buttonQty {
+  display: flex;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 11px;
+  text-align: center;
+  border: 1px solid #3ecb7d;
+  border-radius: 2px;
+}
+
+.buttonQtyText {
+  padding-bottom: 2px;
+  font-family: "Barlow", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #3ecb7d;
+}
+
+.card {
+  padding: 10px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 7px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+}
+
+.description {
+  flex: 1;
+  flex-wrap: wrap;
+  font-family: "Roboto Slab", serif;
+  font-size: 13px;
+  line-height: 17px;
+  color: #8f9bb3;
+}
+
+.name {
+  flex: 1;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+  font-family: "Barlow", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+  color: #4d360f;
+}
+
+.nameDescription {
+  flex: 1;
+}
+
+.price {
+  margin-left: 12px;
+  font-family: "Barlow", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2f995e;
+}
+
+.product {
+  padding-right: 10px;
+  padding-bottom: 10px;
+  margin-top: 15px;
+  margin-right: 16px;
+  margin-left: 16px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.productButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  appearance: none;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.productRoot {
+  position: relative;
+}

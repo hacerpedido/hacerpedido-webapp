@@ -1,0 +1,59 @@
+.uploaderContainer {
+  background-color: #fff;
+  border: 1px solid #ededed;
+  border-radius: 5px;
+}
+
+.dropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: #666666;
+  cursor: pointer;
+}
+
+.dropZone p {
+  margin: 0;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 75vh;
+  overflow: auto;
+  background-color: #999;
+}
+
+.footer {
+  align-items: center;
+}
+
+.footerEmpty {
+  justify-content: flex-end;
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+}
+
+.spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-left: 8px;
+  border: 4px solid rgba(255, 178, 51, 0.2);
+  border-top-color: #ffb233;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

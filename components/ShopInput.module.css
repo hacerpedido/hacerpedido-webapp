@@ -1,0 +1,55 @@
+.container {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.label {
+  display: block;
+}
+
+.labelText {
+  display: block;
+  padding: 0.25em 0;
+  font-size: 0.75em;
+  color: #8f9bb3;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.25em 0.5em;
+  font-size: 1em;
+  background-color: transparent;
+  border: 1px solid;
+  border-color: #ececec;
+  border-radius: 3px;
+}
+
+.input:not(textarea) {
+  height: 40px;
+}
+
+.inputLines2 {
+  height: 62px;
+}
+
+.inputLines3_5 {
+  height: 108.5px;
+}
+
+.inputError {
+  border-color: #fc6d47;
+}
+
+.textError {
+  font-size: 0.75em;
+  color: #fc6d47;
+}
+
+.input::placeholder {
+  color: var(--placeholder-color, currentColor);
+}
+
+textarea.input {
+  resize: none;
+}
