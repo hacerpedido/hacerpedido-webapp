@@ -39,6 +39,13 @@ jobs:
           path: coverage/
           retention-days: 7
           if-no-files-found: ignore
+      - name: Upload coverage to Codecov
+        # Keep coverage reporting non-blocking while the repository is private.
+        if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
 
   e2e:
     runs-on: ubuntu-24.04

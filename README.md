@@ -1,5 +1,7 @@
 # HacerPedido WebApp
 
+[![CI](https://github.com/hacerpedido/hacerpedido-webapp/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hacerpedido/hacerpedido-webapp/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/hacerpedido/hacerpedido-webapp/branch/master/graph/badge.svg)](https://codecov.io/gh/hacerpedido/hacerpedido-webapp)
+
 HacerPedido is a web application (Next.js + React) that enables local businesses to receive orders through WhatsApp. Customers browse a shop's storefront, build their order in a cart, and send it as a pre-built WhatsApp message without registering.
 
 This repository is the **webapp** (frontend + internal API routes). Browser requests use the native `fetch` API against internal App Router routes backed by PostgreSQL.
