@@ -7,6 +7,8 @@ import {
 } from "@aws-sdk/client-s3";
 
 function createS3Client(): S3Client {
+  const endpoint = process.env.HP_S3_ENDPOINT;
+
   return new S3Client({
     region: process.env.AWS_REGION ?? "us-east-1",
     followRegionRedirects: true,
@@ -14,6 +16,7 @@ function createS3Client(): S3Client {
       accessKeyId: process.env.HP_AWS_ACCESS_KEY_ID as string,
       secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY as string,
     },
+    ...(endpoint ? { endpoint, forcePathStyle: true } : {}),
   });
 }
 

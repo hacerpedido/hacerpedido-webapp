@@ -19,6 +19,76 @@ services:
       timeout: 5s
       retries: 15
 
+  s3:
+    image: ghcr.io/versity/versitygw:v1.4.1
+    command:
+      - --port
+      - :7070
+      - --access
+      - "${DEV_S3_ACCESS_KEY:-dev-access-key}"
+      - --secret
+      - "${DEV_S3_SECRET_KEY:-dev-secret-key}"
+      - --iam-dir
+      - /iam
+      - --health
+      - /healthz
+      - posix
+      - /data
+    ports:
+      - "127.0.0.1:${DEV_S3_PORT:-7070}:7070"
+    volumes:
+      - s3data:/data
+      - s3iam:/iam
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:7070/healthz"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  s3-init:
+    image: amazon/aws-cli:2.27.49
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        if head_error="$$(aws --endpoint-url "$${S3_ENDPOINT}" s3api head-bucket --bucket "$${S3_BUCKET}" 2>&1 >/dev/null)"; then
+          :
+        else
+          case "$${head_error}" in
+            *404*|*NotFound*|*NoSuchBucket*)
+              aws --endpoint-url "$${S3_ENDPOINT}" s3api create-bucket --bucket "$${S3_BUCKET}"
+              ;;
+            *)
+              printf 'Unable to check local S3 bucket %s: %s\n' "$${S3_BUCKET}" "$${head_error}" >&2
+              exit 1
+              ;;
+          esac
+        fi
+        cat > /tmp/public-read-policy.json <<EOF
+        {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::$${S3_BUCKET}/*"}]}
+        EOF
+        aws --endpoint-url "$${S3_ENDPOINT}" s3api put-bucket-policy --bucket "$${S3_BUCKET}" --policy file:///tmp/public-read-policy.json
+        touch /tmp/s3-ready
+        exec tail -f /dev/null
+    environment:
+      AWS_ACCESS_KEY_ID: "${DEV_S3_ACCESS_KEY:-dev-access-key}"
+      AWS_SECRET_ACCESS_KEY: "${DEV_S3_SECRET_KEY:-dev-secret-key}"
+      AWS_DEFAULT_REGION: us-east-1
+      S3_ENDPOINT: http://s3:7070
+      S3_BUCKET: "${DEV_S3_BUCKET:-hacerpedido-images}"
+    depends_on:
+      s3:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/s3-ready"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
 volumes:
   pgdata:
     name: "${DEV_VOLUME_PREFIX:-hacerpedido_dev}_pgdata"
+  s3data:
+    name: "${DEV_VOLUME_PREFIX:-hacerpedido_dev}_s3data"
+  s3iam:
+    name: "${DEV_VOLUME_PREFIX:-hacerpedido_dev}_s3iam"

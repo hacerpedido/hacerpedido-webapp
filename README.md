@@ -63,25 +63,41 @@ docs/             Documentation
 
 - Node.js 22 (CI and `.tool-versions` use 22)
 - pnpm 11.25.0
-- **Docker** (for the local database and E2E; starts PostgreSQL 17.6 with `pg_stat_statements`)
+- **Docker** (for the local database, S3-compatible image storage, and E2E; starts PostgreSQL 17.6 with `pg_stat_statements`)
 
 ### Environment variables
 
 Copy `.env.example` to `.env.local` (or create it) in the repository root. For local development,
-the example's `PG_CONNECTION_STRING` value works with `compose.dev.yaml`:
+the example's database and S3 values work with `compose.dev.yaml`:
 
 | Variable | Purpose | Required? |
 |---|---|---|
 | `PG_CONNECTION_STRING` | PostgreSQL connection (Knex, migrations, E2E override) | Yes (db) |
-| `HP_AWS_ACCESS_KEY_ID` | S3 image upload | Uploads only |
-| `HP_AWS_SECRET_ACCESS_KEY` | S3 image upload | Uploads only |
-| `HP_AWS_IMAGES_BUCKET` | S3 image bucket | Uploads only |
-| `NEXT_PUBLIC_IMAGE_BUCKET_URL` | Public bucket URL | Images only |
+| `HP_S3_ENDPOINT` | Local S3-compatible endpoint (`http://localhost:7070`) | Images only |
+| `HP_AWS_ACCESS_KEY_ID` | Local S3 image-upload access key | Uploads only |
+| `HP_AWS_SECRET_ACCESS_KEY` | Local S3 image-upload secret | Uploads only |
+| `HP_AWS_IMAGES_BUCKET` | Local S3 image bucket | Uploads only |
+| `NEXT_PUBLIC_IMAGE_BUCKET_URL` | Local public bucket URL | Images only |
+| `DEV_S3_PORT` | Local S3 host port (default `7070`) | No |
+| `DEV_S3_ACCESS_KEY` / `DEV_S3_SECRET_KEY` | Credentials used by the local Compose S3 service | No |
+| `DEV_S3_BUCKET` | Bucket created by the local S3 init service | No |
 | `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Error monitoring (disabled in dev) | No |
 | `SENTRY_AUTH_TOKEN` | Sentry source map upload (CI/deploy) | Uploads only |
 | `SENTRY_ORG` / `SENTRY_PROJECT` | Sentry org/project slugs (default from `sentry.properties`) | Uploads only |
 
 > Never commit secret values. `Sentry` is automatically disabled in development.
+
+The development Compose stack runs VersityGW, an S3-compatible local service, on
+`http://localhost:7070` with the non-sensitive credentials from `.env.example`.
+It creates `hacerpedido-images` automatically; no external AWS account or cloud
+credentials are needed. If you change `DEV_S3_PORT` or `DEV_S3_BUCKET`, update
+`HP_S3_ENDPOINT`, `HP_AWS_IMAGES_BUCKET`, and `NEXT_PUBLIC_IMAGE_BUCKET_URL` to
+match. Keep the `DEV_S3_*` values and the `HP_AWS_*` credentials aligned.
+
+Production and preview deployments use the real `HP_AWS_ACCESS_KEY_ID`,
+`HP_AWS_SECRET_ACCESS_KEY`, `HP_AWS_IMAGES_BUCKET`, and
+`NEXT_PUBLIC_IMAGE_BUCKET_URL` values configured in Vercel. `HP_S3_ENDPOINT` is
+only for local S3-compatible storage and should not point production at localhost.
 
 Sentry follows the SDK v10 wiring: `next.config.ts` wraps the Next config with
 `withSentryConfig`, `instrumentation.ts` + `instrumentation-client.ts` initialize
@@ -110,8 +126,8 @@ pnpm run db:rollback      # Revert the last migration
 pnpm run db:create         # Create/start the local database (idempotent)
 pnpm run db:seed           # Start PostgreSQL and load synthetic data
 pnpm run db:seed:test      # E2E fixtures (test database)
-pnpm run db:up             # Start local PostgreSQL on 54328
-pnpm run db:down           # Stop local PostgreSQL
+pnpm run db:up              # Start PostgreSQL and local S3 on 54328/7070
+pnpm run db:down            # Stop local PostgreSQL and S3
 pnpm run db:logs           # Follow PostgreSQL logs
 pnpm run db:check          # Check that PostgreSQL responds
 pnpm run db:reset          # Delete the local volume and recreate everything
@@ -122,6 +138,14 @@ uses `compose.e2e.yaml`, port **54329**, and deterministic fixtures; they are se
 databases. `db:reset` permanently deletes data from the local volume:
 use it only when you want to start from scratch. It does not require `psql` to be installed on the
 host; checks run inside the container.
+
+`db:up` starts PostgreSQL and the local VersityGW service, waits for both health
+checks, and runs the one-shot initializer that creates the image bucket
+idempotently. `db:down` stops the services but keeps the named PostgreSQL, S3
+data, and S3 IAM volumes, so local images and bucket state persist across
+restarts. To inspect S3 logs, run `docker compose -f compose.dev.yaml logs -f s3`.
+Use `db:reset` when you intentionally want to delete all local database and S3
+data and recreate the stack.
 
 Baseline `0000_init` creates `shops` and `products` and is **not reversible** (forward-only migrations). It requires the `uuid-ossp`, `pgcrypto`, and `pg_stat_statements` extensions (the latter must be preloaded — see `compose.e2e.yaml`). Compatible with Postgres 17.6.
 
@@ -196,7 +220,7 @@ First time: `pnpm run test:e2e:install` (installs Chromium).
 | `pnpm run db:migrate` / `db:migrate:make` / `db:migrate:status` / `db:rollback` | Knex migrations |
 | `pnpm run db:seed` | Development seed |
 | `pnpm run db:seed:test` / `db:seed:e2e` | E2E seed |
-| `pnpm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operate the local DB |
+| `pnpm run db:create` / `db:up` / `db:down` / `db:logs` / `db:check` | Operate local PostgreSQL and S3 |
 | `pnpm run db:setup` / `db:reset` | Set up / recreate the local DB |
 | `pnpm run format` | Format code with Biome |
 | `pnpm run format:check` | Check formatting with Biome |

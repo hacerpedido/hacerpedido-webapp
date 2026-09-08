@@ -22,6 +22,7 @@ describe("S3 image utilities", () => {
     secretAccessKey: process.env.HP_AWS_SECRET_ACCESS_KEY,
     imagesBucket: process.env.HP_AWS_IMAGES_BUCKET,
     region: process.env.AWS_REGION,
+    endpoint: process.env.HP_S3_ENDPOINT,
   };
 
   beforeEach(() => {
@@ -34,6 +35,7 @@ describe("S3 image utilities", () => {
     process.env.HP_AWS_SECRET_ACCESS_KEY = "test-secret-key";
     process.env.HP_AWS_IMAGES_BUCKET = "test-images-bucket";
     delete process.env.AWS_REGION;
+    delete process.env.HP_S3_ENDPOINT;
   });
 
   afterEach(() => {
@@ -42,6 +44,7 @@ describe("S3 image utilities", () => {
       HP_AWS_SECRET_ACCESS_KEY: originalEnvironment.secretAccessKey,
       HP_AWS_IMAGES_BUCKET: originalEnvironment.imagesBucket,
       AWS_REGION: originalEnvironment.region,
+      HP_S3_ENDPOINT: originalEnvironment.endpoint,
     };
 
     for (const [name, value] of Object.entries(environment)) {
@@ -93,6 +96,23 @@ describe("S3 image utilities", () => {
       Key: "shops/shop-id/logo.png",
     });
     expect(mockSend).toHaveBeenCalledWith({ input: expect.any(Object) });
+  });
+
+  test("configures a local endpoint with path-style addressing", async () => {
+    process.env.HP_S3_ENDPOINT = "http://localhost:9000";
+
+    await deleteFile("shops/shop-id/logo.png");
+
+    expect(mockS3Client).toHaveBeenCalledWith({
+      region: "us-east-1",
+      followRegionRedirects: true,
+      credentials: {
+        accessKeyId: "test-access-key",
+        secretAccessKey: "test-secret-key",
+      },
+      endpoint: "http://localhost:9000",
+      forcePathStyle: true,
+    });
   });
 
   test("propagates a rejected upload send", async () => {
