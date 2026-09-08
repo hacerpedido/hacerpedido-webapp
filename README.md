@@ -230,3 +230,4 @@ Please report vulnerabilities privately through GitHub rather than opening a pub
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+<!-- ruleset verification -->
