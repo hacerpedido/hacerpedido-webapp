@@ -1,5 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
+import { isSentryEnabled } from "./lib/utils/sentry";
 
 // Mirror the public image bucket (NEXT_PUBLIC_IMAGE_BUCKET_URL) under Vercel's
 // image optimizer. The optimizer emits WebP/AVIF, serves responsive widths,
@@ -38,18 +39,23 @@ const nextConfig: NextConfig = {
   },
 };
 
+// Sentry is wired only for Vercel production deployments (see isSentryEnabled).
+// Skipping the wrapper in tests, CI, and preview avoids the source-map upload
+// step (and its "no auth token" warnings) and keeps Sentry out of those builds.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/webpack-setup/
-export default withSentryConfig(nextConfig, {
-  // Org/project slugs mirror sentry.properties (they are not secrets). They
-  // can be overridden via SENTRY_ORG / SENTRY_PROJECT.
-  org: process.env.SENTRY_ORG ?? "hp-0q",
-  project: process.env.SENTRY_PROJECT ?? "hacerpedido",
+export default isSentryEnabled()
+  ? withSentryConfig(nextConfig, {
+      // Org/project slugs mirror sentry.properties (they are not secrets). They
+      // can be overridden via SENTRY_ORG / SENTRY_PROJECT.
+      org: process.env.SENTRY_ORG ?? "hp-0q",
+      project: process.env.SENTRY_PROJECT ?? "hacerpedido",
 
-  // Only print logs for uploading source maps in CI
-  silent: !process.env.CI,
+      // Only print logs for uploading source maps in CI
+      silent: !process.env.CI,
 
-  // Upload source maps when an auth token is available. Without a token the
-  // plugin logs a warning and skips the upload instead of failing the build,
-  // keeping local and CI builds green.
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-});
+      // Upload source maps when an auth token is available. Without a token the
+      // plugin logs a warning and skips the upload instead of failing the build,
+      // keeping local and CI builds green.
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    })
+  : nextConfig;
