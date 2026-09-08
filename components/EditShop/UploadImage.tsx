@@ -18,12 +18,12 @@ const pixelRatio =
 type UploadImageType = "logo" | "background";
 
 type UploadImageProps = {
-  shopID: number;
   imageType: UploadImageType;
   handleClose: (options?: { forceRefresh?: boolean }) => void;
+  token: string;
 };
 
-const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
+const UploadImage = ({ imageType, handleClose, token }: UploadImageProps) => {
   const circularCrop = imageType === "logo";
   const aspect = imageType === "logo" ? 1 : 1.2014;
 
@@ -57,7 +57,6 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
 
   const onDelete = () => {
     const data = new FormData();
-    data.append("shop_id", String(shopID));
     data.append("image_type", imageType);
 
     setError("");
@@ -65,6 +64,7 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
     fetch(`${window.location.origin}/api/images`, {
       method: "DELETE",
       body: data,
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
         if (!response.ok) {
@@ -126,12 +126,12 @@ const UploadImage = ({ shopID, imageType, handleClose }: UploadImageProps) => {
             return;
           }
           data.append("image", blob);
-          data.append("shop_id", String(shopID));
           data.append("image_type", imageType);
 
           fetch(`${window.location.origin}/api/images`, {
             method: "POST",
             body: data,
+            headers: { Authorization: `Bearer ${token}` },
           })
             .then((response) => {
               if (!response.ok) {

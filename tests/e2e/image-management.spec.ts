@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 
 const token = "/e2e-image-token/edit";
 const imageType = "logo";
-const shopId = "00000000-0000-0000-0000-000000000006";
 
 // This is a deliberately tiny, valid PNG. Sending a real multipart image
 // exercises the upload contract without requiring AWS credentials.
@@ -15,71 +14,88 @@ test.describe("shop image management", () => {
   test("uploads a logo through the editor without contacting AWS", async ({
     page,
   }) => {
-    let uploadRequestBody: string | null = null;
-    await page.route("**/api/images", async (route) => {
-      uploadRequestBody = route.request().postData() ?? null;
-      await route.fulfill({
+    await page.route("**/api/images", (route) =>
+      route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({ image: "mock-logo.png" }),
         status: 200,
-      });
-    });
+      }),
+    );
 
     await page.goto(token);
-    await expect(
-      page.getByRole("button", { name: "Editar logo" }),
-    ).toBeVisible();
-    await page.evaluate(
-      async ({ bytes, shopId }) => {
-        const data = new FormData();
-        data.append(
-          "image",
-          new File([new Uint8Array(bytes)], "test-logo.png", {
-            type: "image/png",
-          }),
-        );
-        data.append("shop_id", shopId);
-        data.append("image_type", "logo");
-        await fetch("/api/images", { method: "POST", body: data });
-      },
-      { bytes: [...png], shopId },
+    await page.getByRole("button", { name: "Editar logo" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    await dialog.locator('input[type="file"]').setInputFiles({
+      name: "test-logo.png",
+      mimeType: "image/png",
+      buffer: png,
+    });
+
+    const preview = dialog.getByAltText("Vista previa");
+    await expect(preview).toBeVisible();
+    const previewBounds = await preview.boundingBox();
+    expect(previewBounds).not.toBeNull();
+    if (!previewBounds) {
+      throw new Error(
+        "The image preview must have visible bounds for cropping",
+      );
+    }
+
+    // ReactCrop requires a user crop before it enables the upload path.
+    await page.mouse.move(previewBounds.x, previewBounds.y);
+    await page.mouse.down();
+    await page.mouse.move(
+      previewBounds.x + previewBounds.width,
+      previewBounds.y + previewBounds.height,
     );
+    await page.mouse.up();
+
+    const uploadRequest = page.waitForRequest(
+      (request) =>
+        request.url().includes("/api/images") && request.method() === "POST",
+    );
+    await dialog.getByRole("button", { name: "Aceptar" }).click();
+
+    const request = await uploadRequest;
+    const uploadRequestBody = request.postData() ?? "";
     expect(uploadRequestBody).toContain("image_type");
-    expect(uploadRequestBody).toContain("logo");
+    expect(uploadRequestBody).toContain(imageType);
+    expect(uploadRequestBody).not.toContain("shop_id");
+    await expect(request.headerValue("authorization")).resolves.toBe(
+      "Bearer e2e-image-token",
+    );
   });
 
   test("deletes the current logo through the editor without contacting AWS", async ({
     page,
   }) => {
-    let deleteRequest: { image_type?: string; shop_id?: string } | undefined;
-    await page.route("**/api/images", async (route) => {
-      if (route.request().method() === "DELETE") {
-        const body = route.request().postData() ?? "";
-        deleteRequest = {
-          image_type: body.includes("logo") ? "logo" : undefined,
-          shop_id: body.match(new RegExp(shopId))?.[0],
-        };
-      }
-      await route.fulfill({
+    await page.route("**/api/images", (route) =>
+      route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({ deleted: "/logo512.png" }),
         status: 200,
-      });
-    });
+      }),
+    );
 
     await page.goto(token);
-    await expect(
-      page.getByRole("button", { name: "Editar logo" }),
-    ).toBeVisible();
-    await page.evaluate(async (shopId) => {
-      const data = new FormData();
-      data.append("shop_id", shopId);
-      data.append("image_type", "logo");
-      await fetch("/api/images", { method: "DELETE", body: data });
-    }, shopId);
-    expect(deleteRequest?.image_type).toBe(imageType);
-    expect(deleteRequest?.shop_id).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    await page.getByRole("button", { name: "Editar logo" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    const deleteRequest = page.waitForRequest(
+      (request) =>
+        request.url().includes("/api/images") && request.method() === "DELETE",
+    );
+    await dialog.getByRole("button", { name: "Borrar imagen actual" }).click();
+
+    const request = await deleteRequest;
+    const deleteRequestBody = request.postData() ?? "";
+    expect(deleteRequestBody).toContain(imageType);
+    expect(deleteRequestBody).not.toContain("shop_id");
+    await expect(request.headerValue("authorization")).resolves.toBe(
+      "Bearer e2e-image-token",
     );
   });
 

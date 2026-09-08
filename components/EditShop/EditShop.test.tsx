@@ -72,11 +72,13 @@ jest.mock(
     ({
       handleClose,
       imageType,
+      token,
     }: {
       handleClose: (options: { forceRefresh: boolean }) => void;
       imageType: string;
+      token: string;
     }) => (
-      <div data-testid="upload-image">
+      <div data-testid="upload-image" data-token={token}>
         Editando {imageType}
         <button
           onClick={() => handleClose({ forceRefresh: true })}
@@ -114,6 +116,7 @@ describe("EditShop", () => {
       onSave: jest.fn(),
       refresh: jest.fn(),
       shop,
+      token: "editor-token",
       ...overrides,
     };
 
@@ -214,6 +217,9 @@ describe("EditShop", () => {
     expect(dialog.hasAttribute("open")).toBe(true);
     expect(screen.getByTestId("upload-image").textContent).toContain(
       "Editando background",
+    );
+    expect(screen.getByTestId("upload-image").getAttribute("data-token")).toBe(
+      "editor-token",
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Confirmar imagen" }));

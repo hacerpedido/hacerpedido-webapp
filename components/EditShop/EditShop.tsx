@@ -58,6 +58,7 @@ export default function EditShop({
   isSaving,
   refresh,
   onSave,
+  token,
 }) {
   const [imageType, setImageType] = useState(undefined);
 
@@ -78,7 +79,7 @@ export default function EditShop({
         <UploadImage
           handleClose={handleClose}
           imageType={imageType}
-          shopID={shop.id}
+          token={token}
         />
       </Dialog>
 

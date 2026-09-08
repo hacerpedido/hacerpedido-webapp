@@ -45,6 +45,7 @@
     "@handsontable/react-wrapper": "18.1.0",
     "@sentry/nextjs": "^10.73.0",
     "bootstrap": "^4.6.2",
+    "busboy": "1.6.0",
     "drizzle-orm": "^0.45.2",
     "handsontable": "18.1.0",
     "next": "16.3.4",
@@ -56,6 +57,7 @@
     "react-image-crop": "^11.1.2",
     "react-spring": "^8.0.27",
     "react-timeago": "^8.3.0",
+    "sharp": "0.35.4",
     "validator": "^13.15.35"
   },
   "devDependencies": {
@@ -64,6 +66,7 @@
     "@next/env": "^16.3.4",
     "@playwright/test": "^1.62.1",
     "@testing-library/react": "^16.3.3",
+    "@types/busboy": "1.5.4",
     "@types/jest": "^30.0.0",
     "@types/jest-axe": "^3.5.9",
     "@types/node": "^26.4.0",

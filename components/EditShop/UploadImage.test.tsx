@@ -182,7 +182,7 @@ describe("UploadImage", () => {
       <UploadImage
         handleClose={handleClose}
         imageType={imageType}
-        shopID={7}
+        token="editor-token"
       />,
     );
 
@@ -224,9 +224,14 @@ describe("UploadImage", () => {
       }),
     );
     const uploadRequest = fetchMock.mock.calls[0][1];
-    expect(uploadRequest.headers).toBeUndefined();
+    expect(uploadRequest.headers).toEqual({
+      Authorization: "Bearer editor-token",
+    });
     expect(uploadRequest.body.get("image_type")).toBe("background");
-    expect(uploadRequest.body.get("shop_id")).toBe("7");
+    expect(Array.from(uploadRequest.body.keys())).toEqual([
+      "image",
+      "image_type",
+    ]);
     expect(uploadRequest.body.get("image")).toBeTruthy();
     expect(context.drawImage).toHaveBeenCalled();
   });
@@ -303,9 +308,11 @@ describe("UploadImage", () => {
       }),
     );
     const deleteRequest = fetchMock.mock.calls[0][1];
-    expect(deleteRequest.headers).toBeUndefined();
+    expect(deleteRequest.headers).toEqual({
+      Authorization: "Bearer editor-token",
+    });
     expect(deleteRequest.body.get("image_type")).toBe("logo");
-    expect(deleteRequest.body.get("shop_id")).toBe("7");
+    expect(Array.from(deleteRequest.body.keys())).toEqual(["image_type"]);
   });
 
   test("shows delete errors and stops loading", async () => {

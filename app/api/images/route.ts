@@ -1,38 +1,252 @@
+import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { Readable, Transform } from "node:stream";
 import { shops } from "#db/schema";
 import { getDb } from "#lib/db/client";
+import { authorizeEditorRequest } from "#lib/server/editor-authorization";
 import * as s3utils from "#lib/utils/aws-s3";
-import { randomString } from "#lib/utils/utils";
 
-import { eq } from "drizzle-orm";
-
-const validator: { isUUID(value: string): boolean } = require("validator");
+import Busboy from "busboy";
+import { and, eq, isNull } from "drizzle-orm";
+import sharp from "sharp";
 
 export const runtime = "nodejs";
 
 const acceptedImageTypes = ["logo", "background"];
-const acceptedMimeTypes = ["image/png", "image/jpeg"];
+const maxInputBytes = 5 * 1024 * 1024;
+// The image is capped separately; this allowance is only for multipart
+// headers, boundaries, and the two small text fields.
+const maxMultipartOverheadBytes = 64 * 1024;
+const maxRequestBytes = maxInputBytes + maxMultipartOverheadBytes;
+const maxFieldBytes = 128;
+const maxImagePixels = 16_000_000;
+const maxImageDimension = 4096;
 
 const db = getDb();
-
-function field(form: FormData, name: string): string | undefined {
-  const value = form.get(name);
-  return typeof value === "string" ? value : undefined;
-}
 
 function errorResponse(message: string) {
   return Response.json({ error: message }, { status: 400 });
 }
 
-async function parseForm(request: Request): Promise<FormData | Response> {
+function unauthorizedResponse() {
+  return Response.json({ error: "Unauthorized." }, { status: 401 });
+}
+
+function tooLargeResponse() {
+  return Response.json({ error: "Image too large." }, { status: 413 });
+}
+
+function conflictResponse() {
+  return Response.json(
+    { error: "The image changed. Please try again." },
+    {
+      status: 409,
+    },
+  );
+}
+
+class PayloadTooLargeError extends Error {}
+
+interface ParsedMultipart {
+  fields: Map<string, string>;
+  image?: Buffer;
+}
+
+type MultipartResult = ParsedMultipart | Response;
+
+/**
+ * Parse the request without letting undici's FormData implementation buffer
+ * an unbounded body. Busboy's limits protect individual parts; the counting
+ * transform protects the complete request, including multipart overhead.
+ */
+async function parseMultipart(request: Request): Promise<MultipartResult> {
+  const contentType = request.headers.get("content-type");
+  if (!contentType?.toLowerCase().startsWith("multipart/form-data")) {
+    return errorResponse("Invalid multipart request.");
+  }
+
+  const contentLength = request.headers.get("content-length");
+  if (contentLength !== null) {
+    if (!/^\d+$/.test(contentLength.trim())) {
+      return errorResponse("Invalid multipart request.");
+    }
+    const declaredLength = Number(contentLength);
+    if (!Number.isSafeInteger(declaredLength)) {
+      return tooLargeResponse();
+    }
+    if (declaredLength > maxRequestBytes) return tooLargeResponse();
+  }
+
+  if (!request.body) return errorResponse("Invalid multipart request.");
+
+  let busboy: ReturnType<typeof Busboy>;
   try {
-    return await request.formData();
-  } catch (error) {
-    return errorResponse(
-      error instanceof Error ? error.message : String(error),
-    );
+    busboy = Busboy({
+      headers: Object.fromEntries(request.headers.entries()),
+      limits: {
+        fileSize: maxInputBytes,
+        files: 1,
+        fields: 3,
+        // Busboy emits partsLimit when the counter reaches the configured
+        // value, so 4 permits exactly the three supported parts.
+        parts: 4,
+        fieldSize: maxFieldBytes,
+        headerPairs: 20,
+      },
+    });
+  } catch {
+    return errorResponse("Invalid multipart request.");
+  }
+
+  const source = Readable.fromWeb(
+    request.body as Parameters<typeof Readable.fromWeb>[0],
+  );
+  let totalBytes = 0;
+  const counter = new Transform({
+    transform(chunk: unknown, _encoding, callback) {
+      const bytes = Buffer.isBuffer(chunk)
+        ? chunk
+        : Buffer.from(chunk as Uint8Array);
+      totalBytes += bytes.length;
+      if (totalBytes > maxRequestBytes) {
+        callback(new PayloadTooLargeError());
+        return;
+      }
+      callback(null, bytes);
+    },
+  });
+
+  return new Promise((resolve) => {
+    const fields = new Map<string, string>();
+    let image: Buffer | undefined;
+    let imageParts = 0;
+    let invalid = false;
+    let limitExceeded = false;
+    let settled = false;
+
+    const stopStreams = () => {
+      source.destroy();
+      counter.destroy();
+      busboy.destroy();
+    };
+    const fail = (response: Response) => {
+      if (settled) return;
+      settled = true;
+      stopStreams();
+      resolve(response);
+    };
+    const failStream = (error: unknown) => {
+      if (error instanceof PayloadTooLargeError) {
+        fail(tooLargeResponse());
+      } else {
+        fail(errorResponse("Invalid multipart request."));
+      }
+    };
+
+    busboy.on("field", (name, value, info) => {
+      if (info.valueTruncated) {
+        limitExceeded = true;
+        return;
+      }
+      if (fields.has(name)) {
+        invalid = true;
+        return;
+      }
+      fields.set(name, value);
+    });
+    busboy.on("file", (name, file) => {
+      file.on("error", failStream);
+      imageParts += 1;
+      if (name !== "image" || imageParts > 1) {
+        invalid = true;
+        file.resume();
+        return;
+      }
+
+      const chunks: Buffer[] = [];
+      let fileBytes = 0;
+      file.on("data", (chunk: Buffer) => {
+        fileBytes += chunk.length;
+        if (fileBytes <= maxInputBytes) chunks.push(chunk);
+      });
+      file.on("limit", () => {
+        limitExceeded = true;
+      });
+      file.on("end", () => {
+        if (!settled && fileBytes <= maxInputBytes) {
+          image = Buffer.concat(chunks, fileBytes);
+        }
+      });
+    });
+    busboy.on("filesLimit", () => {
+      limitExceeded = true;
+    });
+    busboy.on("fieldsLimit", () => {
+      limitExceeded = true;
+    });
+    busboy.on("partsLimit", () => {
+      limitExceeded = true;
+    });
+    busboy.on("error", failStream);
+    counter.on("error", failStream);
+    source.on("error", failStream);
+    busboy.on("close", () => {
+      if (settled) return;
+      settled = true;
+      if (limitExceeded) {
+        resolve(tooLargeResponse());
+      } else if (invalid) {
+        resolve(errorResponse("Wrong parameters (3)."));
+      } else {
+        resolve({ fields, image });
+      }
+    });
+
+    source.pipe(counter).pipe(busboy);
+  });
+}
+
+interface ProcessedImage {
+  buffer: Buffer;
+  extension: "png" | "jpg";
+  mime: "image/png" | "image/jpeg";
+}
+
+async function processImage(input: Buffer): Promise<ProcessedImage | Response> {
+  if (input.length > maxInputBytes) return tooLargeResponse();
+  try {
+    const options = {
+      failOn: "error" as const,
+      limitInputPixels: maxImagePixels,
+    };
+    const metadata = await sharp(input, options).metadata();
+    const format = metadata.format;
+    const width = metadata.width;
+    const height = metadata.height;
+    if (
+      (format !== "png" && format !== "jpeg") ||
+      !width ||
+      !height ||
+      width > maxImageDimension ||
+      height > maxImageDimension ||
+      width * height > maxImagePixels
+    ) {
+      return errorResponse("Invalid image.");
+    }
+
+    const output = await sharp(input, options)
+      .rotate()
+      .toFormat(format === "png" ? "png" : "jpeg")
+      .toBuffer();
+    return {
+      buffer: output,
+      extension: format === "png" ? "png" : "jpg",
+      mime: format === "png" ? "image/png" : "image/jpeg",
+    };
+  } catch {
+    return errorResponse("Invalid image.");
   }
 }
 
@@ -66,26 +280,23 @@ async function cleanupBestEffort(
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const form = await parseForm(request);
+  const shopID = await authorizeEditorRequest(request);
+  if (!shopID) return unauthorizedResponse();
+
+  const form = await parseMultipart(request);
   if (form instanceof Response) return form;
 
-  const imageType = field(form, "image_type");
-  const shopID = field(form, "shop_id");
+  const imageType = form.fields.get("image_type");
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
     return errorResponse("Wrong parameters (1).");
   }
-  if (!shopID || !validator.isUUID(shopID)) {
-    return errorResponse("Wrong parameters (2).");
-  }
 
-  const image = form.get("image");
-  if (!(image instanceof File) || image.size === 0) {
+  if (!form.image || form.image.length === 0) {
     return errorResponse("Wrong parameters (3).");
   }
-  const mime = image.type;
-  if (!mime || !acceptedMimeTypes.includes(mime)) {
-    return errorResponse("Wrong parameters (4).");
-  }
+
+  const processed = await processImage(form.image);
+  if (processed instanceof Response) return processed;
 
   const imageColumn = imageType === "logo" ? "logo" : "background";
   const selected = await db
@@ -97,21 +308,39 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const oldKey = selected[0].oldKey;
-  const extension = mime === "image/png" ? "png" : "jpg";
-  const key = `${shopID}-${imageType}-${randomString(10)}.${extension}`;
+  const key = `${shopID}-${imageType}-${randomUUID()}.${processed.extension}`;
   const temporaryFile = path.join(
     os.tmpdir(),
-    `hacerpedido-image-${randomString(16)}.${extension}`,
+    `hacerpedido-image-${randomUUID()}.${processed.extension}`,
   );
 
   try {
-    await fs.writeFile(temporaryFile, Buffer.from(await image.arrayBuffer()));
-    await s3utils.uploadFile(temporaryFile, key, mime);
+    await fs.writeFile(temporaryFile, processed.buffer);
+    await s3utils.uploadFile(temporaryFile, key, processed.mime);
     try {
-      await db
+      const updated = await db
         .update(shops)
         .set(imageColumn === "logo" ? { logo: key } : { background: key })
-        .where(eq(shops.id, shopID));
+        .where(
+          and(
+            eq(shops.id, shopID),
+            oldKey === null
+              ? isNull(imageColumn === "logo" ? shops.logo : shops.background)
+              : eq(
+                  imageColumn === "logo" ? shops.logo : shops.background,
+                  oldKey,
+                ),
+          ),
+        )
+        .returning({ id: shops.id });
+      if (updated.length === 0) {
+        await cleanupBestEffort(
+          "remove uploaded image after compare-and-swap conflict",
+          key,
+          () => s3utils.deleteFile(key),
+        );
+        return conflictResponse();
+      }
     } catch (error) {
       await cleanupBestEffort(
         "remove uploaded image after database failure",
@@ -132,16 +361,15 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 export async function DELETE(request: Request): Promise<Response> {
-  const form = await parseForm(request);
+  const shopID = await authorizeEditorRequest(request);
+  if (!shopID) return unauthorizedResponse();
+
+  const form = await parseMultipart(request);
   if (form instanceof Response) return form;
 
-  const imageType = field(form, "image_type");
-  const shopID = field(form, "shop_id");
+  const imageType = form.fields.get("image_type");
   if (!imageType || !acceptedImageTypes.includes(imageType)) {
     return errorResponse("Wrong parameters (1).");
-  }
-  if (!shopID || !validator.isUUID(shopID)) {
-    return errorResponse("Wrong parameters (2).");
   }
 
   const imageColumn = imageType === "logo" ? "logo" : "background";
@@ -154,10 +382,19 @@ export async function DELETE(request: Request): Promise<Response> {
   }
 
   const oldKey = selected[0].oldKey;
-  await db
+  const updated = await db
     .update(shops)
     .set(imageColumn === "logo" ? { logo: null } : { background: null })
-    .where(eq(shops.id, shopID));
+    .where(
+      and(
+        eq(shops.id, shopID),
+        oldKey === null
+          ? isNull(imageColumn === "logo" ? shops.logo : shops.background)
+          : eq(imageColumn === "logo" ? shops.logo : shops.background, oldKey),
+      ),
+    )
+    .returning({ id: shops.id });
+  if (updated.length === 0) return conflictResponse();
   if (oldKey) {
     await cleanupBestEffort("remove cleared image", oldKey, () =>
       s3utils.deleteFile(oldKey),

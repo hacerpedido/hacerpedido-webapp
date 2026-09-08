@@ -448,6 +448,7 @@ export default function EditShopPage() {
                 onSave={showSaveMessage}
                 refresh={refresh}
                 shop={shopState.shop}
+                token={token}
               />
               <EditProductsForm
                 key={productsRevision}
