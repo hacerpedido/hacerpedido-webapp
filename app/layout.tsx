@@ -7,10 +7,12 @@ import { Providers } from "./providers";
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hacerpedido.com";
+
 export const metadata: Metadata = {
   description:
     "Pedí a tu comercio favorito por WhatsApp. Empezá a recibir pedidos de tus clientes hoy mismo, gratis.",
-  metadataBase: new URL("https://hacerpedido.com"),
+  metadataBase: new URL(SITE_URL),
   icons: {
     icon: "/favicon.ico",
     apple: "/logo192.png",
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "Hacer Pedido",
     title: "HacerPedido",
     type: "article",
-    url: "https://hacerpedido.com/",
+    url: `${SITE_URL}/`,
   },
   title: "Hacer Pedido | Pedí a tu comercio favorito por WhatsApp.",
   twitter: {
